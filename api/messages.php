@@ -209,25 +209,55 @@ function handleSendMessage(PDO $db, array $auth): void {
             $metaPayload['type'] = 'template';
             $components = [];
             
-            // Header component (Document / Image)
-            if (!empty($mediaUrl)) {
-                $components[] = [
-                    'type' => 'header',
-                    'parameters' => [
-                        [
-                            'type' => 'document',
-                            'document' => [
-                                'link' => $mediaUrl,
-                                'filename' => $mediaName ?: 'invoice.pdf'
+            // Header component (Document / Image / Video)
+            $headerType = strtoupper(trim($tmpl['header_type'] ?? 'NONE'));
+            if (!empty($mediaUrl) && $headerType !== 'NONE') {
+                if ($headerType === 'IMAGE') {
+                    $components[] = [
+                        'type' => 'header',
+                        'parameters' => [
+                            [
+                                'type' => 'image',
+                                'image' => [
+                                    'link' => $mediaUrl
+                                ]
                             ]
                         ]
-                    ]
-                ];
+                    ];
+                } elseif ($headerType === 'DOCUMENT') {
+                    $components[] = [
+                        'type' => 'header',
+                        'parameters' => [
+                            [
+                                'type' => 'document',
+                                'document' => [
+                                    'link' => $mediaUrl,
+                                    'filename' => $mediaName ?: 'invoice.pdf'
+                                ]
+                            ]
+                        ]
+                    ];
+                } elseif ($headerType === 'VIDEO') {
+                    $components[] = [
+                        'type' => 'header',
+                        'parameters' => [
+                            [
+                                'type' => 'video',
+                                'video' => [
+                                    'link' => $mediaUrl
+                                ]
+                            ]
+                        ]
+                    ];
+                }
             }
 
             // Body parameters
             if (!empty($bodyParams) && is_array($bodyParams)) {
-                $paramObjects = array_map(fn($val) => ['type' => 'text', 'text' => (string)$val], $bodyParams);
+                $paramObjects = [];
+                foreach ($bodyParams as $val) {
+                    $paramObjects[] = ['type' => 'text', 'text' => (string)$val];
+                }
                 $components[] = [
                     'type' => 'body',
                     'parameters' => $paramObjects
@@ -269,6 +299,7 @@ function handleSendMessage(PDO $db, array $auth): void {
             $status = 'sent';
             $metaError = null;
         } else {
+            $status = 'failed';
             $metaError = $resJson['error']['message'] ?? ($resRaw ?: 'Meta HTTP Error ' . $httpCode);
         }
     }
