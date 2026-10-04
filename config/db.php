@@ -28,20 +28,31 @@ class Database {
 
     public static function getConnection(): PDO {
         if (self::$pdoInstance === null) {
-            try {
-                $dsn = "mysql:host=" . self::$host . ";port=" . self::$port . ";dbname=" . self::$dbName . ";charset=" . self::$charset;
-                $options = [
-                    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES   => false,
-                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES " . self::$charset . " COLLATE utf8mb4_unicode_ci"
-                ];
-                self::$pdoInstance = new PDO($dsn, self::$username, self::$password, $options);
-            } catch (PDOException $e) {
+            $hosts = [self::$host, 'localhost', '127.0.0.1'];
+            $hosts = array_unique($hosts);
+            $lastException = null;
+
+            foreach ($hosts as $h) {
+                try {
+                    $dsn = "mysql:host=" . $h . ";port=" . self::$port . ";dbname=" . self::$dbName . ";charset=" . self::$charset;
+                    $options = [
+                        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                        PDO::ATTR_EMULATE_PREPARES   => false,
+                        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES " . self::$charset . " COLLATE utf8mb4_unicode_ci"
+                    ];
+                    self::$pdoInstance = new PDO($dsn, self::$username, self::$password, $options);
+                    break;
+                } catch (PDOException $e) {
+                    $lastException = $e;
+                }
+            }
+
+            if (self::$pdoInstance === null && $lastException !== null) {
                 http_response_code(500);
                 echo json_encode([
                     'success' => false,
-                    'error'   => 'Database connection failed: ' . $e->getMessage()
+                    'error'   => 'Database connection failed: ' . $lastException->getMessage()
                 ]);
                 exit;
             }
