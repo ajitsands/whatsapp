@@ -220,10 +220,48 @@ function DataTable({
 // MAIN APP CONTAINER
 // -----------------------------------------------------------------------------
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('wa_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [loading, setLoading] = useState(!currentUser);
+
+  const [activeTab, setActiveTab] = useState(() => {
+    const hash = window.location.hash.replace('#', '').trim();
+    const saved = localStorage.getItem('wa_tab');
+    const validTabs = ['dashboard', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'settings'];
+    if (hash && validTabs.includes(hash)) return hash;
+    if (saved && validTabs.includes(saved)) return saved;
+    return 'dashboard';
+  });
+
   const [toast, setToast] = useState(null);
+
+  const navigateToTab = (tab) => {
+    setActiveTab(tab);
+    try {
+      window.location.hash = tab;
+      localStorage.setItem('wa_tab', tab);
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '').trim();
+      const validTabs = ['dashboard', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'settings'];
+      if (hash && validTabs.includes(hash)) {
+        setActiveTab(hash);
+        localStorage.setItem('wa_tab', hash);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   useEffect(() => {
     checkAuth();
@@ -236,12 +274,16 @@ function App() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('./api/auth.php?action=check');
+      const res = await fetch('./api/auth.php?action=check', {
+        headers: currentUser ? { 'X-User-Id': String(currentUser.id), 'X-User-Email': currentUser.email } : {}
+      });
       const data = await res.json();
       if (data.success && data.authenticated && data.user) {
         setCurrentUser(data.user);
-      } else {
+        localStorage.setItem('wa_user', JSON.stringify(data.user));
+      } else if (!currentUser) {
         setCurrentUser(null);
+        localStorage.removeItem('wa_user');
       }
     } catch (e) {
       console.error('Auth check error', e);
@@ -252,6 +294,9 @@ function App() {
 
   const handleLogin = (user) => {
     setCurrentUser(user);
+    try {
+      localStorage.setItem('wa_user', JSON.stringify(user));
+    } catch (e) {}
     showToast(`Welcome back, ${user.name}!`);
   };
 
@@ -259,6 +304,9 @@ function App() {
     try {
       await fetch('./api/auth.php?action=logout');
       setCurrentUser(null);
+      localStorage.removeItem('wa_user');
+      localStorage.removeItem('wa_tab');
+      window.location.hash = '';
       showToast('You have been logged out.');
     } catch (e) {
       console.error(e);
@@ -275,6 +323,9 @@ function App() {
       const data = await res.json();
       if (data.success) {
         setCurrentUser(data.user);
+        try {
+          localStorage.setItem('wa_user', JSON.stringify(data.user));
+        } catch (e) {}
         showToast(`Switched to ${data.user.name} (${role.toUpperCase()})`);
       }
     } catch (e) {
@@ -282,7 +333,7 @@ function App() {
     }
   };
 
-  if (loading) {
+  if (loading && !currentUser) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: '12px' }}>
         <div className="brand-badge"><span className="dot"></span> Loading SaNDS Platform...</div>
@@ -354,32 +405,32 @@ function App() {
         <div className="header-nav-bar">
           <div className="header-nav-inner">
             <nav className="horizontal-nav">
-              <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
+              <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => navigateToTab('dashboard')}>
                 <span>📊</span> Dashboard
               </button>
-              <button className={`nav-item ${activeTab === 'composer' ? 'active' : ''}`} onClick={() => setActiveTab('composer')}>
+              <button className={`nav-item ${activeTab === 'composer' ? 'active' : ''}`} onClick={() => navigateToTab('composer')}>
                 <span>💬</span> Send Message
               </button>
-              <button className={`nav-item ${activeTab === 'logs' ? 'active' : ''}`} onClick={() => setActiveTab('logs')}>
+              <button className={`nav-item ${activeTab === 'logs' ? 'active' : ''}`} onClick={() => navigateToTab('logs')}>
                 <span>📜</span> Message Logs
               </button>
-              <button className={`nav-item ${activeTab === 'templates' ? 'active' : ''}`} onClick={() => setActiveTab('templates')}>
+              <button className={`nav-item ${activeTab === 'templates' ? 'active' : ''}`} onClick={() => navigateToTab('templates')}>
                 <span>📋</span> Templates & Tariffs
               </button>
-              <button className={`nav-item ${activeTab === 'api_hub' ? 'active' : ''}`} onClick={() => setActiveTab('api_hub')}>
+              <button className={`nav-item ${activeTab === 'api_hub' ? 'active' : ''}`} onClick={() => navigateToTab('api_hub')}>
                 <span>⚡</span> Odoo API Hub
               </button>
               
               {/* Superadmin & Admin Only Navigation Items */}
               {['superadmin', 'admin'].includes(currentUser.role) && (
                 <>
-                  <button className={`nav-item ${activeTab === 'api_keys' ? 'active' : ''}`} onClick={() => setActiveTab('api_keys')}>
+                  <button className={`nav-item ${activeTab === 'api_keys' ? 'active' : ''}`} onClick={() => navigateToTab('api_keys')}>
                     <span>🔑</span> API Keys
                   </button>
-                  <button className={`nav-item ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>
+                  <button className={`nav-item ${activeTab === 'users' ? 'active' : ''}`} onClick={() => navigateToTab('users')}>
                     <span>👥</span> Users
                   </button>
-                  <button className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
+                  <button className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => navigateToTab('settings')}>
                     <span>⚙️</span> Meta Settings
                   </button>
                 </>
@@ -391,8 +442,8 @@ function App() {
 
       {/* Main App Body */}
       <main className="app-body">
-        {activeTab === 'dashboard' && <DashboardView onNavigate={setActiveTab} />}
-        {activeTab === 'composer' && <ComposerView showToast={showToast} onSent={() => setActiveTab('logs')} />}
+        {activeTab === 'dashboard' && <DashboardView onNavigate={navigateToTab} />}
+        {activeTab === 'composer' && <ComposerView showToast={showToast} onSent={() => navigateToTab('logs')} />}
         {activeTab === 'logs' && <MessageLogsView showToast={showToast} />}
         {activeTab === 'templates' && <TemplatesView showToast={showToast} />}
         {activeTab === 'api_hub' && <OdooApiHubView showToast={showToast} />}
