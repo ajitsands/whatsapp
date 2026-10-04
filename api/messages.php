@@ -193,12 +193,13 @@ function handleSendMessage(PDO $db, array $auth): void {
     // Generate unique WhatsApp Message ID
     $uniqueRandom = bin2hex(random_bytes(16));
     $wamid = 'wamid.HBgL' . base64_encode($toPhone . ':' . $uniqueRandom);
-    $status = 'delivered';
+    $status = 'queued';
     $metaError = null;
 
     // Real Meta Cloud API Dispatch (If token is available)
     $hasRealToken = !empty($metaAccessToken) && !str_starts_with($metaAccessToken, 'EAAJz9284jklasdf');
     if (!$hasRealToken) {
+        $status = 'queued';
         $metaError = 'Meta Access Token not configured in Meta Settings (Simulation Mode).';
     } else {
         $cleanRecipient = preg_replace('/[^0-9]/', '', $toPhone);
@@ -308,8 +309,8 @@ function handleSendMessage(PDO $db, array $auth): void {
         }
     }
 
-    $sentAt = date('Y-m-d H:i:s');
-    $deliveredAt = ($status === 'delivered') ? date('Y-m-d H:i:s') : null;
+    $sentAt = ($status === 'sent') ? date('Y-m-d H:i:s') : null;
+    $deliveredAt = null;
 
     // Insert into DB
     $stmt = $db->prepare("
