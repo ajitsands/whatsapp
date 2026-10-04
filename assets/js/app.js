@@ -688,16 +688,46 @@ function ComposerView({ showToast, onSent }) {
   const pickTemplate = (tmpl) => {
     setSelectedTemplate(tmpl.template_name);
     setCategory(tmpl.category);
+
+    // Extract all {{N}} placeholder numbers from template body_text
+    const matches = tmpl.body_text ? tmpl.body_text.match(/\{\{(\d+)\}\}/g) : null;
+    let maxVarIndex = 0;
+    if (matches) {
+      matches.forEach(m => {
+        const num = parseInt(m.replace(/\D/g, ''), 10);
+        if (!isNaN(num) && num > maxVarIndex) {
+          maxVarIndex = num;
+        }
+      });
+    }
+    const totalVars = Math.max(maxVarIndex, parseInt(tmpl.variable_count) || 0);
+
+    // Parse existing sample parameters if available
+    let existingParams = [];
     if (tmpl.sample_params_json) {
       try {
-        setParams(JSON.parse(tmpl.sample_params_json));
-      } catch (e) {
-        setParams([]);
+        const parsed = typeof tmpl.sample_params_json === 'string' ? JSON.parse(tmpl.sample_params_json) : tmpl.sample_params_json;
+        if (Array.isArray(parsed)) existingParams = parsed;
+      } catch (e) {}
+    }
+
+    // Build parameter input list for all detected placeholders
+    const finalParams = [];
+    for (let i = 0; i < totalVars; i++) {
+      if (existingParams[i] !== undefined && existingParams[i] !== null && existingParams[i] !== '') {
+        finalParams.push(existingParams[i]);
+      } else {
+        finalParams.push(`Value ${i + 1}`);
       }
     }
+    setParams(finalParams);
+
     if (tmpl.header_sample) {
       setMediaUrl(tmpl.header_sample);
       setMediaName(tmpl.header_sample.split('/').pop() || 'document.pdf');
+    } else {
+      setMediaUrl('');
+      setMediaName('');
     }
   };
 

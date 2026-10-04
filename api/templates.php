@@ -50,19 +50,25 @@ switch ($method) {
         ];
         $t = $tariffs[$category] ?? $tariffs['UTILITY'];
 
+        $sampleParams = [];
+        for ($i = 1; $i <= $variableCount; $i++) {
+            $sampleParams[] = "Sample Value {$i}";
+        }
+        $sampleParamsJson = json_encode($sampleParams);
+
         if ($id) {
             // Update
             $stmt = $db->prepare("
                 UPDATE whatsapp_templates SET
                     template_name = ?, display_title = ?, category = ?, language = ?,
                     header_type = ?, header_sample = ?, body_text = ?, footer_text = ?,
-                    variable_count = ?, meta_cost_bhd = ?, platform_charge_bhd = ?, client_rate_bhd = ?
+                    variable_count = ?, sample_params_json = ?, meta_cost_bhd = ?, platform_charge_bhd = ?, client_rate_bhd = ?
                 WHERE id = ?
             ");
             $stmt->execute([
                 $templateName, $displayTitle, $category, $language,
                 $headerType, $headerSample ?: null, $bodyText, $footerText ?: null,
-                $variableCount, $t['meta'], $t['platform'], $t['client'], $id
+                $variableCount, $sampleParamsJson, $t['meta'], $t['platform'], $t['client'], $id
             ]);
             sendJsonResponse(['success' => true, 'message' => 'Template updated successfully', 'id' => $id]);
         } else {
@@ -71,17 +77,17 @@ switch ($method) {
                 INSERT INTO whatsapp_templates (
                     template_name, display_title, category, language,
                     header_type, header_sample, body_text, footer_text,
-                    variable_count, meta_status, meta_cost_bhd, platform_charge_bhd, client_rate_bhd
+                    variable_count, sample_params_json, meta_status, meta_cost_bhd, platform_charge_bhd, client_rate_bhd
                 ) VALUES (
                     ?, ?, ?, ?,
                     ?, ?, ?, ?,
-                    ?, 'APPROVED', ?, ?, ?
+                    ?, ?, 'APPROVED', ?, ?, ?
                 )
             ");
             $stmt->execute([
                 $templateName, $displayTitle, $category, $language,
                 $headerType, $headerSample ?: null, $bodyText, $footerText ?: null,
-                $variableCount, $t['meta'], $t['platform'], $t['client']
+                $variableCount, $sampleParamsJson, $t['meta'], $t['platform'], $t['client']
             ]);
             sendJsonResponse(['success' => true, 'message' => 'Template created successfully', 'id' => (int)$db->lastInsertId()], 201);
         }
