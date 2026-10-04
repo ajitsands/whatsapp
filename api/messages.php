@@ -288,6 +288,13 @@ function handleSendMessage(PDO $db, array $auth): void {
                 // Extract template variable names from body_text
                 preg_match_all('/\{\{([a-zA-Z0-9_]+)\}\}/', $tmpl['body_text'] ?? '', $varMatches);
                 $detectedVarNames = $varMatches[1] ?? [];
+                if (empty($detectedVarNames)) {
+                    preg_match_all('/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/', $tmpl['body_text'] ?? '', $numMatches);
+                    $detectedVarNames = $numMatches[1] ?? [];
+                }
+                if ($templateName === 'offer_sandslab' && (empty($detectedVarNames) || $detectedVarNames === ['1', '2'])) {
+                    $detectedVarNames = ['customer_name', 'contact_number'];
+                }
 
                 $pIdx = 0;
                 foreach ($bodyParams as $pKey => $val) {

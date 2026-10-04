@@ -15,6 +15,26 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
+        // Auto-heal offer_sandslab template if missing or using old placeholder format
+        try {
+            $offerBody = "Hello {{customer_name}},\nHere we have an special *OFFER * for you\nplease contact on this number {{contact_number}}\n\nTeam *SaNDS Lab* 👍";
+            $db->prepare("
+                INSERT INTO whatsapp_templates (
+                    template_name, display_title, category, language,
+                    header_type, header_sample, body_text, footer_text,
+                    variable_count, sample_params_json, meta_status, meta_cost_bhd, platform_charge_bhd, client_rate_bhd
+                ) VALUES (
+                    'offer_sandslab', 'SaNDS Lab Special Offer QR', 'MARKETING', 'en',
+                    'IMAGE', 'https://whatsapp.sandslab.com/assets/images/QRCodePoster.jpg', ?, 'SaNDS Lab Middle East W.L.L',
+                    2, '[\"Ajit Kumar\", \"+919895765626\"]', 'APPROVED', 0.0270, 0.0070, 0.0340
+                )
+                ON DUPLICATE KEY UPDATE
+                    body_text = VALUES(body_text),
+                    variable_count = 2,
+                    sample_params_json = '[\"Ajit Kumar\", \"+919895765626\"]'
+            ")->execute([$offerBody]);
+        } catch (Throwable $ignore) {}
+
         $stmt = $db->query("SELECT * FROM whatsapp_templates ORDER BY category ASC, id ASC");
         $templates = $stmt->fetchAll();
 
