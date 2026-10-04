@@ -161,8 +161,8 @@ function handleSendMessage(PDO $db, array $auth): void {
             $finalBody = $tmpl['body_text'];
             if (!empty($bodyParams) && is_array($bodyParams)) {
                 foreach ($bodyParams as $index => $paramVal) {
-                    $placeholder = '{{' . ($index + 1) . '}}';
-                    $finalBody = str_replace($placeholder, (string)$paramVal, $finalBody);
+                    $varNum = $index + 1;
+                    $finalBody = preg_replace('/\{+[\(\[]?\s*' . $varNum . '\s*[\)\]]?\}+/', (string)$paramVal, $finalBody);
                 }
             }
             if ($tmpl['header_type'] === 'DOCUMENT') {

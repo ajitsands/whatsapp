@@ -689,18 +689,20 @@ function ComposerView({ showToast, onSent }) {
     setSelectedTemplate(tmpl.template_name);
     setCategory(tmpl.category);
 
-    // Extract all {{N}} placeholder numbers from template body_text
-    const matches = tmpl.body_text ? tmpl.body_text.match(/\{\{(\d+)\}\}/g) : null;
+    // Extract all variable placeholder numbers (supports {{1}}, {(1)}, {1}, etc.)
+    const matches = tmpl.body_text ? tmpl.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g) : null;
     let maxVarIndex = 0;
+    let detectedVars = [];
     if (matches) {
       matches.forEach(m => {
         const num = parseInt(m.replace(/\D/g, ''), 10);
-        if (!isNaN(num) && num > maxVarIndex) {
-          maxVarIndex = num;
+        if (!isNaN(num)) {
+          detectedVars.push(num);
+          if (num > maxVarIndex) maxVarIndex = num;
         }
       });
     }
-    const totalVars = Math.max(maxVarIndex, parseInt(tmpl.variable_count) || 0);
+    const totalVars = Math.max(maxVarIndex, detectedVars.length, parseInt(tmpl.variable_count) || 0);
 
     // Parse existing sample parameters if available
     let existingParams = [];
@@ -737,7 +739,10 @@ function ComposerView({ showToast, onSent }) {
     if (!tmpl) return '';
     let body = tmpl.body_text;
     params.forEach((val, idx) => {
-      body = body.replace(new RegExp(`\\{\\{${idx + 1}\\}\\}`, 'g'), val || `[Param ${idx + 1}]`);
+      const varNum = idx + 1;
+      const valText = val || `[Param ${varNum}]`;
+      const pattern = new RegExp(`\\{+[\\(\\[]?\\s*${varNum}\\s*[\\)\\]]?\\}+`, 'g');
+      body = body.replace(pattern, valText);
     });
     return body;
   }, [selectedTemplate, templates, params, customText]);
@@ -1223,9 +1228,11 @@ function TemplatesView({ showToast }) {
   };
   const activeTariff = editingTemplate ? (modalTariffs[editingTemplate.category] || modalTariffs.UTILITY) : modalTariffs.UTILITY;
 
-  // Variable counter for preview
+  // Variable counter for preview (supports {{1}}, {(1)}, {1}, etc.)
   const varCount = editingTemplate && editingTemplate.body_text
-    ? (editingTemplate.body_text.match(/\{\{(\d+)\}\}/g) ? new Set(editingTemplate.body_text.match(/\{\{(\d+)\}\}/g)).size : 0)
+    ? (editingTemplate.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g)
+        ? new Set(editingTemplate.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g).map(s => parseInt(s.replace(/\D/g, ''), 10))).size
+        : 0)
     : 0;
 
   const templateColumns = [

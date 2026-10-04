@@ -37,9 +37,10 @@ switch ($method) {
             sendJsonResponse(['success' => false, 'error' => 'Template name and body text are required'], 400);
         }
 
-        // Count {{N}} variables
-        preg_match_all('/\{\{(\d+)\}\}/', $bodyText, $matches);
-        $variableCount = !empty($matches[1]) ? count(array_unique($matches[1])) : 0;
+        // Count variables: support {{1}}, {(1)}, {1}, etc.
+        preg_match_all('/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/', $bodyText, $matches);
+        $uniqueVars = !empty($matches[1]) ? array_map('intval', array_unique($matches[1])) : [];
+        $variableCount = !empty($uniqueVars) ? max(max($uniqueVars), count($uniqueVars)) : 0;
 
         // Tariffs based on Category
         $tariffs = [

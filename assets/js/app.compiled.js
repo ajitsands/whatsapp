@@ -320,17 +320,19 @@ function ComposerView({ showToast, onSent }) {
   const pickTemplate = (tmpl) => {
     setSelectedTemplate(tmpl.template_name);
     setCategory(tmpl.category);
-    const matches = tmpl.body_text ? tmpl.body_text.match(/\{\{(\d+)\}\}/g) : null;
+    const matches = tmpl.body_text ? tmpl.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g) : null;
     let maxVarIndex = 0;
+    let detectedVars = [];
     if (matches) {
       matches.forEach((m) => {
         const num = parseInt(m.replace(/\D/g, ""), 10);
-        if (!isNaN(num) && num > maxVarIndex) {
-          maxVarIndex = num;
+        if (!isNaN(num)) {
+          detectedVars.push(num);
+          if (num > maxVarIndex) maxVarIndex = num;
         }
       });
     }
-    const totalVars = Math.max(maxVarIndex, parseInt(tmpl.variable_count) || 0);
+    const totalVars = Math.max(maxVarIndex, detectedVars.length, parseInt(tmpl.variable_count) || 0);
     let existingParams = [];
     if (tmpl.sample_params_json) {
       try {
@@ -362,7 +364,10 @@ function ComposerView({ showToast, onSent }) {
     if (!tmpl) return "";
     let body = tmpl.body_text;
     params.forEach((val, idx) => {
-      body = body.replace(new RegExp(`\\{\\{${idx + 1}\\}\\}`, "g"), val || `[Param ${idx + 1}]`);
+      const varNum = idx + 1;
+      const valText = val || `[Param ${varNum}]`;
+      const pattern = new RegExp(`\\{+[\\(\\[]?\\s*${varNum}\\s*[\\)\\]]?\\}+`, "g");
+      body = body.replace(pattern, valText);
     });
     return body;
   }, [selectedTemplate, templates, params, customText]);
@@ -626,7 +631,7 @@ function TemplatesView({ showToast }) {
     SERVICE: { meta: 75e-4, platform: 25e-4, client: 0.01 }
   };
   const activeTariff = editingTemplate ? modalTariffs[editingTemplate.category] || modalTariffs.UTILITY : modalTariffs.UTILITY;
-  const varCount = editingTemplate && editingTemplate.body_text ? editingTemplate.body_text.match(/\{\{(\d+)\}\}/g) ? new Set(editingTemplate.body_text.match(/\{\{(\d+)\}\}/g)).size : 0 : 0;
+  const varCount = editingTemplate && editingTemplate.body_text ? editingTemplate.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g) ? new Set(editingTemplate.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g).map((s) => parseInt(s.replace(/\D/g, ""), 10))).size : 0 : 0;
   const templateColumns = [
     {
       key: "display_title",
