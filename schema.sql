@@ -134,8 +134,8 @@ ON DUPLICATE KEY UPDATE display_title=VALUES(display_title);
 -- Seed System Settings
 INSERT INTO system_settings (setting_key, setting_value, setting_group, description) VALUES
 ('meta_phone_number_id', '347848611735147', 'whatsapp_cloud_api', 'Meta WhatsApp Business Cloud API Phone Number ID'),
-('meta_waba_account_id', '981273918237192', 'whatsapp_cloud_api', 'Meta WhatsApp Business Account ID (WABA)'),
-('meta_access_token', 'EAATLuWFVcZBkBShyqCMEBcxXp77EAXXyWJXvyLr2ZBUisziJohZBDCozF0NFb61TnfJGY0vlBTfZAEzGoq6n9E7xAZAmbLD0dSZCogqYjAKJFzB9yTmaq10kQ2ZCfms3GOT0J9xi0Lzh4ZCYpZCILHx7nPFbVaGCmhs1TsVlHxUMMFNm2EYiDZCpGKLFSZAGLKo9onKZAAYGOZCOZCyou0ALgb4OXJJRXZCRVrqfn3ocZBHfv664guNKm8HeZB61mLZBH1HZC4uMR0Ngw4h3Gdskwt5mxcOIy5kOks6UCUS9s33G0ckbBAZDZD', 'whatsapp_cloud_api', 'Permanent Meta System User Graph API Token'),
+('meta_waba_account_id', '313160575215815', 'whatsapp_cloud_api', 'Meta WhatsApp Business Account ID (WABA)'),
+('meta_access_token', 'EAATLuWFVcZBkBSIQfQ02NV8tXYHXIOLwZC5CZBMngCZB32TH1f5b9HibzLqjDrnWI30GBOuXLwzaH2j9Iju4RZCpNLDZCaZAFAm9hcaTgcBETEXQDyzcQ3oj53dvuLjxG6Wt2rr9cVh0XhRFqbs2C21rRtZCeJPLcS2sQVJtk05qhxSzA2fmmsnU8dJsBcUZAgpWzv05hAGAS4w5hqYEOqQEMY69H14nuzBAZBng86HwjR3AhMepkZCQQSPFqDAPYERoidjae8S94QHXkgJsutN0q8Dsz0gvSVNGWvuU6HhBwZDZD', 'whatsapp_cloud_api', 'Permanent Meta System User Graph API Token'),
 ('webhook_verify_token', 'sands_uniglobal_wh_verify_token_2026', 'whatsapp_cloud_api', 'Webhook Verification Challenge Token for Meta Developer Dashboard'),
 ('system_mode', 'simulation_and_cloud', 'general', 'Mode: simulation_and_cloud (allows live simulation + real Cloud API dispatch)'),
 ('currency_symbol', 'BHD', 'general', 'Default Currency Display'),

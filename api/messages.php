@@ -186,11 +186,12 @@ function handleSendMessage(PDO $db, array $auth): void {
         $settingsMap[$row['setting_key']] = $row['setting_value'];
     }
 
-    $defaultToken = 'EAATLuWFVcZBkBShyqCMEBcxXp77EAXXyWJXvyLr2ZBUisziJohZBDCozF0NFb61TnfJGY0vlBTfZAEzGoq6n9E7xAZAmbLD0dSZCogqYjAKJFzB9yTmaq10kQ2ZCfms3GOT0J9xi0Lzh4ZCYpZCILHx7nPFbVaGCmhs1TsVlHxUMMFNm2EYiDZCpGKLFSZAGLKo9onKZAAYGOZCOZCyou0ALgb4OXJJRXZCRVrqfn3ocZBHfv664guNKm8HeZB61mLZBH1HZC4uMR0Ngw4h3Gdskwt5mxcOIy5kOks6UCUS9s33G0ckbBAZDZD';
+    $defaultToken = 'EAATLuWFVcZBkBSIQfQ02NV8tXYHXIOLwZC5CZBMngCZB32TH1f5b9HibzLqjDrnWI30GBOuXLwzaH2j9Iju4RZCpNLDZCaZAFAm9hcaTgcBETEXQDyzcQ3oj53dvuLjxG6Wt2rr9cVh0XhRFqbs2C21rRtZCeJPLcS2sQVJtk05qhxSzA2fmmsnU8dJsBcUZAgpWzv05hAGAS4w5hqYEOqQEMY69H14nuzBAZBng86HwjR3AhMepkZCQQSPFqDAPYERoidjae8S94QHXkgJsutN0q8Dsz0gvSVNGWvuU6HhBwZDZD';
     $defaultPhoneId = '347848611735147';
+    $defaultWabaId  = '313160575215815';
     $metaPhoneId     = (!empty($settingsMap['meta_phone_number_id']) && $settingsMap['meta_phone_number_id'] !== '109823471928374') ? $settingsMap['meta_phone_number_id'] : $defaultPhoneId;
     $metaAccessToken = (!empty($settingsMap['meta_access_token']) && !str_starts_with($settingsMap['meta_access_token'], 'EAAJz9284jklasdf')) ? $settingsMap['meta_access_token'] : $defaultToken;
-    $businessPhone   = $settingsMap['business_phone_number'] ?? '+973 1700 8899';
+    $businessPhone   = $settingsMap['business_phone_number'] ?? '+91 99954 89008';
 
     // Auto-update system_settings if it had dummy or blank values
     if (empty($settingsMap['meta_access_token']) || str_starts_with($settingsMap['meta_access_token'], 'EAAJz9284jklasdf') || empty($settingsMap['meta_phone_number_id']) || $settingsMap['meta_phone_number_id'] === '109823471928374') {
