@@ -305,13 +305,19 @@ function DashboardView({ onNavigate }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    fetch("./api/analytics.php").then((res) => res.json()).then((res) => {
-      if (res.success) setData(res);
-    }).finally(() => setLoading(false));
+    const loadAnalytics = () => {
+      fetch("./api/analytics.php").then((res) => res.json()).then((res) => {
+        if (res.success) setData(res);
+      }).finally(() => setLoading(false));
+    };
+    loadAnalytics();
+    const interval = setInterval(loadAnalytics, 4e3);
+    return () => clearInterval(interval);
   }, []);
-  if (loading || !data) {
+  if (loading && !data) {
     return /* @__PURE__ */ React.createElement("div", { className: "card" }, "Loading real-time analytics...");
   }
+  if (!data) return null;
   const { kpis, categories, daily_volume, integrations } = data;
   const integrationColumns = [
     {
@@ -532,8 +538,9 @@ function MessageLogsView({ showToast }) {
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedLog, setSelectedLog] = useState(null);
-  const fetchLogs = async () => {
-    setLoading(true);
+  const [autoSync, setAutoSync] = useState(true);
+  const fetchLogs = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const url = `./api/messages.php?status=${statusFilter}&category=${categoryFilter}&limit=100`;
       const res = await fetch(url);
@@ -544,12 +551,19 @@ function MessageLogsView({ showToast }) {
     } catch (e) {
       console.error(e);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
   useEffect(() => {
-    fetchLogs();
+    fetchLogs(false);
   }, [statusFilter, categoryFilter]);
+  useEffect(() => {
+    if (!autoSync) return;
+    const interval = setInterval(() => {
+      fetchLogs(true);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [autoSync, statusFilter, categoryFilter]);
   const simulateStatus = async (msgId, newStatus) => {
     try {
       const res = await fetch("./api/messages.php", {
@@ -605,7 +619,17 @@ function MessageLogsView({ showToast }) {
     }
   ];
   const customFilterBar = /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px", alignItems: "center" } }, /* @__PURE__ */ React.createElement("select", { className: "form-select", style: { width: "140px", padding: "5px 8px", fontSize: "12px" }, value: statusFilter, onChange: (e) => setStatusFilter(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "all" }, "All Statuses"), /* @__PURE__ */ React.createElement("option", { value: "read" }, "Read (\u2713\u2713 Blue)"), /* @__PURE__ */ React.createElement("option", { value: "delivered" }, "Delivered (\u2713\u2713 Grey)"), /* @__PURE__ */ React.createElement("option", { value: "sent" }, "Sent (\u2713 Single)"), /* @__PURE__ */ React.createElement("option", { value: "queued" }, "Queued"), /* @__PURE__ */ React.createElement("option", { value: "failed" }, "Failed")), /* @__PURE__ */ React.createElement("select", { className: "form-select", style: { width: "150px", padding: "5px 8px", fontSize: "12px" }, value: categoryFilter, onChange: (e) => setCategoryFilter(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "all" }, "All Categories"), /* @__PURE__ */ React.createElement("option", { value: "UTILITY" }, "Utility (Invoices)"), /* @__PURE__ */ React.createElement("option", { value: "AUTHENTICATION" }, "Authentication (OTP)"), /* @__PURE__ */ React.createElement("option", { value: "MARKETING" }, "Marketing (Promo)"), /* @__PURE__ */ React.createElement("option", { value: "SERVICE" }, "Service (Support)")));
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Message Telemetry & Logs"), /* @__PURE__ */ React.createElement("p", null, "Audit trail of all inbound and outbound WhatsApp conversations, delivery lifecycle, and billing tariffs.")), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary", onClick: fetchLogs }, /* @__PURE__ */ React.createElement("span", null, "\u{1F504}"), " Refresh Logs")), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Message Telemetry & Logs"), /* @__PURE__ */ React.createElement("p", null, "Audit trail of all inbound and outbound WhatsApp conversations, delivery lifecycle, and billing tariffs.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      className: `btn ${autoSync ? "btn-success" : "btn-secondary"}`,
+      style: { fontSize: "12px", padding: "6px 12px", display: "flex", alignItems: "center", gap: "6px" },
+      onClick: () => setAutoSync(!autoSync),
+      title: autoSync ? "Live Sync Active (Polling every 2.5s)" : "Click to enable Auto Sync"
+    },
+    /* @__PURE__ */ React.createElement("span", { style: { display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: autoSync ? "#22C55E" : "#9CA3AF", boxShadow: autoSync ? "0 0 8px #22C55E" : "none" } }),
+    autoSync ? "\u{1F7E2} Live Auto-Sync Active" : "\u23F8\uFE0F Live Sync Paused"
+  ), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary", onClick: () => fetchLogs(false) }, /* @__PURE__ */ React.createElement("span", null, "\u{1F504}"), " Refresh Now"))), /* @__PURE__ */ React.createElement(
     DataTable,
     {
       columns: logColumns,

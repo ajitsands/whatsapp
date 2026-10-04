@@ -582,17 +582,25 @@ function DashboardView({ onNavigate }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('./api/analytics.php')
-      .then(res => res.json())
-      .then(res => {
-        if (res.success) setData(res);
-      })
-      .finally(() => setLoading(false));
+    const loadAnalytics = () => {
+      fetch('./api/analytics.php')
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) setData(res);
+        })
+        .finally(() => setLoading(false));
+    };
+
+    loadAnalytics();
+    const interval = setInterval(loadAnalytics, 4000);
+    return () => clearInterval(interval);
   }, []);
 
-  if (loading || !data) {
+  if (loading && !data) {
     return <div className="card">Loading real-time analytics...</div>;
   }
+
+  if (!data) return null;
 
   const { kpis, categories, daily_volume, integrations } = data;
 
@@ -1045,9 +1053,10 @@ function MessageLogsView({ showToast }) {
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedLog, setSelectedLog] = useState(null);
+  const [autoSync, setAutoSync] = useState(true);
 
-  const fetchLogs = async () => {
-    setLoading(true);
+  const fetchLogs = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const url = `./api/messages.php?status=${statusFilter}&category=${categoryFilter}&limit=100`;
       const res = await fetch(url);
@@ -1058,13 +1067,22 @@ function MessageLogsView({ showToast }) {
     } catch (e) {
       console.error(e);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchLogs();
+    fetchLogs(false);
   }, [statusFilter, categoryFilter]);
+
+  // Real-time automatic polling every 2.5 seconds
+  useEffect(() => {
+    if (!autoSync) return;
+    const interval = setInterval(() => {
+      fetchLogs(true);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [autoSync, statusFilter, categoryFilter]);
 
   const simulateStatus = async (msgId, newStatus) => {
     try {
@@ -1186,9 +1204,20 @@ function MessageLogsView({ showToast }) {
           <h1><span>📜</span> Message Telemetry & Logs</h1>
           <p>Audit trail of all inbound and outbound WhatsApp conversations, delivery lifecycle, and billing tariffs.</p>
         </div>
-        <button className="btn btn-secondary" onClick={fetchLogs}>
-          <span>🔄</span> Refresh Logs
-        </button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <button
+            className={`btn ${autoSync ? 'btn-success' : 'btn-secondary'}`}
+            style={{ fontSize: '12px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '6px' }}
+            onClick={() => setAutoSync(!autoSync)}
+            title={autoSync ? 'Live Sync Active (Polling every 2.5s)' : 'Click to enable Auto Sync'}
+          >
+            <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: autoSync ? '#22C55E' : '#9CA3AF', boxShadow: autoSync ? '0 0 8px #22C55E' : 'none' }}></span>
+            {autoSync ? '🟢 Live Auto-Sync Active' : '⏸️ Live Sync Paused'}
+          </button>
+          <button className="btn btn-secondary" onClick={() => fetchLogs(false)}>
+            <span>🔄</span> Refresh Now
+          </button>
+        </div>
       </div>
 
       {/* Main DataTable */}

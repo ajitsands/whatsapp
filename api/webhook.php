@@ -48,20 +48,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$eventType, $rawPayload, $ip]);
 
         // Process status updates (sent -> delivered -> read)
-        if (isset($data['entry'][0]['changes'][0]['value']['statuses'][0])) {
-            $statusObj = $data['entry'][0]['changes'][0]['value']['statuses'][0];
-            $wamid     = $statusObj['id'] ?? '';
-            $status    = $statusObj['status'] ?? '';
+        $statuses = $data['entry'][0]['changes'][0]['value']['statuses'] ?? [];
+        if (!empty($statuses) && is_array($statuses)) {
+            foreach ($statuses as $statusObj) {
+                $wamid  = $statusObj['id'] ?? '';
+                $status = $statusObj['status'] ?? '';
 
-            if ($wamid && in_array($status, ['sent', 'delivered', 'read', 'failed'])) {
-                $timeFieldMap = [
-                    'sent'      => 'sent_at = NOW()',
-                    'delivered' => 'delivered_at = NOW()',
-                    'read'      => 'read_at = NOW()'
-                ];
-                $timeField = $timeFieldMap[$status] ?? 'updated_at = NOW()';
-                $upd = $db->prepare("UPDATE whatsapp_messages SET status = ?, {$timeField} WHERE message_id = ?");
-                $upd->execute([$status, $wamid]);
+                if ($wamid && in_array($status, ['sent', 'delivered', 'read', 'failed'])) {
+                    $timeClause = "";
+                    if ($status === 'sent') {
+                        $timeClause = ", sent_at = IFNULL(sent_at, NOW())";
+                    } elseif ($status === 'delivered') {
+                        $timeClause = ", delivered_at = IFNULL(delivered_at, NOW())";
+                    } elseif ($status === 'read') {
+                        $timeClause = ", read_at = IFNULL(read_at, NOW()), delivered_at = IFNULL(delivered_at, NOW())";
+                    }
+
+                    $errClause = "";
+                    $params = [$status];
+                    if ($status === 'failed' && !empty($statusObj['errors'][0]['message'])) {
+                        $errClause = ", error_message = ?";
+                        $params[] = $statusObj['errors'][0]['message'];
+                    }
+                    $params[] = $wamid;
+
+                    $upd = $db->prepare("UPDATE whatsapp_messages SET status = ? {$timeClause} {$errClause} WHERE message_id = ?");
+                    $upd->execute($params);
+                }
             }
         }
 
