@@ -17,6 +17,25 @@ switch ($method) {
     case 'GET':
         $stmt = $db->query("SELECT * FROM whatsapp_templates ORDER BY category ASC, id ASC");
         $templates = $stmt->fetchAll();
+
+        // Dynamically verify and auto-heal variable_count & sample parameters for any existing template
+        foreach ($templates as &$tmpl) {
+            preg_match_all('/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/', $tmpl['body_text'], $matches);
+            $uniqueVars = !empty($matches[1]) ? array_map('intval', array_unique($matches[1])) : [];
+            $computedCount = !empty($uniqueVars) ? max(max($uniqueVars), count($uniqueVars)) : 0;
+            if ($computedCount > (int)$tmpl['variable_count']) {
+                $tmpl['variable_count'] = $computedCount;
+            }
+            $existing = !empty($tmpl['sample_params_json']) ? json_decode($tmpl['sample_params_json'], true) : [];
+            if (!is_array($existing)) $existing = [];
+            $needed = max($computedCount, (int)$tmpl['variable_count']);
+            for ($i = count($existing); $i < $needed; $i++) {
+                $existing[] = "Sample Param " . ($i + 1);
+            }
+            $tmpl['sample_params_json'] = json_encode($existing);
+        }
+        unset($tmpl);
+
         sendJsonResponse(['success' => true, 'data' => $templates]);
         break;
 
