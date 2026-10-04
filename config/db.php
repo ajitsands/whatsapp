@@ -21,8 +21,8 @@ class Database {
 
     private static string $host = '127.0.0.1';
     private static string $port = '3306';
-    private static string $dbName = 'integration_platform_db';
-    private static string $username = 'root';
+    private static string $dbName = 'sandsl23_whatsapp_db';
+    private static string $username = 'sandsl23_whatsapp_user';
     private static string $password = 'S@nds1@b';
     private static string $charset = 'utf8mb4';
 

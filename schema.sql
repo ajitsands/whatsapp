@@ -1,8 +1,8 @@
 -- WhatsApp Integration Platform Database Schema
--- Database: integration_platform_db
+-- Database: sandsl23_whatsapp_db
 -- Engineered by SaNDS Lab Middle East W.L.L
 
-USE integration_platform_db;
+-- USE sandsl23_whatsapp_db;
 
 -- 1. Users Table (Superadmin, Admin, Standard Users)
 CREATE TABLE IF NOT EXISTS users (

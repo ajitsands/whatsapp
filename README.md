@@ -40,6 +40,13 @@ mysql -u root -p < schema.sql
 ```
 Update database credentials in `config/db.php`.
 
+## Server & Deployment Configuration
+
+### 1. Production Server Details
+- **Production URL:** `https://whatsapp.sandslab.com`
+- **Database Name:** `sandsl23_whatsapp_db`
+- **Database User:** `sandsl23_whatsapp_user`
+
 ### 2. Meta WhatsApp Cloud API Setup
 Set up your Meta Developer credentials in the settings panel or database:
 - `meta_phone_number_id`
@@ -47,7 +54,7 @@ Set up your Meta Developer credentials in the settings panel or database:
 - `meta_access_token`
 - `webhook_verify_token`
 
-### 3. Webhook URL
-Configure in Meta Business Developer Dashboard:
-- **Callback URL:** `https://your-domain.com/whatsapp/api/webhook.php`
+### 3. Webhook Configuration in Meta Developer Console
+- **Callback URL:** `https://whatsapp.sandslab.com/api/webhook.php`
 - **Verify Token:** `sands_uniglobal_wh_verify_token_2026`
+- **Subscribed Fields:** `messages`
