@@ -740,20 +740,16 @@ function ComposerView({ showToast, onSent }) {
     setSelectedTemplate(tmpl.template_name);
     setCategory(tmpl.category);
 
-    // Extract all variable placeholder numbers (supports {{1}}, {(1)}, {1}, etc.)
-    const matches = tmpl.body_text ? tmpl.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g) : null;
-    let maxVarIndex = 0;
-    let detectedVars = [];
-    if (matches) {
-      matches.forEach(m => {
-        const num = parseInt(m.replace(/\D/g, ''), 10);
-        if (!isNaN(num)) {
-          detectedVars.push(num);
-          if (num > maxVarIndex) maxVarIndex = num;
-        }
-      });
+    // Extract all variable identifiers (supports {{customer_name}}, {{1}}, etc.)
+    const varMatches = tmpl.body_text ? tmpl.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g) : null;
+    let detectedVarNames = varMatches ? varMatches.map(m => m.replace(/[\{\}]/g, '').trim()) : [];
+    if (detectedVarNames.length === 0) {
+      const numMatches = tmpl.body_text ? tmpl.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g) : null;
+      if (numMatches) {
+        detectedVarNames = numMatches.map(m => m.replace(/\D/g, '').trim());
+      }
     }
-    const totalVars = Math.max(maxVarIndex, detectedVars.length, parseInt(tmpl.variable_count) || 0);
+    const totalVars = Math.max(detectedVarNames.length, parseInt(tmpl.variable_count) || 0);
 
     // Parse existing sample parameters if available
     let existingParams = [];
@@ -770,7 +766,8 @@ function ComposerView({ showToast, onSent }) {
       if (existingParams[i] !== undefined && existingParams[i] !== null && existingParams[i] !== '') {
         finalParams.push(existingParams[i]);
       } else {
-        finalParams.push(`Value ${i + 1}`);
+        const vName = detectedVarNames[i] || `Param ${i + 1}`;
+        finalParams.push(vName.includes('_') ? vName.replace(/_/g, ' ') : `Value ${i + 1}`);
       }
     }
     setParams(finalParams);
@@ -789,10 +786,16 @@ function ComposerView({ showToast, onSent }) {
     const tmpl = templates.find(t => t.template_name === selectedTemplate);
     if (!tmpl) return '';
     let body = tmpl.body_text;
+    
+    // Extract all variable names
+    const varMatches = tmpl.body_text ? tmpl.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g) : null;
+    const detectedVarNames = varMatches ? varMatches.map(m => m.replace(/[\{\}]/g, '').trim()) : [];
+    
     params.forEach((val, idx) => {
-      const varNum = idx + 1;
-      const valText = val || `[Param ${varNum}]`;
-      const pattern = new RegExp(`\\{+[\\(\\[]?\\s*${varNum}\\s*[\\)\\]]?\\}+`, 'g');
+      const varName = detectedVarNames[idx] || String(idx + 1);
+      const valText = val || `[${varName}]`;
+      body = body.split(`{{${varName}}}`).join(valText);
+      const pattern = new RegExp(`\\{+[\\(\\[]?\\s*${varName}\\s*[\\)\\]]?\\}+`, 'g');
       body = body.replace(pattern, valText);
     });
     return body;
@@ -899,23 +902,28 @@ function ComposerView({ showToast, onSent }) {
               <div className="form-group">
                 <label className="form-label">Template Dynamic Parameters ({params.length} Variables)</label>
                 <div className="param-grid">
-                  {params.map((val, idx) => (
-                    <div key={idx}>
-                      <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--wa-dark-teal)' }}>
-                        Variable #{idx + 1}
-                      </label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={val}
-                        onChange={(e) => {
-                          const newParams = [...params];
-                          newParams[idx] = e.target.value;
-                          setParams(newParams);
-                        }}
-                      />
-                    </div>
-                  ))}
+                  {params.map((val, idx) => {
+                    const varMatches = (currentTemplateObj.body_text || '').match(/\{\{([a-zA-Z0-9_]+)\}\}/g);
+                    const detectedVarNames = varMatches ? varMatches.map(m => m.replace(/[\{\}]/g, '').trim()) : [];
+                    const varName = detectedVarNames[idx] || String(idx + 1);
+                    return (
+                      <div key={idx}>
+                        <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--wa-dark-teal)' }}>
+                          {varName.includes('_') ? `{{${varName}}}` : `Variable #${idx + 1}`}
+                        </label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={val}
+                          onChange={(e) => {
+                            const newParams = [...params];
+                            newParams[idx] = e.target.value;
+                            setParams(newParams);
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -1285,11 +1293,13 @@ function TemplatesView({ showToast }) {
   };
   const activeTariff = editingTemplate ? (modalTariffs[editingTemplate.category] || modalTariffs.UTILITY) : modalTariffs.UTILITY;
 
-  // Variable counter for preview (supports {{1}}, {(1)}, {1}, etc.)
+  // Variable counter for preview (supports {{customer_name}}, {{1}}, {(1)}, {1}, etc.)
   const varCount = editingTemplate && editingTemplate.body_text
-    ? (editingTemplate.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g)
-        ? new Set(editingTemplate.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g).map(s => parseInt(s.replace(/\D/g, ''), 10))).size
-        : 0)
+    ? (editingTemplate.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g)
+        ? new Set(editingTemplate.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g).map(s => s.replace(/[\{\}]/g, '').trim())).size
+        : (editingTemplate.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g)
+            ? new Set(editingTemplate.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g).map(s => parseInt(s.replace(/\D/g, ''), 10))).size
+            : 0))
     : 0;
 
   const templateColumns = [

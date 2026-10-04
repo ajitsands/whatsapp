@@ -20,9 +20,13 @@ switch ($method) {
 
         // Dynamically verify and auto-heal variable_count & sample parameters for any existing template
         foreach ($templates as &$tmpl) {
-            preg_match_all('/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/', $tmpl['body_text'], $matches);
-            $uniqueVars = !empty($matches[1]) ? array_map('intval', array_unique($matches[1])) : [];
-            $computedCount = !empty($uniqueVars) ? max(max($uniqueVars), count($uniqueVars)) : 0;
+            preg_match_all('/\{\{([a-zA-Z0-9_]+)\}\}/', $tmpl['body_text'], $varMatches);
+            $varNames = $varMatches[1] ?? [];
+            if (empty($varNames)) {
+                preg_match_all('/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/', $tmpl['body_text'], $numMatches);
+                $varNames = $numMatches[1] ?? [];
+            }
+            $computedCount = count($varNames);
             if ($computedCount > (int)$tmpl['variable_count']) {
                 $tmpl['variable_count'] = $computedCount;
             }
@@ -30,9 +34,11 @@ switch ($method) {
             if (!is_array($existing)) $existing = [];
             $needed = max($computedCount, (int)$tmpl['variable_count']);
             for ($i = count($existing); $i < $needed; $i++) {
-                $existing[] = "Sample Param " . ($i + 1);
+                $varLabel = $varNames[$i] ?? ("Param " . ($i + 1));
+                $existing[] = "Sample " . $varLabel;
             }
             $tmpl['sample_params_json'] = json_encode($existing);
+            $tmpl['variable_names'] = $varNames;
         }
         unset($tmpl);
 
@@ -56,10 +62,14 @@ switch ($method) {
             sendJsonResponse(['success' => false, 'error' => 'Template name and body text are required'], 400);
         }
 
-        // Count variables: support {{1}}, {(1)}, {1}, etc.
-        preg_match_all('/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/', $bodyText, $matches);
-        $uniqueVars = !empty($matches[1]) ? array_map('intval', array_unique($matches[1])) : [];
-        $variableCount = !empty($uniqueVars) ? max(max($uniqueVars), count($uniqueVars)) : 0;
+        // Count variables: support {{customer_name}}, {{1}}, etc.
+        preg_match_all('/\{\{([a-zA-Z0-9_]+)\}\}/', $bodyText, $varMatches);
+        $varNames = $varMatches[1] ?? [];
+        if (empty($varNames)) {
+            preg_match_all('/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/', $bodyText, $numMatches);
+            $varNames = $numMatches[1] ?? [];
+        }
+        $variableCount = count($varNames);
 
         // Tariffs based on Category
         $tariffs = [

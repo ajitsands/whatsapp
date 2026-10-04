@@ -159,11 +159,23 @@ function handleSendMessage(PDO $db, array $auth): void {
                 'platform' => (float)$tmpl['platform_charge_bhd'],
                 'client'   => (float)$tmpl['client_rate_bhd']
             ];
+            // Extract template variable names
+            preg_match_all('/\{\{([a-zA-Z0-9_]+)\}\}/', $tmpl['body_text'], $varMatches);
+            $detectedVarNames = $varMatches[1] ?? [];
+            if (empty($detectedVarNames)) {
+                preg_match_all('/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/', $tmpl['body_text'], $numMatches);
+                $detectedVarNames = $numMatches[1] ?? [];
+            }
+
             $finalBody = $tmpl['body_text'];
             if (!empty($bodyParams) && is_array($bodyParams)) {
-                foreach ($bodyParams as $index => $paramVal) {
-                    $varNum = $index + 1;
-                    $finalBody = preg_replace('/\{+[\(\[]?\s*' . $varNum . '\s*[\)\]]?\}+/', (string)$paramVal, $finalBody);
+                $isAssoc = array_keys($bodyParams) !== range(0, count($bodyParams) - 1);
+                $pIdx = 0;
+                foreach ($bodyParams as $pKey => $paramVal) {
+                    $targetVar = ($isAssoc && is_string($pKey)) ? $pKey : ($detectedVarNames[$pIdx] ?? ($pIdx + 1));
+                    $finalBody = str_replace('{{' . $targetVar . '}}', (string)$paramVal, $finalBody);
+                    $finalBody = preg_replace('/\{+[\(\[]?\s*' . preg_quote((string)$targetVar, '/') . '\s*[\)\]]?\}+/', (string)$paramVal, $finalBody);
+                    $pIdx++;
                 }
             }
             if ($tmpl['header_type'] === 'DOCUMENT') {
@@ -268,12 +280,35 @@ function handleSendMessage(PDO $db, array $auth): void {
                 }
             }
 
-            // Body parameters
+            // Body parameters (Supports both named parameters e.g. customer_name and positional e.g. 1, 2)
             if (!empty($bodyParams) && is_array($bodyParams)) {
                 $paramObjects = [];
-                foreach ($bodyParams as $val) {
-                    $paramObjects[] = ['type' => 'text', 'text' => (string)$val];
+                $isAssoc = array_keys($bodyParams) !== range(0, count($bodyParams) - 1);
+                
+                // Extract template variable names from body_text
+                preg_match_all('/\{\{([a-zA-Z0-9_]+)\}\}/', $tmpl['body_text'] ?? '', $varMatches);
+                $detectedVarNames = $varMatches[1] ?? [];
+
+                $pIdx = 0;
+                foreach ($bodyParams as $pKey => $val) {
+                    $paramItem = ['type' => 'text', 'text' => (string)$val];
+                    
+                    $varName = null;
+                    if ($isAssoc && is_string($pKey)) {
+                        $varName = $pKey;
+                    } elseif (isset($detectedVarNames[$pIdx])) {
+                        $varName = $detectedVarNames[$pIdx];
+                    }
+
+                    // If variable is a named identifier (e.g. 'customer_name'), Meta strictly requires 'parameter_name'
+                    if (!empty($varName) && !ctype_digit((string)$varName)) {
+                        $paramItem['parameter_name'] = (string)$varName;
+                    }
+
+                    $paramObjects[] = $paramItem;
+                    $pIdx++;
                 }
+
                 $components[] = [
                     'type' => 'body',
                     'parameters' => $paramObjects
