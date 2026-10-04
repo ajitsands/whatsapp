@@ -187,15 +187,16 @@ function handleSendMessage(PDO $db, array $auth): void {
     }
 
     $defaultToken = 'EAATLuWFVcZBkBShyqCMEBcxXp77EAXXyWJXvyLr2ZBUisziJohZBDCozF0NFb61TnfJGY0vlBTfZAEzGoq6n9E7xAZAmbLD0dSZCogqYjAKJFzB9yTmaq10kQ2ZCfms3GOT0J9xi0Lzh4ZCYpZCILHx7nPFbVaGCmhs1TsVlHxUMMFNm2EYiDZCpGKLFSZAGLKo9onKZAAYGOZCOZCyou0ALgb4OXJJRXZCRVrqfn3ocZBHfv664guNKm8HeZB61mLZBH1HZC4uMR0Ngw4h3Gdskwt5mxcOIy5kOks6UCUS9s33G0ckbBAZDZD';
-    $metaPhoneId     = !empty($settingsMap['meta_phone_number_id']) ? $settingsMap['meta_phone_number_id'] : '347848611735147';
+    $defaultPhoneId = '347848611735147';
+    $metaPhoneId     = (!empty($settingsMap['meta_phone_number_id']) && $settingsMap['meta_phone_number_id'] !== '109823471928374') ? $settingsMap['meta_phone_number_id'] : $defaultPhoneId;
     $metaAccessToken = (!empty($settingsMap['meta_access_token']) && !str_starts_with($settingsMap['meta_access_token'], 'EAAJz9284jklasdf')) ? $settingsMap['meta_access_token'] : $defaultToken;
     $businessPhone   = $settingsMap['business_phone_number'] ?? '+973 1700 8899';
 
-    // Auto-update system_settings if it had dummy or blank token
-    if (empty($settingsMap['meta_access_token']) || str_starts_with($settingsMap['meta_access_token'], 'EAAJz9284jklasdf')) {
+    // Auto-update system_settings if it had dummy or blank values
+    if (empty($settingsMap['meta_access_token']) || str_starts_with($settingsMap['meta_access_token'], 'EAAJz9284jklasdf') || empty($settingsMap['meta_phone_number_id']) || $settingsMap['meta_phone_number_id'] === '109823471928374') {
         try {
             $db->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES ('meta_access_token', ?), ('meta_phone_number_id', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)")
-               ->execute([$defaultToken, $metaPhoneId]);
+               ->execute([$defaultToken, $defaultPhoneId]);
         } catch (Throwable $ignore) {}
     }
 
