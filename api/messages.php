@@ -350,12 +350,12 @@ function handleUpdateStatus(PDO $db): void {
         sendJsonResponse(['success' => false, 'error' => 'Invalid status value'], 400);
     }
 
-    $timeField = match ($newStatus) {
+    $timeFieldMap = [
         'sent'      => 'sent_at = NOW()',
         'delivered' => 'delivered_at = NOW()',
-        'read'      => 'read_at = NOW()',
-        default     => 'updated_at = NOW()'
-    };
+        'read'      => 'read_at = NOW()'
+    ];
+    $timeField = $timeFieldMap[$newStatus] ?? 'updated_at = NOW()';
 
     $stmt = $db->prepare("UPDATE whatsapp_messages SET status = ?, {$timeField} WHERE message_id = ? OR id = ?");
     $stmt->execute([$newStatus, $messageId, $messageId]);

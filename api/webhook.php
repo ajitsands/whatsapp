@@ -54,12 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $status    = $statusObj['status'] ?? '';
 
             if ($wamid && in_array($status, ['sent', 'delivered', 'read', 'failed'])) {
-                $timeField = match ($status) {
+                $timeFieldMap = [
                     'sent'      => 'sent_at = NOW()',
                     'delivered' => 'delivered_at = NOW()',
-                    'read'      => 'read_at = NOW()',
-                    default     => 'updated_at = NOW()'
-                };
+                    'read'      => 'read_at = NOW()'
+                ];
+                $timeField = $timeFieldMap[$status] ?? 'updated_at = NOW()';
                 $upd = $db->prepare("UPDATE whatsapp_messages SET status = ?, {$timeField} WHERE message_id = ?");
                 $upd->execute([$status, $wamid]);
             }
