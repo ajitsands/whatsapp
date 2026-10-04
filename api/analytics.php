@@ -24,14 +24,14 @@ $kpiSql = "
         COALESCE(SUM(client_rate_bhd), 0) as total_client_billed_bhd
     FROM whatsapp_messages
 ";
-$kpi = $db->query($kpiSql)->fetch();
+$kpi = $db->query($kpiSql)->fetch() ?: [];
 
-$totalOutbound = (int)$kpi['outbound_count'];
-$successful = (int)$kpi['successful_count'];
-$readCount  = (int)$kpi['read_count'];
+$totalOutbound = (int)($kpi['outbound_count'] ?? 0);
+$successful    = (int)($kpi['successful_count'] ?? 0);
+$readCount     = (int)($kpi['read_count'] ?? 0);
 
-$deliveryRate = $totalOutbound > 0 ? round(($successful / $totalOutbound) * 100, 1) : 100;
-$readRate     = $successful > 0 ? round(($readCount / $successful) * 100, 1) : 0;
+$deliveryRate  = $totalOutbound > 0 ? round(($successful / $totalOutbound) * 100, 1) : 100;
+$readRate      = $successful > 0 ? round(($readCount / $successful) * 100, 1) : 0;
 
 // 2. Category Breakdown
 $catSql = "
@@ -44,7 +44,7 @@ $catSql = "
     GROUP BY category
     ORDER BY message_count DESC
 ";
-$categories = $db->query($catSql)->fetchAll();
+$categories = $db->query($catSql)->fetchAll() ?: [];
 
 // 3. Last 7 Days Volume
 $dailySql = "
@@ -60,7 +60,7 @@ $dailySql = "
     GROUP BY DATE(created_at)
     ORDER BY msg_date ASC
 ";
-$daily = $db->query($dailySql)->fetchAll();
+$daily = $db->query($dailySql)->fetchAll() ?: [];
 
 // 4. Recent Active Integrations
 $integrationsSql = "
@@ -69,20 +69,20 @@ $integrationsSql = "
     GROUP BY source_system
     ORDER BY volume DESC
 ";
-$integrations = $db->query($integrationsSql)->fetchAll();
+$integrations = $db->query($integrationsSql)->fetchAll() ?: [];
 
 sendJsonResponse([
     'success' => true,
     'kpis' => [
-        'total_messages'        => (int)$kpi['total_messages'],
+        'total_messages'        => (int)($kpi['total_messages'] ?? 0),
         'outbound_count'        => $totalOutbound,
-        'inbound_count'         => (int)$kpi['inbound_count'],
+        'inbound_count'         => (int)($kpi['inbound_count'] ?? 0),
         'delivery_rate'         => $deliveryRate,
         'read_rate'             => $readRate,
-        'failed_count'          => (int)$kpi['failed_count'],
-        'total_meta_cost_bhd'   => number_format((float)$kpi['total_meta_cost_bhd'], 4),
-        'total_platform_bhd'    => number_format((float)$kpi['total_platform_charge_bhd'], 4),
-        'total_client_bhd'      => number_format((float)$kpi['total_client_billed_bhd'], 4)
+        'failed_count'          => (int)($kpi['failed_count'] ?? 0),
+        'total_meta_cost_bhd'   => number_format((float)($kpi['total_meta_cost_bhd'] ?? 0), 4),
+        'total_platform_bhd'    => number_format((float)($kpi['total_platform_charge_bhd'] ?? 0), 4),
+        'total_client_bhd'      => number_format((float)($kpi['total_client_billed_bhd'] ?? 0), 4)
     ],
     'categories'   => $categories,
     'daily_volume' => $daily,
