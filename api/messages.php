@@ -101,19 +101,20 @@ function handleGetMessages(PDO $db): void {
  * POST Send Message (Odoo Integration & UI Composer)
  */
 function handleSendMessage(PDO $db, array $auth): void {
-    $input = getJsonInput();
+    try {
+        $input = getJsonInput();
 
-    // Required fields
-    $toPhone = trim($input['to_phone'] ?? $input['recipient'] ?? '');
-    if (empty($toPhone)) {
-        sendJsonResponse(['success' => false, 'error' => 'Field "to_phone" is required (e.g. +97339000000)'], 400);
-    }
+        // Required fields
+        $toPhone = trim($input['to_phone'] ?? $input['recipient'] ?? '');
+        if (empty($toPhone)) {
+            sendJsonResponse(['success' => false, 'error' => 'Field "to_phone" is required (e.g. +97339000000)'], 400);
+        }
 
-    // Clean Phone number format
-    $toPhone = preg_replace('/[^0-9\+]/', '', $toPhone);
-    if (!str_starts_with($toPhone, '+')) {
-        $toPhone = '+' . $toPhone;
-    }
+        // Clean Phone number format
+        $toPhone = preg_replace('/[^0-9\+]/', '', $toPhone);
+        if (strpos($toPhone, '+') !== 0) {
+            $toPhone = '+' . $toPhone;
+        }
 
     $templateName = trim($input['template_name'] ?? '');
     $category     = strtoupper(trim($input['category'] ?? 'UTILITY'));
@@ -363,6 +364,9 @@ function handleSendMessage(PDO $db, array $auth): void {
         ],
         'timestamp'    => $sentAt
     ], 201);
+    } catch (Throwable $e) {
+        sendJsonResponse(['success' => false, 'error' => 'Server error: ' . $e->getMessage()], 500);
+    }
 }
 
 /**

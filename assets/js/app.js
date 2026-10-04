@@ -778,15 +778,21 @@ function ComposerView({ showToast, onSent }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      const data = await res.json();
-      if (data.success) {
-        showToast(`WhatsApp Message Dispatched to ${toPhone}! (Rate: ${data.tariff?.client_rate})`);
+      const data = await res.json().catch(() => null);
+      if (data && data.success) {
+        if (data.status === 'failed' && data.meta_error) {
+          showToast(`Meta Error: ${data.meta_error}`, 'error');
+        } else if (data.status === 'simulated') {
+          showToast(`Dispatched in Simulation Mode (Enter Meta Token in Settings for Live)`, 'success');
+        } else {
+          showToast(`WhatsApp Message Dispatched to ${toPhone}! (Rate: ${data.tariff?.client_rate})`);
+        }
         onSent();
       } else {
-        showToast(data.error || 'Failed to send message', 'error');
+        showToast((data && data.error) || `Server Error (HTTP ${res.status})`, 'error');
       }
     } catch (err) {
-      showToast('Connection error while sending message', 'error');
+      showToast('Error: ' + err.message, 'error');
     } finally {
       setSending(false);
     }
