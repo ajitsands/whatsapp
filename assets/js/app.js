@@ -1,0 +1,1780 @@
+/**
+ * WhatsApp Integration Platform - React 18 Application
+ * Engineered by SaNDS Lab Middle East W.L.L.
+ */
+
+const { useState, useEffect, useMemo, useRef } = React;
+
+// -----------------------------------------------------------------------------
+// REUSABLE ENTERPRISE DATATABLE COMPONENT
+// Supports Search, Sorting (Asc/Desc), Pagination, Page-Size, and CSV Export
+// -----------------------------------------------------------------------------
+function DataTable({
+  columns,
+  data = [],
+  searchable = true,
+  searchPlaceholder = 'Search records...',
+  pageSizeOptions = [5, 10, 25, 50],
+  defaultPageSize = 10,
+  defaultSortKey = '',
+  defaultSortDir = 'asc',
+  title = 'export',
+  actions = null,
+  emptyMessage = 'No matching records found.'
+}) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [pageSize, setPageSize] = useState(defaultPageSize);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortKey, setSortKey] = useState(defaultSortKey || (columns[0]?.key || ''));
+  const [sortDir, setSortDir] = useState(defaultSortDir);
+
+  // Filter rows across all fields
+  const filteredData = useMemo(() => {
+    if (!searchTerm.trim()) return data;
+    const term = searchTerm.toLowerCase();
+    return data.filter(row => {
+      return columns.some(col => {
+        const val = row[col.key];
+        if (val === null || val === undefined) return false;
+        return String(val).toLowerCase().includes(term);
+      });
+    });
+  }, [data, searchTerm, columns]);
+
+  // Sort rows
+  const sortedData = useMemo(() => {
+    if (!sortKey) return filteredData;
+    return [...filteredData].sort((a, b) => {
+      let aVal = a[sortKey];
+      let bVal = b[sortKey];
+      if (aVal === null || aVal === undefined) aVal = '';
+      if (bVal === null || bVal === undefined) bVal = '';
+
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return sortDir === 'asc' ? aVal - bVal : bVal - aVal;
+      }
+      return sortDir === 'asc'
+        ? String(aVal).localeCompare(String(bVal), undefined, { numeric: true })
+        : String(bVal).localeCompare(String(aVal), undefined, { numeric: true });
+    });
+  }, [filteredData, sortKey, sortDir]);
+
+  // Pagination calculations
+  const totalEntries = sortedData.length;
+  const totalPages = Math.ceil(totalEntries / pageSize) || 1;
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+
+  const paginatedData = useMemo(() => {
+    const start = (safeCurrentPage - 1) * pageSize;
+    return sortedData.slice(start, start + pageSize);
+  }, [sortedData, safeCurrentPage, pageSize]);
+
+  const handleSort = (key, sortable = true) => {
+    if (!sortable) return;
+    if (sortKey === key) {
+      setSortDir(prev => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+  };
+
+  // CSV Export Utility
+  const exportCSV = () => {
+    const headerRow = columns.map(c => `"${c.label.replace(/"/g, '""')}"`).join(',');
+    const bodyRows = sortedData.map(row => {
+      return columns.map(c => {
+        let val = row[c.key];
+        if (val === null || val === undefined) val = '';
+        return `"${String(val).replace(/"/g, '""')}"`;
+      }).join(',');
+    });
+    const csvContent = "data:text/csv;charset=utf-8," + [headerRow, ...bodyRows].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${title}_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const startIdx = totalEntries === 0 ? 0 : (safeCurrentPage - 1) * pageSize + 1;
+  const endIdx = Math.min(safeCurrentPage * pageSize, totalEntries);
+
+  return (
+    <div className="datatable-container">
+      {/* DataTable Top Controls */}
+      <div className="datatable-header">
+        <div className="datatable-length">
+          <span>Show</span>
+          <select value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}>
+            {pageSizeOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+          </select>
+          <span>entries</span>
+        </div>
+
+        <div className="datatable-tools">
+          {actions}
+          <button className="btn-export" onClick={exportCSV} title="Export table data to CSV file">
+            <span>📥</span> Export CSV
+          </button>
+          {searchable && (
+            <div className="datatable-search">
+              <span className="datatable-search-icon">🔍</span>
+              <input
+                type="text"
+                placeholder={searchPlaceholder}
+                value={searchTerm}
+                onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Table Canvas */}
+      <div className="data-table-wrapper">
+        <table className="data-table">
+          <thead>
+            <tr>
+              {columns.map(col => {
+                const isSorted = sortKey === col.key;
+                const isSortable = col.sortable !== false;
+                return (
+                  <th
+                    key={col.key}
+                    className={`${isSortable ? 'sortable' : ''} ${isSorted ? 'sorted' : ''}`}
+                    onClick={() => handleSort(col.key, isSortable)}
+                    style={col.width ? { width: col.width } : {}}
+                  >
+                    {col.label}
+                    {isSortable && (
+                      <span className="sort-indicator">
+                        {isSorted ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ' ⇅'}
+                      </span>
+                    )}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedData.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
+                  {emptyMessage}
+                </td>
+              </tr>
+            ) : (
+              paginatedData.map((row, rowIdx) => (
+                <tr key={row.id || rowIdx}>
+                  {columns.map(col => (
+                    <td key={col.key}>
+                      {col.render ? col.render(row) : (row[col.key] ?? '')}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* DataTable Bottom Pagination */}
+      <div className="datatable-footer">
+        <div className="datatable-info">
+          Showing {startIdx} to {endIdx} of {totalEntries} entries
+          {searchTerm && ` (filtered from ${data.length} total entries)`}
+        </div>
+
+        <div className="datatable-pagination">
+          <button className="page-btn" disabled={safeCurrentPage <= 1} onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}>
+            ‹ Prev
+          </button>
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            let pageNum = safeCurrentPage <= 3 ? i + 1 : safeCurrentPage + i - 2;
+            if (pageNum > totalPages) pageNum = totalPages - (4 - i);
+            if (pageNum < 1) pageNum = i + 1;
+            if (pageNum > totalPages) return null;
+            return (
+              <button
+                key={pageNum}
+                className={`page-btn ${safeCurrentPage === pageNum ? 'active' : ''}`}
+                onClick={() => setCurrentPage(pageNum)}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+          <button className="page-btn" disabled={safeCurrentPage >= totalPages} onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}>
+            Next ›
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// MAIN APP CONTAINER
+// -----------------------------------------------------------------------------
+function App() {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
+
+  const checkAuth = async () => {
+    try {
+      const res = await fetch('./api/auth.php?action=check');
+      const data = await res.json();
+      if (data.success && data.authenticated && data.user) {
+        setCurrentUser(data.user);
+      } else {
+        setCurrentUser(null);
+      }
+    } catch (e) {
+      console.error('Auth check error', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogin = (user) => {
+    setCurrentUser(user);
+    showToast(`Welcome back, ${user.name}!`);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('./api/auth.php?action=logout');
+      setCurrentUser(null);
+      showToast('You have been logged out.');
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const switchDemoRole = async (role) => {
+    try {
+      const res = await fetch('./api/auth.php?action=switch_demo_user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCurrentUser(data.user);
+        showToast(`Switched to ${data.user.name} (${role.toUpperCase()})`);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: '12px' }}>
+        <div className="brand-badge"><span className="dot"></span> Loading SaNDS Platform...</div>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return <LoginView onLogin={handleLogin} onSwitchDemo={switchDemoRole} />;
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      {/* Toast Notification Banner */}
+      {toast && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '24px',
+          zIndex: 9999,
+          background: toast.type === 'error' ? '#EF4444' : '#075E54',
+          color: '#fff',
+          padding: '12px 20px',
+          borderRadius: '8px',
+          boxShadow: '0 8px 16px rgba(0,0,0,0.15)',
+          fontSize: '13px',
+          fontWeight: '600',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px'
+        }}>
+          <span>{toast.type === 'error' ? '⚠️' : '✅'}</span>
+          {toast.message}
+        </div>
+      )}
+
+      {/* 2-Tier Header: Top Brand/Profile Bar + Dedicated Bottom Menu Bar */}
+      <header className="app-header">
+        {/* Tier 1: Brand Logo & User Profile */}
+        <div className="header-top-bar">
+          <div className="header-top-inner">
+            <div className="header-brand">
+              <img src="./assets/logos/SaNDSLab-LogoNewUpdated.png" alt="SaNDS Lab Middle East" className="brand-logo" />
+              <div className="brand-badge">
+                <span className="dot"></span> WhatsApp Gateway
+              </div>
+            </div>
+
+            {/* User Profile & Logout Actions */}
+            <div className="header-actions">
+              <div className="user-profile-pill" title={`Logged in as ${currentUser.email}`}>
+                <div className="avatar" style={{ background: currentUser.avatar_color || '#128C7E' }}>
+                  {currentUser.name.charAt(0)}
+                </div>
+                <div className="user-details">
+                  <span className="user-name">{currentUser.name}</span>
+                  <span className="user-role-badge">{currentUser.role}</span>
+                </div>
+              </div>
+
+              <button className="btn-logout" onClick={handleLogout} title="Sign Out">
+                <span>🚪</span> Logout
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Tier 2: Dedicated Horizontal Menu Just at the Bottom of Header */}
+        <div className="header-nav-bar">
+          <div className="header-nav-inner">
+            <nav className="horizontal-nav">
+              <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
+                <span>📊</span> Dashboard
+              </button>
+              <button className={`nav-item ${activeTab === 'composer' ? 'active' : ''}`} onClick={() => setActiveTab('composer')}>
+                <span>💬</span> Send Message
+              </button>
+              <button className={`nav-item ${activeTab === 'logs' ? 'active' : ''}`} onClick={() => setActiveTab('logs')}>
+                <span>📜</span> Message Logs
+              </button>
+              <button className={`nav-item ${activeTab === 'templates' ? 'active' : ''}`} onClick={() => setActiveTab('templates')}>
+                <span>📋</span> Templates & Tariffs
+              </button>
+              <button className={`nav-item ${activeTab === 'api_hub' ? 'active' : ''}`} onClick={() => setActiveTab('api_hub')}>
+                <span>⚡</span> Odoo API Hub
+              </button>
+              
+              {/* Superadmin & Admin Only Navigation Items */}
+              {['superadmin', 'admin'].includes(currentUser.role) && (
+                <>
+                  <button className={`nav-item ${activeTab === 'api_keys' ? 'active' : ''}`} onClick={() => setActiveTab('api_keys')}>
+                    <span>🔑</span> API Keys
+                  </button>
+                  <button className={`nav-item ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>
+                    <span>👥</span> Users
+                  </button>
+                  <button className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
+                    <span>⚙️</span> Meta Settings
+                  </button>
+                </>
+              )}
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      {/* Main App Body */}
+      <main className="app-body">
+        {activeTab === 'dashboard' && <DashboardView onNavigate={setActiveTab} />}
+        {activeTab === 'composer' && <ComposerView showToast={showToast} onSent={() => setActiveTab('logs')} />}
+        {activeTab === 'logs' && <MessageLogsView showToast={showToast} />}
+        {activeTab === 'templates' && <TemplatesView showToast={showToast} />}
+        {activeTab === 'api_hub' && <OdooApiHubView showToast={showToast} />}
+        {activeTab === 'api_keys' && <ApiKeysView showToast={showToast} />}
+        {activeTab === 'users' && <UsersView currentUser={currentUser} showToast={showToast} />}
+        {activeTab === 'settings' && <SettingsView showToast={showToast} />}
+      </main>
+
+      {/* Footer */}
+      <footer className="app-footer">
+        <div className="footer-inner">
+          <div className="footer-left">
+            All Rights Reserved | Engineered By SaNDS Lab Middle East W.L.L.
+          </div>
+          <div className="footer-right">
+            <span className="footer-badge">WhatsApp Cloud API v19.0</span>
+            <span className="footer-badge">Odoo ERP Connector Active</span>
+            <span>Bahrain (BHD) Tariff Active</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 1. LOGIN VIEW
+// -----------------------------------------------------------------------------
+function LoginView({ onLogin, onSwitchDemo }) {
+  const [email, setEmail] = useState('superadmin@sandslab.com');
+  const [password, setPassword] = useState('Password@123');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const submitLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('./api/auth.php?action=login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        onLogin(data.user);
+      } else {
+        setError(data.error || 'Login failed');
+      }
+    } catch (err) {
+      setError('Connection error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const pickPreset = (presetEmail, role) => {
+    setEmail(presetEmail);
+    setPassword('Password@123');
+    onSwitchDemo(role);
+  };
+
+  return (
+    <div className="login-container">
+      <div className="login-card">
+        <div className="login-header">
+          <img src="./assets/logos/SaNDSLab-LogoNewUpdated.png" alt="SaNDS Lab" className="login-logo" />
+          <h2>WhatsApp Integration Platform</h2>
+          <p>Sign in to manage messaging, templates, and Odoo ERP webhooks</p>
+        </div>
+
+        {/* 1-Click Role Presets */}
+        <div className="preset-roles-box">
+          <div className="preset-roles-title">⚡ Quick Sign-In by Role:</div>
+          <div className="preset-buttons-row">
+            <button type="button" className="btn-preset" onClick={() => pickPreset('superadmin@sandslab.com', 'superadmin')}>
+              👑 Superadmin
+            </button>
+            <button type="button" className="btn-preset" onClick={() => pickPreset('admin@uniglobal.bh', 'admin')}>
+              🛡️ Admin
+            </button>
+            <button type="button" className="btn-preset" onClick={() => pickPreset('user@uniglobal.bh', 'user')}>
+              👤 User
+            </button>
+          </div>
+        </div>
+
+        {error && (
+          <div style={{ background: '#FEE2E2', color: '#B91C1C', padding: '10px 14px', borderRadius: '8px', fontSize: '12.5px', marginBottom: '16px', fontWeight: '600' }}>
+            ⚠️ {error}
+          </div>
+        )}
+
+        <form onSubmit={submitLogin}>
+          <div className="form-group">
+            <label className="form-label">Email Address</label>
+            <input
+              type="email"
+              className="form-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Password</label>
+            <input
+              type="password"
+              className="form-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '10px', marginTop: '6px' }} disabled={loading}>
+            {loading ? 'Authenticating...' : 'Sign In to Gateway'}
+          </button>
+        </form>
+
+        <div style={{ textAlign: 'center', marginTop: '24px', fontSize: '11.5px', color: 'var(--text-muted)' }}>
+          All Rights Reserved | Engineered By SaNDS Lab Middle East W.L.L.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 2. DASHBOARD VIEW (WITH DATATABLE)
+// -----------------------------------------------------------------------------
+function DashboardView({ onNavigate }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('./api/analytics.php')
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) setData(res);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading || !data) {
+    return <div className="card">Loading real-time analytics...</div>;
+  }
+
+  const { kpis, categories, daily_volume, integrations } = data;
+
+  // Integrations DataTable Columns
+  const integrationColumns = [
+    {
+      key: 'source_system',
+      label: 'Source Integration',
+      render: (row) => <strong>{row.source_system}</strong>
+    },
+    {
+      key: 'volume',
+      label: 'Message Volume',
+      render: (row) => <span className="badge status-read">{row.volume} msgs</span>
+    },
+    {
+      key: 'last_activity',
+      label: 'Last Activity',
+      render: (row) => <span style={{ color: 'var(--text-muted)', fontSize: '11.5px' }}>{row.last_activity}</span>
+    }
+  ];
+
+  return (
+    <div>
+      <div className="page-header-row">
+        <div className="page-title-group">
+          <h1><span>📊</span> Operational Dashboard & Metrics</h1>
+          <p>Real-time telemetry of WhatsApp Business API throughput, delivery reliability, and billing tariffs.</p>
+        </div>
+        <button className="btn btn-success" onClick={() => onNavigate('composer')}>
+          <span>💬</span> Send New Message
+        </button>
+      </div>
+
+      {/* KPI Cards Grid */}
+      <div className="kpi-grid">
+        <div className="kpi-card accent-green">
+          <span className="kpi-label">Total Volume</span>
+          <span className="kpi-value">{kpis.total_messages.toLocaleString()}</span>
+          <span className="kpi-sub positive">
+            <span>↑</span> {kpis.outbound_count} Outbound | {kpis.inbound_count} Inbound
+          </span>
+        </div>
+
+        <div className="kpi-card accent-blue">
+          <span className="kpi-label">Delivery Reliability</span>
+          <span className="kpi-value">{kpis.delivery_rate}%</span>
+          <span className="kpi-sub positive">
+            <span>✓✓</span> {kpis.read_rate}% Read Rate
+          </span>
+        </div>
+
+        <div className="kpi-card accent-purple">
+          <span className="kpi-label">Total Billed (BHD)</span>
+          <span className="kpi-value">BHD {kpis.total_client_bhd}</span>
+          <span className="kpi-sub">
+            Bahrain Market Official Schedule
+          </span>
+        </div>
+
+        <div className="kpi-card accent-amber">
+          <span className="kpi-label">Cost Breakdown</span>
+          <span className="kpi-value">BHD {kpis.total_platform_bhd}</span>
+          <span className="kpi-sub">
+            Platform Margin | Meta Cost: BHD {kpis.total_meta_cost_bhd}
+          </span>
+        </div>
+      </div>
+
+      {/* Grid: Category Breakdown & Integrations DataTable */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+        {/* Category Breakdown Card */}
+        <div className="card" style={{ margin: 0 }}>
+          <div className="card-header">
+            <span className="card-title"><span>🏷️</span> Message Volume by Meta Category</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {categories.map((cat, i) => (
+              <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', fontWeight: '700' }}>
+                  <span className={`badge cat-${cat.category.toLowerCase().substring(0, 4)}`}>
+                    {cat.category}
+                  </span>
+                  <span>{cat.message_count} msgs ({parseFloat(cat.category_billed_bhd).toFixed(4)} BHD)</span>
+                </div>
+                <div style={{ height: '7px', background: '#F1F5F9', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{
+                    width: `${Math.min(100, (cat.message_count / (kpis.total_messages || 1)) * 100)}%`,
+                    height: '100%',
+                    background: cat.category === 'UTILITY' ? '#10B981' : cat.category === 'AUTHENTICATION' ? '#3B82F6' : cat.category === 'MARKETING' ? '#8B5CF6' : '#06B6D4'
+                  }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Integration Hub Sources DataTable */}
+        <div>
+          <div style={{ marginBottom: '10px', fontWeight: '700', fontSize: '14px', color: 'var(--text-primary)' }}>
+            <span>🔗</span> Active System Connectors
+          </div>
+          <DataTable
+            columns={integrationColumns}
+            data={integrations}
+            title="active_integrations"
+            searchPlaceholder="Search connectors..."
+            defaultPageSize={5}
+            pageSizeOptions={[5, 10, 20]}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 3. COMPOSER VIEW WITH REALTIME WHATSAPP PHONE PREVIEW
+// -----------------------------------------------------------------------------
+function ComposerView({ showToast, onSent }) {
+  const [templates, setTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [toPhone, setToPhone] = useState('+97339000000');
+  const [category, setCategory] = useState('UTILITY');
+  const [mediaUrl, setMediaUrl] = useState('https://erp.uniglobal.bh/INV_9941.pdf');
+  const [mediaName, setMediaName] = useState('INV_9941.pdf');
+  const [params, setParams] = useState(['Ahmed Al-Khalifa', 'INV/2026/0142', 'BHD 345.500', '15-Oct-2026']);
+  const [customText, setCustomText] = useState('');
+  const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    fetch('./api/templates.php')
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          setTemplates(res.data);
+          if (res.data.length > 0) {
+            pickTemplate(res.data[0]);
+          }
+        }
+      });
+  }, []);
+
+  const pickTemplate = (tmpl) => {
+    setSelectedTemplate(tmpl.template_name);
+    setCategory(tmpl.category);
+    if (tmpl.sample_params_json) {
+      try {
+        setParams(JSON.parse(tmpl.sample_params_json));
+      } catch (e) {
+        setParams([]);
+      }
+    }
+    if (tmpl.header_sample) {
+      setMediaUrl(tmpl.header_sample);
+      setMediaName(tmpl.header_sample.split('/').pop() || 'document.pdf');
+    }
+  };
+
+  const renderedText = useMemo(() => {
+    if (!selectedTemplate) return customText || 'Type your message...';
+    const tmpl = templates.find(t => t.template_name === selectedTemplate);
+    if (!tmpl) return '';
+    let body = tmpl.body_text;
+    params.forEach((val, idx) => {
+      body = body.replace(new RegExp(`\\{\\{${idx + 1}\\}\\}`, 'g'), val || `[Param ${idx + 1}]`);
+    });
+    return body;
+  }, [selectedTemplate, templates, params, customText]);
+
+  const currentTemplateObj = templates.find(t => t.template_name === selectedTemplate);
+
+  const tariffEstimate = useMemo(() => {
+    const rates = {
+      'AUTHENTICATION': { meta: 0.0110, platform: 0.0035, client: 0.0145 },
+      'UTILITY': { meta: 0.0140, platform: 0.0045, client: 0.0185 },
+      'MARKETING': { meta: 0.0270, platform: 0.0070, client: 0.0340 },
+      'SERVICE': { meta: 0.0075, platform: 0.0025, client: 0.0100 }
+    };
+    return rates[category] || rates['UTILITY'];
+  }, [category]);
+
+  const handleSend = async (e) => {
+    e.preventDefault();
+    setSending(true);
+    try {
+      const payload = {
+        to_phone: toPhone,
+        template_name: selectedTemplate || null,
+        category: category,
+        message: customText,
+        body_parameters: params,
+        header_media: mediaUrl ? { url: mediaUrl, filename: mediaName } : null,
+        source_system: 'Manual Web Console'
+      };
+
+      const res = await fetch('./api/messages.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`WhatsApp Message Dispatched to ${toPhone}! (Rate: ${data.tariff?.client_rate})`);
+        onSent();
+      } else {
+        showToast(data.error || 'Failed to send message', 'error');
+      }
+    } catch (err) {
+      showToast('Connection error while sending message', 'error');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div>
+      <div className="page-header-row">
+        <div className="page-title-group">
+          <h1><span>💬</span> Interactive Message Composer</h1>
+          <p>Compose pre-approved WhatsApp templates or direct customer notifications with real-time phone preview.</p>
+        </div>
+      </div>
+
+      <div className="composer-layout">
+        {/* Left Column: Form Controls */}
+        <div className="card">
+          <form onSubmit={handleSend}>
+            <div className="form-group">
+              <label className="form-label">Recipient Phone Number (E.164 Format)</label>
+              <input
+                type="text"
+                className="form-input"
+                value={toPhone}
+                onChange={(e) => setToPhone(e.target.value)}
+                placeholder="+97339000000"
+                required
+              />
+              <span className="form-hint">Includes Bahrain country code (+973) or international destination</span>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">WhatsApp Meta Template</label>
+              <select
+                className="form-select"
+                value={selectedTemplate}
+                onChange={(e) => {
+                  const tmpl = templates.find(t => t.template_name === e.target.value);
+                  if (tmpl) pickTemplate(tmpl);
+                  else setSelectedTemplate('');
+                }}
+              >
+                {templates.map(t => (
+                  <option key={t.id} value={t.template_name}>
+                    {t.display_title} [{t.category}]
+                  </option>
+                ))}
+                <option value="">-- Custom Direct Text Message --</option>
+              </select>
+            </div>
+
+            {selectedTemplate && currentTemplateObj && (
+              <div className="form-group">
+                <label className="form-label">Template Dynamic Parameters ({params.length} Variables)</label>
+                <div className="param-grid">
+                  {params.map((val, idx) => (
+                    <div key={idx}>
+                      <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--wa-dark-teal)' }}>
+                        Variable #{idx + 1}
+                      </label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={val}
+                        onChange={(e) => {
+                          const newParams = [...params];
+                          newParams[idx] = e.target.value;
+                          setParams(newParams);
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {currentTemplateObj?.header_type === 'DOCUMENT' && (
+              <div className="form-group">
+                <label className="form-label">PDF Invoice Attachment URL</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={mediaUrl}
+                  onChange={(e) => setMediaUrl(e.target.value)}
+                  placeholder="https://erp.uniglobal.bh/INV_9941.pdf"
+                />
+              </div>
+            )}
+
+            {!selectedTemplate && (
+              <div className="form-group">
+                <label className="form-label">Custom Message Content</label>
+                <textarea
+                  className="form-textarea"
+                  value={customText}
+                  onChange={(e) => setCustomText(e.target.value)}
+                  placeholder="Type direct WhatsApp message here..."
+                ></textarea>
+              </div>
+            )}
+
+            {/* Tariff Pricing Banner */}
+            <div className="tariff-estimate-banner">
+              <div className="tariff-info">
+                <span className="title">Category: {category}</span>
+                <span className="breakdown">
+                  Meta Cost: {tariffEstimate.meta.toFixed(4)} BHD | Platform Charges: +{tariffEstimate.platform.toFixed(4)} BHD
+                </span>
+              </div>
+              <div className="tariff-rate-badge">
+                BHD {tariffEstimate.client.toFixed(4)} / msg
+              </div>
+            </div>
+
+            <button type="submit" className="btn btn-success" style={{ width: '100%', marginTop: '20px', padding: '12px' }} disabled={sending}>
+              {sending ? 'Dispatching via Meta API...' : '🚀 Send WhatsApp Notification Now'}
+            </button>
+          </form>
+        </div>
+
+        {/* Right Column: Realistic WhatsApp Phone Mockup */}
+        <div className="phone-mockup-wrapper">
+          <div className="phone-device">
+            <div className="phone-notch">
+              <div className="phone-speaker"></div>
+            </div>
+
+            <div className="phone-screen">
+              {/* WhatsApp Chat Header */}
+              <div className="wa-chat-header">
+                <div className="wa-avatar">UG</div>
+                <div className="wa-user-info">
+                  <div className="wa-contact-name">
+                    UniGlobal Consultancy <span className="wa-verified-icon">✓</span>
+                  </div>
+                  <div className="wa-status-text">Official Business Account</div>
+                </div>
+              </div>
+
+              {/* Chat Canvas */}
+              <div className="wa-chat-body">
+                <div className="wa-date-pill">TODAY</div>
+
+                <div className="wa-bubble">
+                  {currentTemplateObj?.header_type === 'DOCUMENT' && (
+                    <div className="wa-bubble-doc">
+                      <span>📄</span>
+                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {mediaName || 'INV_9941.pdf'}
+                        <div style={{ fontSize: '9px', color: '#4B5563' }}>PDF Document • 345 KB</div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ whiteSpace: 'pre-line' }}>
+                    {renderedText}
+                  </div>
+
+                  {currentTemplateObj?.footer_text && (
+                    <div className="wa-bubble-footer">
+                      {currentTemplateObj.footer_text}
+                    </div>
+                  )}
+
+                  <div className="wa-bubble-meta">
+                    <span>10:42 AM</span>
+                    <span className="wa-ticks">✓✓</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chat Dummy Input Bar */}
+              <div className="wa-chat-input-bar">
+                <div className="wa-dummy-input">Message</div>
+                <span style={{ color: '#075E54', fontSize: '14px' }}>🎤</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 4. MESSAGE LOGS VIEW (WITH DATATABLE)
+// -----------------------------------------------------------------------------
+function MessageLogsView({ showToast }) {
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [selectedLog, setSelectedLog] = useState(null);
+
+  const fetchLogs = async () => {
+    setLoading(true);
+    try {
+      const url = `./api/messages.php?status=${statusFilter}&category=${categoryFilter}&limit=100`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.success) {
+        setMessages(data.data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLogs();
+  }, [statusFilter, categoryFilter]);
+
+  const simulateStatus = async (msgId, newStatus) => {
+    try {
+      const res = await fetch('./api/messages.php', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message_id: msgId, status: newStatus })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Message status updated to ${newStatus.toUpperCase()}`);
+        fetchLogs();
+      }
+    } catch (e) {
+      showToast('Error updating status', 'error');
+    }
+  };
+
+  // DataTable Column Definitions for Logs
+  const logColumns = [
+    {
+      key: 'to_phone',
+      label: 'Recipient / Source',
+      render: (m) => (
+        <div>
+          <div><strong>{m.to_phone}</strong></div>
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{m.source_system}</div>
+        </div>
+      )
+    },
+    {
+      key: 'category',
+      label: 'Category',
+      render: (m) => (
+        <span className={`badge cat-${m.category.toLowerCase().substring(0, 4)}`}>
+          {m.category}
+        </span>
+      )
+    },
+    {
+      key: 'message_body',
+      label: 'Message Content',
+      render: (m) => (
+        <div style={{ maxWidth: '280px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {m.header_media_name && <span style={{ marginRight: '4px' }}>📎 [{m.header_media_name}]</span>}
+          {m.message_body}
+        </div>
+      )
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (m) => (
+        <span className={`badge status-${m.status}`}>
+          {m.status === 'read' ? '✓✓ Read' : m.status === 'delivered' ? '✓✓ Delivered' : m.status === 'sent' ? '✓ Sent' : m.status}
+        </span>
+      )
+    },
+    {
+      key: 'client_rate_bhd',
+      label: 'Client Rate (BHD)',
+      render: (m) => (
+        <div>
+          <strong>{parseFloat(m.client_rate_bhd).toFixed(4)} BHD</strong>
+          <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+            Meta: {parseFloat(m.meta_cost_bhd).toFixed(4)} | Platform: +{parseFloat(m.platform_charge_bhd).toFixed(4)}
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'created_at',
+      label: 'Timestamp',
+      render: (m) => <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>{m.created_at}</span>
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      sortable: false,
+      render: (m) => (
+        <div style={{ display: 'flex', gap: '5px' }}>
+          <button className="btn btn-secondary btn-sm" onClick={() => setSelectedLog(m)} title="Inspect Payload">
+            Inspect
+          </button>
+          {m.status !== 'read' && (
+            <button className="btn btn-primary btn-sm" onClick={() => simulateStatus(m.message_id, 'read')} title="Mark Read">
+              ✓ Read
+            </button>
+          )}
+        </div>
+      )
+    }
+  ];
+
+  const customFilterBar = (
+    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+      <select className="form-select" style={{ width: '140px', padding: '5px 8px', fontSize: '12px' }} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+        <option value="all">All Statuses</option>
+        <option value="read">Read (✓✓ Blue)</option>
+        <option value="delivered">Delivered (✓✓ Grey)</option>
+        <option value="sent">Sent (✓ Single)</option>
+        <option value="queued">Queued</option>
+        <option value="failed">Failed</option>
+      </select>
+      <select className="form-select" style={{ width: '150px', padding: '5px 8px', fontSize: '12px' }} value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+        <option value="all">All Categories</option>
+        <option value="UTILITY">Utility (Invoices)</option>
+        <option value="AUTHENTICATION">Authentication (OTP)</option>
+        <option value="MARKETING">Marketing (Promo)</option>
+        <option value="SERVICE">Service (Support)</option>
+      </select>
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="page-header-row">
+        <div className="page-title-group">
+          <h1><span>📜</span> Message Telemetry & Logs</h1>
+          <p>Audit trail of all inbound and outbound WhatsApp conversations, delivery lifecycle, and billing tariffs.</p>
+        </div>
+        <button className="btn btn-secondary" onClick={fetchLogs}>
+          <span>🔄</span> Refresh Logs
+        </button>
+      </div>
+
+      {/* Main DataTable */}
+      <DataTable
+        columns={logColumns}
+        data={messages}
+        title="whatsapp_messages_log"
+        searchPlaceholder="Search phone, wamid, content..."
+        defaultPageSize={10}
+        pageSizeOptions={[10, 25, 50, 100]}
+        actions={customFilterBar}
+        emptyMessage={loading ? 'Loading telemetry logs...' : 'No messages found matching criteria.'}
+      />
+
+      {/* Inspect Modal */}
+      {selectedLog && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
+        }}>
+          <div className="card" style={{ width: '600px', maxHeight: '85vh', overflowY: 'auto' }}>
+            <div className="card-header">
+              <span className="card-title">Message Inspection: {selectedLog.message_id}</span>
+              <button className="btn btn-secondary btn-sm" onClick={() => setSelectedLog(null)}>✕ Close</button>
+            </div>
+            <div className="code-box">
+              <pre>{JSON.stringify(selectedLog, null, 2)}</pre>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 5. TEMPLATES & TARIFFS VIEW (WITH DATATABLE)
+// -----------------------------------------------------------------------------
+function TemplatesView({ showToast }) {
+  const [templates, setTemplates] = useState([]);
+  const [editingTemplate, setEditingTemplate] = useState(null);
+
+  const loadTemplates = () => {
+    fetch('./api/templates.php')
+      .then(res => res.json())
+      .then(res => { if (res.success) setTemplates(res.data); });
+  };
+
+  useEffect(() => { loadTemplates(); }, []);
+
+  const templateColumns = [
+    {
+      key: 'display_title',
+      label: 'Template Title & Key',
+      render: (t) => (
+        <div>
+          <div><strong>{t.display_title}</strong></div>
+          <div style={{ fontFamily: 'monospace', fontSize: '11px', color: 'var(--wa-teal)' }}>{t.template_name}</div>
+        </div>
+      )
+    },
+    {
+      key: 'category',
+      label: 'Category',
+      render: (t) => <span className={`badge cat-${t.category.toLowerCase().substring(0, 4)}`}>{t.category}</span>
+    },
+    {
+      key: 'header_type',
+      label: 'Header Type',
+      render: (t) => <span style={{ fontSize: '11px', fontWeight: '700' }}>{t.header_type}</span>
+    },
+    {
+      key: 'body_text',
+      label: 'Body Format',
+      render: (t) => <div style={{ maxWidth: '280px', fontSize: '11.5px', color: 'var(--text-secondary)' }}>{t.body_text}</div>
+    },
+    {
+      key: 'meta_cost_bhd',
+      label: 'Meta Cost',
+      render: (t) => <span>{parseFloat(t.meta_cost_bhd).toFixed(4)} BHD</span>
+    },
+    {
+      key: 'platform_charge_bhd',
+      label: 'Platform Charges',
+      render: (t) => <span style={{ color: 'var(--wa-dark-teal)', fontWeight: '700' }}>+{parseFloat(t.platform_charge_bhd).toFixed(4)} BHD</span>
+    },
+    {
+      key: 'client_rate_bhd',
+      label: 'Client Rate',
+      render: (t) => (
+        <strong style={{ color: 'var(--wa-teal)', fontSize: '13px' }}>
+          {parseFloat(t.client_rate_bhd).toFixed(4)} BHD
+        </strong>
+      )
+    },
+    {
+      key: 'meta_status',
+      label: 'Meta Status',
+      render: (t) => <span className="badge status-read">APPROVED</span>
+    }
+  ];
+
+  return (
+    <div>
+      <div className="page-header-row">
+        <div className="page-title-group">
+          <h1><span>📋</span> WhatsApp Templates & Tariff Schedule</h1>
+          <p>Meta-registered message templates, variable placeholders, and official Bahrain Market rates.</p>
+        </div>
+        <button className="btn btn-primary" onClick={() => setEditingTemplate({
+          template_name: '', display_title: '', category: 'UTILITY', language: 'en',
+          header_type: 'NONE', body_text: '', footer_text: ''
+        })}>
+          <span>➕</span> Register New Template
+        </button>
+      </div>
+
+      <DataTable
+        columns={templateColumns}
+        data={templates}
+        title="whatsapp_templates"
+        searchPlaceholder="Search template title, category..."
+        defaultPageSize={10}
+        pageSizeOptions={[5, 10, 20]}
+      />
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 6. ODOO API HUB & LIVE DEVELOPER CONSOLE
+// -----------------------------------------------------------------------------
+function OdooApiHubView({ showToast }) {
+  const [responseOutput, setResponseOutput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [apiKey, setApiKey] = useState('sk_live_odoo_uniglobal_98741362');
+  const [endpoint, setEndpoint] = useState('/api/messages.php');
+
+  const [requestPayload, setRequestPayload] = useState(JSON.stringify({
+    "to_phone": "+97339000000",
+    "template_name": "uniglobal_invoice_notification",
+    "category": "UTILITY",
+    "header_media": {
+      "type": "document",
+      "url": "https://erp.uniglobal.bh/INV_9941.pdf",
+      "filename": "INV.pdf"
+    },
+    "body_parameters": ["Ahmed Al-Khalifa", "INV/2026/0142", "BHD 345.500", "15-Oct-2026"],
+    "source_system": "Odoo ERP (Direct API)"
+  }, null, 2));
+
+  const runLiveTest = async () => {
+    setLoading(true);
+    setResponseOutput('Sending request to WhatsApp Gateway...');
+    try {
+      const res = await fetch(`.${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey
+        },
+        body: requestPayload
+      });
+      const data = await res.json();
+      setResponseOutput(JSON.stringify(data, null, 2));
+      showToast('API Executed successfully!');
+    } catch (err) {
+      setResponseOutput(JSON.stringify({ error: err.message }, null, 2));
+      showToast('API execution error', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const pythonSnippet = `import requests
+
+API_URL = "http://your-server-ip/whatsapp/api/messages.php"
+API_KEY = "sk_live_odoo_uniglobal_98741362"
+
+def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_bhd, date_str, pdf_url):
+    payload = {
+        "to_phone": partner_phone,
+        "template_name": "uniglobal_invoice_notification",
+        "category": "UTILITY",
+        "header_media": {
+            "type": "document",
+            "url": pdf_url,
+            "filename": f"{invoice_num}.pdf"
+        },
+        "body_parameters": [partner_name, invoice_num, amount_bhd, date_str],
+        "source_system": "Odoo ERP Automated Action"
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "X-API-Key": API_KEY
+    }
+    response = requests.post(API_URL, json=payload, headers=headers, timeout=10)
+    return response.json()`;
+
+  return (
+    <div>
+      <div className="page-header-row">
+        <div className="page-title-group">
+          <h1><span>⚡</span> Odoo ERP Integration & API Hub</h1>
+          <p>REST API documentation, live testing console, and copyable Python integration snippets for Odoo developers.</p>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+        {/* Left: Interactive API Request Runner */}
+        <div className="card">
+          <div className="card-header">
+            <span className="card-title"><span>🧪</span> Live API Tester</span>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">API Key Header (X-API-Key)</label>
+            <input type="text" className="form-input" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">HTTP Method & Endpoint</label>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <span className="badge cat-utility" style={{ padding: '8px 12px', fontSize: '12px' }}>POST</span>
+              <input type="text" className="form-input" value={endpoint} readOnly />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Request Body (JSON)</label>
+            <textarea
+              className="form-textarea"
+              style={{ minHeight: '180px', fontFamily: 'monospace', fontSize: '11.5px' }}
+              value={requestPayload}
+              onChange={(e) => setRequestPayload(e.target.value)}
+            />
+          </div>
+
+          <button className="btn btn-success" style={{ width: '100%' }} onClick={runLiveTest} disabled={loading}>
+            {loading ? 'Executing...' : '▶ Execute API Call'}
+          </button>
+
+          {responseOutput && (
+            <div style={{ marginTop: '16px' }}>
+              <label className="form-label">Response Body (HTTP 200/201)</label>
+              <div className="code-box">
+                <pre>{responseOutput}</pre>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right: Odoo Python Snippet */}
+        <div className="card">
+          <div className="card-header">
+            <span className="card-title"><span>🐍</span> Odoo ERP Python Model Action Code</span>
+            <button className="btn-copy-code" onClick={() => {
+              navigator.clipboard.writeText(pythonSnippet);
+              showToast('Python snippet copied to clipboard!');
+            }}>Copy Code</button>
+          </div>
+          <div className="code-box" style={{ minHeight: '380px' }}>
+            <div className="code-box-header">
+              <span>odoo_whatsapp_connector.py</span>
+            </div>
+            <pre>{pythonSnippet}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 7. API KEYS VIEW (WITH DATATABLE)
+// -----------------------------------------------------------------------------
+function ApiKeysView({ showToast }) {
+  const [keys, setKeys] = useState([]);
+  const [newSystemName, setNewSystemName] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const loadKeys = () => {
+    fetch('./api/api_keys.php')
+      .then(res => res.json())
+      .then(res => { if (res.success) setKeys(res.data); });
+  };
+
+  useEffect(() => { loadKeys(); }, []);
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    if (!newSystemName) return;
+    setLoading(true);
+    try {
+      const res = await fetch('./api/api_keys.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system_name: newSystemName })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Generated API key for ${newSystemName}`);
+        setNewSystemName('');
+        loadKeys();
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleStatus = async (id, currentStatus) => {
+    await fetch('./api/api_keys.php', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, is_active: currentStatus ? 0 : 1 })
+    });
+    showToast('API Key status updated');
+    loadKeys();
+  };
+
+  const keyColumns = [
+    {
+      key: 'system_name',
+      label: 'Integration System',
+      render: (k) => <strong>{k.system_name}</strong>
+    },
+    {
+      key: 'api_key',
+      label: 'Secret API Key Token',
+      render: (k) => (
+        <code style={{ background: '#F1F5F9', padding: '4px 8px', borderRadius: '4px', color: '#0F172A' }}>
+          {k.api_key}
+        </code>
+      )
+    },
+    {
+      key: 'rate_limit_per_minute',
+      label: 'Rate Limit',
+      render: (k) => <span>{k.rate_limit_per_minute} req/min</span>
+    },
+    {
+      key: 'is_active',
+      label: 'Status',
+      render: (k) => (
+        <span className={`badge ${k.is_active ? 'status-read' : 'status-failed'}`}>
+          {k.is_active ? 'ACTIVE' : 'REVOKED'}
+        </span>
+      )
+    },
+    {
+      key: 'last_used_at',
+      label: 'Last Used',
+      render: (k) => <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>{k.last_used_at || 'Never'}</span>
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      sortable: false,
+      render: (k) => (
+        <button className="btn btn-secondary btn-sm" onClick={() => toggleStatus(k.id, k.is_active)}>
+          {k.is_active ? 'Revoke' : 'Activate'}
+        </button>
+      )
+    }
+  ];
+
+  return (
+    <div>
+      <div className="page-header-row">
+        <div className="page-title-group">
+          <h1><span>🔑</span> External API Keys Management</h1>
+          <p>Manage authentication tokens for Odoo ERP, POS terminal middleware, and third-party systems.</p>
+        </div>
+      </div>
+
+      {/* Create New Key Box */}
+      <div className="card" style={{ padding: '16px 20px', marginBottom: '16px' }}>
+        <form onSubmit={handleCreate} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <input
+            type="text"
+            className="form-input"
+            placeholder="System / Application Name (e.g. Odoo ERP Production)"
+            value={newSystemName}
+            onChange={(e) => setNewSystemName(e.target.value)}
+            style={{ flex: 1 }}
+            required
+          />
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            <span>➕</span> Generate New API Key
+          </button>
+        </form>
+      </div>
+
+      <DataTable
+        columns={keyColumns}
+        data={keys}
+        title="api_keys"
+        searchPlaceholder="Search system name, token..."
+        defaultPageSize={10}
+        pageSizeOptions={[5, 10, 20]}
+      />
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 8. USER MANAGEMENT VIEW (WITH DATATABLE)
+// -----------------------------------------------------------------------------
+function UsersView({ currentUser, showToast }) {
+  const [users, setUsers] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', password: 'Password@123', role: 'user', status: 'active' });
+
+  const loadUsers = () => {
+    fetch('./api/users.php')
+      .then(res => res.json())
+      .then(res => { if (res.success) setUsers(res.data); });
+  };
+
+  useEffect(() => { loadUsers(); }, []);
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('./api/users.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('User created successfully');
+        setShowAddModal(false);
+        setForm({ name: '', email: '', password: 'Password@123', role: 'user', status: 'active' });
+        loadUsers();
+      } else {
+        showToast(data.error || 'Failed to create user', 'error');
+      }
+    } catch (err) {
+      showToast('Error creating user', 'error');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this user?')) return;
+    try {
+      const res = await fetch(`./api/users.php?id=${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        showToast('User deleted');
+        loadUsers();
+      } else {
+        showToast(data.error, 'error');
+      }
+    } catch (e) {
+      showToast('Error deleting user', 'error');
+    }
+  };
+
+  const userColumns = [
+    {
+      key: 'name',
+      label: 'User Name',
+      render: (u) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="avatar" style={{ background: u.avatar_color || '#128C7E' }}>
+            {u.name.charAt(0)}
+          </div>
+          <strong>{u.name}</strong>
+        </div>
+      )
+    },
+    {
+      key: 'email',
+      label: 'Email Address'
+    },
+    {
+      key: 'role',
+      label: 'Assigned Role',
+      render: (u) => (
+        <span className={`badge ${u.role === 'superadmin' ? 'cat-marketing' : u.role === 'admin' ? 'cat-auth' : 'cat-utility'}`}>
+          {u.role.toUpperCase()}
+        </span>
+      )
+    },
+    {
+      key: 'status',
+      label: 'Account Status',
+      render: (u) => (
+        <span className={`badge ${u.status === 'active' ? 'status-read' : 'status-failed'}`}>
+          {u.status.toUpperCase()}
+        </span>
+      )
+    },
+    {
+      key: 'last_login',
+      label: 'Last Active',
+      render: (u) => <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>{u.last_login || 'Never'}</span>
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      sortable: false,
+      render: (u) => (
+        <>
+          {currentUser.id !== u.id && (
+            <button className="btn btn-secondary btn-sm" onClick={() => handleDelete(u.id)}>
+              Delete
+            </button>
+          )}
+        </>
+      )
+    }
+  ];
+
+  return (
+    <div>
+      <div className="page-header-row">
+        <div className="page-title-group">
+          <h1><span>👥</span> User Accounts & Role Permissions</h1>
+          <p>Manage Superadmin, Admin, and Operations User accounts for platform access.</p>
+        </div>
+        <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
+          <span>➕</span> Add New User
+        </button>
+      </div>
+
+      <DataTable
+        columns={userColumns}
+        data={users}
+        title="platform_users"
+        searchPlaceholder="Search users by name, email, role..."
+        defaultPageSize={10}
+        pageSizeOptions={[5, 10, 20]}
+      />
+
+      {showAddModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
+        }}>
+          <div className="card" style={{ width: '480px' }}>
+            <div className="card-header">
+              <span className="card-title">Create New User</span>
+              <button className="btn btn-secondary btn-sm" onClick={() => setShowAddModal(false)}>✕</button>
+            </div>
+            <form onSubmit={handleSave}>
+              <div className="form-group">
+                <label className="form-label">Full Name</label>
+                <input type="text" className="form-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Email Address</label>
+                <input type="email" className="form-input" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Password</label>
+                <input type="password" className="form-input" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Role</label>
+                <select className="form-select" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
+                  <option value="user">User (Standard Access)</option>
+                  <option value="admin">Admin (Full Client Access)</option>
+                  <option value="superadmin">Superadmin (SaNDS Lab Platform)</option>
+                </select>
+              </div>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '10px' }}>Save User</button>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 9. SETTINGS VIEW (SUPERADMIN / ADMIN)
+// -----------------------------------------------------------------------------
+function SettingsView({ showToast }) {
+  const [settings, setSettings] = useState({
+    meta_phone_number_id: '',
+    meta_waba_account_id: '',
+    meta_access_token: '',
+    webhook_verify_token: '',
+    business_display_name: 'UniGlobal Consultancy W.L.L',
+    business_phone_number: '+973 1700 8899'
+  });
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch('./api/settings.php')
+      .then(res => res.json())
+      .then(res => {
+        if (res.success && res.settings) {
+          setSettings(prev => ({ ...prev, ...res.settings }));
+        }
+      });
+  }, []);
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch('./api/settings.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ settings })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Meta & System settings saved successfully');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <div className="page-header-row">
+        <div className="page-title-group">
+          <h1><span>⚙️</span> Meta Cloud API & System Configuration</h1>
+          <p>Configure WhatsApp Business API credentials, permanent access tokens, and webhook secrets.</p>
+        </div>
+      </div>
+
+      <div className="card" style={{ maxWidth: '800px' }}>
+        <form onSubmit={handleSave}>
+          <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--wa-dark-teal)', marginBottom: '14px' }}>
+            Meta WhatsApp Business Cloud API Credentials
+          </h3>
+
+          <div className="form-group">
+            <label className="form-label">Meta Phone Number ID</label>
+            <input
+              type="text"
+              className="form-input"
+              value={settings.meta_phone_number_id}
+              onChange={(e) => setSettings({ ...settings, meta_phone_number_id: e.target.value })}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">WhatsApp Business Account ID (WABA)</label>
+            <input
+              type="text"
+              className="form-input"
+              value={settings.meta_waba_account_id}
+              onChange={(e) => setSettings({ ...settings, meta_waba_account_id: e.target.value })}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Permanent System User Access Token (Graph API)</label>
+            <input
+              type="password"
+              className="form-input"
+              value={settings.meta_access_token}
+              onChange={(e) => setSettings({ ...settings, meta_access_token: e.target.value })}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Webhook Verification Secret Token</label>
+            <input
+              type="text"
+              className="form-input"
+              value={settings.webhook_verify_token}
+              onChange={(e) => setSettings({ ...settings, webhook_verify_token: e.target.value })}
+            />
+            <span className="form-hint">Paste this token into Meta Developer App Dashboard Webhook settings.</span>
+          </div>
+
+          <button type="submit" className="btn btn-primary" style={{ marginTop: '12px' }} disabled={loading}>
+            {loading ? 'Saving...' : '💾 Save Settings'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// Render React App into #root
+const rootElement = document.getElementById('root');
+if (rootElement) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(<App />);
+}
