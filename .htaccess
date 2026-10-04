@@ -1,0 +1,15 @@
+# WhatsApp Integration Platform - NGINX/Apache Cache Control Rules
+
+<IfModule mod_headers.c>
+    # 1. Strictly prevent caching of PHP dynamic API responses
+    <FilesMatch "\.(php)$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0, s-maxage=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+        Header set X-Accel-Expires "0"
+    </FilesMatch>
+
+    # 2. CORS and security headers
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>

@@ -22,7 +22,7 @@ require_once __DIR__ . '/config/db.php';
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Application Stylesheet -->
-  <link rel="stylesheet" href="./assets/css/app.css">
+  <link rel="stylesheet" href="./assets/css/app.css?v=<?= @filemtime(__DIR__ . '/assets/css/app.css') ?: time() ?>">
 
   <!-- Local Offline React 18 Core -->
   <script src="./assets/js/vendor/react.min.js"></script>
@@ -32,6 +32,6 @@ require_once __DIR__ . '/config/db.php';
   <div id="root"></div>
 
   <!-- Pre-compiled Fast React 18 Application Bundle -->
-  <script src="./assets/js/app.compiled.js"></script>
+  <script src="./assets/js/app.compiled.js?v=<?= @filemtime(__DIR__ . '/assets/js/app.compiled.js') ?: time() ?>"></script>
 </body>
 </html>

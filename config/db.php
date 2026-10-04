@@ -117,6 +117,9 @@ class Database {
 function sendJsonResponse(array $data, int $statusCode = 200): void {
     http_response_code($statusCode);
     header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: 0');
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
     header('Access-Control-Allow-Headers: Content-Type, Authorization, X-API-Key, X-User-Id, X-User-Email, X-Requested-With');
