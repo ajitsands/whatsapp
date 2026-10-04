@@ -186,9 +186,18 @@ function handleSendMessage(PDO $db, array $auth): void {
         $settingsMap[$row['setting_key']] = $row['setting_value'];
     }
 
-    $metaPhoneId     = $settingsMap['meta_phone_number_id'] ?? '347848611735147';
-    $metaAccessToken = $settingsMap['meta_access_token'] ?? '';
-    $businessPhone   = $settingsMap['business_phone_number'] ?? '+91 99954 89008';
+    $defaultToken = 'EAATLuWFVcZBkBShyqCMEBcxXp77EAXXyWJXvyLr2ZBUisziJohZBDCozF0NFb61TnfJGY0vlBTfZAEzGoq6n9E7xAZAmbLD0dSZCogqYjAKJFzB9yTmaq10kQ2ZCfms3GOT0J9xi0Lzh4ZCYpZCILHx7nPFbVaGCmhs1TsVlHxUMMFNm2EYiDZCpGKLFSZAGLKo9onKZAAYGOZCOZCyou0ALgb4OXJJRXZCRVrqfn3ocZBHfv664guNKm8HeZB61mLZBH1HZC4uMR0Ngw4h3Gdskwt5mxcOIy5kOks6UCUS9s33G0ckbBAZDZD';
+    $metaPhoneId     = !empty($settingsMap['meta_phone_number_id']) ? $settingsMap['meta_phone_number_id'] : '347848611735147';
+    $metaAccessToken = (!empty($settingsMap['meta_access_token']) && !str_starts_with($settingsMap['meta_access_token'], 'EAAJz9284jklasdf')) ? $settingsMap['meta_access_token'] : $defaultToken;
+    $businessPhone   = $settingsMap['business_phone_number'] ?? '+973 1700 8899';
+
+    // Auto-update system_settings if it had dummy or blank token
+    if (empty($settingsMap['meta_access_token']) || str_starts_with($settingsMap['meta_access_token'], 'EAAJz9284jklasdf')) {
+        try {
+            $db->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES ('meta_access_token', ?), ('meta_phone_number_id', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)")
+               ->execute([$defaultToken, $metaPhoneId]);
+        } catch (Throwable $ignore) {}
+    }
 
     // Generate unique WhatsApp Message ID
     $uniqueRandom = bin2hex(random_bytes(16));
@@ -305,7 +314,13 @@ function handleSendMessage(PDO $db, array $auth): void {
             $metaError = null;
         } else {
             $status = 'failed';
-            $metaError = $resJson['error']['message'] ?? ($resRaw ?: 'Meta HTTP Error ' . $httpCode);
+            $errMsg = $resJson['error']['message'] ?? ($resRaw ?: 'Meta HTTP Error ' . $httpCode);
+            if (!empty($resJson['error']['error_data']['details'])) {
+                $errMsg .= ' (' . $resJson['error']['error_data']['details'] . ')';
+            } elseif (!empty($resJson['error']['error_user_msg'])) {
+                $errMsg .= ' (' . $resJson['error']['error_user_msg'] . ')';
+            }
+            $metaError = $errMsg;
         }
     }
 

@@ -127,14 +127,15 @@ INSERT INTO whatsapp_templates (template_name, display_title, category, language
 ('uniglobal_otp_verification', 'Customer Portal OTP Verification', 'AUTHENTICATION', 'en', 'NONE', NULL, '{{1}} is your UniGlobal portal verification security code. Valid for 5 minutes. Do not share this code with anyone.', 'UniGlobal Security Center', 1, '["849201"]', 0.0110, 0.0035, 0.0145),
 ('uniglobal_delivery_dispatch', 'Order Dispatched Status', 'UTILITY', 'en', 'TEXT', 'Dispatch Notice: {{1}}', 'Hello {{1}}, your order #{{2}} is out for delivery with tracking ref {{3}}. Expected delivery time is {{4}}.', 'UniGlobal Logistics Support', 4, '["Dr. Tariq Salman", "ORD-88219", "TRK-BH-9912", "Today before 4:00 PM"]', 0.0140, 0.0045, 0.0185),
 ('uniglobal_seasonal_promo', 'Special Offers & Loyalty Benefits', 'MARKETING', 'en', 'IMAGE', 'https://erp.uniglobal.bh/assets/promo_banner.jpg', 'Exclusive Offer for {{1}}! Enjoy {{2}} off on all enterprise consultancy packages this month using promo code {{3}}. Valid until {{4}}.', 'Terms & Conditions Apply | UniGlobal', 4, '["Valued Partner", "25%", "UNI2026", "31-Oct-2026"]', 0.0270, 0.0070, 0.0340),
-('uniglobal_support_welcome', 'Live Support Chat Response', 'SERVICE', 'en', 'NONE', NULL, 'Hello {{1}}, thank you for reaching UniGlobal Support. Ticket #{{2}} has been opened for your inquiry: "{{3}}". Our support agent will assist you shortly.', 'Customer Experience Hub', 3, '["Fatima Noor", "TCK-5541", "Invoice Adjustment Request"]', 0.0075, 0.0025, 0.0100)
+('uniglobal_support_welcome', 'Live Support Chat Response', 'SERVICE', 'en', 'NONE', NULL, 'Hello {{1}}, thank you for reaching UniGlobal Support. Ticket #{{2}} has been opened for your inquiry: "{{3}}". Our support agent will assist you shortly.', 'Customer Experience Hub', 3, '["Fatima Noor", "TCK-5541", "Invoice Adjustment Request"]', 0.0075, 0.0025, 0.0100),
+('hello_world', 'Official Meta Hello World (Test)', 'UTILITY', 'en_US', 'NONE', NULL, 'Hello World', 'Meta Standard Test', 0, '[]', 0.0140, 0.0045, 0.0185)
 ON DUPLICATE KEY UPDATE display_title=VALUES(display_title);
 
 -- Seed System Settings
 INSERT INTO system_settings (setting_key, setting_value, setting_group, description) VALUES
-('meta_phone_number_id', '109823471928374', 'whatsapp_cloud_api', 'Meta WhatsApp Business Cloud API Phone Number ID'),
+('meta_phone_number_id', '347848611735147', 'whatsapp_cloud_api', 'Meta WhatsApp Business Cloud API Phone Number ID'),
 ('meta_waba_account_id', '981273918237192', 'whatsapp_cloud_api', 'Meta WhatsApp Business Account ID (WABA)'),
-('meta_access_token', 'EAAJz9284jklasdf902384jsdf98234kjhsdf98234kjhsdf89234jkhasdf', 'whatsapp_cloud_api', 'Permanent Meta System User Graph API Token'),
+('meta_access_token', 'EAATLuWFVcZBkBShyqCMEBcxXp77EAXXyWJXvyLr2ZBUisziJohZBDCozF0NFb61TnfJGY0vlBTfZAEzGoq6n9E7xAZAmbLD0dSZCogqYjAKJFzB9yTmaq10kQ2ZCfms3GOT0J9xi0Lzh4ZCYpZCILHx7nPFbVaGCmhs1TsVlHxUMMFNm2EYiDZCpGKLFSZAGLKo9onKZAAYGOZCOZCyou0ALgb4OXJJRXZCRVrqfn3ocZBHfv664guNKm8HeZB61mLZBH1HZC4uMR0Ngw4h3Gdskwt5mxcOIy5kOks6UCUS9s33G0ckbBAZDZD', 'whatsapp_cloud_api', 'Permanent Meta System User Graph API Token'),
 ('webhook_verify_token', 'sands_uniglobal_wh_verify_token_2026', 'whatsapp_cloud_api', 'Webhook Verification Challenge Token for Meta Developer Dashboard'),
 ('system_mode', 'simulation_and_cloud', 'general', 'Mode: simulation_and_cloud (allows live simulation + real Cloud API dispatch)'),
 ('currency_symbol', 'BHD', 'general', 'Default Currency Display'),
