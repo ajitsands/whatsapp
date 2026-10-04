@@ -1130,6 +1130,7 @@ function MessageLogsView({ showToast }) {
 function TemplatesView({ showToast }) {
   const [templates, setTemplates] = useState([]);
   const [editingTemplate, setEditingTemplate] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   const loadTemplates = () => {
     fetch('./api/templates.php')
@@ -1138,6 +1139,64 @@ function TemplatesView({ showToast }) {
   };
 
   useEffect(() => { loadTemplates(); }, []);
+
+  const handleSaveTemplate = async (e) => {
+    e.preventDefault();
+    if (!editingTemplate.template_name || !editingTemplate.body_text) {
+      showToast('Template Key and Body Text are required', 'error');
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch('./api/templates.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editingTemplate)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message || 'Template saved successfully!');
+        setEditingTemplate(null);
+        loadTemplates();
+      } else {
+        showToast(data.error || 'Failed to save template', 'error');
+      }
+    } catch (err) {
+      showToast('Network error saving template', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteTemplate = async (id, name) => {
+    if (!confirm(`Are you sure you want to delete template "${name}"?`)) return;
+    try {
+      const res = await fetch(`./api/templates.php?id=${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Template deleted successfully');
+        loadTemplates();
+      } else {
+        showToast(data.error || 'Failed to delete template', 'error');
+      }
+    } catch (err) {
+      showToast('Error deleting template', 'error');
+    }
+  };
+
+  // Tariff calculation for modal preview
+  const modalTariffs = {
+    AUTHENTICATION: { meta: 0.0110, platform: 0.0035, client: 0.0145 },
+    UTILITY:        { meta: 0.0140, platform: 0.0045, client: 0.0185 },
+    MARKETING:      { meta: 0.0270, platform: 0.0070, client: 0.0340 },
+    SERVICE:        { meta: 0.0075, platform: 0.0025, client: 0.0100 }
+  };
+  const activeTariff = editingTemplate ? (modalTariffs[editingTemplate.category] || modalTariffs.UTILITY) : modalTariffs.UTILITY;
+
+  // Variable counter for preview
+  const varCount = editingTemplate && editingTemplate.body_text
+    ? (editingTemplate.body_text.match(/\{\{(\d+)\}\}/g) ? new Set(editingTemplate.body_text.match(/\{\{(\d+)\}\}/g)).size : 0)
+    : 0;
 
   const templateColumns = [
     {
@@ -1188,6 +1247,30 @@ function TemplatesView({ showToast }) {
       key: 'meta_status',
       label: 'Meta Status',
       render: (t) => <span className="badge status-read">APPROVED</span>
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      sortable: false,
+      render: (t) => (
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => setEditingTemplate({ ...t })}
+            title="Edit Template"
+          >
+            ✏️ Edit
+          </button>
+          <button
+            className="btn btn-secondary btn-sm"
+            style={{ color: '#EF4444' }}
+            onClick={() => handleDeleteTemplate(t.id, t.template_name)}
+            title="Delete Template"
+          >
+            🗑️
+          </button>
+        </div>
+      )
     }
   ];
 
@@ -1200,7 +1283,7 @@ function TemplatesView({ showToast }) {
         </div>
         <button className="btn btn-primary" onClick={() => setEditingTemplate({
           template_name: '', display_title: '', category: 'UTILITY', language: 'en',
-          header_type: 'NONE', body_text: '', footer_text: ''
+          header_type: 'NONE', header_sample: '', body_text: '', footer_text: ''
         })}>
           <span>➕</span> Register New Template
         </button>
@@ -1214,6 +1297,166 @@ function TemplatesView({ showToast }) {
         defaultPageSize={10}
         pageSizeOptions={[5, 10, 20]}
       />
+
+      {/* Register & Edit Template Modal */}
+      {editingTemplate && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000,
+          padding: '20px'
+        }}>
+          <div className="card" style={{ maxWidth: '650px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
+            <div className="card-header" style={{ marginBottom: '16px' }}>
+              <span className="card-title">
+                <span>{editingTemplate.id ? '✏️ Edit Template' : '➕ Register New WhatsApp Template'}</span>
+              </span>
+              <button className="btn btn-secondary btn-sm" onClick={() => setEditingTemplate(null)}>✕ Close</button>
+            </div>
+
+            <form onSubmit={handleSaveTemplate}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                <div className="form-group">
+                  <label className="form-label">Meta Template Key *</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. uniglobal_invoice_alert"
+                    value={editingTemplate.template_name}
+                    onChange={(e) => setEditingTemplate({
+                      ...editingTemplate,
+                      template_name: e.target.value.toLowerCase().replace(/\s+/g, '_')
+                    })}
+                    required
+                  />
+                  <span style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>Lowercase & underscores only</span>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Display Title *</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. Invoice Notification with PDF"
+                    value={editingTemplate.display_title}
+                    onChange={(e) => setEditingTemplate({ ...editingTemplate, display_title: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginTop: '6px' }}>
+                <div className="form-group">
+                  <label className="form-label">Category</label>
+                  <select
+                    className="form-select"
+                    value={editingTemplate.category}
+                    onChange={(e) => setEditingTemplate({ ...editingTemplate, category: e.target.value })}
+                  >
+                    <option value="UTILITY">Utility (Invoices, Notifications)</option>
+                    <option value="AUTHENTICATION">Authentication (OTP Verification)</option>
+                    <option value="MARKETING">Marketing (Offers & Promotions)</option>
+                    <option value="SERVICE">Service (Customer Support)</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Language Code</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="en, ar"
+                    value={editingTemplate.language}
+                    onChange={(e) => setEditingTemplate({ ...editingTemplate, language: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginTop: '6px' }}>
+                <div className="form-group">
+                  <label className="form-label">Header Media Type</label>
+                  <select
+                    className="form-select"
+                    value={editingTemplate.header_type}
+                    onChange={(e) => setEditingTemplate({ ...editingTemplate, header_type: e.target.value })}
+                  >
+                    <option value="NONE">None (Plain Message)</option>
+                    <option value="DOCUMENT">Document (PDF Invoice/Report)</option>
+                    <option value="IMAGE">Image (Banner / JPG / PNG)</option>
+                    <option value="TEXT">Text Header</option>
+                    <option value="VIDEO">Video</option>
+                  </select>
+                </div>
+
+                {editingTemplate.header_type !== 'NONE' && (
+                  <div className="form-group">
+                    <label className="form-label">Header Sample / URL</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="https://... or header text"
+                      value={editingTemplate.header_sample || ''}
+                      onChange={(e) => setEditingTemplate({ ...editingTemplate, header_sample: e.target.value })}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="form-group" style={{ marginTop: '6px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="form-label">Body Text (Message Format) *</label>
+                  <span className="badge cat-auth" style={{ fontSize: '10px' }}>
+                    {varCount} variable{varCount !== 1 ? 's' : ''} detected
+                  </span>
+                </div>
+                <textarea
+                  className="form-textarea"
+                  style={{ minHeight: '110px' }}
+                  placeholder="Dear {{1}}, your invoice {{2}} for BHD {{3}} has been generated on {{4}}."
+                  value={editingTemplate.body_text}
+                  onChange={(e) => setEditingTemplate({ ...editingTemplate, body_text: e.target.value })}
+                  required
+                />
+                <span style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>
+                  Use placeholders like <code>&#123;&#123;1&#125;&#125;</code>, <code>&#123;&#123;2&#125;&#125;</code> for dynamic ERP variables.
+                </span>
+              </div>
+
+              <div className="form-group" style={{ marginTop: '6px' }}>
+                <label className="form-label">Footer Tagline (Optional)</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. UniGlobal Accounts | Powered by SaNDS Lab"
+                  value={editingTemplate.footer_text || ''}
+                  onChange={(e) => setEditingTemplate({ ...editingTemplate, footer_text: e.target.value })}
+                />
+              </div>
+
+              {/* Live Tariff Calculation Banner */}
+              <div className="tariff-estimate-banner" style={{ margin: '14px 0' }}>
+                <div className="tariff-info">
+                  <span className="title">Bahrain Tariff ({editingTemplate.category})</span>
+                  <span className="breakdown">
+                    Meta Cost: {activeTariff.meta.toFixed(4)} BHD | Platform Fee: +{activeTariff.platform.toFixed(4)} BHD
+                  </span>
+                </div>
+                <div className="tariff-rate-badge">
+                  BHD {activeTariff.client.toFixed(4)} / msg
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '16px' }}>
+                <button type="button" className="btn btn-secondary" onClick={() => setEditingTemplate(null)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary" disabled={saving}>
+                  {saving ? 'Saving...' : (editingTemplate.id ? '💾 Update Template' : '🚀 Register Template')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

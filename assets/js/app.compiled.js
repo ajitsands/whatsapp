@@ -544,6 +544,7 @@ function MessageLogsView({ showToast }) {
 function TemplatesView({ showToast }) {
   const [templates, setTemplates] = useState([]);
   const [editingTemplate, setEditingTemplate] = useState(null);
+  const [saving, setSaving] = useState(false);
   const loadTemplates = () => {
     fetch("./api/templates.php").then((res) => res.json()).then((res) => {
       if (res.success) setTemplates(res.data);
@@ -552,6 +553,56 @@ function TemplatesView({ showToast }) {
   useEffect(() => {
     loadTemplates();
   }, []);
+  const handleSaveTemplate = async (e) => {
+    e.preventDefault();
+    if (!editingTemplate.template_name || !editingTemplate.body_text) {
+      showToast("Template Key and Body Text are required", "error");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch("./api/templates.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editingTemplate)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message || "Template saved successfully!");
+        setEditingTemplate(null);
+        loadTemplates();
+      } else {
+        showToast(data.error || "Failed to save template", "error");
+      }
+    } catch (err) {
+      showToast("Network error saving template", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+  const handleDeleteTemplate = async (id, name) => {
+    if (!confirm(`Are you sure you want to delete template "${name}"?`)) return;
+    try {
+      const res = await fetch(`./api/templates.php?id=${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        showToast("Template deleted successfully");
+        loadTemplates();
+      } else {
+        showToast(data.error || "Failed to delete template", "error");
+      }
+    } catch (err) {
+      showToast("Error deleting template", "error");
+    }
+  };
+  const modalTariffs = {
+    AUTHENTICATION: { meta: 0.011, platform: 35e-4, client: 0.0145 },
+    UTILITY: { meta: 0.014, platform: 45e-4, client: 0.0185 },
+    MARKETING: { meta: 0.027, platform: 7e-3, client: 0.034 },
+    SERVICE: { meta: 75e-4, platform: 25e-4, client: 0.01 }
+  };
+  const activeTariff = editingTemplate ? modalTariffs[editingTemplate.category] || modalTariffs.UTILITY : modalTariffs.UTILITY;
+  const varCount = editingTemplate && editingTemplate.body_text ? editingTemplate.body_text.match(/\{\{(\d+)\}\}/g) ? new Set(editingTemplate.body_text.match(/\{\{(\d+)\}\}/g)).size : 0 : 0;
   const templateColumns = [
     {
       key: "display_title",
@@ -592,6 +643,29 @@ function TemplatesView({ showToast }) {
       key: "meta_status",
       label: "Meta Status",
       render: (t) => /* @__PURE__ */ React.createElement("span", { className: "badge status-read" }, "APPROVED")
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      sortable: false,
+      render: (t) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-secondary btn-sm",
+          onClick: () => setEditingTemplate({ ...t }),
+          title: "Edit Template"
+        },
+        "\u270F\uFE0F Edit"
+      ), /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-secondary btn-sm",
+          style: { color: "#EF4444" },
+          onClick: () => handleDeleteTemplate(t.id, t.template_name),
+          title: "Delete Template"
+        },
+        "\u{1F5D1}\uFE0F"
+      ))
     }
   ];
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " WhatsApp Templates & Tariff Schedule"), /* @__PURE__ */ React.createElement("p", null, "Meta-registered message templates, variable placeholders, and official Bahrain Market rates.")), /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary", onClick: () => setEditingTemplate({
@@ -600,6 +674,7 @@ function TemplatesView({ showToast }) {
     category: "UTILITY",
     language: "en",
     header_type: "NONE",
+    header_sample: "",
     body_text: "",
     footer_text: ""
   }) }, /* @__PURE__ */ React.createElement("span", null, "\u2795"), " Register New Template")), /* @__PURE__ */ React.createElement(
@@ -612,7 +687,102 @@ function TemplatesView({ showToast }) {
       defaultPageSize: 10,
       pageSizeOptions: [5, 10, 20]
     }
-  ));
+  ), editingTemplate && /* @__PURE__ */ React.createElement("div", { style: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(0,0,0,0.55)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1e4,
+    padding: "20px"
+  } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "650px", width: "100%", maxHeight: "90vh", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { marginBottom: "16px" } }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, editingTemplate.id ? "\u270F\uFE0F Edit Template" : "\u2795 Register New WhatsApp Template")), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setEditingTemplate(null) }, "\u2715 Close")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSaveTemplate }, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Meta Template Key *"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      placeholder: "e.g. uniglobal_invoice_alert",
+      value: editingTemplate.template_name,
+      onChange: (e) => setEditingTemplate({
+        ...editingTemplate,
+        template_name: e.target.value.toLowerCase().replace(/\s+/g, "_")
+      }),
+      required: true
+    }
+  ), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Lowercase & underscores only")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Display Title *"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      placeholder: "e.g. Invoice Notification with PDF",
+      value: editingTemplate.display_title,
+      onChange: (e) => setEditingTemplate({ ...editingTemplate, display_title: e.target.value }),
+      required: true
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginTop: "6px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Category"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: editingTemplate.category,
+      onChange: (e) => setEditingTemplate({ ...editingTemplate, category: e.target.value })
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "UTILITY" }, "Utility (Invoices, Notifications)"),
+    /* @__PURE__ */ React.createElement("option", { value: "AUTHENTICATION" }, "Authentication (OTP Verification)"),
+    /* @__PURE__ */ React.createElement("option", { value: "MARKETING" }, "Marketing (Offers & Promotions)"),
+    /* @__PURE__ */ React.createElement("option", { value: "SERVICE" }, "Service (Customer Support)")
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Language Code"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      placeholder: "en, ar",
+      value: editingTemplate.language,
+      onChange: (e) => setEditingTemplate({ ...editingTemplate, language: e.target.value })
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginTop: "6px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Header Media Type"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: editingTemplate.header_type,
+      onChange: (e) => setEditingTemplate({ ...editingTemplate, header_type: e.target.value })
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "NONE" }, "None (Plain Message)"),
+    /* @__PURE__ */ React.createElement("option", { value: "DOCUMENT" }, "Document (PDF Invoice/Report)"),
+    /* @__PURE__ */ React.createElement("option", { value: "IMAGE" }, "Image (Banner / JPG / PNG)"),
+    /* @__PURE__ */ React.createElement("option", { value: "TEXT" }, "Text Header"),
+    /* @__PURE__ */ React.createElement("option", { value: "VIDEO" }, "Video")
+  )), editingTemplate.header_type !== "NONE" && /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Header Sample / URL"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      placeholder: "https://... or header text",
+      value: editingTemplate.header_sample || "",
+      onChange: (e) => setEditingTemplate({ ...editingTemplate, header_sample: e.target.value })
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginTop: "6px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Body Text (Message Format) *"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-auth", style: { fontSize: "10px" } }, varCount, " variable", varCount !== 1 ? "s" : "", " detected")), /* @__PURE__ */ React.createElement(
+    "textarea",
+    {
+      className: "form-textarea",
+      style: { minHeight: "110px" },
+      placeholder: "Dear {{1}}, your invoice {{2}} for BHD {{3}} has been generated on {{4}}.",
+      value: editingTemplate.body_text,
+      onChange: (e) => setEditingTemplate({ ...editingTemplate, body_text: e.target.value }),
+      required: true
+    }
+  ), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Use placeholders like ", /* @__PURE__ */ React.createElement("code", null, "{{1}}"), ", ", /* @__PURE__ */ React.createElement("code", null, "{{2}}"), " for dynamic ERP variables.")), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginTop: "6px" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Footer Tagline (Optional)"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      placeholder: "e.g. UniGlobal Accounts | Powered by SaNDS Lab",
+      value: editingTemplate.footer_text || "",
+      onChange: (e) => setEditingTemplate({ ...editingTemplate, footer_text: e.target.value })
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "tariff-estimate-banner", style: { margin: "14px 0" } }, /* @__PURE__ */ React.createElement("div", { className: "tariff-info" }, /* @__PURE__ */ React.createElement("span", { className: "title" }, "Bahrain Tariff (", editingTemplate.category, ")"), /* @__PURE__ */ React.createElement("span", { className: "breakdown" }, "Meta Cost: ", activeTariff.meta.toFixed(4), " BHD | Platform Fee: +", activeTariff.platform.toFixed(4), " BHD")), /* @__PURE__ */ React.createElement("div", { className: "tariff-rate-badge" }, "BHD ", activeTariff.client.toFixed(4), " / msg")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "16px" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: () => setEditingTemplate(null) }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: saving }, saving ? "Saving..." : editingTemplate.id ? "\u{1F4BE} Update Template" : "\u{1F680} Register Template"))))));
 }
 function OdooApiHubView({ showToast }) {
   const [responseOutput, setResponseOutput] = useState("");
