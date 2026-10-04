@@ -1,60 +1,75 @@
-# WhatsApp Integration Platform
+# WhatsApp Integration Platform — Project Documentation & Handover
+*Engineered by SaNDS Lab Middle East W.L.L.*
 
-Enterprise WhatsApp Cloud API Gateway and Odoo ERP Integration Middleware engineered by **SaNDS Lab Middle East W.L.L.**
+---
 
-## Overview
-- **WhatsApp Cloud API Integration**: Automated dispatch for utility, authentication (OTP), marketing, and service templates.
-- **Odoo ERP Connector & Webhooks**: Two-way telemetry with delivery statuses (`sent`, `delivered`, `read`, `failed`).
-- **Interactive UI Console**: Built with React 18 & Vanilla CSS, live WhatsApp phone message preview mockup, and Bahrain (BHD) market tariff calculation.
-- **Enterprise Security**: Role-based access control, X-API-Key management, rate limiting, and webhook verification.
+## 📌 Project Status Snapshot (All Working & Verified)
+- **Live Production URL:** `https://whatsapp.sandslab.com`
+- **GitHub Repository:** `https://github.com/ajitsands/whatsapp.git` (`branch: main`)
+- **PHP Compatibility:** PHP 7.4+ compatible (with polyfills in `config/db.php`)
+- **Frontend Stack:** React 18 (transpiled bundle `assets/js/app.compiled.js` via `esbuild`)
 
-## Architecture & Directory Structure
+---
+
+## 🔑 Live Environment & Meta Configuration
+
+### 1. Database Credentials (cPanel MySQL)
+- **Host:** `localhost` / `127.0.0.1`
+- **Database:** `sandsl23_whatsapp_db`
+- **Username:** `sandsl23_whatsapp_user`
+- **Password:** `S@nds1@b`
+
+### 2. Meta WhatsApp Cloud API (Active & Connected)
+- **Meta App ID:** `1349896969221097`
+- **Phone Number ID:** `347848611735147`
+- **Sender Phone Number:** `+91 99954 89008`
+- **WhatsApp Business Account ID (WABA):** `313160575215815`
+- **Webhook Callback URL:** `https://whatsapp.sandslab.com/api/webhook.php`
+- **Webhook Verify Token:** `sands_uniglobal_wh_verify_token_2026`
+- **Subscribed Webhook Field:** `messages`
+
+---
+
+## 🚀 Key Features Implemented & Working
+
+1. **Live Meta WhatsApp Cloud API Dispatch:**
+   - Supports Media Headers (`IMAGE`, `DOCUMENT`, `VIDEO`, `NONE`).
+   - Supports both **Named Parameters** (`{{customer_name}}`, `{{contact_number}}`) and **Positional Parameters** (`{{1}}`, `{{2}}`).
+   - Verified end-to-end delivery to recipient `+97335078079`.
+
+2. **Real-Time Live Status Updates (No Refresh Needed):**
+   - Telemetry log screen (`#logs`) automatically polls every 2.5s with a visual `🟢 Live Auto-Sync Active` indicator.
+   - Status updates in real-time: `QUEUED` ➔ `✓ SENT` ➔ `✓✓ DELIVERED` ➔ `✓✓ READ`.
+   - Webhook processor (`api/webhook.php`) captures live delivery & read receipts from Meta.
+
+3. **Session & Tab State Persistence:**
+   - Navigating or refreshing the browser stays on the exact active page (`#composer`, `#logs`, `#templates`, `#settings`, etc.) without kicking back to login.
+
+4. **1-Click Role-Based Demo Logins & RBAC:**
+   - **Superadmin:** `superadmin@sandslab.com` / `Password@123`
+   - **Admin:** `admin@uniglobal.bh` / `Password@123`
+   - **Standard User:** `user@uniglobal.bh` / `Password@123`
+
+5. **Bahrain (BHD) Market Tariff Engine:**
+   - Live pricing calculation per category (Utility, Authentication, Marketing, Service).
+
+---
+
+## 🛠️ Local Development & Build Commands
+
+### Run Local Development Server:
+```powershell
+php -S localhost:8000 -t "e:\integration_with oodu_document\whatsapp"
 ```
-whatsapp/
-├── api/
-│   ├── analytics.php    # Analytics telemetry & billing breakdown
-│   ├── api_keys.php     # API Key management for external ERPs
-│   ├── auth.php         # Authentication & RBAC session handling
-│   ├── messages.php     # Inbound/Outbound message dispatch & logs
-│   ├── settings.php     # Meta Cloud API credentials & system config
-│   ├── templates.php    # Template catalog & tariff calculator
-│   ├── users.php        # User access management
-│   └── webhook.php      # Meta Webhook challenge & event listener
-├── assets/
-│   ├── css/             # Enterprise responsive styles
-│   ├── js/              # React 18 UI components & DataTable
-│   └── logos/           # SaNDS Lab & UniGlobal brand assets
-├── config/
-│   └── db.php           # PDO database connection & response helpers
-├── index.html           # SPA Web App entry point
-├── index.php            # PHP Web Server bootstrap
-└── schema.sql           # MySQL database schema & seed data
+
+### Recompile Frontend React Code:
+```powershell
+npx esbuild assets/js/app.js --outfile=assets/js/app.compiled.js --loader:.js=jsx
 ```
 
-## Setup Instructions
-
-### 1. Database Configuration
-Import `schema.sql` into MySQL:
-```bash
-mysql -u root -p < schema.sql
+### Push Updates to GitHub:
+```powershell
+git add .
+git commit -m "Update documentation"
+git push origin main
 ```
-Update database credentials in `config/db.php`.
-
-## Server & Deployment Configuration
-
-### 1. Production Server Details
-- **Production URL:** `https://whatsapp.sandslab.com`
-- **Database Name:** `sandsl23_whatsapp_db`
-- **Database User:** `sandsl23_whatsapp_user`
-
-### 2. Meta WhatsApp Cloud API Setup
-Set up your Meta Developer credentials in the settings panel or database:
-- `meta_phone_number_id`
-- `meta_waba_account_id`
-- `meta_access_token`
-- `webhook_verify_token`
-
-### 3. Webhook Configuration in Meta Developer Console
-- **Callback URL:** `https://whatsapp.sandslab.com/api/webhook.php`
-- **Verify Token:** `sands_uniglobal_wh_verify_token_2026`
-- **Subscribed Fields:** `messages`
