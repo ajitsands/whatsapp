@@ -189,14 +189,15 @@ function handleSendMessage(PDO $db, array $auth): void {
     $metaAccessToken = $settingsMap['meta_access_token'] ?? '';
     $businessPhone   = $settingsMap['business_phone_number'] ?? '+91 99954 89008';
 
-    // Generate fallback unique WhatsApp Message ID
+    // Generate unique WhatsApp Message ID
     $uniqueRandom = bin2hex(random_bytes(16));
     $wamid = 'wamid.HBgL' . base64_encode($toPhone . ':' . $uniqueRandom);
-    $status = 'delivered';
-    $metaError = null;
+    $status = 'simulated';
+    $metaError = 'Meta Access Token not configured in Meta Settings. Dispatched in Simulation Mode.';
 
     // Real Meta Cloud API Dispatch (If token is available)
-    if (!empty($metaAccessToken) && !str_starts_with($metaAccessToken, 'EAAJz9284jklasdf')) {
+    $hasRealToken = !empty($metaAccessToken) && !str_starts_with($metaAccessToken, 'EAAJz9284jklasdf');
+    if ($hasRealToken) {
         $cleanRecipient = preg_replace('/[^0-9]/', '', $toPhone);
         
         $metaPayload = [
