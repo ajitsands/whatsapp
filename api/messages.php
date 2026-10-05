@@ -62,6 +62,16 @@ function handleGetMessages(PDO $db): void {
         $params[] = $direction;
     }
 
+    $phone     = trim($_GET['phone'] ?? '');
+    $order     = strtoupper(trim($_GET['order'] ?? 'DESC')) === 'ASC' ? 'ASC' : 'DESC';
+
+    if (!empty($phone)) {
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+        $where[] = "(to_phone LIKE ? OR from_phone LIKE ?)";
+        $params[] = "%{$cleanPhone}%";
+        $params[] = "%{$cleanPhone}%";
+    }
+
     if (!empty($search)) {
         $where[] = "(to_phone LIKE ? OR from_phone LIKE ? OR message_body LIKE ? OR template_name LIKE ? OR message_id LIKE ?)";
         $term = "%{$search}%";
@@ -80,7 +90,7 @@ function handleGetMessages(PDO $db): void {
     $total = (int)$countStmt->fetch()['total'];
 
     // Records
-    $sql = "SELECT * FROM whatsapp_messages {$whereSql} ORDER BY created_at DESC LIMIT {$limit} OFFSET {$offset}";
+    $sql = "SELECT * FROM whatsapp_messages {$whereSql} ORDER BY created_at {$order} LIMIT {$limit} OFFSET {$offset}";
     $stmt = $db->prepare($sql);
     $stmt->execute($params);
     $records = $stmt->fetchAll();

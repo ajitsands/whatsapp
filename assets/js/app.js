@@ -1045,7 +1045,204 @@ function ComposerView({ showToast, onSent }) {
 }
 
 // -----------------------------------------------------------------------------
-// 4. MESSAGE LOGS VIEW (WITH DATATABLE)
+// 4. MESSAGE LO// -----------------------------------------------------------------------------
+// 3.5. INTERACTIVE LIVE WHATSAPP CONVERSATION CHAT CONSOLE
+// -----------------------------------------------------------------------------
+function ConversationChatModal({ phone, onClose, showToast }) {
+  const [thread, setThread] = useState([]);
+  const [replyText, setReplyText] = useState('');
+  const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const messagesEndRef = useRef(null);
+
+  const cleanPhone = phone ? phone.replace(/[^0-9\+]/g, '') : '';
+
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const fetchThread = async (silent = false) => {
+    if (!phone) return;
+    if (!silent) setLoading(true);
+    try {
+      const res = await fetch(`./api/messages.php?phone=${encodeURIComponent(cleanPhone)}&order=asc&limit=100`);
+      const data = await res.json();
+      if (data.success) {
+        setThread(data.data || []);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      if (!silent) setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchThread(false);
+  }, [phone]);
+
+  // Real-time polling every 2 seconds while chat modal is open
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchThread(true);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [phone]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [thread]);
+
+  const handleSendReply = async (e) => {
+    if (e) e.preventDefault();
+    if (!replyText.trim() || sending) return;
+
+    setSending(true);
+    try {
+      const res = await fetch('./api/messages.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to_phone: cleanPhone,
+          message: replyText.trim(),
+          category: 'SERVICE',
+          source_system: 'Live Chat Console'
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setReplyText('');
+        fetchThread(true);
+        showToast(`WhatsApp message sent to ${cleanPhone}`);
+      } else {
+        showToast(data.error || 'Failed to send WhatsApp message', 'error');
+      }
+    } catch (err) {
+      showToast('Network error sending message', 'error');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendReply();
+    }
+  };
+
+  // Check if customer replied within the last 24 hours
+  const hasRecentInbound = useMemo(() => {
+    const inboundMsgs = thread.filter(m => m.direction === 'inbound');
+    if (inboundMsgs.length === 0) return false;
+    const lastInbound = inboundMsgs[inboundMsgs.length - 1];
+    const diffHours = (Date.now() - new Date(lastInbound.created_at).getTime()) / (1000 * 60 * 60);
+    return diffHours <= 24;
+  }, [thread]);
+
+  return (
+    <div className="chat-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="chat-modal-box">
+        {/* Chat Header */}
+        <div className="chat-modal-header">
+          <div className="chat-header-user">
+            <div className="chat-avatar">
+              {cleanPhone.slice(-2)}
+              <span className="chat-avatar-online" title="WhatsApp Connected"></span>
+            </div>
+            <div className="chat-user-meta">
+              <span className="chat-user-phone">{cleanPhone}</span>
+              <span className="chat-user-sub">
+                Official WhatsApp Gateway • {hasRecentInbound ? <span className="chat-window-pill">🟢 24h Window Active</span> : <span className="chat-window-pill" style={{ background: 'rgba(234, 179, 8, 0.2)', color: '#FEF08A' }}>🟡 Outbound Session</span>}
+              </span>
+            </div>
+          </div>
+
+          <div className="chat-header-actions">
+            <button className="btn-chat-close" onClick={onClose} title="Close Chat">✕</button>
+          </div>
+        </div>
+
+        {/* Chat Messages Canvas */}
+        <div className="chat-messages-canvas">
+          <div className="chat-date-separator">
+            🔒 WhatsApp Cloud API Live Conversation Thread
+          </div>
+
+          {loading && thread.length === 0 ? (
+            <div style={{ textAlign: 'center', color: '#64748B', padding: '30px' }}>Loading conversation history...</div>
+          ) : thread.length === 0 ? (
+            <div style={{ textAlign: 'center', color: '#64748B', padding: '30px' }}>No messages exchanged with {cleanPhone} yet.</div>
+          ) : (
+            thread.map((msg, idx) => {
+              const isOutbound = msg.direction === 'outbound';
+              return (
+                <div key={msg.id || idx} className={`chat-bubble-row ${isOutbound ? 'outbound' : 'inbound'}`}>
+                  <div className="chat-bubble">
+                    {msg.template_name && (
+                      <span className="chat-bubble-template-tag">
+                        📋 {msg.template_name} [{msg.category}]
+                      </span>
+                    )}
+
+                    {msg.header_media_name && (
+                      <div className="chat-bubble-media">
+                        <span>📎</span>
+                        <span>{msg.header_media_name}</span>
+                      </div>
+                    )}
+
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{msg.message_body}</div>
+
+                    <div className="chat-bubble-footer">
+                      <span>{msg.created_at ? msg.created_at.split(' ')[1] : ''}</span>
+                      {isOutbound && (
+                        <span>
+                          {msg.status === 'read' ? (
+                            <span className="chat-tick-read" title="Read">✓✓</span>
+                          ) : msg.status === 'delivered' ? (
+                            <span className="chat-tick-delivered" title="Delivered">✓✓</span>
+                          ) : msg.status === 'sent' ? (
+                            <span title="Sent">✓</span>
+                          ) : msg.status === 'failed' ? (
+                            <span style={{ color: '#EF4444' }} title={msg.error_message || 'Failed'}>⚠️</span>
+                          ) : (
+                            <span style={{ color: '#94A3B8' }} title="Queued">⏱️</span>
+                          )}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Chat Input Bar */}
+        <form onSubmit={handleSendReply} className="chat-input-bar">
+          <textarea
+            className="chat-textarea"
+            placeholder={hasRecentInbound ? "Type a direct WhatsApp message... (Press Enter to send)" : "Type a WhatsApp reply... (Press Enter to send)"}
+            value={replyText}
+            onChange={(e) => setReplyText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            rows="1"
+          />
+          <button type="submit" className="btn-chat-send" disabled={sending || !replyText.trim()} title="Send WhatsApp Message">
+            {sending ? '⏳' : '➤'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 4. MESSAGE LOGS VIEW (WITH DATATABLE & LIVE CONVERSATIONS)
 // -----------------------------------------------------------------------------
 function MessageLogsView({ showToast }) {
   const [messages, setMessages] = useState([]);
@@ -1053,6 +1250,7 @@ function MessageLogsView({ showToast }) {
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedLog, setSelectedLog] = useState(null);
+  const [activeChatPhone, setActiveChatPhone] = useState(null);
   const [autoSync, setAutoSync] = useState(true);
 
   const fetchLogs = async (silent = false) => {
@@ -1094,7 +1292,7 @@ function MessageLogsView({ showToast }) {
       const data = await res.json();
       if (data.success) {
         showToast(`Message status updated to ${newStatus.toUpperCase()}`);
-        fetchLogs();
+        fetchLogs(true);
       }
     } catch (e) {
       showToast('Error updating status', 'error');
@@ -1169,18 +1367,29 @@ function MessageLogsView({ showToast }) {
       key: 'actions',
       label: 'Actions',
       sortable: false,
-      render: (m) => (
-        <div style={{ display: 'flex', gap: '5px' }}>
-          <button className="btn btn-secondary btn-sm" onClick={() => setSelectedLog(m)} title="Inspect Payload">
-            Inspect
-          </button>
-          {m.status !== 'read' && (
-            <button className="btn btn-primary btn-sm" onClick={() => simulateStatus(m.message_id, 'read')} title="Mark Read">
-              ✓ Read
+      render: (m) => {
+        const chatPhone = m.direction === 'inbound' ? m.from_phone : m.to_phone;
+        return (
+          <div style={{ display: 'flex', gap: '5px' }}>
+            <button
+              className="btn btn-success btn-sm"
+              style={{ padding: '4px 9px', fontSize: '11.5px', display: 'flex', alignItems: 'center', gap: '4px' }}
+              onClick={() => setActiveChatPhone(chatPhone)}
+              title={`Open Live WhatsApp Chat with ${chatPhone}`}
+            >
+              <span>💬</span> Chat
             </button>
-          )}
-        </div>
-      )
+            <button className="btn btn-secondary btn-sm" onClick={() => setSelectedLog(m)} title="Inspect Payload">
+              Inspect
+            </button>
+            {m.status !== 'read' && (
+              <button className="btn btn-primary btn-sm" onClick={() => simulateStatus(m.message_id, 'read')} title="Mark Read">
+                ✓ Read
+              </button>
+            )}
+          </div>
+        );
+      }
     }
   ];
 
@@ -1238,6 +1447,18 @@ function MessageLogsView({ showToast }) {
         actions={customFilterBar}
         emptyMessage={loading ? 'Loading telemetry logs...' : 'No messages found matching criteria.'}
       />
+
+      {/* Live Conversation Chat Modal */}
+      {activeChatPhone && (
+        <ConversationChatModal
+          phone={activeChatPhone}
+          onClose={() => {
+            setActiveChatPhone(null);
+            fetchLogs(true);
+          }}
+          showToast={showToast}
+        />
+      )}
 
       {/* Inspect Modal */}
       {selectedLog && (
