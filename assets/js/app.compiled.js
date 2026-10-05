@@ -1512,6 +1512,8 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
   });
   const [submitting, setSubmitting] = useState(false);
   const [typeFilter, setTypeFilter] = useState("all");
+  const [deleteTargetTx, setDeleteTargetTx] = useState(null);
+  const [deletingTx, setDeletingTx] = useState(false);
   const isSuperadmin = currentUser?.role === "superadmin";
   const loadWallet = async () => {
     setLoading(true);
@@ -1570,21 +1572,23 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
       setSubmitting(false);
     }
   };
-  const handleDeleteTransaction = async (txId, description) => {
-    if (!confirm(`Are you sure you want to delete this transaction record (#${txId})?
-
-This will remove the entry and automatically adjust the user balance accordingly.`)) return;
+  const confirmExecuteDelete = async () => {
+    if (!deleteTargetTx) return;
+    setDeletingTx(true);
     try {
-      const res = await fetch(`./api/wallet.php?id=${txId}&revert=1`, { method: "DELETE" });
+      const res = await fetch(`./api/wallet.php?id=${deleteTargetTx.id}&revert=1`, { method: "DELETE" });
       const data = await res.json();
       if (data.success) {
-        showToast(data.message || "Transaction record deleted successfully");
+        showToast(data.message || "Transaction record deleted & balance adjusted successfully");
+        setDeleteTargetTx(null);
         loadWallet();
       } else {
         showToast(data.error || "Failed to delete transaction", "error");
       }
     } catch (e) {
       showToast("Network error deleting transaction", "error");
+    } finally {
+      setDeletingTx(false);
     }
   };
   const curr = walletData.currency || globalSettings?.system_currency || "BHD";
@@ -1642,7 +1646,7 @@ This will remove the entry and automatically adjust the user balance accordingly
         {
           className: "btn btn-secondary btn-sm",
           style: { padding: "3px 8px", fontSize: "11px", color: "#EF4444", display: "flex", alignItems: "center", gap: "3px" },
-          onClick: () => handleDeleteTransaction(t.id, t.description),
+          onClick: () => setDeleteTargetTx(t),
           title: "Delete this transaction record and adjust user balance"
         },
         /* @__PURE__ */ React.createElement("span", null, "\u{1F5D1}\uFE0F"),
@@ -1751,7 +1755,25 @@ This will remove the entry and automatically adjust the user balance accordingly
       value: topUpForm.notes,
       onChange: (e) => setTopUpForm({ ...topUpForm, notes: e.target.value })
     }
-  )), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", marginTop: "16px" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", style: { flex: 1 }, onClick: () => setShowTopUpModal(false) }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { flex: 1 }, disabled: submitting }, submitting ? "Processing..." : "\u{1F4B3} Credit Wallet Balance"))))));
+  )), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", marginTop: "16px" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", style: { flex: 1 }, onClick: () => setShowTopUpModal(false) }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { flex: 1 }, disabled: submitting }, submitting ? "Processing..." : "\u{1F4B3} Credit Wallet Balance"))))), deleteTargetTx && /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-overlay", onClick: () => !deletingTx && setDeleteTargetTx(null) }, /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-card", onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-body" }, /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-icon-badge" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F5D1}\uFE0F")), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-title" }, "Delete Transaction Record"), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-subtitle" }, "Are you sure you want to permanently remove this transaction from the ledger?"), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-info-box" }, /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-info-row" }, /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-label" }, "Transaction ID"), /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-value" }, "#", deleteTargetTx.id)), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-info-row" }, /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-label" }, "Account / User"), /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-value" }, deleteTargetTx.user_name || deleteTargetTx.user_email || "N/A")), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-info-row" }, /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-label" }, "Type & Amount"), /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-value", style: { color: deleteTargetTx.transaction_type === "credit" ? "#15803D" : "#DC2626" } }, deleteTargetTx.transaction_type === "credit" ? "\u{1F7E2} Credit (+)" : "\u{1F534} Debit (-)", " ", formatCurrency(deleteTargetTx.amount, deleteTargetTx.currency || curr, dec))), deleteTargetTx.reference_id && /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-info-row" }, /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-label" }, "Reference ID"), /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-value", style: { fontFamily: "monospace" } }, deleteTargetTx.reference_id)), deleteTargetTx.description && /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-info-row" }, /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-label" }, "Description"), /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-value", style: { maxWidth: "220px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, deleteTargetTx.description))), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-warning-box" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "16px" } }, "\u26A0\uFE0F"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", null, "Automatic Balance Reversal:"), " Deleting this record will automatically adjust the user balance accordingly (e.g. subtracting credited funds or refunding debited messages)."))), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-actions" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn-confirm-cancel",
+      onClick: () => setDeleteTargetTx(null),
+      disabled: deletingTx
+    },
+    "Cancel"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn-confirm-delete",
+      onClick: confirmExecuteDelete,
+      disabled: deletingTx
+    },
+    deletingTx ? "Deleting..." : "\u{1F5D1}\uFE0F Yes, Delete & Adjust Balance"
+  )))));
 }
 function SettingsView({ showToast, onSettingsChange }) {
   const [activeSubTab, setActiveSubTab] = useState("tariffs");

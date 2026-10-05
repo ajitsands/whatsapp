@@ -2564,6 +2564,8 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
   });
   const [submitting, setSubmitting] = useState(false);
   const [typeFilter, setTypeFilter] = useState('all');
+  const [deleteTargetTx, setDeleteTargetTx] = useState(null);
+  const [deletingTx, setDeletingTx] = useState(false);
 
   const isSuperadmin = currentUser?.role === 'superadmin';
 
@@ -2628,19 +2630,23 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
     }
   };
 
-  const handleDeleteTransaction = async (txId, description) => {
-    if (!confirm(`Are you sure you want to delete this transaction record (#${txId})?\n\nThis will remove the entry and automatically adjust the user balance accordingly.`)) return;
+  const confirmExecuteDelete = async () => {
+    if (!deleteTargetTx) return;
+    setDeletingTx(true);
     try {
-      const res = await fetch(`./api/wallet.php?id=${txId}&revert=1`, { method: 'DELETE' });
+      const res = await fetch(`./api/wallet.php?id=${deleteTargetTx.id}&revert=1`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success) {
-        showToast(data.message || 'Transaction record deleted successfully');
+        showToast(data.message || 'Transaction record deleted & balance adjusted successfully');
+        setDeleteTargetTx(null);
         loadWallet();
       } else {
         showToast(data.error || 'Failed to delete transaction', 'error');
       }
     } catch (e) {
       showToast('Network error deleting transaction', 'error');
+    } finally {
+      setDeletingTx(false);
     }
   };
 
@@ -2740,7 +2746,7 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
             <button
               className="btn btn-secondary btn-sm"
               style={{ padding: '3px 8px', fontSize: '11px', color: '#EF4444', display: 'flex', alignItems: 'center', gap: '3px' }}
-              onClick={() => handleDeleteTransaction(t.id, t.description)}
+              onClick={() => setDeleteTargetTx(t)}
               title="Delete this transaction record and adjust user balance"
             >
               <span>🗑️</span> Delete
@@ -2994,6 +3000,80 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Attractive Custom Delete Confirmation Modal */}
+      {deleteTargetTx && (
+        <div className="confirm-modal-overlay" onClick={() => !deletingTx && setDeleteTargetTx(null)}>
+          <div className="confirm-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="confirm-modal-body">
+              <div className="confirm-modal-icon-badge">
+                <span>🗑️</span>
+              </div>
+              <div className="confirm-modal-title">Delete Transaction Record</div>
+              <div className="confirm-modal-subtitle">
+                Are you sure you want to permanently remove this transaction from the ledger?
+              </div>
+
+              <div className="confirm-modal-info-box">
+                <div className="confirm-modal-info-row">
+                  <span className="confirm-modal-info-label">Transaction ID</span>
+                  <span className="confirm-modal-info-value">#{deleteTargetTx.id}</span>
+                </div>
+                <div className="confirm-modal-info-row">
+                  <span className="confirm-modal-info-label">Account / User</span>
+                  <span className="confirm-modal-info-value">{deleteTargetTx.user_name || deleteTargetTx.user_email || 'N/A'}</span>
+                </div>
+                <div className="confirm-modal-info-row">
+                  <span className="confirm-modal-info-label">Type & Amount</span>
+                  <span className="confirm-modal-info-value" style={{ color: deleteTargetTx.transaction_type === 'credit' ? '#15803D' : '#DC2626' }}>
+                    {deleteTargetTx.transaction_type === 'credit' ? '🟢 Credit (+)' : '🔴 Debit (-)'} {formatCurrency(deleteTargetTx.amount, deleteTargetTx.currency || curr, dec)}
+                  </span>
+                </div>
+                {deleteTargetTx.reference_id && (
+                  <div className="confirm-modal-info-row">
+                    <span className="confirm-modal-info-label">Reference ID</span>
+                    <span className="confirm-modal-info-value" style={{ fontFamily: 'monospace' }}>{deleteTargetTx.reference_id}</span>
+                  </div>
+                )}
+                {deleteTargetTx.description && (
+                  <div className="confirm-modal-info-row">
+                    <span className="confirm-modal-info-label">Description</span>
+                    <span className="confirm-modal-info-value" style={{ maxWidth: '220px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {deleteTargetTx.description}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="confirm-modal-warning-box">
+                <span style={{ fontSize: '16px' }}>⚠️</span>
+                <div>
+                  <strong>Automatic Balance Reversal:</strong> Deleting this record will automatically adjust the user balance accordingly (e.g. subtracting credited funds or refunding debited messages).
+                </div>
+              </div>
+            </div>
+
+            <div className="confirm-modal-actions">
+              <button
+                type="button"
+                className="btn-confirm-cancel"
+                onClick={() => setDeleteTargetTx(null)}
+                disabled={deletingTx}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-confirm-delete"
+                onClick={confirmExecuteDelete}
+                disabled={deletingTx}
+              >
+                {deletingTx ? 'Deleting...' : '🗑️ Yes, Delete & Adjust Balance'}
+              </button>
+            </div>
           </div>
         </div>
       )}
