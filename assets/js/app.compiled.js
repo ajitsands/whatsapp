@@ -1240,9 +1240,14 @@ function OdooApiHubView({ showToast }) {
       setLoading(false);
     }
   };
-  const pythonSnippet = `import requests
+  const [activeSnippetLang, setActiveSnippetLang] = useState("python");
+  const snippets = {
+    python: {
+      title: "Python 3 (Odoo ERP Action / Requests)",
+      filename: "odoo_whatsapp_connector.py",
+      code: `import requests
 
-API_URL = "http://your-server-ip/whatsapp/api/messages.php"
+API_URL = "https://whatsapp.sandslab.com/api/messages.php"
 API_KEY = "sk_live_odoo_uniglobal_98741362"
 
 def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_bhd, date_str, pdf_url):
@@ -1263,8 +1268,196 @@ def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_
         "X-API-Key": API_KEY
     }
     response = requests.post(API_URL, json=payload, headers=headers, timeout=10)
-    return response.json()`;
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo ERP Integration & API Hub"), /* @__PURE__ */ React.createElement("p", null, "REST API documentation, live testing console, and copyable Python integration snippets for Odoo developers."))), /* @__PURE__ */ React.createElement("div", { className: "api-hub-grid" }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { minWidth: 0, margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F9EA}"), " Live API Tester")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "API Key Header (X-API-Key)"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: apiKey, onChange: (e) => setApiKey(e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "HTTP Method & Endpoint"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge cat-utility", style: { padding: "8px 12px", fontSize: "12px" } }, "POST"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: endpoint, readOnly: true }))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Request Body (JSON)"), /* @__PURE__ */ React.createElement(
+    return response.json()`
+    },
+    php: {
+      title: "PHP 7.4+ / 8.x (cURL Native)",
+      filename: "whatsapp_sender.php",
+      code: `<?php
+/**
+ * WhatsApp Gateway - PHP Integration Example
+ * Send Automated WhatsApp Template Notifications
+ */
+
+function sendWhatsAppNotification($toPhone, $customerName, $invoiceNum, $amountBhd, $dateStr, $pdfUrl) {
+    $apiUrl = 'https://whatsapp.sandslab.com/api/messages.php';
+    $apiKey = 'sk_live_odoo_uniglobal_98741362';
+
+    $payload = [
+        'to_phone'        => $toPhone,
+        'template_name'   => 'uniglobal_invoice_notification',
+        'category'        => 'UTILITY',
+        'header_media'    => [
+            'type'     => 'document',
+            'url'      => $pdfUrl,
+            'filename' => $invoiceNum . '.pdf'
+        ],
+        'body_parameters' => [$customerName, $invoiceNum, $amountBhd, $dateStr],
+        'source_system'   => 'PHP ERP Application'
+    ];
+
+    $ch = curl_init($apiUrl);
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => json_encode($payload),
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER     => [
+            'Content-Type: application/json',
+            'X-API-Key: ' . $apiKey
+        ],
+        CURLOPT_TIMEOUT        => 15
+    ]);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    return json_decode($response, true);
+}
+
+// Example Execution
+$result = sendWhatsAppNotification(
+    '+97339000000',
+    'Ahmed Al-Khalifa',
+    'INV/2026/0142',
+    'BHD 345.500',
+    '15-Oct-2026',
+    'https://erp.uniglobal.bh/INV_9941.pdf'
+);
+print_r($result);`
+    },
+    curl: {
+      title: "cURL (Bash / Terminal CLI)",
+      filename: "send_invoice.sh",
+      code: `#!/bin/bash
+
+# WhatsApp Gateway - cURL Integration Example
+API_URL="https://whatsapp.sandslab.com/api/messages.php"
+API_KEY="sk_live_odoo_uniglobal_98741362"
+
+curl -X POST "$API_URL" \\
+  -H "Content-Type: application/json" \\
+  -H "X-API-Key: $API_KEY" \\
+  -d '{
+    "to_phone": "+97339000000",
+    "template_name": "uniglobal_invoice_notification",
+    "category": "UTILITY",
+    "header_media": {
+      "type": "document",
+      "url": "https://erp.uniglobal.bh/INV_9941.pdf",
+      "filename": "INV_2026_0142.pdf"
+    },
+    "body_parameters": [
+      "Ahmed Al-Khalifa",
+      "INV/2026/0142",
+      "BHD 345.500",
+      "15-Oct-2026"
+    ],
+    "source_system": "cURL CLI Script"
+  }'`
+    },
+    dotnet: {
+      title: ".NET 6/7/8 C# (HttpClient)",
+      filename: "WhatsAppService.cs",
+      code: `using System;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+namespace UniGlobal.Integrations
+{
+    public class WhatsAppSender
+    {
+        private static readonly HttpClient _httpClient = new HttpClient();
+        private const string ApiUrl = "https://whatsapp.sandslab.com/api/messages.php";
+        private const string ApiKey = "sk_live_odoo_uniglobal_98741362";
+
+        public static async Task<string> SendInvoiceNotificationAsync(
+            string recipientPhone,
+            string customerName,
+            string invoiceNumber,
+            string amountFormatted,
+            string issueDate,
+            string invoicePdfUrl)
+        {
+            var payload = new
+            {
+                to_phone = recipientPhone,
+                template_name = "uniglobal_invoice_notification",
+                category = "UTILITY",
+                header_media = new
+                {
+                    type = "document",
+                    url = invoicePdfUrl,
+                    filename = $"{invoiceNumber}.pdf"
+                },
+                body_parameters = new[] { customerName, invoiceNumber, amountFormatted, issueDate },
+                source_system = ".NET ERP Connector"
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Post, ApiUrl);
+            request.Headers.Add("X-API-Key", ApiKey);
+            request.Content = new StringContent(
+                JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await _httpClient.SendAsync(request);
+            return await response.Content.ReadAsStringAsync();
+        }
+    }
+}`
+    },
+    node: {
+      title: "Node.js / Express (Fetch API)",
+      filename: "send_whatsapp.js",
+      code: `/**
+ * WhatsApp Gateway - Node.js Integration Example
+ */
+const API_URL = 'https://whatsapp.sandslab.com/api/messages.php';
+const API_KEY = 'sk_live_odoo_uniglobal_98741362';
+
+async function sendWhatsAppInvoice({ toPhone, customerName, invoiceNumber, amount, date, pdfUrl }) {
+  const payload = {
+    to_phone: toPhone,
+    template_name: 'uniglobal_invoice_notification',
+    category: 'UTILITY',
+    header_media: {
+      type: 'document',
+      url: pdfUrl,
+      filename: \`\${invoiceNumber}.pdf\`
+    },
+    body_parameters: [customerName, invoiceNumber, amount, date],
+    source_system: 'Node.js Microservice'
+  };
+
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-Key': API_KEY
+    },
+    body: JSON.stringify(payload)
+  });
+
+  return await response.json();
+}
+
+// Example Execution
+// sendWhatsAppInvoice({
+//   toPhone: '+97339000000',
+//   customerName: 'Ahmed Al-Khalifa',
+//   invoiceNumber: 'INV/2026/0142',
+//   amount: 'BHD 345.500',
+//   date: '15-Oct-2026',
+//   pdfUrl: 'https://erp.uniglobal.bh/INV_9941.pdf'
+// }).then(console.log);`
+    }
+  };
+  const currentSnippet = snippets[activeSnippetLang] || snippets.python;
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo & Multi-Platform Integration API Hub"), /* @__PURE__ */ React.createElement("p", null, "REST API documentation, live testing console, and copyable integration snippets for Python, PHP, cURL, .NET (C#), and Node.js."))), /* @__PURE__ */ React.createElement("div", { className: "api-hub-grid" }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { minWidth: 0, margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F9EA}"), " Live API Tester")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "API Key Header (X-API-Key)"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: apiKey, onChange: (e) => setApiKey(e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "HTTP Method & Endpoint"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge cat-utility", style: { padding: "8px 12px", fontSize: "12px" } }, "POST"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: endpoint, readOnly: true }))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Request Body (JSON)"), /* @__PURE__ */ React.createElement(
     "textarea",
     {
       className: "form-textarea",
@@ -1272,10 +1465,55 @@ def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_
       value: requestPayload,
       onChange: (e) => setRequestPayload(e.target.value)
     }
-  )), /* @__PURE__ */ React.createElement("button", { className: "btn btn-success", style: { width: "100%" }, onClick: runLiveTest, disabled: loading }, loading ? "Executing..." : "\u25B6 Execute API Call"), responseOutput && /* @__PURE__ */ React.createElement("div", { style: { marginTop: "16px" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Response Body (HTTP 200/201)"), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { maxHeight: "350px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, responseOutput)))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { minWidth: 0, margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F40D}"), " Odoo ERP Python Model Action Code"), /* @__PURE__ */ React.createElement("button", { className: "btn-copy-code", onClick: () => {
-    navigator.clipboard.writeText(pythonSnippet);
-    showToast("Python snippet copied to clipboard!");
-  } }, "Copy Code")), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { minHeight: "380px", maxHeight: "560px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "code-box-header" }, /* @__PURE__ */ React.createElement("span", null, "odoo_whatsapp_connector.py")), /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, pythonSnippet)))));
+  )), /* @__PURE__ */ React.createElement("button", { className: "btn btn-success", style: { width: "100%" }, onClick: runLiveTest, disabled: loading }, loading ? "Executing..." : "\u25B6 Execute API Call"), responseOutput && /* @__PURE__ */ React.createElement("div", { style: { marginTop: "16px" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Response Body (HTTP 200/201)"), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { maxHeight: "350px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, responseOutput)))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { minWidth: 0, margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F50C}"), " Multi-Platform Connector Snippets"), /* @__PURE__ */ React.createElement("button", { className: "btn-copy-code", onClick: () => {
+    navigator.clipboard.writeText(currentSnippet.code);
+    showToast(`${currentSnippet.filename} copied to clipboard!`);
+  } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Copy Code")), /* @__PURE__ */ React.createElement("div", { className: "code-tabs-header" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `code-tab-btn ${activeSnippetLang === "python" ? "active" : ""}`,
+      onClick: () => setActiveSnippetLang("python")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F40D}"),
+    " Python (Odoo)"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `code-tab-btn ${activeSnippetLang === "php" ? "active" : ""}`,
+      onClick: () => setActiveSnippetLang("php")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F418}"),
+    " PHP"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `code-tab-btn ${activeSnippetLang === "curl" ? "active" : ""}`,
+      onClick: () => setActiveSnippetLang("curl")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4BB}"),
+    " cURL"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `code-tab-btn ${activeSnippetLang === "dotnet" ? "active" : ""}`,
+      onClick: () => setActiveSnippetLang("dotnet")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F537}"),
+    " .NET (C#)"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `code-tab-btn ${activeSnippetLang === "node" ? "active" : ""}`,
+      onClick: () => setActiveSnippetLang("node")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F7E8}"),
+    " Node.js"
+  )), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { minHeight: "380px", maxHeight: "560px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "code-box-header" }, /* @__PURE__ */ React.createElement("span", null, currentSnippet.filename), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "#64748B" } }, currentSnippet.title)), /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, currentSnippet.code)))));
 }
 function ApiKeysView({ showToast }) {
   const [keys, setKeys] = useState([]);
