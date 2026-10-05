@@ -1570,6 +1570,23 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
       setSubmitting(false);
     }
   };
+  const handleDeleteTransaction = async (txId, description) => {
+    if (!confirm(`Are you sure you want to delete this transaction record (#${txId})?
+
+This will remove the entry and automatically adjust the user balance accordingly.`)) return;
+    try {
+      const res = await fetch(`./api/wallet.php?id=${txId}&revert=1`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message || "Transaction record deleted successfully");
+        loadWallet();
+      } else {
+        showToast(data.error || "Failed to delete transaction", "error");
+      }
+    } catch (e) {
+      showToast("Network error deleting transaction", "error");
+    }
+  };
   const curr = walletData.currency || globalSettings?.system_currency || "BHD";
   const dec = walletData.currency_decimals ?? globalSettings?.currency_decimals ?? 3;
   const ledgerColumns = [
@@ -1615,6 +1632,22 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
       key: "performed_by_name",
       label: "Processed By",
       render: (t) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, t.performed_by_name || "System / Auto")
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      sortable: false,
+      render: (t) => /* @__PURE__ */ React.createElement("div", null, isSuperadmin && /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-secondary btn-sm",
+          style: { padding: "3px 8px", fontSize: "11px", color: "#EF4444", display: "flex", alignItems: "center", gap: "3px" },
+          onClick: () => handleDeleteTransaction(t.id, t.description),
+          title: "Delete this transaction record and adjust user balance"
+        },
+        /* @__PURE__ */ React.createElement("span", null, "\u{1F5D1}\uFE0F"),
+        " Delete"
+      ))
     }
   ];
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Prepaid Wallet & Financial Statement"), /* @__PURE__ */ React.createElement("p", null, "Superadmin balance management, automatic transaction debit ledger, and multi-currency billing statement.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px" } }, isSuperadmin && /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary", onClick: () => handleOpenTopUp(null), style: { display: "flex", alignItems: "center", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "\u2795"), " Add Wallet Balance"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary", onClick: loadWallet }, /* @__PURE__ */ React.createElement("span", null, "\u{1F504}"), " Refresh Statement"))), /* @__PURE__ */ React.createElement("div", { className: "wallet-hero-grid" }, /* @__PURE__ */ React.createElement("div", { className: "wallet-balance-card" }, /* @__PURE__ */ React.createElement("div", { className: "wallet-balance-label" }, "Available Prepaid Wallet Balance"), /* @__PURE__ */ React.createElement("div", { className: "wallet-balance-amount" }, formatCurrency(walletData.wallet_balance, curr, dec)), /* @__PURE__ */ React.createElement("div", { className: "wallet-quick-actions" }, isSuperadmin && /* @__PURE__ */ React.createElement("button", { className: "btn-recharge", onClick: () => handleOpenTopUp(null) }, /* @__PURE__ */ React.createElement("span", null, "\u2795"), " Top-Up / Add Credit"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", opacity: 0.9, alignSelf: "center" } }, "Base Currency: ", /* @__PURE__ */ React.createElement("strong", null, curr)))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { display: "flex", flexDirection: "column", justifyContent: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "var(--text-muted)", fontWeight: "700", textTransform: "uppercase" } }, "Total Credits / Recharges"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "24px", fontWeight: "800", color: "#15803D", marginTop: "6px" } }, formatCurrency(

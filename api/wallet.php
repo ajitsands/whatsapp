@@ -25,6 +25,10 @@ switch ($method) {
         handleTopUpWallet($db, $currentUser, $isSuperadmin);
         break;
 
+    case 'DELETE':
+        handleDeleteTransaction($db, $currentUser, $isSuperadmin);
+        break;
+
     default:
         sendJsonResponse(['success' => false, 'error' => 'Method not allowed'], 405);
 }
@@ -221,3 +225,72 @@ function handleTopUpWallet(PDO $db, ?array $currentUser, bool $isSuperadmin): vo
         sendJsonResponse(['success' => false, 'error' => 'Database transaction failed: ' . $e->getMessage()], 500);
     }
 }
+
+/**
+ * DELETE Wallet Transaction (Superadmin Only)
+ */
+function handleDeleteTransaction(PDO $db, ?array $currentUser, bool $isSuperadmin): void {
+    if (!$isSuperadmin) {
+        sendJsonResponse(['success' => false, 'error' => 'Forbidden: Only Superadmin can delete transaction logs'], 403);
+    }
+
+    $id = (int)($_GET['id'] ?? 0);
+    $revertBalance = ($_GET['revert'] ?? '1') === '1';
+
+    if ($id <= 0) {
+        sendJsonResponse(['success' => false, 'error' => 'Valid transaction ID is required'], 400);
+    }
+
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare("SELECT * FROM wallet_transactions WHERE id = ? FOR UPDATE");
+        $stmt->execute([$id]);
+        $tx = $stmt->fetch();
+
+        if (!$tx) {
+            $db->rollBack();
+            sendJsonResponse(['success' => false, 'error' => 'Transaction record not found'], 404);
+        }
+
+        $userId = (int)$tx['user_id'];
+        $amount = (float)$tx['amount'];
+        $txType = $tx['transaction_type'];
+
+        // If reverting balance
+        if ($revertBalance && $userId > 0) {
+            $uStmt = $db->prepare("SELECT id, wallet_balance FROM users WHERE id = ? FOR UPDATE");
+            $uStmt->execute([$userId]);
+            $u = $uStmt->fetch();
+            if ($u) {
+                $curBal = (float)$u['wallet_balance'];
+                if ($txType === 'credit') {
+                    $newBal = max(0.0000, $curBal - $amount);
+                } elseif ($txType === 'debit') {
+                    $newBal = $curBal + $amount;
+                } else {
+                    $newBal = $curBal;
+                }
+                $upd = $db->prepare("UPDATE users SET wallet_balance = ? WHERE id = ?");
+                $upd->execute([$newBal, $userId]);
+            }
+        }
+
+        $del = $db->prepare("DELETE FROM wallet_transactions WHERE id = ?");
+        $del->execute([$id]);
+
+        $db->commit();
+
+        sendJsonResponse([
+            'success' => true,
+            'message' => 'Transaction record deleted successfully' . ($revertBalance ? ' and user balance adjusted.' : '.')
+        ]);
+
+    } catch (Throwable $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+        sendJsonResponse(['success' => false, 'error' => 'Failed to delete transaction: ' . $e->getMessage()], 500);
+    }
+}
+

@@ -2628,6 +2628,22 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
     }
   };
 
+  const handleDeleteTransaction = async (txId, description) => {
+    if (!confirm(`Are you sure you want to delete this transaction record (#${txId})?\n\nThis will remove the entry and automatically adjust the user balance accordingly.`)) return;
+    try {
+      const res = await fetch(`./api/wallet.php?id=${txId}&revert=1`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message || 'Transaction record deleted successfully');
+        loadWallet();
+      } else {
+        showToast(data.error || 'Failed to delete transaction', 'error');
+      }
+    } catch (e) {
+      showToast('Network error deleting transaction', 'error');
+    }
+  };
+
   const curr = walletData.currency || globalSettings?.system_currency || 'BHD';
   const dec = walletData.currency_decimals ?? globalSettings?.currency_decimals ?? 3;
 
@@ -2712,6 +2728,25 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
         <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>
           {t.performed_by_name || 'System / Auto'}
         </span>
+      )
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      sortable: false,
+      render: (t) => (
+        <div>
+          {isSuperadmin && (
+            <button
+              className="btn btn-secondary btn-sm"
+              style={{ padding: '3px 8px', fontSize: '11px', color: '#EF4444', display: 'flex', alignItems: 'center', gap: '3px' }}
+              onClick={() => handleDeleteTransaction(t.id, t.description)}
+              title="Delete this transaction record and adjust user balance"
+            >
+              <span>🗑️</span> Delete
+            </button>
+          )}
+        </div>
       )
     }
   ];
