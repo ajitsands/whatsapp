@@ -3896,12 +3896,34 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
 
         {/* TAB 4: META CLOUD API CREDENTIALS */}
         {activeSubTab === 'meta' && (
-          <div className="card" style={{ maxWidth: '800px' }}>
-            <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--wa-dark-teal)', marginBottom: '8px' }}>
-              Meta WhatsApp Business Cloud API Credentials
-            </h3>
+          <div className="card" style={{ maxWidth: '850px' }}>
+            {/* Superadmin vs Admin Notice */}
+            {!isSuperadmin && (
+              <div style={{ background: '#FEF3C7', border: '1.5px solid #FCD34D', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '24px' }}>🔒</span>
+                <div>
+                  <strong style={{ fontSize: '13.5px', color: '#92400E' }}>Read-Only Meta Cloud API Credentials</strong>
+                  <div style={{ fontSize: '12px', color: '#78350F', marginTop: '2px' }}>
+                    WhatsApp Business Cloud API tokens, Phone ID, WABA Account ID, and Webhook verification tokens are managed exclusively by SaNDS Lab Superadmin. Admin accounts have view-only access.
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--wa-dark-teal)', margin: 0 }}>
+                Meta WhatsApp Business Cloud API Credentials
+              </h3>
+              {isSuperadmin && (
+                <span className="badge" style={{ background: '#CCFBF1', color: '#0F766E', fontWeight: '800', fontSize: '11px', padding: '4px 9px' }}>
+                  👑 Superadmin Managed
+                </span>
+              )}
+            </div>
             <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', marginBottom: '18px' }}>
-              Permanent System User Graph API access tokens and Webhook validation tokens.
+              {isSuperadmin
+                ? 'Permanent System User Graph API access tokens and Webhook validation tokens for Meta WhatsApp Cloud API v19.0.'
+                : 'Active Meta WhatsApp Cloud API credentials currently operating this platform.'}
             </p>
 
             <div className="form-group">
@@ -3910,7 +3932,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                 type="text"
                 className="form-input"
                 value={settings.meta_phone_number_id}
-                onChange={(e) => setSettings({ ...settings, meta_phone_number_id: e.target.value })}
+                onChange={(e) => isSuperadmin && setSettings({ ...settings, meta_phone_number_id: e.target.value })}
+                readOnly={!isSuperadmin}
+                disabled={!isSuperadmin}
+                style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : {}}
               />
             </div>
 
@@ -3920,7 +3945,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                 type="text"
                 className="form-input"
                 value={settings.meta_waba_account_id}
-                onChange={(e) => setSettings({ ...settings, meta_waba_account_id: e.target.value })}
+                onChange={(e) => isSuperadmin && setSettings({ ...settings, meta_waba_account_id: e.target.value })}
+                readOnly={!isSuperadmin}
+                disabled={!isSuperadmin}
+                style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : {}}
               />
             </div>
 
@@ -3930,8 +3958,16 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                 type="password"
                 className="form-input"
                 value={settings.meta_access_token}
-                onChange={(e) => setSettings({ ...settings, meta_access_token: e.target.value })}
+                onChange={(e) => isSuperadmin && setSettings({ ...settings, meta_access_token: e.target.value })}
+                readOnly={!isSuperadmin}
+                disabled={!isSuperadmin}
+                style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : {}}
               />
+              <span className="form-hint">
+                {isSuperadmin
+                  ? 'Active system token connected to WhatsApp Business Cloud API.'
+                  : 'System token is securely managed by Superadmin.'}
+              </span>
             </div>
 
             <div className="form-group">
@@ -3940,7 +3976,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                 type="text"
                 className="form-input"
                 value={settings.webhook_verify_token}
-                onChange={(e) => setSettings({ ...settings, webhook_verify_token: e.target.value })}
+                onChange={(e) => isSuperadmin && setSettings({ ...settings, webhook_verify_token: e.target.value })}
+                readOnly={!isSuperadmin}
+                disabled={!isSuperadmin}
+                style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : {}}
               />
               <span className="form-hint">Paste this token into Meta Developer App Dashboard Webhook settings.</span>
             </div>
@@ -3950,15 +3989,17 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
         <div style={{ marginTop: '20px' }}>
           <button
             type="submit"
-            className={`btn ${isSuperadmin || activeSubTab !== 'tariffs' ? 'btn-primary' : 'btn-secondary'}`}
+            className={`btn ${isSuperadmin || (activeSubTab !== 'tariffs' && activeSubTab !== 'meta') ? 'btn-primary' : 'btn-secondary'}`}
             style={{ padding: '10px 24px', fontSize: '14px', fontWeight: '700' }}
-            disabled={loading || (!isSuperadmin && activeSubTab === 'tariffs')}
+            disabled={loading || (!isSuperadmin && (activeSubTab === 'tariffs' || activeSubTab === 'meta'))}
           >
             {loading
               ? 'Saving...'
               : (!isSuperadmin && activeSubTab === 'tariffs'
                   ? '🔒 Tariffs Managed by Superadmin (Read Only)'
-                  : '💾 Save & Apply System Configuration')}
+                  : (!isSuperadmin && activeSubTab === 'meta'
+                      ? '🔒 Meta Credentials Managed by Superadmin (Read Only)'
+                      : '💾 Save & Apply System Configuration'))}
           </button>
         </div>
       </form>

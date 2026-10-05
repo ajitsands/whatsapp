@@ -2370,13 +2370,16 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
     /* @__PURE__ */ React.createElement("option", { value: "Asia/Muscat" }, "\u{1F1F4}\u{1F1F2} Oman (GMT+4) - Asia/Muscat"),
     /* @__PURE__ */ React.createElement("option", { value: "Asia/Kolkata" }, "\u{1F1EE}\u{1F1F3} India (GMT+5:30) - Asia/Kolkata"),
     /* @__PURE__ */ React.createElement("option", { value: "UTC" }, "\u{1F310} Coordinated Universal Time (UTC)")
-  )), /* @__PURE__ */ React.createElement("div", { style: { background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "10px", padding: "14px", marginTop: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#166534", fontWeight: "700", textTransform: "uppercase" } }, "Live Format Preview"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "18px", fontWeight: "800", color: "#15803D", marginTop: "4px" } }, formatDateTime(currentTimePreview, settings.system_date_format)))), activeSubTab === "meta" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "800px" } }, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", color: "var(--wa-dark-teal)", marginBottom: "8px" } }, "Meta WhatsApp Business Cloud API Credentials"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "18px" } }, "Permanent System User Graph API access tokens and Webhook validation tokens."), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Meta Phone Number ID"), /* @__PURE__ */ React.createElement(
+  )), /* @__PURE__ */ React.createElement("div", { style: { background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "10px", padding: "14px", marginTop: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#166534", fontWeight: "700", textTransform: "uppercase" } }, "Live Format Preview"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "18px", fontWeight: "800", color: "#15803D", marginTop: "4px" } }, formatDateTime(currentTimePreview, settings.system_date_format)))), activeSubTab === "meta" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "850px" } }, !isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEF3C7", border: "1.5px solid #FCD34D", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F512}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#92400E" } }, "Read-Only Meta Cloud API Credentials"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "#78350F", marginTop: "2px" } }, "WhatsApp Business Cloud API tokens, Phone ID, WABA Account ID, and Webhook verification tokens are managed exclusively by SaNDS Lab Superadmin. Admin accounts have view-only access."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", color: "var(--wa-dark-teal)", margin: 0 } }, "Meta WhatsApp Business Cloud API Credentials"), isSuperadmin && /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#CCFBF1", color: "#0F766E", fontWeight: "800", fontSize: "11px", padding: "4px 9px" } }, "\u{1F451} Superadmin Managed")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "18px" } }, isSuperadmin ? "Permanent System User Graph API access tokens and Webhook validation tokens for Meta WhatsApp Cloud API v19.0." : "Active Meta WhatsApp Cloud API credentials currently operating this platform."), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Meta Phone Number ID"), /* @__PURE__ */ React.createElement(
     "input",
     {
       type: "text",
       className: "form-input",
       value: settings.meta_phone_number_id,
-      onChange: (e) => setSettings({ ...settings, meta_phone_number_id: e.target.value })
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, meta_phone_number_id: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {}
     }
   )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "WhatsApp Business Account ID (WABA)"), /* @__PURE__ */ React.createElement(
     "input",
@@ -2384,7 +2387,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       type: "text",
       className: "form-input",
       value: settings.meta_waba_account_id,
-      onChange: (e) => setSettings({ ...settings, meta_waba_account_id: e.target.value })
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, meta_waba_account_id: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {}
     }
   )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Permanent System User Access Token (Graph API)"), /* @__PURE__ */ React.createElement(
     "input",
@@ -2392,25 +2398,31 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       type: "password",
       className: "form-input",
       value: settings.meta_access_token,
-      onChange: (e) => setSettings({ ...settings, meta_access_token: e.target.value })
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, meta_access_token: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {}
     }
-  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Webhook Verification Secret Token"), /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, isSuperadmin ? "Active system token connected to WhatsApp Business Cloud API." : "System token is securely managed by Superadmin.")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Webhook Verification Secret Token"), /* @__PURE__ */ React.createElement(
     "input",
     {
       type: "text",
       className: "form-input",
       value: settings.webhook_verify_token,
-      onChange: (e) => setSettings({ ...settings, webhook_verify_token: e.target.value })
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, webhook_verify_token: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {}
     }
   ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Paste this token into Meta Developer App Dashboard Webhook settings."))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "20px" } }, /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "submit",
-      className: `btn ${isSuperadmin || activeSubTab !== "tariffs" ? "btn-primary" : "btn-secondary"}`,
+      className: `btn ${isSuperadmin || activeSubTab !== "tariffs" && activeSubTab !== "meta" ? "btn-primary" : "btn-secondary"}`,
       style: { padding: "10px 24px", fontSize: "14px", fontWeight: "700" },
-      disabled: loading || !isSuperadmin && activeSubTab === "tariffs"
+      disabled: loading || !isSuperadmin && (activeSubTab === "tariffs" || activeSubTab === "meta")
     },
-    loading ? "Saving..." : !isSuperadmin && activeSubTab === "tariffs" ? "\u{1F512} Tariffs Managed by Superadmin (Read Only)" : "\u{1F4BE} Save & Apply System Configuration"
+    loading ? "Saving..." : !isSuperadmin && activeSubTab === "tariffs" ? "\u{1F512} Tariffs Managed by Superadmin (Read Only)" : !isSuperadmin && activeSubTab === "meta" ? "\u{1F512} Meta Credentials Managed by Superadmin (Read Only)" : "\u{1F4BE} Save & Apply System Configuration"
   ))));
 }
 const rootElement = document.getElementById("root");

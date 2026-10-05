@@ -61,19 +61,21 @@ switch ($method) {
             sendJsonResponse(['success' => false, 'error' => 'Invalid settings payload'], 400);
         }
 
-        // Restrict Tariff & Pricing Engine modifications exclusively to Superadmin
-        $tariffKeys = [
+        // Restrict Tariff, Pricing Engine & Meta Cloud API Credentials modifications exclusively to Superadmin
+        $superadminOnlyKeys = [
             'tariff_utility_meta', 'tariff_utility_platform',
             'tariff_auth_meta', 'tariff_auth_platform',
             'tariff_marketing_meta', 'tariff_marketing_platform',
             'tariff_service_meta', 'tariff_service_platform',
-            'billing_model', 'wallet_enforcement'
+            'billing_model', 'wallet_enforcement',
+            'meta_phone_number_id', 'meta_waba_account_id',
+            'meta_access_token', 'webhook_verify_token'
         ];
 
         if (!$isSuperadmin) {
-            foreach ($tariffKeys as $tk) {
-                if (isset($settings[$tk])) {
-                    unset($settings[$tk]);
+            foreach ($superadminOnlyKeys as $sk) {
+                if (isset($settings[$sk])) {
+                    unset($settings[$sk]);
                 }
             }
         }
