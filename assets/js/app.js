@@ -1252,6 +1252,7 @@ function MessageLogsView({ showToast }) {
   const [selectedLog, setSelectedLog] = useState(null);
   const [activeChatPhone, setActiveChatPhone] = useState(null);
   const [autoSync, setAutoSync] = useState(true);
+  const [viewMode, setViewMode] = useState('grouped'); // 'grouped' (Inbox/Threads) or 'raw' (Full Telemetry Log)
 
   const fetchLogs = async (silent = false) => {
     if (!silent) setLoading(true);
@@ -1299,15 +1300,145 @@ function MessageLogsView({ showToast }) {
     }
   };
 
-  // DataTable Column Definitions for Logs
+  // Group messages by contact phone number (Latest message per conversation)
+  const groupedConversations = useMemo(() => {
+    const map = new Map();
+    for (const m of messages) {
+      const contactPhone = (m.direction === 'inbound' ? m.from_phone : m.to_phone) || m.to_phone || m.from_phone;
+      if (!contactPhone) continue;
+
+      if (!map.has(contactPhone)) {
+        map.set(contactPhone, {
+          ...m,
+          contact_phone: contactPhone,
+          total_count: 1,
+          has_inbound: m.direction === 'inbound',
+          unread_inbound: (m.direction === 'inbound' && m.status !== 'read') ? 1 : 0
+        });
+      } else {
+        const entry = map.get(contactPhone);
+        entry.total_count += 1;
+        if (m.direction === 'inbound') {
+          entry.has_inbound = true;
+          if (m.status !== 'read') entry.unread_inbound += 1;
+        }
+      }
+    }
+    return Array.from(map.values());
+  }, [messages]);
+
+  // Column definitions for Grouped Conversations (Latest message per phone)
+  const conversationColumns = [
+    {
+      key: 'contact_phone',
+      label: 'Contact / Recipient',
+      render: (c) => (
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+            <span style={{ fontWeight: '700', fontSize: '13.5px', color: '#0F172A' }}>{c.contact_phone}</span>
+            <span className="badge" style={{ background: '#E0F2FE', color: '#0369A1', fontSize: '11px', padding: '2px 7px', fontWeight: '600' }}>
+              {c.total_count} {c.total_count === 1 ? 'msg' : 'msgs'}
+            </span>
+            {c.has_inbound && (
+              <span className="badge" style={{ background: '#DCFCE7', color: '#15803D', fontSize: '10.5px', padding: '2px 6px' }}>
+                🟢 2-Way Active
+              </span>
+            )}
+          </div>
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+            {c.source_system} • {c.direction === 'inbound' ? '📥 Last Inbound' : '📤 Last Outbound'}
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'category',
+      label: 'Category',
+      render: (c) => (
+        <span className={`badge cat-${(c.category || 'SERVICE').toLowerCase().substring(0, 4)}`}>
+          {c.category}
+        </span>
+      )
+    },
+    {
+      key: 'message_body',
+      label: 'Latest Message Preview',
+      render: (c) => (
+        <div style={{ maxWidth: '320px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={c.message_body}>
+          <span style={{ marginRight: '6px', opacity: 0.85 }}>
+            {c.direction === 'inbound' ? '📥' : '📤'}
+          </span>
+          {c.header_media_name && <span style={{ marginRight: '4px', fontWeight: '600' }}>📎 [{c.header_media_name}]</span>}
+          <span>{c.message_body}</span>
+        </div>
+      )
+    },
+    {
+      key: 'status',
+      label: 'Latest Status',
+      render: (c) => (
+        <div>
+          <span className={`badge status-${c.status}`} style={{ transition: 'all 0.3s ease' }}>
+            {c.status === 'read' ? '✓✓ Read' : c.status === 'delivered' ? '✓✓ Delivered' : c.status === 'sent' ? '✓ Sent' : c.status.toUpperCase()}
+          </span>
+          {c.status === 'failed' && c.error_message && (
+            <div style={{ fontSize: '10px', color: '#EF4444', marginTop: '3px', maxWidth: '200px', whiteSpace: 'normal', lineHeight: '1.2' }}>
+              ⚠️ {c.error_message}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'client_rate_bhd',
+      label: 'Latest Rate (BHD)',
+      render: (c) => (
+        <div>
+          <strong>{parseFloat(c.client_rate_bhd || 0).toFixed(4)} BHD</strong>
+          <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+            Meta: {parseFloat(c.meta_cost_bhd || 0).toFixed(4)}
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'created_at',
+      label: 'Last Message Time',
+      render: (c) => <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>{c.created_at}</span>
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      sortable: false,
+      render: (c) => (
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <button
+            className="btn btn-success btn-sm"
+            style={{ padding: '5px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: '700' }}
+            onClick={() => setActiveChatPhone(c.contact_phone)}
+            title={`Open Full WhatsApp Chat History with ${c.contact_phone}`}
+          >
+            <span>💬</span> Open Chat ({c.total_count})
+          </button>
+          <button className="btn btn-secondary btn-sm" onClick={() => setSelectedLog(c)} title="Inspect Latest Payload">
+            Inspect
+          </button>
+        </div>
+      )
+    }
+  ];
+
+  // DataTable Column Definitions for Raw Individual Logs
   const logColumns = [
     {
       key: 'to_phone',
       label: 'Recipient / Source',
       render: (m) => (
         <div>
-          <div><strong>{m.to_phone}</strong></div>
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{m.source_system}</div>
+          <div><strong>{m.direction === 'inbound' ? m.from_phone : m.to_phone}</strong></div>
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+            {m.direction === 'inbound' ? '📥 WhatsApp Inbound' : `📤 ${m.source_system}`}
+          </div>
         </div>
       )
     },
@@ -1394,8 +1525,30 @@ function MessageLogsView({ showToast }) {
   ];
 
   const customFilterBar = (
-    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-      <select className="form-select" style={{ width: '140px', padding: '5px 8px', fontSize: '12px' }} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+      {/* View Mode Toggle */}
+      <div className="view-mode-toggle">
+        <button
+          type="button"
+          className={`view-mode-btn ${viewMode === 'grouped' ? 'active' : ''}`}
+          onClick={() => setViewMode('grouped')}
+          title="Group conversations by Phone Number (Shows latest message with full chat history on click)"
+        >
+          <span>💬 Conversations</span>
+          <span className="count-badge">{groupedConversations.length}</span>
+        </button>
+        <button
+          type="button"
+          className={`view-mode-btn ${viewMode === 'raw' ? 'active' : ''}`}
+          onClick={() => setViewMode('raw')}
+          title="Show raw individual message logs and telemetry audit trail"
+        >
+          <span>📜 Raw Logs</span>
+          <span className="count-badge">{messages.length}</span>
+        </button>
+      </div>
+
+      <select className="form-select" style={{ width: '135px', padding: '5px 8px', fontSize: '12px' }} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
         <option value="all">All Statuses</option>
         <option value="read">Read (✓✓ Blue)</option>
         <option value="delivered">Delivered (✓✓ Grey)</option>
@@ -1403,7 +1556,7 @@ function MessageLogsView({ showToast }) {
         <option value="queued">Queued</option>
         <option value="failed">Failed</option>
       </select>
-      <select className="form-select" style={{ width: '150px', padding: '5px 8px', fontSize: '12px' }} value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+      <select className="form-select" style={{ width: '145px', padding: '5px 8px', fontSize: '12px' }} value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
         <option value="all">All Categories</option>
         <option value="UTILITY">Utility (Invoices)</option>
         <option value="AUTHENTICATION">Authentication (OTP)</option>
@@ -1417,8 +1570,12 @@ function MessageLogsView({ showToast }) {
     <div>
       <div className="page-header-row">
         <div className="page-title-group">
-          <h1><span>📜</span> Message Telemetry & Logs</h1>
-          <p>Audit trail of all inbound and outbound WhatsApp conversations, delivery lifecycle, and billing tariffs.</p>
+          <h1><span>📜</span> Message Telemetry & Conversations</h1>
+          <p>
+            {viewMode === 'grouped'
+              ? 'Grouped active WhatsApp conversations with latest message previews and instant chat consoles.'
+              : 'Audit trail of all individual inbound and outbound WhatsApp messages, lifecycle, and billing tariffs.'}
+          </p>
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <button
@@ -1437,16 +1594,29 @@ function MessageLogsView({ showToast }) {
       </div>
 
       {/* Main DataTable */}
-      <DataTable
-        columns={logColumns}
-        data={messages}
-        title="whatsapp_messages_log"
-        searchPlaceholder="Search phone, wamid, content..."
-        defaultPageSize={10}
-        pageSizeOptions={[10, 25, 50, 100]}
-        actions={customFilterBar}
-        emptyMessage={loading ? 'Loading telemetry logs...' : 'No messages found matching criteria.'}
-      />
+      {viewMode === 'grouped' ? (
+        <DataTable
+          columns={conversationColumns}
+          data={groupedConversations}
+          title="whatsapp_conversations"
+          searchPlaceholder="Search phone or latest message..."
+          defaultPageSize={10}
+          pageSizeOptions={[10, 25, 50, 100]}
+          actions={customFilterBar}
+          emptyMessage={loading ? 'Loading conversations...' : 'No conversations found matching criteria.'}
+        />
+      ) : (
+        <DataTable
+          columns={logColumns}
+          data={messages}
+          title="whatsapp_messages_log"
+          searchPlaceholder="Search phone, wamid, content..."
+          defaultPageSize={10}
+          pageSizeOptions={[10, 25, 50, 100]}
+          actions={customFilterBar}
+          emptyMessage={loading ? 'Loading telemetry logs...' : 'No messages found matching criteria.'}
+        />
+      )}
 
       {/* Live Conversation Chat Modal */}
       {activeChatPhone && (

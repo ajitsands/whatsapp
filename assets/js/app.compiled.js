@@ -638,6 +638,7 @@ function MessageLogsView({ showToast }) {
   const [selectedLog, setSelectedLog] = useState(null);
   const [activeChatPhone, setActiveChatPhone] = useState(null);
   const [autoSync, setAutoSync] = useState(true);
+  const [viewMode, setViewMode] = useState("grouped");
   const fetchLogs = async (silent = false) => {
     if (!silent) setLoading(true);
     try {
@@ -679,11 +680,85 @@ function MessageLogsView({ showToast }) {
       showToast("Error updating status", "error");
     }
   };
+  const groupedConversations = useMemo(() => {
+    const map = /* @__PURE__ */ new Map();
+    for (const m of messages) {
+      const contactPhone = (m.direction === "inbound" ? m.from_phone : m.to_phone) || m.to_phone || m.from_phone;
+      if (!contactPhone) continue;
+      if (!map.has(contactPhone)) {
+        map.set(contactPhone, {
+          ...m,
+          contact_phone: contactPhone,
+          total_count: 1,
+          has_inbound: m.direction === "inbound",
+          unread_inbound: m.direction === "inbound" && m.status !== "read" ? 1 : 0
+        });
+      } else {
+        const entry = map.get(contactPhone);
+        entry.total_count += 1;
+        if (m.direction === "inbound") {
+          entry.has_inbound = true;
+          if (m.status !== "read") entry.unread_inbound += 1;
+        }
+      }
+    }
+    return Array.from(map.values());
+  }, [messages]);
+  const conversationColumns = [
+    {
+      key: "contact_phone",
+      label: "Contact / Recipient",
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: "700", fontSize: "13.5px", color: "#0F172A" } }, c.contact_phone), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#E0F2FE", color: "#0369A1", fontSize: "11px", padding: "2px 7px", fontWeight: "600" } }, c.total_count, " ", c.total_count === 1 ? "msg" : "msgs"), c.has_inbound && /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#DCFCE7", color: "#15803D", fontSize: "10.5px", padding: "2px 6px" } }, "\u{1F7E2} 2-Way Active")), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)", marginTop: "2px" } }, c.source_system, " \u2022 ", c.direction === "inbound" ? "\u{1F4E5} Last Inbound" : "\u{1F4E4} Last Outbound"))
+    },
+    {
+      key: "category",
+      label: "Category",
+      render: (c) => /* @__PURE__ */ React.createElement("span", { className: `badge cat-${(c.category || "SERVICE").toLowerCase().substring(0, 4)}` }, c.category)
+    },
+    {
+      key: "message_body",
+      label: "Latest Message Preview",
+      render: (c) => /* @__PURE__ */ React.createElement("div", { style: { maxWidth: "320px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }, title: c.message_body }, /* @__PURE__ */ React.createElement("span", { style: { marginRight: "6px", opacity: 0.85 } }, c.direction === "inbound" ? "\u{1F4E5}" : "\u{1F4E4}"), c.header_media_name && /* @__PURE__ */ React.createElement("span", { style: { marginRight: "4px", fontWeight: "600" } }, "\u{1F4CE} [", c.header_media_name, "]"), /* @__PURE__ */ React.createElement("span", null, c.message_body))
+    },
+    {
+      key: "status",
+      label: "Latest Status",
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: `badge status-${c.status}`, style: { transition: "all 0.3s ease" } }, c.status === "read" ? "\u2713\u2713 Read" : c.status === "delivered" ? "\u2713\u2713 Delivered" : c.status === "sent" ? "\u2713 Sent" : c.status.toUpperCase()), c.status === "failed" && c.error_message && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "#EF4444", marginTop: "3px", maxWidth: "200px", whiteSpace: "normal", lineHeight: "1.2" } }, "\u26A0\uFE0F ", c.error_message))
+    },
+    {
+      key: "client_rate_bhd",
+      label: "Latest Rate (BHD)",
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", null, parseFloat(c.client_rate_bhd || 0).toFixed(4), " BHD"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "var(--text-muted)" } }, "Meta: ", parseFloat(c.meta_cost_bhd || 0).toFixed(4)))
+    },
+    {
+      key: "created_at",
+      label: "Last Message Time",
+      render: (c) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, c.created_at)
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      sortable: false,
+      render: (c) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-success btn-sm",
+          style: { padding: "5px 12px", fontSize: "12px", display: "flex", alignItems: "center", gap: "5px", fontWeight: "700" },
+          onClick: () => setActiveChatPhone(c.contact_phone),
+          title: `Open Full WhatsApp Chat History with ${c.contact_phone}`
+        },
+        /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"),
+        " Open Chat (",
+        c.total_count,
+        ")"
+      ), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setSelectedLog(c), title: "Inspect Latest Payload" }, "Inspect"))
+    }
+  ];
   const logColumns = [
     {
       key: "to_phone",
       label: "Recipient / Source",
-      render: (m) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", null, m.to_phone)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, m.source_system))
+      render: (m) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", null, m.direction === "inbound" ? m.from_phone : m.to_phone)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, m.direction === "inbound" ? "\u{1F4E5} WhatsApp Inbound" : `\u{1F4E4} ${m.source_system}`))
     },
     {
       key: "category",
@@ -730,8 +805,28 @@ function MessageLogsView({ showToast }) {
       }
     }
   ];
-  const customFilterBar = /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px", alignItems: "center" } }, /* @__PURE__ */ React.createElement("select", { className: "form-select", style: { width: "140px", padding: "5px 8px", fontSize: "12px" }, value: statusFilter, onChange: (e) => setStatusFilter(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "all" }, "All Statuses"), /* @__PURE__ */ React.createElement("option", { value: "read" }, "Read (\u2713\u2713 Blue)"), /* @__PURE__ */ React.createElement("option", { value: "delivered" }, "Delivered (\u2713\u2713 Grey)"), /* @__PURE__ */ React.createElement("option", { value: "sent" }, "Sent (\u2713 Single)"), /* @__PURE__ */ React.createElement("option", { value: "queued" }, "Queued"), /* @__PURE__ */ React.createElement("option", { value: "failed" }, "Failed")), /* @__PURE__ */ React.createElement("select", { className: "form-select", style: { width: "150px", padding: "5px 8px", fontSize: "12px" }, value: categoryFilter, onChange: (e) => setCategoryFilter(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "all" }, "All Categories"), /* @__PURE__ */ React.createElement("option", { value: "UTILITY" }, "Utility (Invoices)"), /* @__PURE__ */ React.createElement("option", { value: "AUTHENTICATION" }, "Authentication (OTP)"), /* @__PURE__ */ React.createElement("option", { value: "MARKETING" }, "Marketing (Promo)"), /* @__PURE__ */ React.createElement("option", { value: "SERVICE" }, "Service (Support)")));
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Message Telemetry & Logs"), /* @__PURE__ */ React.createElement("p", null, "Audit trail of all inbound and outbound WhatsApp conversations, delivery lifecycle, and billing tariffs.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+  const customFilterBar = /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("div", { className: "view-mode-toggle" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `view-mode-btn ${viewMode === "grouped" ? "active" : ""}`,
+      onClick: () => setViewMode("grouped"),
+      title: "Group conversations by Phone Number (Shows latest message with full chat history on click)"
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC} Conversations"),
+    /* @__PURE__ */ React.createElement("span", { className: "count-badge" }, groupedConversations.length)
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `view-mode-btn ${viewMode === "raw" ? "active" : ""}`,
+      onClick: () => setViewMode("raw"),
+      title: "Show raw individual message logs and telemetry audit trail"
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC} Raw Logs"),
+    /* @__PURE__ */ React.createElement("span", { className: "count-badge" }, messages.length)
+  )), /* @__PURE__ */ React.createElement("select", { className: "form-select", style: { width: "135px", padding: "5px 8px", fontSize: "12px" }, value: statusFilter, onChange: (e) => setStatusFilter(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "all" }, "All Statuses"), /* @__PURE__ */ React.createElement("option", { value: "read" }, "Read (\u2713\u2713 Blue)"), /* @__PURE__ */ React.createElement("option", { value: "delivered" }, "Delivered (\u2713\u2713 Grey)"), /* @__PURE__ */ React.createElement("option", { value: "sent" }, "Sent (\u2713 Single)"), /* @__PURE__ */ React.createElement("option", { value: "queued" }, "Queued"), /* @__PURE__ */ React.createElement("option", { value: "failed" }, "Failed")), /* @__PURE__ */ React.createElement("select", { className: "form-select", style: { width: "145px", padding: "5px 8px", fontSize: "12px" }, value: categoryFilter, onChange: (e) => setCategoryFilter(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "all" }, "All Categories"), /* @__PURE__ */ React.createElement("option", { value: "UTILITY" }, "Utility (Invoices)"), /* @__PURE__ */ React.createElement("option", { value: "AUTHENTICATION" }, "Authentication (OTP)"), /* @__PURE__ */ React.createElement("option", { value: "MARKETING" }, "Marketing (Promo)"), /* @__PURE__ */ React.createElement("option", { value: "SERVICE" }, "Service (Support)")));
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Message Telemetry & Conversations"), /* @__PURE__ */ React.createElement("p", null, viewMode === "grouped" ? "Grouped active WhatsApp conversations with latest message previews and instant chat consoles." : "Audit trail of all individual inbound and outbound WhatsApp messages, lifecycle, and billing tariffs.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
     "button",
     {
       className: `btn ${autoSync ? "btn-success" : "btn-secondary"}`,
@@ -741,7 +836,19 @@ function MessageLogsView({ showToast }) {
     },
     /* @__PURE__ */ React.createElement("span", { style: { display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: autoSync ? "#22C55E" : "#9CA3AF", boxShadow: autoSync ? "0 0 8px #22C55E" : "none" } }),
     autoSync ? "\u{1F7E2} Live Auto-Sync Active" : "\u23F8\uFE0F Live Sync Paused"
-  ), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary", onClick: () => fetchLogs(false) }, /* @__PURE__ */ React.createElement("span", null, "\u{1F504}"), " Refresh Now"))), /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary", onClick: () => fetchLogs(false) }, /* @__PURE__ */ React.createElement("span", null, "\u{1F504}"), " Refresh Now"))), viewMode === "grouped" ? /* @__PURE__ */ React.createElement(
+    DataTable,
+    {
+      columns: conversationColumns,
+      data: groupedConversations,
+      title: "whatsapp_conversations",
+      searchPlaceholder: "Search phone or latest message...",
+      defaultPageSize: 10,
+      pageSizeOptions: [10, 25, 50, 100],
+      actions: customFilterBar,
+      emptyMessage: loading ? "Loading conversations..." : "No conversations found matching criteria."
+    }
+  ) : /* @__PURE__ */ React.createElement(
     DataTable,
     {
       columns: logColumns,
