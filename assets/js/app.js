@@ -3498,7 +3498,32 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
         {/* TAB 1: TARIFFS & PRICING ENGINE */}
         {activeSubTab === 'tariffs' && (
           <div className="card" style={{ maxWidth: '950px' }}>
-            {/* Superadmin Only: Billing Model Selection (Option A vs Option B) */}
+            {/* Superadmin vs Admin Notice */}
+            {!isSuperadmin && (
+              <div style={{ background: '#FEF3C7', border: '1.5px solid #FCD34D', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '24px' }}>🔒</span>
+                <div>
+                  <strong style={{ fontSize: '13.5px', color: '#92400E' }}>Read-Only Official Tariff Schedule</strong>
+                  <div style={{ fontSize: '12px', color: '#78350F', marginTop: '2px' }}>
+                    WhatsApp Meta base costs, platform margins, and billing engine rules are managed exclusively by SaNDS Lab Superadmin. Admin accounts have view-only access.
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Charging Model Indicator for Admin */}
+            {!isSuperadmin && (
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                  <strong style={{ fontSize: '13.5px', color: '#0F172A' }}>Active Charging Engine Model:</strong>
+                  <span className="badge" style={{ background: settings.billing_model === '24h_session' ? '#DBEAFE' : '#DCFCE7', color: settings.billing_model === '24h_session' ? '#1E40AF' : '#15803D', fontWeight: '700', padding: '5px 12px' }}>
+                    {settings.billing_model === '24h_session' ? '⚡ Option B: Meta 24-Hour Session Billing' : '📄 Option A: Standard Per-Message Billing'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Superadmin Only: Interactive Billing Model Selector (Option A vs Option B) */}
             {isSuperadmin && (
               <div style={{ background: '#F8FAFC', border: '1.5px solid #0D9488', borderRadius: '12px', padding: '18px', marginBottom: '22px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
@@ -3587,7 +3612,9 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
               Dynamic Meta Cost & Platform Charges per Category
             </h3>
             <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', marginBottom: '18px' }}>
-              Configure the exact Meta Cost and SaNDS Platform Margin per message category. These tariffs take effect dynamically across all outgoing message dispatches, wallet debits, and client billing.
+              {isSuperadmin
+                ? 'Configure the exact Meta Cost and SaNDS Platform Margin per message category. These tariffs take effect dynamically across all outgoing message dispatches, wallet debits, and client billing.'
+                : 'Current official Meta Cost and Platform Charges per message category for outgoing dispatches.'}
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '16px' }}>
@@ -3605,7 +3632,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                       step="0.0001"
                       className="form-input"
                       value={settings.tariff_utility_meta}
-                      onChange={(e) => setSettings({ ...settings, tariff_utility_meta: e.target.value })}
+                      onChange={(e) => isSuperadmin && setSettings({ ...settings, tariff_utility_meta: e.target.value })}
+                      readOnly={!isSuperadmin}
+                      disabled={!isSuperadmin}
+                      style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : {}}
                       required
                     />
                   </div>
@@ -3616,7 +3646,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                       step="0.0001"
                       className="form-input"
                       value={settings.tariff_utility_platform}
-                      onChange={(e) => setSettings({ ...settings, tariff_utility_platform: e.target.value })}
+                      onChange={(e) => isSuperadmin && setSettings({ ...settings, tariff_utility_platform: e.target.value })}
+                      readOnly={!isSuperadmin}
+                      disabled={!isSuperadmin}
+                      style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : {}}
                       required
                     />
                   </div>
@@ -3640,7 +3673,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                       step="0.0001"
                       className="form-input"
                       value={settings.tariff_auth_meta}
-                      onChange={(e) => setSettings({ ...settings, tariff_auth_meta: e.target.value })}
+                      onChange={(e) => isSuperadmin && setSettings({ ...settings, tariff_auth_meta: e.target.value })}
+                      readOnly={!isSuperadmin}
+                      disabled={!isSuperadmin}
+                      style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : {}}
                       required
                     />
                   </div>
@@ -3651,7 +3687,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                       step="0.0001"
                       className="form-input"
                       value={settings.tariff_auth_platform}
-                      onChange={(e) => setSettings({ ...settings, tariff_auth_platform: e.target.value })}
+                      onChange={(e) => isSuperadmin && setSettings({ ...settings, tariff_auth_platform: e.target.value })}
+                      readOnly={!isSuperadmin}
+                      disabled={!isSuperadmin}
+                      style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : {}}
                       required
                     />
                   </div>
@@ -3675,7 +3714,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                       step="0.0001"
                       className="form-input"
                       value={settings.tariff_marketing_meta}
-                      onChange={(e) => setSettings({ ...settings, tariff_marketing_meta: e.target.value })}
+                      onChange={(e) => isSuperadmin && setSettings({ ...settings, tariff_marketing_meta: e.target.value })}
+                      readOnly={!isSuperadmin}
+                      disabled={!isSuperadmin}
+                      style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : {}}
                       required
                     />
                   </div>
@@ -3686,7 +3728,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                       step="0.0001"
                       className="form-input"
                       value={settings.tariff_marketing_platform}
-                      onChange={(e) => setSettings({ ...settings, tariff_marketing_platform: e.target.value })}
+                      onChange={(e) => isSuperadmin && setSettings({ ...settings, tariff_marketing_platform: e.target.value })}
+                      readOnly={!isSuperadmin}
+                      disabled={!isSuperadmin}
+                      style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : {}}
                       required
                     />
                   </div>
@@ -3710,7 +3755,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                       step="0.0001"
                       className="form-input"
                       value={settings.tariff_service_meta}
-                      onChange={(e) => setSettings({ ...settings, tariff_service_meta: e.target.value })}
+                      onChange={(e) => isSuperadmin && setSettings({ ...settings, tariff_service_meta: e.target.value })}
+                      readOnly={!isSuperadmin}
+                      disabled={!isSuperadmin}
+                      style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : {}}
                       required
                     />
                   </div>
@@ -3721,7 +3769,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                       step="0.0001"
                       className="form-input"
                       value={settings.tariff_service_platform}
-                      onChange={(e) => setSettings({ ...settings, tariff_service_platform: e.target.value })}
+                      onChange={(e) => isSuperadmin && setSettings({ ...settings, tariff_service_platform: e.target.value })}
+                      readOnly={!isSuperadmin}
+                      disabled={!isSuperadmin}
+                      style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : {}}
                       required
                     />
                   </div>
@@ -3897,8 +3948,17 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
         )}
 
         <div style={{ marginTop: '20px' }}>
-          <button type="submit" className="btn btn-primary" style={{ padding: '10px 24px', fontSize: '14px', fontWeight: '700' }} disabled={loading}>
-            {loading ? 'Saving...' : '💾 Save & Apply System Configuration'}
+          <button
+            type="submit"
+            className={`btn ${isSuperadmin || activeSubTab !== 'tariffs' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ padding: '10px 24px', fontSize: '14px', fontWeight: '700' }}
+            disabled={loading || (!isSuperadmin && activeSubTab === 'tariffs')}
+          >
+            {loading
+              ? 'Saving...'
+              : (!isSuperadmin && activeSubTab === 'tariffs'
+                  ? '🔒 Tariffs Managed by Superadmin (Read Only)'
+                  : '💾 Save & Apply System Configuration')}
           </button>
         </div>
       </form>

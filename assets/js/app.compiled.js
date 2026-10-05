@@ -2154,7 +2154,7 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
     },
     /* @__PURE__ */ React.createElement("span", null, "\u26A1"),
     " Meta Cloud API Credentials"
-  )), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, activeSubTab === "tariffs" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "950px" } }, isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1.5px solid #0D9488", borderRadius: "12px", padding: "18px", marginBottom: "22px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u26A1"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#0F172A" } }, "WhatsApp Tariff & Charging Engine Model")), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#CCFBF1", color: "#0F766E", fontWeight: "800", fontSize: "11px", padding: "4px 9px" } }, "\u{1F451} Superadmin Exclusive Rule")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", margin: "0 0 16px 0", lineHeight: "1.4" } }, "Choose how the platform calculates Meta tariffs and debits client prepaid balances for outgoing messages:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "14px" } }, /* @__PURE__ */ React.createElement(
+  )), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, activeSubTab === "tariffs" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "950px" } }, !isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEF3C7", border: "1.5px solid #FCD34D", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F512}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#92400E" } }, "Read-Only Official Tariff Schedule"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "#78350F", marginTop: "2px" } }, "WhatsApp Meta base costs, platform margins, and billing engine rules are managed exclusively by SaNDS Lab Superadmin. Admin accounts have view-only access."))), !isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A" } }, "Active Charging Engine Model:"), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: settings.billing_model === "24h_session" ? "#DBEAFE" : "#DCFCE7", color: settings.billing_model === "24h_session" ? "#1E40AF" : "#15803D", fontWeight: "700", padding: "5px 12px" } }, settings.billing_model === "24h_session" ? "\u26A1 Option B: Meta 24-Hour Session Billing" : "\u{1F4C4} Option A: Standard Per-Message Billing"))), isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1.5px solid #0D9488", borderRadius: "12px", padding: "18px", marginBottom: "22px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u26A1"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#0F172A" } }, "WhatsApp Tariff & Charging Engine Model")), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#CCFBF1", color: "#0F766E", fontWeight: "800", fontSize: "11px", padding: "4px 9px" } }, "\u{1F451} Superadmin Exclusive Rule")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", margin: "0 0 16px 0", lineHeight: "1.4" } }, "Choose how the platform calculates Meta tariffs and debits client prepaid balances for outgoing messages:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "14px" } }, /* @__PURE__ */ React.createElement(
     "div",
     {
       onClick: () => setSettings({ ...settings, billing_model: "per_message" }),
@@ -2208,14 +2208,17 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
     ), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A" } }, "Option B: Meta 24-Hour Session Billing")),
     /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", margin: "4px 0 0 26px", lineHeight: "1.4" } }, /* @__PURE__ */ React.createElement("strong", null, "1st Message:"), " Opens a 24h window (Full Meta Cost + Platform Margin).", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("strong", null, "Subsequent Messages in 24h:"), " Meta Cost is waived (", /* @__PURE__ */ React.createElement("strong", null, "0.0000 ", curr), ") and only Platform Margin is debited."),
     /* @__PURE__ */ React.createElement("div", { style: { margin: "8px 0 0 26px", fontSize: "11px", color: "#2563EB", fontWeight: "700" } }, "\u2713 Official Meta Conversation Window Alignment.")
-  ))), /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", color: "var(--wa-dark-teal)", marginBottom: "8px" } }, "Dynamic Meta Cost & Platform Charges per Category"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "18px" } }, "Configure the exact Meta Cost and SaNDS Platform Margin per message category. These tariffs take effect dynamically across all outgoing message dispatches, wallet debits, and client billing."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(380px, 1fr))", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "\u{1F4C4} UTILITY (Invoices, Receipts, Notices)"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-util" }, "UTILITY")), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Meta Base Cost (", curr, ")"), /* @__PURE__ */ React.createElement(
+  ))), /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", color: "var(--wa-dark-teal)", marginBottom: "8px" } }, "Dynamic Meta Cost & Platform Charges per Category"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "18px" } }, isSuperadmin ? "Configure the exact Meta Cost and SaNDS Platform Margin per message category. These tariffs take effect dynamically across all outgoing message dispatches, wallet debits, and client billing." : "Current official Meta Cost and Platform Charges per message category for outgoing dispatches."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(380px, 1fr))", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "\u{1F4C4} UTILITY (Invoices, Receipts, Notices)"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-util" }, "UTILITY")), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Meta Base Cost (", curr, ")"), /* @__PURE__ */ React.createElement(
     "input",
     {
       type: "number",
       step: "0.0001",
       className: "form-input",
       value: settings.tariff_utility_meta,
-      onChange: (e) => setSettings({ ...settings, tariff_utility_meta: e.target.value }),
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_utility_meta: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
       required: true
     }
   )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Platform Margin (", curr, ")"), /* @__PURE__ */ React.createElement(
@@ -2225,7 +2228,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       step: "0.0001",
       className: "form-input",
       value: settings.tariff_utility_platform,
-      onChange: (e) => setSettings({ ...settings, tariff_utility_platform: e.target.value }),
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_utility_platform: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
       required: true
     }
   ))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "10px", fontSize: "12px", color: "#0369A1", fontWeight: "700" } }, "Total Client Rate: ", (parseFloat(settings.tariff_utility_meta || 0) + parseFloat(settings.tariff_utility_platform || 0)).toFixed(dec), " ", curr)), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "\u{1F510} AUTHENTICATION (OTP, 2FA, Logins)"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-auth" }, "AUTH")), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Meta Base Cost (", curr, ")"), /* @__PURE__ */ React.createElement(
@@ -2235,7 +2241,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       step: "0.0001",
       className: "form-input",
       value: settings.tariff_auth_meta,
-      onChange: (e) => setSettings({ ...settings, tariff_auth_meta: e.target.value }),
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_auth_meta: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
       required: true
     }
   )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Platform Margin (", curr, ")"), /* @__PURE__ */ React.createElement(
@@ -2245,7 +2254,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       step: "0.0001",
       className: "form-input",
       value: settings.tariff_auth_platform,
-      onChange: (e) => setSettings({ ...settings, tariff_auth_platform: e.target.value }),
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_auth_platform: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
       required: true
     }
   ))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "10px", fontSize: "12px", color: "#0369A1", fontWeight: "700" } }, "Total Client Rate: ", (parseFloat(settings.tariff_auth_meta || 0) + parseFloat(settings.tariff_auth_platform || 0)).toFixed(dec), " ", curr)), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "\u{1F4E3} MARKETING (Promotions, Discounts, Offers)"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-mark" }, "MARKETING")), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Meta Base Cost (", curr, ")"), /* @__PURE__ */ React.createElement(
@@ -2255,7 +2267,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       step: "0.0001",
       className: "form-input",
       value: settings.tariff_marketing_meta,
-      onChange: (e) => setSettings({ ...settings, tariff_marketing_meta: e.target.value }),
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_marketing_meta: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
       required: true
     }
   )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Platform Margin (", curr, ")"), /* @__PURE__ */ React.createElement(
@@ -2265,7 +2280,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       step: "0.0001",
       className: "form-input",
       value: settings.tariff_marketing_platform,
-      onChange: (e) => setSettings({ ...settings, tariff_marketing_platform: e.target.value }),
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_marketing_platform: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
       required: true
     }
   ))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "10px", fontSize: "12px", color: "#0369A1", fontWeight: "700" } }, "Total Client Rate: ", (parseFloat(settings.tariff_marketing_meta || 0) + parseFloat(settings.tariff_marketing_platform || 0)).toFixed(dec), " ", curr)), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "\u{1F4AC} SERVICE (Customer Support, Live Chat)"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-serv" }, "SERVICE")), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Meta Base Cost (", curr, ")"), /* @__PURE__ */ React.createElement(
@@ -2275,7 +2293,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       step: "0.0001",
       className: "form-input",
       value: settings.tariff_service_meta,
-      onChange: (e) => setSettings({ ...settings, tariff_service_meta: e.target.value }),
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_service_meta: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
       required: true
     }
   )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Platform Margin (", curr, ")"), /* @__PURE__ */ React.createElement(
@@ -2285,7 +2306,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       step: "0.0001",
       className: "form-input",
       value: settings.tariff_service_platform,
-      onChange: (e) => setSettings({ ...settings, tariff_service_platform: e.target.value }),
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_service_platform: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
       required: true
     }
   ))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "10px", fontSize: "12px", color: "#0369A1", fontWeight: "700" } }, "Total Client Rate: ", (parseFloat(settings.tariff_service_meta || 0) + parseFloat(settings.tariff_service_platform || 0)).toFixed(dec), " ", curr)))), activeSubTab === "currency" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "800px" } }, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", color: "var(--wa-dark-teal)", marginBottom: "8px" } }, "Multi-Currency Configuration (All GCC & India)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "18px" } }, "Select the operating currency for the entire platform, wallet balances, tariffs, and transaction reports."), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Platform Operating Currency"), /* @__PURE__ */ React.createElement(
@@ -2378,7 +2402,16 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       value: settings.webhook_verify_token,
       onChange: (e) => setSettings({ ...settings, webhook_verify_token: e.target.value })
     }
-  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Paste this token into Meta Developer App Dashboard Webhook settings."))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "20px" } }, /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { padding: "10px 24px", fontSize: "14px", fontWeight: "700" }, disabled: loading }, loading ? "Saving..." : "\u{1F4BE} Save & Apply System Configuration"))));
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Paste this token into Meta Developer App Dashboard Webhook settings."))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "20px" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "submit",
+      className: `btn ${isSuperadmin || activeSubTab !== "tariffs" ? "btn-primary" : "btn-secondary"}`,
+      style: { padding: "10px 24px", fontSize: "14px", fontWeight: "700" },
+      disabled: loading || !isSuperadmin && activeSubTab === "tariffs"
+    },
+    loading ? "Saving..." : !isSuperadmin && activeSubTab === "tariffs" ? "\u{1F512} Tariffs Managed by Superadmin (Read Only)" : "\u{1F4BE} Save & Apply System Configuration"
+  ))));
 }
 const rootElement = document.getElementById("root");
 if (rootElement) {

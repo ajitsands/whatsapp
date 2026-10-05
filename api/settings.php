@@ -51,11 +51,31 @@ switch ($method) {
         break;
 
     case 'POST':
+        $userRole = $auth['role'] ?? ($auth['user']['role'] ?? 'admin');
+        $isSuperadmin = ($userRole === 'superadmin');
+
         $input = getJsonInput();
         $settings = $input['settings'] ?? $input;
 
         if (!is_array($settings)) {
             sendJsonResponse(['success' => false, 'error' => 'Invalid settings payload'], 400);
+        }
+
+        // Restrict Tariff & Pricing Engine modifications exclusively to Superadmin
+        $tariffKeys = [
+            'tariff_utility_meta', 'tariff_utility_platform',
+            'tariff_auth_meta', 'tariff_auth_platform',
+            'tariff_marketing_meta', 'tariff_marketing_platform',
+            'tariff_service_meta', 'tariff_service_platform',
+            'billing_model', 'wallet_enforcement'
+        ];
+
+        if (!$isSuperadmin) {
+            foreach ($tariffKeys as $tk) {
+                if (isset($settings[$tk])) {
+                    unset($settings[$tk]);
+                }
+            }
         }
 
         $stmt = $db->prepare("
