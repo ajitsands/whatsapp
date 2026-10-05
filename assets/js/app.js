@@ -1637,8 +1637,10 @@ function MessageLogsView({ showToast }) {
           background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
         }}>
           <div className="card" style={{ width: '600px', maxHeight: '85vh', overflowY: 'auto' }}>
-            <div className="card-header">
-              <span className="card-title">Message Inspection: {selectedLog.message_id}</span>
+            <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '15px' }}>
+                <span>🔍</span> Message Payload Inspection
+              </span>
               <button className="btn btn-secondary btn-sm" onClick={() => setSelectedLog(null)}>✕ Close</button>
             </div>
             <div className="code-box">
