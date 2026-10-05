@@ -1877,7 +1877,7 @@ function TemplatesView({ showToast }) {
           <p>Meta-registered message templates, variable placeholders, and official Bahrain Market rates.</p>
         </div>
         <button className="btn btn-primary" onClick={() => setEditingTemplate({
-          template_name: '', display_title: '', category: 'UTILITY', language: 'en',
+          template_name: '', display_title: '', category: 'UTILITY', language: 'en_US',
           header_type: 'NONE', header_sample: '', body_text: '', footer_text: ''
         })}>
           <span>➕</span> Register New Template
@@ -1955,14 +1955,21 @@ function TemplatesView({ showToast }) {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Language Code</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="en, ar"
-                    value={editingTemplate.language}
+                  <label className="form-label">Language Code *</label>
+                  <select
+                    className="form-select"
+                    value={editingTemplate.language || 'en_US'}
                     onChange={(e) => setEditingTemplate({ ...editingTemplate, language: e.target.value })}
-                  />
+                  >
+                    <option value="en_US">English (US) — en_US (Most Common)</option>
+                    <option value="en">English — en</option>
+                    <option value="en_GB">English (UK) — en_GB</option>
+                    <option value="ar">Arabic — ar</option>
+                    <option value="hi">Hindi — hi</option>
+                  </select>
+                  <span style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>
+                    Must match the Language set in Meta (e.g. English (US) is <code>en_US</code>).
+                  </span>
                 </div>
               </div>
 

@@ -369,7 +369,14 @@ function handleSendMessage(PDO $db, array $auth): void {
                 ];
             }
 
-            $langCode = ($templateName === 'hello_world') ? 'en_US' : ($tmpl['language'] ?? 'en');
+            $langCode = !empty($input['language']) 
+                ? trim($input['language']) 
+                : (!empty($input['language_code']) 
+                    ? trim($input['language_code']) 
+                    : (!empty($tmpl['language']) ? trim($tmpl['language']) : 'en'));
+            if ($templateName === 'hello_world' && empty($input['language'])) {
+                $langCode = 'en_US';
+            }
             $metaPayload['template'] = [
                 'name' => $templateName,
                 'language' => ['code' => $langCode],

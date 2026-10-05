@@ -1073,7 +1073,7 @@ function TemplatesView({ showToast }) {
     template_name: "",
     display_title: "",
     category: "UTILITY",
-    language: "en",
+    language: "en_US",
     header_type: "NONE",
     header_sample: "",
     body_text: "",
@@ -1134,16 +1134,19 @@ function TemplatesView({ showToast }) {
     /* @__PURE__ */ React.createElement("option", { value: "AUTHENTICATION" }, "Authentication (OTP Verification)"),
     /* @__PURE__ */ React.createElement("option", { value: "MARKETING" }, "Marketing (Offers & Promotions)"),
     /* @__PURE__ */ React.createElement("option", { value: "SERVICE" }, "Service (Customer Support)")
-  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Language Code"), /* @__PURE__ */ React.createElement(
-    "input",
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Language Code *"), /* @__PURE__ */ React.createElement(
+    "select",
     {
-      type: "text",
-      className: "form-input",
-      placeholder: "en, ar",
-      value: editingTemplate.language,
+      className: "form-select",
+      value: editingTemplate.language || "en_US",
       onChange: (e) => setEditingTemplate({ ...editingTemplate, language: e.target.value })
-    }
-  ))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginTop: "6px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Header Media Type"), /* @__PURE__ */ React.createElement(
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "en_US" }, "English (US) \u2014 en_US (Most Common)"),
+    /* @__PURE__ */ React.createElement("option", { value: "en" }, "English \u2014 en"),
+    /* @__PURE__ */ React.createElement("option", { value: "en_GB" }, "English (UK) \u2014 en_GB"),
+    /* @__PURE__ */ React.createElement("option", { value: "ar" }, "Arabic \u2014 ar"),
+    /* @__PURE__ */ React.createElement("option", { value: "hi" }, "Hindi \u2014 hi")
+  ), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Must match the Language set in Meta (e.g. English (US) is ", /* @__PURE__ */ React.createElement("code", null, "en_US"), ")."))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginTop: "6px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Header Media Type"), /* @__PURE__ */ React.createElement(
     "select",
     {
       className: "form-select",
