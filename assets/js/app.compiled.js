@@ -131,10 +131,26 @@ function App() {
     }
   });
   const [loading, setLoading] = useState(!currentUser);
+  const [globalSettings, setGlobalSettings] = useState({
+    system_currency: "BHD",
+    currency_decimals: "3",
+    system_date_format: "YYYY-MM-DD HH:mm:ss",
+    system_timezone: "Asia/Bahrain",
+    tariff_utility_meta: "0.0140",
+    tariff_utility_platform: "0.0045",
+    tariff_auth_meta: "0.0110",
+    tariff_auth_platform: "0.0035",
+    tariff_marketing_meta: "0.0270",
+    tariff_marketing_platform: "0.0070",
+    tariff_service_meta: "0.0075",
+    tariff_service_platform: "0.0025",
+    wallet_enforcement: "1"
+  });
+  const [walletBalance, setWalletBalance] = useState(0);
   const [activeTab, setActiveTab] = useState(() => {
     const hash = window.location.hash.replace("#", "").trim();
     const saved = localStorage.getItem("wa_tab");
-    const validTabs = ["dashboard", "composer", "logs", "templates", "api_hub", "api_keys", "users", "settings"];
+    const validTabs = ["dashboard", "composer", "logs", "templates", "api_hub", "api_keys", "users", "wallet", "settings"];
     if (hash && validTabs.includes(hash)) return hash;
     if (saved && validTabs.includes(saved)) return saved;
     return "dashboard";
@@ -151,7 +167,7 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace("#", "").trim();
-      const validTabs = ["dashboard", "composer", "logs", "templates", "api_hub", "api_keys", "users", "settings"];
+      const validTabs = ["dashboard", "composer", "logs", "templates", "api_hub", "api_keys", "users", "wallet", "settings"];
       if (hash && validTabs.includes(hash)) {
         setActiveTab(hash);
         localStorage.setItem("wa_tab", hash);
@@ -160,8 +176,30 @@ function App() {
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
+  const loadGlobalSettings = async () => {
+    try {
+      const res = await fetch("./api/settings.php");
+      const data = await res.json();
+      if (data.success && data.settings) {
+        setGlobalSettings((prev) => ({ ...prev, ...data.settings }));
+      }
+    } catch (e) {
+    }
+  };
+  const loadWalletBalance = async () => {
+    try {
+      const res = await fetch("./api/wallet.php?limit=1");
+      const data = await res.json();
+      if (data.success && data.wallet_balance !== void 0) {
+        setWalletBalance(parseFloat(data.wallet_balance));
+      }
+    } catch (e) {
+    }
+  };
   useEffect(() => {
     checkAuth();
+    loadGlobalSettings();
+    loadWalletBalance();
   }, []);
   const showToast = (message, type = "success") => {
     setToast({ message, type });
@@ -176,6 +214,7 @@ function App() {
       if (data.success && data.authenticated && data.user) {
         setCurrentUser(data.user);
         localStorage.setItem("wa_user", JSON.stringify(data.user));
+        loadWalletBalance();
       } else if (!currentUser) {
         setCurrentUser(null);
         localStorage.removeItem("wa_user");
@@ -193,6 +232,8 @@ function App() {
     } catch (e) {
     }
     showToast(`Welcome back, ${user.name}!`);
+    loadGlobalSettings();
+    loadWalletBalance();
   };
   const handleLogout = async () => {
     try {
@@ -221,6 +262,7 @@ function App() {
         } catch (e) {
         }
         showToast(`Switched to ${data.user.name} (${role.toUpperCase()})`);
+        loadWalletBalance();
       }
     } catch (e) {
       console.error(e);
@@ -232,6 +274,8 @@ function App() {
   if (!currentUser) {
     return /* @__PURE__ */ React.createElement(LoginView, { onLogin: handleLogin, onSwitchDemo: switchDemoRole });
   }
+  const curr = globalSettings?.system_currency || "BHD";
+  const dec = parseInt(globalSettings?.currency_decimals || "3", 10);
   return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh" } }, toast && /* @__PURE__ */ React.createElement("div", { style: {
     position: "fixed",
     top: "20px",
@@ -247,7 +291,22 @@ function App() {
     display: "flex",
     alignItems: "center",
     gap: "10px"
-  } }, /* @__PURE__ */ React.createElement("span", null, toast.type === "error" ? "\u26A0\uFE0F" : "\u2705"), toast.message), /* @__PURE__ */ React.createElement("header", { className: "app-header" }, /* @__PURE__ */ React.createElement("div", { className: "header-top-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-top-inner" }, /* @__PURE__ */ React.createElement("div", { className: "header-brand" }, /* @__PURE__ */ React.createElement("img", { src: "./assets/logos/SaNDSLab-LogoNewUpdated.png", alt: "SaNDS Lab Middle East", className: "brand-logo" }), /* @__PURE__ */ React.createElement("div", { className: "brand-badge" }, /* @__PURE__ */ React.createElement("span", { className: "dot" }), " WhatsApp Gateway")), /* @__PURE__ */ React.createElement("div", { className: "header-actions" }, /* @__PURE__ */ React.createElement("div", { className: "user-profile-pill", title: `Logged in as ${currentUser.email}` }, /* @__PURE__ */ React.createElement("div", { className: "avatar", style: { background: currentUser.avatar_color || "#128C7E" } }, currentUser.name.charAt(0)), /* @__PURE__ */ React.createElement("div", { className: "user-details" }, /* @__PURE__ */ React.createElement("span", { className: "user-name" }, currentUser.name), /* @__PURE__ */ React.createElement("span", { className: "user-role-badge" }, currentUser.role))), /* @__PURE__ */ React.createElement("button", { className: "btn-logout", onClick: handleLogout, title: "Sign Out" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6AA}"), " Logout")))), /* @__PURE__ */ React.createElement("div", { className: "header-nav-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-nav-inner" }, /* @__PURE__ */ React.createElement("nav", { className: "horizontal-nav" }, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "dashboard" ? "active" : ""}`, onClick: () => navigateToTab("dashboard") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CA}"), " Dashboard"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "composer" ? "active" : ""}`, onClick: () => navigateToTab("composer") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"), " Send Message"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "logs" ? "active" : ""}`, onClick: () => navigateToTab("logs") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Message Logs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "templates" ? "active" : ""}`, onClick: () => navigateToTab("templates") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Templates & Tariffs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_hub" ? "active" : ""}`, onClick: () => navigateToTab("api_hub") }, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo API Hub"), ["superadmin", "admin"].includes(currentUser.role) && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_keys" ? "active" : ""}`, onClick: () => navigateToTab("api_keys") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"), " API Keys"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "users" ? "active" : ""}`, onClick: () => navigateToTab("users") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " Users"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "settings" ? "active" : ""}`, onClick: () => navigateToTab("settings") }, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Meta Settings")))))), /* @__PURE__ */ React.createElement("main", { className: "app-body" }, activeTab === "dashboard" && /* @__PURE__ */ React.createElement(DashboardView, { onNavigate: navigateToTab }), activeTab === "composer" && /* @__PURE__ */ React.createElement(ComposerView, { showToast, onSent: () => navigateToTab("logs") }), activeTab === "logs" && /* @__PURE__ */ React.createElement(MessageLogsView, { showToast }), activeTab === "templates" && /* @__PURE__ */ React.createElement(TemplatesView, { showToast }), activeTab === "api_hub" && /* @__PURE__ */ React.createElement(OdooApiHubView, { showToast }), activeTab === "api_keys" && /* @__PURE__ */ React.createElement(ApiKeysView, { showToast }), activeTab === "users" && /* @__PURE__ */ React.createElement(UsersView, { currentUser, showToast }), activeTab === "settings" && /* @__PURE__ */ React.createElement(SettingsView, { showToast })), /* @__PURE__ */ React.createElement("footer", { className: "app-footer" }, /* @__PURE__ */ React.createElement("div", { className: "footer-inner" }, /* @__PURE__ */ React.createElement("div", { className: "footer-left" }, "All Rights Reserved | Engineered By SaNDS Lab Middle East W.L.L."), /* @__PURE__ */ React.createElement("div", { className: "footer-right" }, /* @__PURE__ */ React.createElement("span", { className: "footer-badge" }, "WhatsApp Cloud API v19.0"), /* @__PURE__ */ React.createElement("span", { className: "footer-badge" }, "Odoo ERP Connector Active"), /* @__PURE__ */ React.createElement("span", null, "Bahrain (BHD) Tariff Active")))));
+  } }, /* @__PURE__ */ React.createElement("span", null, toast.type === "error" ? "\u26A0\uFE0F" : "\u2705"), toast.message), /* @__PURE__ */ React.createElement("header", { className: "app-header" }, /* @__PURE__ */ React.createElement("div", { className: "header-top-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-top-inner" }, /* @__PURE__ */ React.createElement("div", { className: "header-brand" }, /* @__PURE__ */ React.createElement("img", { src: "./assets/logos/SaNDSLab-LogoNewUpdated.png", alt: "SaNDS Lab Middle East", className: "brand-logo" }), /* @__PURE__ */ React.createElement("div", { className: "brand-badge" }, /* @__PURE__ */ React.createElement("span", { className: "dot" }), " WhatsApp Gateway")), /* @__PURE__ */ React.createElement("div", { className: "header-actions" }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: "wallet-header-pill",
+      onClick: () => navigateToTab("wallet"),
+      title: "Click to manage Wallet & view Billing Statement"
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"),
+    /* @__PURE__ */ React.createElement("span", null, "Wallet: ", /* @__PURE__ */ React.createElement("strong", null, formatCurrency(walletBalance, curr, dec)))
+  ), /* @__PURE__ */ React.createElement("div", { className: "user-profile-pill", title: `Logged in as ${currentUser.email}` }, /* @__PURE__ */ React.createElement("div", { className: "avatar", style: { background: currentUser.avatar_color || "#128C7E" } }, currentUser.name.charAt(0)), /* @__PURE__ */ React.createElement("div", { className: "user-details" }, /* @__PURE__ */ React.createElement("span", { className: "user-name" }, currentUser.name), /* @__PURE__ */ React.createElement("span", { className: "user-role-badge" }, currentUser.role))), /* @__PURE__ */ React.createElement("button", { className: "btn-logout", onClick: handleLogout, title: "Sign Out" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6AA}"), " Logout")))), /* @__PURE__ */ React.createElement("div", { className: "header-nav-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-nav-inner" }, /* @__PURE__ */ React.createElement("nav", { className: "horizontal-nav" }, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "dashboard" ? "active" : ""}`, onClick: () => navigateToTab("dashboard") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CA}"), " Dashboard"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "composer" ? "active" : ""}`, onClick: () => navigateToTab("composer") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"), " Send Message"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "logs" ? "active" : ""}`, onClick: () => navigateToTab("logs") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Message Logs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "templates" ? "active" : ""}`, onClick: () => navigateToTab("templates") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Templates & Tariffs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "wallet" ? "active" : ""}`, onClick: () => navigateToTab("wallet") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Wallet & Billing"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_hub" ? "active" : ""}`, onClick: () => navigateToTab("api_hub") }, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo API Hub"), ["superadmin", "admin"].includes(currentUser.role) && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_keys" ? "active" : ""}`, onClick: () => navigateToTab("api_keys") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"), " API Keys"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "users" ? "active" : ""}`, onClick: () => navigateToTab("users") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " Users"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "settings" ? "active" : ""}`, onClick: () => navigateToTab("settings") }, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Engine Settings")))))), /* @__PURE__ */ React.createElement("main", { className: "app-body" }, activeTab === "dashboard" && /* @__PURE__ */ React.createElement(DashboardView, { onNavigate: navigateToTab, globalSettings }), activeTab === "composer" && /* @__PURE__ */ React.createElement(ComposerView, { showToast, onSent: () => {
+    navigateToTab("logs");
+    loadWalletBalance();
+  }, globalSettings }), activeTab === "logs" && /* @__PURE__ */ React.createElement(MessageLogsView, { showToast, globalSettings }), activeTab === "templates" && /* @__PURE__ */ React.createElement(TemplatesView, { showToast, globalSettings }), activeTab === "wallet" && /* @__PURE__ */ React.createElement(WalletView, { currentUser, showToast, globalSettings, onBalanceChange: setWalletBalance }), activeTab === "api_hub" && /* @__PURE__ */ React.createElement(OdooApiHubView, { showToast, globalSettings }), activeTab === "api_keys" && /* @__PURE__ */ React.createElement(ApiKeysView, { showToast }), activeTab === "users" && /* @__PURE__ */ React.createElement(UsersView, { currentUser, showToast }), activeTab === "settings" && /* @__PURE__ */ React.createElement(SettingsView, { showToast, onSettingsChange: (s) => {
+    setGlobalSettings((prev) => ({ ...prev, ...s }));
+    loadWalletBalance();
+  } })), /* @__PURE__ */ React.createElement("footer", { className: "app-footer" }, /* @__PURE__ */ React.createElement("div", { className: "footer-inner" }, /* @__PURE__ */ React.createElement("div", { className: "footer-left" }, "All Rights Reserved | Engineered By SaNDS Lab Middle East W.L.L."), /* @__PURE__ */ React.createElement("div", { className: "footer-right" }, /* @__PURE__ */ React.createElement("span", { className: "footer-badge" }, "WhatsApp Cloud API v19.0"), /* @__PURE__ */ React.createElement("span", { className: "footer-badge" }, "Odoo ERP Connector Active"), /* @__PURE__ */ React.createElement("span", null, "Bahrain (BHD) Tariff Active")))));
 }
 function LoginView({ onLogin, onSwitchDemo }) {
   const [email, setEmail] = useState("superadmin@sandslab.com");
@@ -1402,16 +1461,290 @@ function UsersView({ currentUser, showToast }) {
     zIndex: 1e4
   } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { width: "480px" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "Create New User"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setShowAddModal(false) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Full Name"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: form.name, onChange: (e) => setForm({ ...form, name: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Email Address"), /* @__PURE__ */ React.createElement("input", { type: "email", className: "form-input", value: form.email, onChange: (e) => setForm({ ...form, email: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Password"), /* @__PURE__ */ React.createElement("input", { type: "password", className: "form-input", value: form.password, onChange: (e) => setForm({ ...form, password: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Role"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: form.role, onChange: (e) => setForm({ ...form, role: e.target.value }) }, /* @__PURE__ */ React.createElement("option", { value: "user" }, "User (Standard Access)"), /* @__PURE__ */ React.createElement("option", { value: "admin" }, "Admin (Full Client Access)"), /* @__PURE__ */ React.createElement("option", { value: "superadmin" }, "Superadmin (SaNDS Lab Platform)"))), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { width: "100%", marginTop: "10px" } }, "Save User")))));
 }
-function SettingsView({ showToast }) {
+function formatCurrency(amount, currency = "BHD", decimals = 3) {
+  const num = parseFloat(amount || 0);
+  const dec = typeof decimals === "number" ? decimals : ["BHD", "KWD", "OMR"].includes(currency) ? 3 : 2;
+  const formatted = num.toFixed(dec);
+  if (currency === "INR") return `\u20B9 ${formatted}`;
+  if (currency === "USD") return `$ ${formatted}`;
+  return `${formatted} ${currency}`;
+}
+function formatDateTime(dateStr, format = "YYYY-MM-DD HH:mm:ss") {
+  if (!dateStr) return "";
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const YYYY = d.getFullYear();
+    const MM = String(d.getMonth() + 1).padStart(2, "0");
+    const DD = String(d.getDate()).padStart(2, "0");
+    let hours = d.getHours();
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    const seconds = String(d.getSeconds()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const hh12 = String(hours % 12 || 12).padStart(2, "0");
+    const HH24 = String(hours).padStart(2, "0");
+    if (format === "DD/MM/YYYY hh:mm:ss A") return `${DD}/${MM}/${YYYY} ${hh12}:${minutes}:${seconds} ${ampm}`;
+    if (format === "DD-MM-YYYY HH:mm") return `${DD}-${MM}-${YYYY} ${HH24}:${minutes}`;
+    if (format === "MM/DD/YYYY hh:mm A") return `${MM}/${DD}/${YYYY} ${hh12}:${minutes} ${ampm}`;
+    if (format === "YYYY-MM-DD hh:mm A") return `${YYYY}-${MM}-${DD} ${hh12}:${minutes} ${ampm}`;
+    return `${YYYY}-${MM}-${DD} ${HH24}:${minutes}:${seconds}`;
+  } catch (e) {
+    return dateStr;
+  }
+}
+function WalletView({ currentUser, showToast, globalSettings, onBalanceChange }) {
+  const [walletData, setWalletData] = useState({
+    wallet_balance: 0,
+    currency: "BHD",
+    currency_decimals: 3,
+    users: [],
+    transactions: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [showTopUpModal, setShowTopUpModal] = useState(false);
+  const [selectedUserForTopUp, setSelectedUserForTopUp] = useState(null);
+  const [topUpForm, setTopUpForm] = useState({
+    user_id: "",
+    amount: "",
+    transaction_type: "credit",
+    reference_id: "",
+    notes: ""
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [typeFilter, setTypeFilter] = useState("all");
+  const isSuperadmin = currentUser?.role === "superadmin";
+  const loadWallet = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`./api/wallet.php?type=${typeFilter === "all" ? "" : typeFilter}&limit=100`);
+      const data = await res.json();
+      if (data.success) {
+        setWalletData(data);
+        if (onBalanceChange) onBalanceChange(data.wallet_balance);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    loadWallet();
+  }, [typeFilter]);
+  const handleOpenTopUp = (user = null) => {
+    const targetId = user ? user.id : walletData.users[0]?.id || "";
+    setTopUpForm({
+      user_id: targetId,
+      amount: "",
+      transaction_type: "credit",
+      reference_id: "",
+      notes: ""
+    });
+    setSelectedUserForTopUp(user);
+    setShowTopUpModal(true);
+  };
+  const handleSaveTopUp = async (e) => {
+    e.preventDefault();
+    if (!topUpForm.user_id || parseFloat(topUpForm.amount) <= 0) {
+      showToast("Please enter a valid amount and target account", "error");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch("./api/wallet.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(topUpForm)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message || "Wallet balance updated successfully!");
+        setShowTopUpModal(false);
+        loadWallet();
+      } else {
+        showToast(data.error || "Failed to update wallet balance", "error");
+      }
+    } catch (err) {
+      showToast("Network error processing recharge", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  const curr = walletData.currency || globalSettings?.system_currency || "BHD";
+  const dec = walletData.currency_decimals ?? globalSettings?.currency_decimals ?? 3;
+  const ledgerColumns = [
+    {
+      key: "created_at",
+      label: "Date & Time",
+      render: (t) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "var(--text-secondary)" } }, formatDateTime(t.created_at, globalSettings?.system_date_format))
+    },
+    {
+      key: "user_name",
+      label: "Account / User",
+      render: (t) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", null, t.user_name || "Client Account"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, t.user_email))
+    },
+    {
+      key: "transaction_type",
+      label: "Type",
+      render: (t) => /* @__PURE__ */ React.createElement("span", { className: `tx-type-badge tx-${t.transaction_type}` }, t.transaction_type === "credit" ? "\u{1F7E2} Credit (+)" : t.transaction_type === "debit" ? "\u{1F534} Debit (-)" : "\u{1F7E1} Adjustment")
+    },
+    {
+      key: "amount",
+      label: "Amount",
+      render: (t) => {
+        const isCredit = t.transaction_type === "credit";
+        return /* @__PURE__ */ React.createElement("span", { style: { fontWeight: "800", fontSize: "13px", color: isCredit ? "#15803D" : "#B91C1C" } }, isCredit ? "+" : "-", formatCurrency(t.amount, t.currency || curr, dec));
+      }
+    },
+    {
+      key: "balance_after",
+      label: "Balance After",
+      render: (t) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", null, formatCurrency(t.balance_after, t.currency || curr, dec)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "var(--text-muted)" } }, "Before: ", formatCurrency(t.balance_before, t.currency || curr, dec)))
+    },
+    {
+      key: "reference_id",
+      label: "Reference / Ref ID",
+      render: (t) => /* @__PURE__ */ React.createElement("div", { style: { maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }, title: t.reference_id }, /* @__PURE__ */ React.createElement("span", { className: "badge badge-subtle", style: { fontSize: "11px", fontFamily: "monospace" } }, t.reference_id || "N/A"))
+    },
+    {
+      key: "description",
+      label: "Description / Notes",
+      render: (t) => /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", maxWidth: "240px" }, title: t.description }, t.description || (t.reference_type === "superadmin_topup" ? "Recharge added by Superadmin" : "WhatsApp Dispatch"))
+    },
+    {
+      key: "performed_by_name",
+      label: "Processed By",
+      render: (t) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, t.performed_by_name || "System / Auto")
+    }
+  ];
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Prepaid Wallet & Financial Statement"), /* @__PURE__ */ React.createElement("p", null, "Superadmin balance management, automatic transaction debit ledger, and multi-currency billing statement.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px" } }, isSuperadmin && /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary", onClick: () => handleOpenTopUp(null), style: { display: "flex", alignItems: "center", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "\u2795"), " Add Wallet Balance"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary", onClick: loadWallet }, /* @__PURE__ */ React.createElement("span", null, "\u{1F504}"), " Refresh Statement"))), /* @__PURE__ */ React.createElement("div", { className: "wallet-hero-grid" }, /* @__PURE__ */ React.createElement("div", { className: "wallet-balance-card" }, /* @__PURE__ */ React.createElement("div", { className: "wallet-balance-label" }, "Available Prepaid Wallet Balance"), /* @__PURE__ */ React.createElement("div", { className: "wallet-balance-amount" }, formatCurrency(walletData.wallet_balance, curr, dec)), /* @__PURE__ */ React.createElement("div", { className: "wallet-quick-actions" }, isSuperadmin && /* @__PURE__ */ React.createElement("button", { className: "btn-recharge", onClick: () => handleOpenTopUp(null) }, /* @__PURE__ */ React.createElement("span", null, "\u2795"), " Top-Up / Add Credit"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", opacity: 0.9, alignSelf: "center" } }, "Base Currency: ", /* @__PURE__ */ React.createElement("strong", null, curr)))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { display: "flex", flexDirection: "column", justifyContent: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "var(--text-muted)", fontWeight: "700", textTransform: "uppercase" } }, "Total Credits / Recharges"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "24px", fontWeight: "800", color: "#15803D", marginTop: "6px" } }, formatCurrency(
+    walletData.transactions.filter((t) => t.transaction_type === "credit").reduce((acc, t) => acc + parseFloat(t.amount || 0), 0),
+    curr,
+    dec
+  )), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)", marginTop: "4px" } }, walletData.transactions.filter((t) => t.transaction_type === "credit").length, " credit events")), /* @__PURE__ */ React.createElement("div", { className: "card", style: { display: "flex", flexDirection: "column", justifyContent: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "var(--text-muted)", fontWeight: "700", textTransform: "uppercase" } }, "Total Dispatches / Debits"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "24px", fontWeight: "800", color: "#B91C1C", marginTop: "6px" } }, formatCurrency(
+    walletData.transactions.filter((t) => t.transaction_type === "debit").reduce((acc, t) => acc + parseFloat(t.amount || 0), 0),
+    curr,
+    dec
+  )), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)", marginTop: "4px" } }, walletData.transactions.filter((t) => t.transaction_type === "debit").length, " message dispatches"))), isSuperadmin && walletData.users && walletData.users.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "card", style: { marginBottom: "24px" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { className: "card-title", style: { fontSize: "15px" } }, "\u{1F465} Client Account Balances Overview"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "var(--text-muted)" } }, "Superadmin Quick Balance Management")), /* @__PURE__ */ React.createElement("div", { style: { overflowX: "auto" } }, /* @__PURE__ */ React.createElement("table", { className: "data-table" }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "User / Company"), /* @__PURE__ */ React.createElement("th", null, "Email"), /* @__PURE__ */ React.createElement("th", null, "Role"), /* @__PURE__ */ React.createElement("th", null, "Current Balance"), /* @__PURE__ */ React.createElement("th", null, "Status"), /* @__PURE__ */ React.createElement("th", null, "Action"))), /* @__PURE__ */ React.createElement("tbody", null, walletData.users.map((u) => /* @__PURE__ */ React.createElement("tr", { key: u.id }, /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("strong", null, u.name)), /* @__PURE__ */ React.createElement("td", null, u.email), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { className: `badge ${u.role === "superadmin" ? "cat-marketing" : u.role === "admin" ? "cat-auth" : "cat-utility"}` }, u.role.toUpperCase())), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: parseFloat(u.wallet_balance) > 0 ? "#15803D" : "#94A3B8" } }, formatCurrency(u.wallet_balance, curr, dec))), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { className: `badge ${u.status === "active" ? "status-read" : "status-failed"}` }, u.status.toUpperCase())), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      className: "btn btn-primary btn-sm",
+      style: { padding: "4px 10px", fontSize: "11.5px", display: "flex", alignItems: "center", gap: "4px" },
+      onClick: () => handleOpenTopUp(u)
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u2795"),
+    " Top-Up"
+  )))))))), /* @__PURE__ */ React.createElement(
+    DataTable,
+    {
+      columns: ledgerColumns,
+      data: walletData.transactions,
+      title: "wallet_transactions_statement",
+      searchPlaceholder: "Search reference ID, description, user...",
+      defaultPageSize: 10,
+      pageSizeOptions: [10, 25, 50, 100],
+      actions: /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+        "select",
+        {
+          className: "form-select",
+          style: { width: "150px", padding: "5px 8px", fontSize: "12px" },
+          value: typeFilter,
+          onChange: (e) => setTypeFilter(e.target.value)
+        },
+        /* @__PURE__ */ React.createElement("option", { value: "all" }, "All Transactions"),
+        /* @__PURE__ */ React.createElement("option", { value: "credit" }, "Credits (Top-Ups)"),
+        /* @__PURE__ */ React.createElement("option", { value: "debit" }, "Debits (Dispatches)")
+      )),
+      emptyMessage: loading ? "Loading wallet transactions..." : "No transaction history records found."
+    }
+  ), showTopUpModal && /* @__PURE__ */ React.createElement("div", { style: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(0,0,0,0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1e4
+  } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { width: "520px", maxWidth: "95vw" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { className: "card-title", style: { fontSize: "16px", display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Add Wallet Balance / Payment Credit"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setShowTopUpModal(false) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSaveTopUp, style: { marginTop: "14px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Select Client / Admin Account"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: topUpForm.user_id,
+      onChange: (e) => setTopUpForm({ ...topUpForm, user_id: e.target.value }),
+      required: true
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "" }, "-- Choose Account --"),
+    walletData.users.map((u) => /* @__PURE__ */ React.createElement("option", { key: u.id, value: u.id }, u.name, " (", u.email, ") - Current Balance: ", formatCurrency(u.wallet_balance, curr, dec)))
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Top-Up Amount (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.001",
+      min: "0.001",
+      placeholder: "e.g. 50.000",
+      className: "form-input",
+      value: topUpForm.amount,
+      onChange: (e) => setTopUpForm({ ...topUpForm, amount: e.target.value }),
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Transaction Type"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: topUpForm.transaction_type,
+      onChange: (e) => setTopUpForm({ ...topUpForm, transaction_type: e.target.value })
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "credit" }, "Credit (Top-Up / Payment Made)"),
+    /* @__PURE__ */ React.createElement("option", { value: "debit" }, "Debit (Deduction)"),
+    /* @__PURE__ */ React.createElement("option", { value: "adjustment" }, "Manual Set (Override)")
+  ))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Payment Reference / Receipt ID"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      placeholder: "e.g. BENEFIT-849201, Bank Transfer #9912, Cash Receipt",
+      className: "form-input",
+      value: topUpForm.reference_id,
+      onChange: (e) => setTopUpForm({ ...topUpForm, reference_id: e.target.value })
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Reference number to match with client invoice or bank statement.")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Notes & Description"), /* @__PURE__ */ React.createElement(
+    "textarea",
+    {
+      rows: "2",
+      placeholder: "e.g. 50 BHD Recharge via BenefitPay on 05-Oct-2026",
+      className: "form-input",
+      value: topUpForm.notes,
+      onChange: (e) => setTopUpForm({ ...topUpForm, notes: e.target.value })
+    }
+  )), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", marginTop: "16px" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", style: { flex: 1 }, onClick: () => setShowTopUpModal(false) }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { flex: 1 }, disabled: submitting }, submitting ? "Processing..." : "\u{1F4B3} Credit Wallet Balance"))))));
+}
+function SettingsView({ showToast, onSettingsChange }) {
+  const [activeSubTab, setActiveSubTab] = useState("tariffs");
   const [settings, setSettings] = useState({
     meta_phone_number_id: "",
     meta_waba_account_id: "",
     meta_access_token: "",
     webhook_verify_token: "",
     business_display_name: "UniGlobal Consultancy W.L.L",
-    business_phone_number: "+973 1700 8899"
+    business_phone_number: "+973 1700 8899",
+    system_currency: "BHD",
+    currency_decimals: "3",
+    system_date_format: "YYYY-MM-DD HH:mm:ss",
+    system_timezone: "Asia/Bahrain",
+    tariff_utility_meta: "0.0140",
+    tariff_utility_platform: "0.0045",
+    tariff_auth_meta: "0.0110",
+    tariff_auth_platform: "0.0035",
+    tariff_marketing_meta: "0.0270",
+    tariff_marketing_platform: "0.0070",
+    tariff_service_meta: "0.0075",
+    tariff_service_platform: "0.0025",
+    wallet_enforcement: "1"
   });
   const [loading, setLoading] = useState(false);
+  const [currentTimePreview, setCurrentTimePreview] = useState((/* @__PURE__ */ new Date()).toISOString());
   useEffect(() => {
     fetch("./api/settings.php").then((res) => res.json()).then((res) => {
       if (res.success && res.settings) {
@@ -1419,8 +1752,12 @@ function SettingsView({ showToast }) {
       }
     });
   }, []);
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTimePreview((/* @__PURE__ */ new Date()).toISOString()), 1e3);
+    return () => clearInterval(timer);
+  }, []);
   const handleSave = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setLoading(true);
     try {
       const res = await fetch("./api/settings.php", {
@@ -1430,13 +1767,211 @@ function SettingsView({ showToast }) {
       });
       const data = await res.json();
       if (data.success) {
-        showToast("Meta & System settings saved successfully");
+        showToast("System configuration & Tariffs updated successfully! Changes are live.");
+        if (onSettingsChange) onSettingsChange(settings);
+      } else {
+        showToast(data.error || "Failed to update settings", "error");
       }
+    } catch (err) {
+      showToast("Network error saving settings", "error");
     } finally {
       setLoading(false);
     }
   };
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Meta Cloud API & System Configuration"), /* @__PURE__ */ React.createElement("p", null, "Configure WhatsApp Business API credentials, permanent access tokens, and webhook secrets."))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "800px" } }, /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "14px", fontWeight: "800", color: "var(--wa-dark-teal)", marginBottom: "14px" } }, "Meta WhatsApp Business Cloud API Credentials"), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Meta Phone Number ID"), /* @__PURE__ */ React.createElement(
+  const curr = settings.system_currency || "BHD";
+  const dec = parseInt(settings.currency_decimals || "3", 10);
+  const currencyOptions = [
+    { code: "BHD", name: "\u{1F1E7}\u{1F1ED} BHD - Bahraini Dinar (3 decimals)", defaultDecimals: 3 },
+    { code: "SAR", name: "\u{1F1F8}\u{1F1E6} SAR - Saudi Riyal (2 decimals)", defaultDecimals: 2 },
+    { code: "AED", name: "\u{1F1E6}\u{1F1EA} AED - UAE Dirham (2 decimals)", defaultDecimals: 2 },
+    { code: "KWD", name: "\u{1F1F0}\u{1F1FC} KWD - Kuwaiti Dinar (3 decimals)", defaultDecimals: 3 },
+    { code: "QAR", name: "\u{1F1F6}\u{1F1E6} QAR - Qatari Riyal (2 decimals)", defaultDecimals: 2 },
+    { code: "OMR", name: "\u{1F1F4}\u{1F1F2} OMR - Omani Rial (3 decimals)", defaultDecimals: 3 },
+    { code: "INR", name: "\u{1F1EE}\u{1F1F3} INR - Indian Rupee (\u20B9, 2 decimals)", defaultDecimals: 2 },
+    { code: "USD", name: "\u{1F1FA}\u{1F1F8} USD - US Dollar ($, 2 decimals)", defaultDecimals: 2 }
+  ];
+  const dateFormatOptions = [
+    { value: "YYYY-MM-DD HH:mm:ss", label: "YYYY-MM-DD HH:mm:ss (2026-10-05 17:45:00)" },
+    { value: "DD/MM/YYYY hh:mm:ss A", label: "DD/MM/YYYY hh:mm:ss A (05/10/2026 05:45:00 PM)" },
+    { value: "DD-MM-YYYY HH:mm", label: "DD-MM-YYYY HH:mm (05-10-2026 17:45)" },
+    { value: "MM/DD/YYYY hh:mm A", label: "MM/DD/YYYY hh:mm A (10/05/2026 05:45 PM)" },
+    { value: "YYYY-MM-DD hh:mm A", label: "YYYY-MM-DD hh:mm A (2026-10-05 05:45 PM)" }
+  ];
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Superadmin Platform Engine Configuration"), /* @__PURE__ */ React.createElement("p", null, "Configure Meta Cloud API, message tariffs, GCC/India currencies, prepaid wallet rules, and date formats."))), /* @__PURE__ */ React.createElement("div", { className: "settings-nav-tabs" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `settings-tab-btn ${activeSubTab === "tariffs" ? "active" : ""}`,
+      onClick: () => setActiveSubTab("tariffs")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4B0}"),
+    " Tariffs & Pricing Engine"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `settings-tab-btn ${activeSubTab === "currency" ? "active" : ""}`,
+      onClick: () => setActiveSubTab("currency")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F30D}"),
+    " Currency & Regional (GCC / India)"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `settings-tab-btn ${activeSubTab === "datetime" ? "active" : ""}`,
+      onClick: () => setActiveSubTab("datetime")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F552}"),
+    " Date & Time Formats"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `settings-tab-btn ${activeSubTab === "meta" ? "active" : ""}`,
+      onClick: () => setActiveSubTab("meta")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u26A1"),
+    " Meta Cloud API Credentials"
+  )), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, activeSubTab === "tariffs" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "900px" } }, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", color: "var(--wa-dark-teal)", marginBottom: "8px" } }, "Dynamic Meta Cost & Platform Charges Engine"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "18px" } }, "Configure the exact Meta Cost and SaNDS Platform Margin per message category. These tariffs take effect dynamically across all outgoing message dispatches, wallet debits, and client billing."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(380px, 1fr))", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "\u{1F4C4} UTILITY (Invoices, Receipts, Notices)"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-util" }, "UTILITY")), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Meta Base Cost (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_utility_meta,
+      onChange: (e) => setSettings({ ...settings, tariff_utility_meta: e.target.value }),
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Platform Margin (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_utility_platform,
+      onChange: (e) => setSettings({ ...settings, tariff_utility_platform: e.target.value }),
+      required: true
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "10px", fontSize: "12px", color: "#0369A1", fontWeight: "700" } }, "Total Client Rate: ", (parseFloat(settings.tariff_utility_meta || 0) + parseFloat(settings.tariff_utility_platform || 0)).toFixed(dec), " ", curr)), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "\u{1F510} AUTHENTICATION (OTP, 2FA, Logins)"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-auth" }, "AUTH")), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Meta Base Cost (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_auth_meta,
+      onChange: (e) => setSettings({ ...settings, tariff_auth_meta: e.target.value }),
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Platform Margin (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_auth_platform,
+      onChange: (e) => setSettings({ ...settings, tariff_auth_platform: e.target.value }),
+      required: true
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "10px", fontSize: "12px", color: "#0369A1", fontWeight: "700" } }, "Total Client Rate: ", (parseFloat(settings.tariff_auth_meta || 0) + parseFloat(settings.tariff_auth_platform || 0)).toFixed(dec), " ", curr)), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "\u{1F4E3} MARKETING (Promotions, Discounts, Offers)"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-mark" }, "MARKETING")), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Meta Base Cost (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_marketing_meta,
+      onChange: (e) => setSettings({ ...settings, tariff_marketing_meta: e.target.value }),
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Platform Margin (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_marketing_platform,
+      onChange: (e) => setSettings({ ...settings, tariff_marketing_platform: e.target.value }),
+      required: true
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "10px", fontSize: "12px", color: "#0369A1", fontWeight: "700" } }, "Total Client Rate: ", (parseFloat(settings.tariff_marketing_meta || 0) + parseFloat(settings.tariff_marketing_platform || 0)).toFixed(dec), " ", curr)), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "\u{1F4AC} SERVICE (Customer Support, Live Chat)"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-serv" }, "SERVICE")), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Meta Base Cost (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_service_meta,
+      onChange: (e) => setSettings({ ...settings, tariff_service_meta: e.target.value }),
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Platform Margin (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_service_platform,
+      onChange: (e) => setSettings({ ...settings, tariff_service_platform: e.target.value }),
+      required: true
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "10px", fontSize: "12px", color: "#0369A1", fontWeight: "700" } }, "Total Client Rate: ", (parseFloat(settings.tariff_service_meta || 0) + parseFloat(settings.tariff_service_platform || 0)).toFixed(dec), " ", curr)))), activeSubTab === "currency" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "800px" } }, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", color: "var(--wa-dark-teal)", marginBottom: "8px" } }, "Multi-Currency Configuration (All GCC & India)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "18px" } }, "Select the operating currency for the entire platform, wallet balances, tariffs, and transaction reports."), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Platform Operating Currency"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: settings.system_currency,
+      onChange: (e) => {
+        const selectedCode = e.target.value;
+        const found = currencyOptions.find((c) => c.code === selectedCode);
+        setSettings({
+          ...settings,
+          system_currency: selectedCode,
+          currency_decimals: found ? String(found.defaultDecimals) : "3"
+        });
+      }
+    },
+    currencyOptions.map((c) => /* @__PURE__ */ React.createElement("option", { key: c.code, value: c.code }, c.name))
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "All wallet top-ups, message charges, and Odoo billing logs will display in this currency.")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Currency Decimal Precision"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: settings.currency_decimals,
+      onChange: (e) => setSettings({ ...settings, currency_decimals: e.target.value })
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "3" }, "3 Decimals (e.g. 0.0185 BHD / 100.500 KWD)"),
+    /* @__PURE__ */ React.createElement("option", { value: "2" }, "2 Decimals (e.g. 2.50 SAR / 150.00 INR / $ 10.00)"),
+    /* @__PURE__ */ React.createElement("option", { value: "4" }, "4 Decimals (e.g. 0.0145 BHD Micro-billing)")
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginTop: "16px" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Prepaid Wallet Enforcement"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: settings.wallet_enforcement,
+      onChange: (e) => setSettings({ ...settings, wallet_enforcement: e.target.value })
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "1" }, "Strict Enforcement: Block messages when wallet balance is insufficient"),
+    /* @__PURE__ */ React.createElement("option", { value: "0" }, "Monitor Only: Allow dispatches and record negative balance")
+  ))), activeSubTab === "datetime" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "800px" } }, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", color: "var(--wa-dark-teal)", marginBottom: "8px" } }, "Date & Time Format Settings"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "18px" } }, "Standardize how timestamps, audit logs, and message telemetry are rendered across all views."), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "System Date & Time Format"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: settings.system_date_format,
+      onChange: (e) => setSettings({ ...settings, system_date_format: e.target.value })
+    },
+    dateFormatOptions.map((df) => /* @__PURE__ */ React.createElement("option", { key: df.value, value: df.value }, df.label))
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Regional Timezone"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: settings.system_timezone,
+      onChange: (e) => setSettings({ ...settings, system_timezone: e.target.value })
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Bahrain" }, "\u{1F1E7}\u{1F1ED} Bahrain (GMT+3) - Asia/Bahrain"),
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Riyadh" }, "\u{1F1F8}\u{1F1E6} Saudi Arabia (GMT+3) - Asia/Riyadh"),
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Dubai" }, "\u{1F1E6}\u{1F1EA} UAE / Dubai (GMT+4) - Asia/Dubai"),
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Kuwait" }, "\u{1F1F0}\u{1F1FC} Kuwait (GMT+3) - Asia/Kuwait"),
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Qatar" }, "\u{1F1F6}\u{1F1E6} Qatar (GMT+3) - Asia/Qatar"),
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Muscat" }, "\u{1F1F4}\u{1F1F2} Oman (GMT+4) - Asia/Muscat"),
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Kolkata" }, "\u{1F1EE}\u{1F1F3} India (GMT+5:30) - Asia/Kolkata"),
+    /* @__PURE__ */ React.createElement("option", { value: "UTC" }, "\u{1F310} Coordinated Universal Time (UTC)")
+  )), /* @__PURE__ */ React.createElement("div", { style: { background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "10px", padding: "14px", marginTop: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#166534", fontWeight: "700", textTransform: "uppercase" } }, "Live Format Preview"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "18px", fontWeight: "800", color: "#15803D", marginTop: "4px" } }, formatDateTime(currentTimePreview, settings.system_date_format)))), activeSubTab === "meta" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "800px" } }, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", color: "var(--wa-dark-teal)", marginBottom: "8px" } }, "Meta WhatsApp Business Cloud API Credentials"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "18px" } }, "Permanent System User Graph API access tokens and Webhook validation tokens."), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Meta Phone Number ID"), /* @__PURE__ */ React.createElement(
     "input",
     {
       type: "text",
@@ -1468,7 +2003,7 @@ function SettingsView({ showToast }) {
       value: settings.webhook_verify_token,
       onChange: (e) => setSettings({ ...settings, webhook_verify_token: e.target.value })
     }
-  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Paste this token into Meta Developer App Dashboard Webhook settings.")), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { marginTop: "12px" }, disabled: loading }, loading ? "Saving..." : "\u{1F4BE} Save Settings"))));
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Paste this token into Meta Developer App Dashboard Webhook settings."))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "20px" } }, /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { padding: "10px 24px", fontSize: "14px", fontWeight: "700" }, disabled: loading }, loading ? "Saving..." : "\u{1F4BE} Save & Apply System Configuration"))));
 }
 const rootElement = document.getElementById("root");
 if (rootElement) {

@@ -105,6 +105,61 @@ class Database {
                     }
                 }
             }
+
+            // Wallet System Schema Migrations
+            // 1. Ensure users table has wallet_balance & currency
+            $cols = $pdo->query("SHOW COLUMNS FROM users LIKE 'wallet_balance'")->fetch();
+            if (!$cols) {
+                $pdo->exec("ALTER TABLE users ADD COLUMN wallet_balance DECIMAL(12, 4) NOT NULL DEFAULT 0.0000 AFTER avatar_color");
+            }
+            $colsCurr = $pdo->query("SHOW COLUMNS FROM users LIKE 'currency'")->fetch();
+            if (!$colsCurr) {
+                $pdo->exec("ALTER TABLE users ADD COLUMN currency VARCHAR(10) NOT NULL DEFAULT 'BHD' AFTER wallet_balance");
+            }
+
+            // 2. Ensure wallet_transactions table exists
+            $pdo->exec("
+                CREATE TABLE IF NOT EXISTS wallet_transactions (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    user_id INT NOT NULL,
+                    transaction_type ENUM('credit', 'debit', 'adjustment') NOT NULL,
+                    amount DECIMAL(12, 4) NOT NULL,
+                    currency VARCHAR(10) NOT NULL DEFAULT 'BHD',
+                    balance_before DECIMAL(12, 4) NOT NULL,
+                    balance_after DECIMAL(12, 4) NOT NULL,
+                    reference_type VARCHAR(50) NOT NULL,
+                    reference_id VARCHAR(100) NULL,
+                    description TEXT NULL,
+                    performed_by INT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_user_id (user_id),
+                    INDEX idx_created_at (created_at),
+                    INDEX idx_ref (reference_id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            ");
+
+            // 3. Seed Default System Settings (Tariffs, Currency, Date/Time Formats)
+            $defaultSettings = [
+                'system_currency'          => 'BHD',
+                'currency_decimals'        => '3',
+                'system_date_format'       => 'YYYY-MM-DD HH:mm:ss',
+                'system_timezone'          => 'Asia/Bahrain',
+                'tariff_utility_meta'      => '0.0140',
+                'tariff_utility_platform'  => '0.0045',
+                'tariff_auth_meta'         => '0.0110',
+                'tariff_auth_platform'     => '0.0035',
+                'tariff_marketing_meta'    => '0.0270',
+                'tariff_marketing_platform'=> '0.0070',
+                'tariff_service_meta'      => '0.0075',
+                'tariff_service_platform'  => '0.0025',
+                'wallet_enforcement'       => '1'
+            ];
+
+            $stmtSetting = $pdo->prepare("INSERT INTO system_settings (setting_key, setting_value, setting_group, description) VALUES (?, ?, 'general', 'Default Setting') ON DUPLICATE KEY UPDATE setting_key=setting_key");
+            foreach ($defaultSettings as $sk => $sv) {
+                $stmtSetting->execute([$sk, $sv]);
+            }
+
         } catch (Throwable $e) {
             // Silently continue if already created or permission denied
         }

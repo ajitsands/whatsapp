@@ -136,21 +136,39 @@ function handleSendMessage(PDO $db, array $auth): void {
 
     // Source determination
     $sourceSystem = 'Manual Web Console';
+    $senderUserId = null;
+
     if ($auth['type'] === 'api_key') {
         $sourceSystem = $auth['system_name'] ?? 'Odoo ERP Integration';
+        $senderUserId = $auth['created_by'] ?? null;
     } elseif (isset($input['source_system'])) {
         $sourceSystem = $input['source_system'];
     }
+    
+    if (isset($auth['user']['id'])) {
+        $senderUserId = (int)$auth['user']['id'];
+    }
 
-    // Tariff Rates based on Category
-    $tariffs = [
-        'AUTHENTICATION' => ['meta' => 0.0110, 'platform' => 0.0035, 'client' => 0.0145],
-        'UTILITY'        => ['meta' => 0.0140, 'platform' => 0.0045, 'client' => 0.0185],
-        'MARKETING'      => ['meta' => 0.0270, 'platform' => 0.0070, 'client' => 0.0340],
-        'SERVICE'        => ['meta' => 0.0075, 'platform' => 0.0025, 'client' => 0.0100],
+    // Fetch System Settings (Tariffs, Currency, Wallet Enforcement, Meta Settings)
+    $settingsStmt = $db->query("SELECT setting_key, setting_value FROM system_settings");
+    $settingsMap = [];
+    while ($row = $settingsStmt->fetch()) {
+        $settingsMap[$row['setting_key']] = $row['setting_value'];
+    }
+
+    $systemCurrency = $settingsMap['system_currency'] ?? 'BHD';
+    $walletEnforcement = ($settingsMap['wallet_enforcement'] ?? '1') === '1';
+
+    // Dynamic Category Tariffs from System Settings (Configured by Superadmin)
+    $catKey = strtolower($category === 'AUTHENTICATION' ? 'auth' : $category);
+    $metaRate = (float)($settingsMap["tariff_{$catKey}_meta"] ?? ($category === 'MARKETING' ? 0.0270 : ($category === 'AUTHENTICATION' ? 0.0110 : ($category === 'SERVICE' ? 0.0075 : 0.0140))));
+    $platformRate = (float)($settingsMap["tariff_{$catKey}_platform"] ?? ($category === 'MARKETING' ? 0.0070 : ($category === 'AUTHENTICATION' ? 0.0035 : ($category === 'SERVICE' ? 0.0025 : 0.0045))));
+
+    $resolvedTariff = [
+        'meta'     => $metaRate,
+        'platform' => $platformRate,
+        'client'   => $metaRate + $platformRate
     ];
-
-    $resolvedTariff = $tariffs[$category] ?? $tariffs['UTILITY'];
 
     // Construct final message body
     $finalBody = '';
@@ -164,10 +182,12 @@ function handleSendMessage(PDO $db, array $auth): void {
 
         if ($tmpl) {
             $category = $tmpl['category'];
+            $tMeta = (float)$tmpl['meta_cost_bhd'];
+            $tPlat = (float)$tmpl['platform_charge_bhd'];
             $resolvedTariff = [
-                'meta'     => (float)$tmpl['meta_cost_bhd'],
-                'platform' => (float)$tmpl['platform_charge_bhd'],
-                'client'   => (float)$tmpl['client_rate_bhd']
+                'meta'     => $tMeta > 0 ? $tMeta : $metaRate,
+                'platform' => $tPlat > 0 ? $tPlat : $platformRate,
+                'client'   => ($tMeta > 0 || $tPlat > 0) ? ($tMeta + $tPlat) : ($metaRate + $platformRate)
             ];
             // Extract template variable names
             preg_match_all('/\{\{([a-zA-Z0-9_]+)\}\}/', $tmpl['body_text'], $varMatches);
@@ -201,11 +221,28 @@ function handleSendMessage(PDO $db, array $auth): void {
         $finalBody   = !empty($customText) ? $customText : 'Direct notification from ' . $sourceSystem;
     }
 
-    // Fetch System Meta Settings
-    $settingsStmt = $db->query("SELECT setting_key, setting_value FROM system_settings");
-    $settingsMap = [];
-    while ($row = $settingsStmt->fetch()) {
-        $settingsMap[$row['setting_key']] = $row['setting_value'];
+    // Wallet Balance Check (If user has role 'admin' or 'user' or enforcement is active)
+    $costToDeduct = (float)$resolvedTariff['client'];
+    $debitedUser = null;
+
+    if ($senderUserId && $walletEnforcement) {
+        $uCheck = $db->prepare("SELECT id, name, role, wallet_balance, currency FROM users WHERE id = ? LIMIT 1");
+        $uCheck->execute([$senderUserId]);
+        $debitedUser = $uCheck->fetch();
+
+        // If regular admin or user, require sufficient balance
+        if ($debitedUser && $debitedUser['role'] !== 'superadmin') {
+            $currBal = (float)$debitedUser['wallet_balance'];
+            if ($currBal < $costToDeduct) {
+                sendJsonResponse([
+                    'success'        => false,
+                    'error'          => "Insufficient wallet balance (Current: " . number_format($currBal, 4) . " {$systemCurrency}, Required: " . number_format($costToDeduct, 4) . " {$systemCurrency}). Please contact Superadmin to top up your wallet balance.",
+                    'wallet_balance' => $currBal,
+                    'required'       => $costToDeduct,
+                    'currency'       => $systemCurrency
+                ], 402);
+            }
+        }
     }
 
     $defaultToken = 'EAATLuWFVcZBkBSIQfQ02NV8tXYHXIOLwZC5CZBMngCZB32TH1f5b9HibzLqjDrnWI30GBOuXLwzaH2j9Iju4RZCpNLDZCaZAFAm9hcaTgcBETEXQDyzcQ3oj53dvuLjxG6Wt2rr9cVh0XhRFqbs2C21rRtZCeJPLcS2sQVJtk05qhxSzA2fmmsnU8dJsBcUZAgpWzv05hAGAS4w5hqYEOqQEMY69H14nuzBAZBng86HwjR3AhMepkZCQQSPFqDAPYERoidjae8S94QHXkgJsutN0q8Dsz0gvSVNGWvuU6HhBwZDZD';
@@ -419,6 +456,42 @@ function handleSendMessage(PDO $db, array $auth): void {
 
     $insertedId = (int)$db->lastInsertId();
 
+    // Debit Wallet Balance if sender has an active user account
+    $newWalletBalance = null;
+    if ($senderUserId && $walletEnforcement && $costToDeduct > 0 && $status !== 'failed') {
+        try {
+            $uLock = $db->prepare("SELECT id, wallet_balance, currency FROM users WHERE id = ?");
+            $uLock->execute([$senderUserId]);
+            $uRow = $uLock->fetch();
+            if ($uRow) {
+                $balBefore = (float)$uRow['wallet_balance'];
+                $balAfter  = max(0.0000, $balBefore - $costToDeduct);
+                $newWalletBalance = $balAfter;
+                
+                $updBal = $db->prepare("UPDATE users SET wallet_balance = ? WHERE id = ?");
+                $updBal->execute([$balAfter, $senderUserId]);
+
+                $insTx = $db->prepare("
+                    INSERT INTO wallet_transactions 
+                    (user_id, transaction_type, amount, currency, balance_before, balance_after, reference_type, reference_id, description, performed_by)
+                    VALUES (?, 'debit', ?, ?, ?, ?, 'message_dispatch', ?, ?, ?)
+                ");
+                $insTx->execute([
+                    $senderUserId,
+                    $costToDeduct,
+                    $systemCurrency,
+                    $balBefore,
+                    $balAfter,
+                    $wamid,
+                    "WhatsApp {$category} dispatch to {$toPhone}",
+                    $senderUserId
+                ]);
+            }
+        } catch (Throwable $txEx) {
+            error_log("Wallet debit error: " . $txEx->getMessage());
+        }
+    }
+
     sendJsonResponse([
         'success'      => true,
         'message_id'   => $wamid,
@@ -429,10 +502,11 @@ function handleSendMessage(PDO $db, array $auth): void {
         'category'     => $category,
         'rendered_body'=> $finalBody,
         'meta_error'   => $metaError,
+        'wallet_balance'=> $newWalletBalance,
         'tariff'       => [
-            'meta_cost'       => number_format($resolvedTariff['meta'], 4) . ' BHD',
-            'platform_charge' => '+' . number_format($resolvedTariff['platform'], 4) . ' BHD',
-            'client_rate'     => number_format($resolvedTariff['client'], 4) . ' BHD'
+            'meta_cost'       => number_format($resolvedTariff['meta'], 4) . " {$systemCurrency}",
+            'platform_charge' => '+' . number_format($resolvedTariff['platform'], 4) . " {$systemCurrency}",
+            'client_rate'     => number_format($resolvedTariff['client'], 4) . " {$systemCurrency}"
         ],
         'timestamp'    => $sentAt
     ], 201);

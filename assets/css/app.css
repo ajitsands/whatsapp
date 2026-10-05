@@ -1519,3 +1519,151 @@ body {
   color: #FFFFFF;
 }
 
+/* =========================================================================
+   WALLET & BILLING SYSTEM STYLES
+   ========================================================================= */
+.wallet-header-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(18, 140, 126, 0.08);
+  border: 1px solid rgba(18, 140, 126, 0.25);
+  color: #075E54;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wallet-header-pill:hover {
+  background: rgba(18, 140, 126, 0.16);
+  border-color: #128C7E;
+  transform: translateY(-1px);
+}
+
+.wallet-hero-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.wallet-balance-card {
+  background: linear-gradient(135deg, #075E54 0%, #128C7E 100%);
+  color: #FFFFFF;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 25px -5px rgba(7, 94, 84, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.wallet-balance-card::after {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 140px;
+  height: 140px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.wallet-balance-label {
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  opacity: 0.85;
+  font-weight: 700;
+}
+
+.wallet-balance-amount {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 10px 0 16px 0;
+  letter-spacing: -0.5px;
+}
+
+.wallet-quick-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-recharge {
+  background: #25D366;
+  color: #064E3B;
+  border: none;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-recharge:hover {
+  background: #34D399;
+  transform: scale(1.03);
+}
+
+.tx-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.tx-credit {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.tx-debit {
+  background: #FEE2E2;
+  color: #B91C1C;
+}
+
+.tx-adjustment {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.settings-nav-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 24px;
+}
+
+.settings-tab-btn {
+  padding: 10px 18px;
+  border: none;
+  background: transparent;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.settings-tab-btn.active {
+  color: var(--wa-teal);
+  border-bottom-color: var(--wa-teal);
+  font-weight: 700;
+}
+
+

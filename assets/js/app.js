@@ -217,6 +217,7 @@ function DataTable({
 }
 
 // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // MAIN APP CONTAINER
 // -----------------------------------------------------------------------------
 function App() {
@@ -231,10 +232,28 @@ function App() {
 
   const [loading, setLoading] = useState(!currentUser);
 
+  const [globalSettings, setGlobalSettings] = useState({
+    system_currency: 'BHD',
+    currency_decimals: '3',
+    system_date_format: 'YYYY-MM-DD HH:mm:ss',
+    system_timezone: 'Asia/Bahrain',
+    tariff_utility_meta: '0.0140',
+    tariff_utility_platform: '0.0045',
+    tariff_auth_meta: '0.0110',
+    tariff_auth_platform: '0.0035',
+    tariff_marketing_meta: '0.0270',
+    tariff_marketing_platform: '0.0070',
+    tariff_service_meta: '0.0075',
+    tariff_service_platform: '0.0025',
+    wallet_enforcement: '1'
+  });
+
+  const [walletBalance, setWalletBalance] = useState(0.0000);
+
   const [activeTab, setActiveTab] = useState(() => {
     const hash = window.location.hash.replace('#', '').trim();
     const saved = localStorage.getItem('wa_tab');
-    const validTabs = ['dashboard', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'settings'];
+    const validTabs = ['dashboard', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'wallet', 'settings'];
     if (hash && validTabs.includes(hash)) return hash;
     if (saved && validTabs.includes(saved)) return saved;
     return 'dashboard';
@@ -253,7 +272,7 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '').trim();
-      const validTabs = ['dashboard', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'settings'];
+      const validTabs = ['dashboard', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'wallet', 'settings'];
       if (hash && validTabs.includes(hash)) {
         setActiveTab(hash);
         localStorage.setItem('wa_tab', hash);
@@ -263,8 +282,30 @@ function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
+  const loadGlobalSettings = async () => {
+    try {
+      const res = await fetch('./api/settings.php');
+      const data = await res.json();
+      if (data.success && data.settings) {
+        setGlobalSettings(prev => ({ ...prev, ...data.settings }));
+      }
+    } catch (e) {}
+  };
+
+  const loadWalletBalance = async () => {
+    try {
+      const res = await fetch('./api/wallet.php?limit=1');
+      const data = await res.json();
+      if (data.success && data.wallet_balance !== undefined) {
+        setWalletBalance(parseFloat(data.wallet_balance));
+      }
+    } catch (e) {}
+  };
+
   useEffect(() => {
     checkAuth();
+    loadGlobalSettings();
+    loadWalletBalance();
   }, []);
 
   const showToast = (message, type = 'success') => {
@@ -281,6 +322,7 @@ function App() {
       if (data.success && data.authenticated && data.user) {
         setCurrentUser(data.user);
         localStorage.setItem('wa_user', JSON.stringify(data.user));
+        loadWalletBalance();
       } else if (!currentUser) {
         setCurrentUser(null);
         localStorage.removeItem('wa_user');
@@ -298,6 +340,8 @@ function App() {
       localStorage.setItem('wa_user', JSON.stringify(user));
     } catch (e) {}
     showToast(`Welcome back, ${user.name}!`);
+    loadGlobalSettings();
+    loadWalletBalance();
   };
 
   const handleLogout = async () => {
@@ -327,6 +371,7 @@ function App() {
           localStorage.setItem('wa_user', JSON.stringify(data.user));
         } catch (e) {}
         showToast(`Switched to ${data.user.name} (${role.toUpperCase()})`);
+        loadWalletBalance();
       }
     } catch (e) {
       console.error(e);
@@ -344,6 +389,9 @@ function App() {
   if (!currentUser) {
     return <LoginView onLogin={handleLogin} onSwitchDemo={switchDemoRole} />;
   }
+
+  const curr = globalSettings?.system_currency || 'BHD';
+  const dec = parseInt(globalSettings?.currency_decimals || '3', 10);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -372,7 +420,7 @@ function App() {
 
       {/* 2-Tier Header: Top Brand/Profile Bar + Dedicated Bottom Menu Bar */}
       <header className="app-header">
-        {/* Tier 1: Brand Logo & User Profile */}
+        {/* Tier 1: Brand Logo & User Profile & Live Wallet Pill */}
         <div className="header-top-bar">
           <div className="header-top-inner">
             <div className="header-brand">
@@ -382,8 +430,18 @@ function App() {
               </div>
             </div>
 
-            {/* User Profile & Logout Actions */}
+            {/* Header Right Actions: Live Wallet Balance Pill & User Profile */}
             <div className="header-actions">
+              {/* Clickable Wallet Balance Pill */}
+              <div
+                className="wallet-header-pill"
+                onClick={() => navigateToTab('wallet')}
+                title="Click to manage Wallet & view Billing Statement"
+              >
+                <span>💳</span>
+                <span>Wallet: <strong>{formatCurrency(walletBalance, curr, dec)}</strong></span>
+              </div>
+
               <div className="user-profile-pill" title={`Logged in as ${currentUser.email}`}>
                 <div className="avatar" style={{ background: currentUser.avatar_color || '#128C7E' }}>
                   {currentUser.name.charAt(0)}
@@ -401,7 +459,7 @@ function App() {
           </div>
         </div>
 
-        {/* Tier 2: Dedicated Horizontal Menu Just at the Bottom of Header */}
+        {/* Tier 2: Dedicated Horizontal Menu */}
         <div className="header-nav-bar">
           <div className="header-nav-inner">
             <nav className="horizontal-nav">
@@ -417,6 +475,9 @@ function App() {
               <button className={`nav-item ${activeTab === 'templates' ? 'active' : ''}`} onClick={() => navigateToTab('templates')}>
                 <span>📋</span> Templates & Tariffs
               </button>
+              <button className={`nav-item ${activeTab === 'wallet' ? 'active' : ''}`} onClick={() => navigateToTab('wallet')}>
+                <span>💳</span> Wallet & Billing
+              </button>
               <button className={`nav-item ${activeTab === 'api_hub' ? 'active' : ''}`} onClick={() => navigateToTab('api_hub')}>
                 <span>⚡</span> Odoo API Hub
               </button>
@@ -431,7 +492,7 @@ function App() {
                     <span>👥</span> Users
                   </button>
                   <button className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => navigateToTab('settings')}>
-                    <span>⚙️</span> Meta Settings
+                    <span>⚙️</span> Engine Settings
                   </button>
                 </>
               )}
@@ -442,14 +503,15 @@ function App() {
 
       {/* Main App Body */}
       <main className="app-body">
-        {activeTab === 'dashboard' && <DashboardView onNavigate={navigateToTab} />}
-        {activeTab === 'composer' && <ComposerView showToast={showToast} onSent={() => navigateToTab('logs')} />}
-        {activeTab === 'logs' && <MessageLogsView showToast={showToast} />}
-        {activeTab === 'templates' && <TemplatesView showToast={showToast} />}
-        {activeTab === 'api_hub' && <OdooApiHubView showToast={showToast} />}
+        {activeTab === 'dashboard' && <DashboardView onNavigate={navigateToTab} globalSettings={globalSettings} />}
+        {activeTab === 'composer' && <ComposerView showToast={showToast} onSent={() => { navigateToTab('logs'); loadWalletBalance(); }} globalSettings={globalSettings} />}
+        {activeTab === 'logs' && <MessageLogsView showToast={showToast} globalSettings={globalSettings} />}
+        {activeTab === 'templates' && <TemplatesView showToast={showToast} globalSettings={globalSettings} />}
+        {activeTab === 'wallet' && <WalletView currentUser={currentUser} showToast={showToast} globalSettings={globalSettings} onBalanceChange={setWalletBalance} />}
+        {activeTab === 'api_hub' && <OdooApiHubView showToast={showToast} globalSettings={globalSettings} />}
         {activeTab === 'api_keys' && <ApiKeysView showToast={showToast} />}
         {activeTab === 'users' && <UsersView currentUser={currentUser} showToast={showToast} />}
-        {activeTab === 'settings' && <SettingsView showToast={showToast} />}
+        {activeTab === 'settings' && <SettingsView showToast={showToast} onSettingsChange={(s) => { setGlobalSettings(prev => ({ ...prev, ...s })); loadWalletBalance(); }} />}
       </main>
 
       {/* Footer */}
@@ -2442,18 +2504,496 @@ function UsersView({ currentUser, showToast }) {
 }
 
 // -----------------------------------------------------------------------------
-// 9. SETTINGS VIEW (SUPERADMIN / ADMIN)
 // -----------------------------------------------------------------------------
-function SettingsView({ showToast }) {
+// HELPER FORMATTING FUNCTIONS (MULTI-CURRENCY & DATE-TIME)
+// -----------------------------------------------------------------------------
+function formatCurrency(amount, currency = 'BHD', decimals = 3) {
+  const num = parseFloat(amount || 0);
+  const dec = typeof decimals === 'number' ? decimals : (['BHD', 'KWD', 'OMR'].includes(currency) ? 3 : 2);
+  const formatted = num.toFixed(dec);
+  if (currency === 'INR') return `₹ ${formatted}`;
+  if (currency === 'USD') return `$ ${formatted}`;
+  return `${formatted} ${currency}`;
+}
+
+function formatDateTime(dateStr, format = 'YYYY-MM-DD HH:mm:ss') {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const YYYY = d.getFullYear();
+    const MM = String(d.getMonth() + 1).padStart(2, '0');
+    const DD = String(d.getDate()).padStart(2, '0');
+    let hours = d.getHours();
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    const seconds = String(d.getSeconds()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const hh12 = String(hours % 12 || 12).padStart(2, '0');
+    const HH24 = String(hours).padStart(2, '0');
+
+    if (format === 'DD/MM/YYYY hh:mm:ss A') return `${DD}/${MM}/${YYYY} ${hh12}:${minutes}:${seconds} ${ampm}`;
+    if (format === 'DD-MM-YYYY HH:mm') return `${DD}-${MM}-${YYYY} ${HH24}:${minutes}`;
+    if (format === 'MM/DD/YYYY hh:mm A') return `${MM}/${DD}/${YYYY} ${hh12}:${minutes} ${ampm}`;
+    if (format === 'YYYY-MM-DD hh:mm A') return `${YYYY}-${MM}-${DD} ${hh12}:${minutes} ${ampm}`;
+    return `${YYYY}-${MM}-${DD} ${HH24}:${minutes}:${seconds}`;
+  } catch (e) {
+    return dateStr;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 8. WALLET & BILLING VIEW (SUPERADMIN TOP-UPS & TRANSACTION LEDGER)
+// -----------------------------------------------------------------------------
+function WalletView({ currentUser, showToast, globalSettings, onBalanceChange }) {
+  const [walletData, setWalletData] = useState({
+    wallet_balance: 0.0000,
+    currency: 'BHD',
+    currency_decimals: 3,
+    users: [],
+    transactions: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [showTopUpModal, setShowTopUpModal] = useState(false);
+  const [selectedUserForTopUp, setSelectedUserForTopUp] = useState(null);
+  const [topUpForm, setTopUpForm] = useState({
+    user_id: '',
+    amount: '',
+    transaction_type: 'credit',
+    reference_id: '',
+    notes: ''
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [typeFilter, setTypeFilter] = useState('all');
+
+  const isSuperadmin = currentUser?.role === 'superadmin';
+
+  const loadWallet = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`./api/wallet.php?type=${typeFilter === 'all' ? '' : typeFilter}&limit=100`);
+      const data = await res.json();
+      if (data.success) {
+        setWalletData(data);
+        if (onBalanceChange) onBalanceChange(data.wallet_balance);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadWallet();
+  }, [typeFilter]);
+
+  const handleOpenTopUp = (user = null) => {
+    const targetId = user ? user.id : (walletData.users[0]?.id || '');
+    setTopUpForm({
+      user_id: targetId,
+      amount: '',
+      transaction_type: 'credit',
+      reference_id: '',
+      notes: ''
+    });
+    setSelectedUserForTopUp(user);
+    setShowTopUpModal(true);
+  };
+
+  const handleSaveTopUp = async (e) => {
+    e.preventDefault();
+    if (!topUpForm.user_id || parseFloat(topUpForm.amount) <= 0) {
+      showToast('Please enter a valid amount and target account', 'error');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch('./api/wallet.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(topUpForm)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message || 'Wallet balance updated successfully!');
+        setShowTopUpModal(false);
+        loadWallet();
+      } else {
+        showToast(data.error || 'Failed to update wallet balance', 'error');
+      }
+    } catch (err) {
+      showToast('Network error processing recharge', 'error');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const curr = walletData.currency || globalSettings?.system_currency || 'BHD';
+  const dec = walletData.currency_decimals ?? globalSettings?.currency_decimals ?? 3;
+
+  // Columns for Transaction Statement / Ledger
+  const ledgerColumns = [
+    {
+      key: 'created_at',
+      label: 'Date & Time',
+      render: (t) => (
+        <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+          {formatDateTime(t.created_at, globalSettings?.system_date_format)}
+        </span>
+      )
+    },
+    {
+      key: 'user_name',
+      label: 'Account / User',
+      render: (t) => (
+        <div>
+          <strong>{t.user_name || 'Client Account'}</strong>
+          <div style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>{t.user_email}</div>
+        </div>
+      )
+    },
+    {
+      key: 'transaction_type',
+      label: 'Type',
+      render: (t) => (
+        <span className={`tx-type-badge tx-${t.transaction_type}`}>
+          {t.transaction_type === 'credit' ? '🟢 Credit (+)' : t.transaction_type === 'debit' ? '🔴 Debit (-)' : '🟡 Adjustment'}
+        </span>
+      )
+    },
+    {
+      key: 'amount',
+      label: 'Amount',
+      render: (t) => {
+        const isCredit = t.transaction_type === 'credit';
+        return (
+          <span style={{ fontWeight: '800', fontSize: '13px', color: isCredit ? '#15803D' : '#B91C1C' }}>
+            {isCredit ? '+' : '-'}{formatCurrency(t.amount, t.currency || curr, dec)}
+          </span>
+        );
+      }
+    },
+    {
+      key: 'balance_after',
+      label: 'Balance After',
+      render: (t) => (
+        <div>
+          <strong>{formatCurrency(t.balance_after, t.currency || curr, dec)}</strong>
+          <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+            Before: {formatCurrency(t.balance_before, t.currency || curr, dec)}
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'reference_id',
+      label: 'Reference / Ref ID',
+      render: (t) => (
+        <div style={{ maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={t.reference_id}>
+          <span className="badge badge-subtle" style={{ fontSize: '11px', fontFamily: 'monospace' }}>
+            {t.reference_id || 'N/A'}
+          </span>
+        </div>
+      )
+    },
+    {
+      key: 'description',
+      label: 'Description / Notes',
+      render: (t) => (
+        <div style={{ fontSize: '12px', maxWidth: '240px' }} title={t.description}>
+          {t.description || (t.reference_type === 'superadmin_topup' ? 'Recharge added by Superadmin' : 'WhatsApp Dispatch')}
+        </div>
+      )
+    },
+    {
+      key: 'performed_by_name',
+      label: 'Processed By',
+      render: (t) => (
+        <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>
+          {t.performed_by_name || 'System / Auto'}
+        </span>
+      )
+    }
+  ];
+
+  return (
+    <div>
+      <div className="page-header-row">
+        <div className="page-title-group">
+          <h1><span>💳</span> Prepaid Wallet & Financial Statement</h1>
+          <p>Superadmin balance management, automatic transaction debit ledger, and multi-currency billing statement.</p>
+        </div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          {isSuperadmin && (
+            <button className="btn btn-primary" onClick={() => handleOpenTopUp(null)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>➕</span> Add Wallet Balance
+            </button>
+          )}
+          <button className="btn btn-secondary" onClick={loadWallet}>
+            <span>🔄</span> Refresh Statement
+          </button>
+        </div>
+      </div>
+
+      {/* Hero Stats Section */}
+      <div className="wallet-hero-grid">
+        <div className="wallet-balance-card">
+          <div className="wallet-balance-label">Available Prepaid Wallet Balance</div>
+          <div className="wallet-balance-amount">
+            {formatCurrency(walletData.wallet_balance, curr, dec)}
+          </div>
+          <div className="wallet-quick-actions">
+            {isSuperadmin && (
+              <button className="btn-recharge" onClick={() => handleOpenTopUp(null)}>
+                <span>➕</span> Top-Up / Add Credit
+              </button>
+            )}
+            <span style={{ fontSize: '12px', opacity: 0.9, alignSelf: 'center' }}>
+              Base Currency: <strong>{curr}</strong>
+            </span>
+          </div>
+        </div>
+
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
+            Total Credits / Recharges
+          </span>
+          <div style={{ fontSize: '24px', fontWeight: '800', color: '#15803D', marginTop: '6px' }}>
+            {formatCurrency(
+              walletData.transactions.filter(t => t.transaction_type === 'credit').reduce((acc, t) => acc + parseFloat(t.amount || 0), 0),
+              curr, dec
+            )}
+          </div>
+          <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+            {walletData.transactions.filter(t => t.transaction_type === 'credit').length} credit events
+          </span>
+        </div>
+
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
+            Total Dispatches / Debits
+          </span>
+          <div style={{ fontSize: '24px', fontWeight: '800', color: '#B91C1C', marginTop: '6px' }}>
+            {formatCurrency(
+              walletData.transactions.filter(t => t.transaction_type === 'debit').reduce((acc, t) => acc + parseFloat(t.amount || 0), 0),
+              curr, dec
+            )}
+          </div>
+          <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+            {walletData.transactions.filter(t => t.transaction_type === 'debit').length} message dispatches
+          </span>
+        </div>
+      </div>
+
+      {/* Superadmin Client Balances Overview */}
+      {isSuperadmin && walletData.users && walletData.users.length > 0 && (
+        <div className="card" style={{ marginBottom: '24px' }}>
+          <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="card-title" style={{ fontSize: '15px' }}>👥 Client Account Balances Overview</span>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Superadmin Quick Balance Management</span>
+          </div>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>User / Company</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Current Balance</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {walletData.users.map(u => (
+                  <tr key={u.id}>
+                    <td><strong>{u.name}</strong></td>
+                    <td>{u.email}</td>
+                    <td>
+                      <span className={`badge ${u.role === 'superadmin' ? 'cat-marketing' : u.role === 'admin' ? 'cat-auth' : 'cat-utility'}`}>
+                        {u.role.toUpperCase()}
+                      </span>
+                    </td>
+                    <td>
+                      <strong style={{ fontSize: '14px', color: parseFloat(u.wallet_balance) > 0 ? '#15803D' : '#94A3B8' }}>
+                        {formatCurrency(u.wallet_balance, curr, dec)}
+                      </strong>
+                    </td>
+                    <td>
+                      <span className={`badge ${u.status === 'active' ? 'status-read' : 'status-failed'}`}>
+                        {u.status.toUpperCase()}
+                      </span>
+                    </td>
+                    <td>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        style={{ padding: '4px 10px', fontSize: '11.5px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        onClick={() => handleOpenTopUp(u)}
+                      >
+                        <span>➕</span> Top-Up
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Transaction Statement / Audit Ledger */}
+      <DataTable
+        columns={ledgerColumns}
+        data={walletData.transactions}
+        title="wallet_transactions_statement"
+        searchPlaceholder="Search reference ID, description, user..."
+        defaultPageSize={10}
+        pageSizeOptions={[10, 25, 50, 100]}
+        actions={
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <select
+              className="form-select"
+              style={{ width: '150px', padding: '5px 8px', fontSize: '12px' }}
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+            >
+              <option value="all">All Transactions</option>
+              <option value="credit">Credits (Top-Ups)</option>
+              <option value="debit">Debits (Dispatches)</option>
+            </select>
+          </div>
+        }
+        emptyMessage={loading ? 'Loading wallet transactions...' : 'No transaction history records found.'}
+      />
+
+      {/* Superadmin Top-Up Modal */}
+      {showTopUpModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
+        }}>
+          <div className="card" style={{ width: '520px', maxWidth: '95vw' }}>
+            <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span className="card-title" style={{ fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>💳</span> Add Wallet Balance / Payment Credit
+              </span>
+              <button className="btn btn-secondary btn-sm" onClick={() => setShowTopUpModal(false)}>✕</button>
+            </div>
+
+            <form onSubmit={handleSaveTopUp} style={{ marginTop: '14px' }}>
+              <div className="form-group">
+                <label className="form-label">Select Client / Admin Account</label>
+                <select
+                  className="form-select"
+                  value={topUpForm.user_id}
+                  onChange={(e) => setTopUpForm({ ...topUpForm, user_id: e.target.value })}
+                  required
+                >
+                  <option value="">-- Choose Account --</option>
+                  {walletData.users.map(u => (
+                    <option key={u.id} value={u.id}>
+                      {u.name} ({u.email}) - Current Balance: {formatCurrency(u.wallet_balance, curr, dec)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Top-Up Amount ({curr})</label>
+                  <input
+                    type="number"
+                    step="0.001"
+                    min="0.001"
+                    placeholder="e.g. 50.000"
+                    className="form-input"
+                    value={topUpForm.amount}
+                    onChange={(e) => setTopUpForm({ ...topUpForm, amount: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Transaction Type</label>
+                  <select
+                    className="form-select"
+                    value={topUpForm.transaction_type}
+                    onChange={(e) => setTopUpForm({ ...topUpForm, transaction_type: e.target.value })}
+                  >
+                    <option value="credit">Credit (Top-Up / Payment Made)</option>
+                    <option value="debit">Debit (Deduction)</option>
+                    <option value="adjustment">Manual Set (Override)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Payment Reference / Receipt ID</label>
+                <input
+                  type="text"
+                  placeholder="e.g. BENEFIT-849201, Bank Transfer #9912, Cash Receipt"
+                  className="form-input"
+                  value={topUpForm.reference_id}
+                  onChange={(e) => setTopUpForm({ ...topUpForm, reference_id: e.target.value })}
+                />
+                <span className="form-hint">Reference number to match with client invoice or bank statement.</span>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Notes & Description</label>
+                <textarea
+                  rows="2"
+                  placeholder="e.g. 50 BHD Recharge via BenefitPay on 05-Oct-2026"
+                  className="form-input"
+                  value={topUpForm.notes}
+                  onChange={(e) => setTopUpForm({ ...topUpForm, notes: e.target.value })}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                <button type="button" className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowTopUpModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={submitting}>
+                  {submitting ? 'Processing...' : '💳 Credit Wallet Balance'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 9. ENHANCED SYSTEM & TARIFF SETTINGS VIEW (SUPERADMIN / ADMIN)
+// -----------------------------------------------------------------------------
+function SettingsView({ showToast, onSettingsChange }) {
+  const [activeSubTab, setActiveSubTab] = useState('tariffs'); // 'meta', 'tariffs', 'currency', 'datetime'
   const [settings, setSettings] = useState({
     meta_phone_number_id: '',
     meta_waba_account_id: '',
     meta_access_token: '',
     webhook_verify_token: '',
     business_display_name: 'UniGlobal Consultancy W.L.L',
-    business_phone_number: '+973 1700 8899'
+    business_phone_number: '+973 1700 8899',
+    system_currency: 'BHD',
+    currency_decimals: '3',
+    system_date_format: 'YYYY-MM-DD HH:mm:ss',
+    system_timezone: 'Asia/Bahrain',
+    tariff_utility_meta: '0.0140',
+    tariff_utility_platform: '0.0045',
+    tariff_auth_meta: '0.0110',
+    tariff_auth_platform: '0.0035',
+    tariff_marketing_meta: '0.0270',
+    tariff_marketing_platform: '0.0070',
+    tariff_service_meta: '0.0075',
+    tariff_service_platform: '0.0025',
+    wallet_enforcement: '1'
   });
   const [loading, setLoading] = useState(false);
+  const [currentTimePreview, setCurrentTimePreview] = useState(new Date().toISOString());
 
   useEffect(() => {
     fetch('./api/settings.php')
@@ -2465,8 +3005,13 @@ function SettingsView({ showToast }) {
       });
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTimePreview(new Date().toISOString()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   const handleSave = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setLoading(true);
     try {
       const res = await fetch('./api/settings.php', {
@@ -2476,74 +3021,405 @@ function SettingsView({ showToast }) {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('Meta & System settings saved successfully');
+        showToast('System configuration & Tariffs updated successfully! Changes are live.');
+        if (onSettingsChange) onSettingsChange(settings);
+      } else {
+        showToast(data.error || 'Failed to update settings', 'error');
       }
+    } catch (err) {
+      showToast('Network error saving settings', 'error');
     } finally {
       setLoading(false);
     }
   };
 
+  const curr = settings.system_currency || 'BHD';
+  const dec = parseInt(settings.currency_decimals || '3', 10);
+
+  // Supported GCC & India Currencies
+  const currencyOptions = [
+    { code: 'BHD', name: '🇧🇭 BHD - Bahraini Dinar (3 decimals)', defaultDecimals: 3 },
+    { code: 'SAR', name: '🇸🇦 SAR - Saudi Riyal (2 decimals)', defaultDecimals: 2 },
+    { code: 'AED', name: '🇦🇪 AED - UAE Dirham (2 decimals)', defaultDecimals: 2 },
+    { code: 'KWD', name: '🇰🇼 KWD - Kuwaiti Dinar (3 decimals)', defaultDecimals: 3 },
+    { code: 'QAR', name: '🇶🇦 QAR - Qatari Riyal (2 decimals)', defaultDecimals: 2 },
+    { code: 'OMR', name: '🇴🇲 OMR - Omani Rial (3 decimals)', defaultDecimals: 3 },
+    { code: 'INR', name: '🇮🇳 INR - Indian Rupee (₹, 2 decimals)', defaultDecimals: 2 },
+    { code: 'USD', name: '🇺🇸 USD - US Dollar ($, 2 decimals)', defaultDecimals: 2 }
+  ];
+
+  const dateFormatOptions = [
+    { value: 'YYYY-MM-DD HH:mm:ss', label: 'YYYY-MM-DD HH:mm:ss (2026-10-05 17:45:00)' },
+    { value: 'DD/MM/YYYY hh:mm:ss A', label: 'DD/MM/YYYY hh:mm:ss A (05/10/2026 05:45:00 PM)' },
+    { value: 'DD-MM-YYYY HH:mm', label: 'DD-MM-YYYY HH:mm (05-10-2026 17:45)' },
+    { value: 'MM/DD/YYYY hh:mm A', label: 'MM/DD/YYYY hh:mm A (10/05/2026 05:45 PM)' },
+    { value: 'YYYY-MM-DD hh:mm A', label: 'YYYY-MM-DD hh:mm A (2026-10-05 05:45 PM)' }
+  ];
+
   return (
     <div>
       <div className="page-header-row">
         <div className="page-title-group">
-          <h1><span>⚙️</span> Meta Cloud API & System Configuration</h1>
-          <p>Configure WhatsApp Business API credentials, permanent access tokens, and webhook secrets.</p>
+          <h1><span>⚙️</span> Superadmin Platform Engine Configuration</h1>
+          <p>Configure Meta Cloud API, message tariffs, GCC/India currencies, prepaid wallet rules, and date formats.</p>
         </div>
       </div>
 
-      <div className="card" style={{ maxWidth: '800px' }}>
-        <form onSubmit={handleSave}>
-          <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--wa-dark-teal)', marginBottom: '14px' }}>
-            Meta WhatsApp Business Cloud API Credentials
-          </h3>
-
-          <div className="form-group">
-            <label className="form-label">Meta Phone Number ID</label>
-            <input
-              type="text"
-              className="form-input"
-              value={settings.meta_phone_number_id}
-              onChange={(e) => setSettings({ ...settings, meta_phone_number_id: e.target.value })}
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">WhatsApp Business Account ID (WABA)</label>
-            <input
-              type="text"
-              className="form-input"
-              value={settings.meta_waba_account_id}
-              onChange={(e) => setSettings({ ...settings, meta_waba_account_id: e.target.value })}
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Permanent System User Access Token (Graph API)</label>
-            <input
-              type="password"
-              className="form-input"
-              value={settings.meta_access_token}
-              onChange={(e) => setSettings({ ...settings, meta_access_token: e.target.value })}
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Webhook Verification Secret Token</label>
-            <input
-              type="text"
-              className="form-input"
-              value={settings.webhook_verify_token}
-              onChange={(e) => setSettings({ ...settings, webhook_verify_token: e.target.value })}
-            />
-            <span className="form-hint">Paste this token into Meta Developer App Dashboard Webhook settings.</span>
-          </div>
-
-          <button type="submit" className="btn btn-primary" style={{ marginTop: '12px' }} disabled={loading}>
-            {loading ? 'Saving...' : '💾 Save Settings'}
-          </button>
-        </form>
+      {/* Sub-Navigation Tabs */}
+      <div className="settings-nav-tabs">
+        <button
+          type="button"
+          className={`settings-tab-btn ${activeSubTab === 'tariffs' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('tariffs')}
+        >
+          <span>💰</span> Tariffs & Pricing Engine
+        </button>
+        <button
+          type="button"
+          className={`settings-tab-btn ${activeSubTab === 'currency' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('currency')}
+        >
+          <span>🌍</span> Currency & Regional (GCC / India)
+        </button>
+        <button
+          type="button"
+          className={`settings-tab-btn ${activeSubTab === 'datetime' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('datetime')}
+        >
+          <span>🕒</span> Date & Time Formats
+        </button>
+        <button
+          type="button"
+          className={`settings-tab-btn ${activeSubTab === 'meta' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('meta')}
+        >
+          <span>⚡</span> Meta Cloud API Credentials
+        </button>
       </div>
+
+      <form onSubmit={handleSave}>
+        {/* TAB 1: TARIFFS & PRICING ENGINE */}
+        {activeSubTab === 'tariffs' && (
+          <div className="card" style={{ maxWidth: '900px' }}>
+            <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--wa-dark-teal)', marginBottom: '8px' }}>
+              Dynamic Meta Cost & Platform Charges Engine
+            </h3>
+            <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', marginBottom: '18px' }}>
+              Configure the exact Meta Cost and SaNDS Platform Margin per message category. These tariffs take effect dynamically across all outgoing message dispatches, wallet debits, and client billing.
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '16px' }}>
+              {/* Utility Category */}
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <strong style={{ fontSize: '14px', color: '#0F172A' }}>📄 UTILITY (Invoices, Receipts, Notices)</strong>
+                  <span className="badge cat-util">UTILITY</span>
+                </div>
+                <div className="form-row">
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '11.5px' }}>Meta Base Cost ({curr})</label>
+                    <input
+                      type="number"
+                      step="0.0001"
+                      className="form-input"
+                      value={settings.tariff_utility_meta}
+                      onChange={(e) => setSettings({ ...settings, tariff_utility_meta: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '11.5px' }}>Platform Margin ({curr})</label>
+                    <input
+                      type="number"
+                      step="0.0001"
+                      className="form-input"
+                      value={settings.tariff_utility_platform}
+                      onChange={(e) => setSettings({ ...settings, tariff_utility_platform: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+                <div style={{ marginTop: '10px', fontSize: '12px', color: '#0369A1', fontWeight: '700' }}>
+                  Total Client Rate: {(parseFloat(settings.tariff_utility_meta || 0) + parseFloat(settings.tariff_utility_platform || 0)).toFixed(dec)} {curr}
+                </div>
+              </div>
+
+              {/* Authentication Category */}
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <strong style={{ fontSize: '14px', color: '#0F172A' }}>🔐 AUTHENTICATION (OTP, 2FA, Logins)</strong>
+                  <span className="badge cat-auth">AUTH</span>
+                </div>
+                <div className="form-row">
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '11.5px' }}>Meta Base Cost ({curr})</label>
+                    <input
+                      type="number"
+                      step="0.0001"
+                      className="form-input"
+                      value={settings.tariff_auth_meta}
+                      onChange={(e) => setSettings({ ...settings, tariff_auth_meta: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '11.5px' }}>Platform Margin ({curr})</label>
+                    <input
+                      type="number"
+                      step="0.0001"
+                      className="form-input"
+                      value={settings.tariff_auth_platform}
+                      onChange={(e) => setSettings({ ...settings, tariff_auth_platform: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+                <div style={{ marginTop: '10px', fontSize: '12px', color: '#0369A1', fontWeight: '700' }}>
+                  Total Client Rate: {(parseFloat(settings.tariff_auth_meta || 0) + parseFloat(settings.tariff_auth_platform || 0)).toFixed(dec)} {curr}
+                </div>
+              </div>
+
+              {/* Marketing Category */}
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <strong style={{ fontSize: '14px', color: '#0F172A' }}>📣 MARKETING (Promotions, Discounts, Offers)</strong>
+                  <span className="badge cat-mark">MARKETING</span>
+                </div>
+                <div className="form-row">
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '11.5px' }}>Meta Base Cost ({curr})</label>
+                    <input
+                      type="number"
+                      step="0.0001"
+                      className="form-input"
+                      value={settings.tariff_marketing_meta}
+                      onChange={(e) => setSettings({ ...settings, tariff_marketing_meta: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '11.5px' }}>Platform Margin ({curr})</label>
+                    <input
+                      type="number"
+                      step="0.0001"
+                      className="form-input"
+                      value={settings.tariff_marketing_platform}
+                      onChange={(e) => setSettings({ ...settings, tariff_marketing_platform: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+                <div style={{ marginTop: '10px', fontSize: '12px', color: '#0369A1', fontWeight: '700' }}>
+                  Total Client Rate: {(parseFloat(settings.tariff_marketing_meta || 0) + parseFloat(settings.tariff_marketing_platform || 0)).toFixed(dec)} {curr}
+                </div>
+              </div>
+
+              {/* Service Category */}
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <strong style={{ fontSize: '14px', color: '#0F172A' }}>💬 SERVICE (Customer Support, Live Chat)</strong>
+                  <span className="badge cat-serv">SERVICE</span>
+                </div>
+                <div className="form-row">
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '11.5px' }}>Meta Base Cost ({curr})</label>
+                    <input
+                      type="number"
+                      step="0.0001"
+                      className="form-input"
+                      value={settings.tariff_service_meta}
+                      onChange={(e) => setSettings({ ...settings, tariff_service_meta: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '11.5px' }}>Platform Margin ({curr})</label>
+                    <input
+                      type="number"
+                      step="0.0001"
+                      className="form-input"
+                      value={settings.tariff_service_platform}
+                      onChange={(e) => setSettings({ ...settings, tariff_service_platform: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+                <div style={{ marginTop: '10px', fontSize: '12px', color: '#0369A1', fontWeight: '700' }}>
+                  Total Client Rate: {(parseFloat(settings.tariff_service_meta || 0) + parseFloat(settings.tariff_service_platform || 0)).toFixed(dec)} {curr}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: CURRENCY & REGIONAL (GCC & INDIA) */}
+        {activeSubTab === 'currency' && (
+          <div className="card" style={{ maxWidth: '800px' }}>
+            <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--wa-dark-teal)', marginBottom: '8px' }}>
+              Multi-Currency Configuration (All GCC & India)
+            </h3>
+            <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', marginBottom: '18px' }}>
+              Select the operating currency for the entire platform, wallet balances, tariffs, and transaction reports.
+            </p>
+
+            <div className="form-group">
+              <label className="form-label">Platform Operating Currency</label>
+              <select
+                className="form-select"
+                value={settings.system_currency}
+                onChange={(e) => {
+                  const selectedCode = e.target.value;
+                  const found = currencyOptions.find(c => c.code === selectedCode);
+                  setSettings({
+                    ...settings,
+                    system_currency: selectedCode,
+                    currency_decimals: found ? String(found.defaultDecimals) : '3'
+                  });
+                }}
+              >
+                {currencyOptions.map(c => (
+                  <option key={c.code} value={c.code}>{c.name}</option>
+                ))}
+              </select>
+              <span className="form-hint">All wallet top-ups, message charges, and Odoo billing logs will display in this currency.</span>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Currency Decimal Precision</label>
+              <select
+                className="form-select"
+                value={settings.currency_decimals}
+                onChange={(e) => setSettings({ ...settings, currency_decimals: e.target.value })}
+              >
+                <option value="3">3 Decimals (e.g. 0.0185 BHD / 100.500 KWD)</option>
+                <option value="2">2 Decimals (e.g. 2.50 SAR / 150.00 INR / $ 10.00)</option>
+                <option value="4">4 Decimals (e.g. 0.0145 BHD Micro-billing)</option>
+              </select>
+            </div>
+
+            <div className="form-group" style={{ marginTop: '16px' }}>
+              <label className="form-label">Prepaid Wallet Enforcement</label>
+              <select
+                className="form-select"
+                value={settings.wallet_enforcement}
+                onChange={(e) => setSettings({ ...settings, wallet_enforcement: e.target.value })}
+              >
+                <option value="1">Strict Enforcement: Block messages when wallet balance is insufficient</option>
+                <option value="0">Monitor Only: Allow dispatches and record negative balance</option>
+              </select>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: DATE & TIME FORMATS */}
+        {activeSubTab === 'datetime' && (
+          <div className="card" style={{ maxWidth: '800px' }}>
+            <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--wa-dark-teal)', marginBottom: '8px' }}>
+              Date & Time Format Settings
+            </h3>
+            <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', marginBottom: '18px' }}>
+              Standardize how timestamps, audit logs, and message telemetry are rendered across all views.
+            </p>
+
+            <div className="form-group">
+              <label className="form-label">System Date & Time Format</label>
+              <select
+                className="form-select"
+                value={settings.system_date_format}
+                onChange={(e) => setSettings({ ...settings, system_date_format: e.target.value })}
+              >
+                {dateFormatOptions.map(df => (
+                  <option key={df.value} value={df.value}>{df.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Regional Timezone</label>
+              <select
+                className="form-select"
+                value={settings.system_timezone}
+                onChange={(e) => setSettings({ ...settings, system_timezone: e.target.value })}
+              >
+                <option value="Asia/Bahrain">🇧🇭 Bahrain (GMT+3) - Asia/Bahrain</option>
+                <option value="Asia/Riyadh">🇸🇦 Saudi Arabia (GMT+3) - Asia/Riyadh</option>
+                <option value="Asia/Dubai">🇦🇪 UAE / Dubai (GMT+4) - Asia/Dubai</option>
+                <option value="Asia/Kuwait">🇰🇼 Kuwait (GMT+3) - Asia/Kuwait</option>
+                <option value="Asia/Qatar">🇶🇦 Qatar (GMT+3) - Asia/Qatar</option>
+                <option value="Asia/Muscat">🇴🇲 Oman (GMT+4) - Asia/Muscat</option>
+                <option value="Asia/Kolkata">🇮🇳 India (GMT+5:30) - Asia/Kolkata</option>
+                <option value="UTC">🌐 Coordinated Universal Time (UTC)</option>
+              </select>
+            </div>
+
+            <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '10px', padding: '14px', marginTop: '16px' }}>
+              <div style={{ fontSize: '11.5px', color: '#166534', fontWeight: '700', textTransform: 'uppercase' }}>Live Format Preview</div>
+              <div style={{ fontSize: '18px', fontWeight: '800', color: '#15803D', marginTop: '4px' }}>
+                {formatDateTime(currentTimePreview, settings.system_date_format)}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: META CLOUD API CREDENTIALS */}
+        {activeSubTab === 'meta' && (
+          <div className="card" style={{ maxWidth: '800px' }}>
+            <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--wa-dark-teal)', marginBottom: '8px' }}>
+              Meta WhatsApp Business Cloud API Credentials
+            </h3>
+            <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', marginBottom: '18px' }}>
+              Permanent System User Graph API access tokens and Webhook validation tokens.
+            </p>
+
+            <div className="form-group">
+              <label className="form-label">Meta Phone Number ID</label>
+              <input
+                type="text"
+                className="form-input"
+                value={settings.meta_phone_number_id}
+                onChange={(e) => setSettings({ ...settings, meta_phone_number_id: e.target.value })}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">WhatsApp Business Account ID (WABA)</label>
+              <input
+                type="text"
+                className="form-input"
+                value={settings.meta_waba_account_id}
+                onChange={(e) => setSettings({ ...settings, meta_waba_account_id: e.target.value })}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Permanent System User Access Token (Graph API)</label>
+              <input
+                type="password"
+                className="form-input"
+                value={settings.meta_access_token}
+                onChange={(e) => setSettings({ ...settings, meta_access_token: e.target.value })}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Webhook Verification Secret Token</label>
+              <input
+                type="text"
+                className="form-input"
+                value={settings.webhook_verify_token}
+                onChange={(e) => setSettings({ ...settings, webhook_verify_token: e.target.value })}
+              />
+              <span className="form-hint">Paste this token into Meta Developer App Dashboard Webhook settings.</span>
+            </div>
+          </div>
+        )}
+
+        <div style={{ marginTop: '20px' }}>
+          <button type="submit" className="btn btn-primary" style={{ padding: '10px 24px', fontSize: '14px', fontWeight: '700' }} disabled={loading}>
+            {loading ? 'Saving...' : '💾 Save & Apply System Configuration'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
@@ -2554,3 +3430,4 @@ if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(<App />);
 }
+
