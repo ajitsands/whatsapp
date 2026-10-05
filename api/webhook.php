@@ -66,9 +66,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     $errClause = "";
                     $params = [$status];
-                    if ($status === 'failed' && !empty($statusObj['errors'][0]['message'])) {
-                        $errClause = ", error_message = ?";
-                        $params[] = $statusObj['errors'][0]['message'];
+                    if ($status === 'failed') {
+                        $errDetails = [];
+                        if (!empty($statusObj['errors'][0]['title'])) {
+                            $errDetails[] = $statusObj['errors'][0]['title'];
+                        }
+                        if (!empty($statusObj['errors'][0]['message'])) {
+                            $errDetails[] = $statusObj['errors'][0]['message'];
+                        }
+                        if (!empty($statusObj['errors'][0]['error_data']['details'])) {
+                            $errDetails[] = $statusObj['errors'][0]['error_data']['details'];
+                        }
+                        if (!empty($errDetails)) {
+                            $errClause = ", error_message = ?";
+                            $params[] = implode(' - ', array_unique($errDetails));
+                        }
                     }
                     $params[] = $wamid;
 

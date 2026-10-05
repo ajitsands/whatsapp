@@ -1136,9 +1136,16 @@ function MessageLogsView({ showToast }) {
       key: 'status',
       label: 'Status',
       render: (m) => (
-        <span className={`badge status-${m.status}`}>
-          {m.status === 'read' ? '✓✓ Read' : m.status === 'delivered' ? '✓✓ Delivered' : m.status === 'sent' ? '✓ Sent' : m.status}
-        </span>
+        <div>
+          <span className={`badge status-${m.status}`} style={{ transition: 'all 0.3s ease' }}>
+            {m.status === 'read' ? '✓✓ Read' : m.status === 'delivered' ? '✓✓ Delivered' : m.status === 'sent' ? '✓ Sent' : m.status.toUpperCase()}
+          </span>
+          {m.status === 'failed' && m.error_message && (
+            <div style={{ fontSize: '10px', color: '#EF4444', marginTop: '3px', maxWidth: '220px', whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: '1.2' }}>
+              ⚠️ {m.error_message}
+            </div>
+          )}
+        </div>
       )
     },
     {

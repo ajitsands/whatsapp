@@ -599,7 +599,7 @@ function MessageLogsView({ showToast }) {
     {
       key: "status",
       label: "Status",
-      render: (m) => /* @__PURE__ */ React.createElement("span", { className: `badge status-${m.status}` }, m.status === "read" ? "\u2713\u2713 Read" : m.status === "delivered" ? "\u2713\u2713 Delivered" : m.status === "sent" ? "\u2713 Sent" : m.status)
+      render: (m) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: `badge status-${m.status}`, style: { transition: "all 0.3s ease" } }, m.status === "read" ? "\u2713\u2713 Read" : m.status === "delivered" ? "\u2713\u2713 Delivered" : m.status === "sent" ? "\u2713 Sent" : m.status.toUpperCase()), m.status === "failed" && m.error_message && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "#EF4444", marginTop: "3px", maxWidth: "220px", whiteSpace: "normal", wordBreak: "break-word", lineHeight: "1.2" } }, "\u26A0\uFE0F ", m.error_message))
     },
     {
       key: "client_rate_bhd",
