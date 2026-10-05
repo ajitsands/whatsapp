@@ -17,7 +17,7 @@ function DataTable({
   pageSizeOptions = [5, 10, 25, 50],
   defaultPageSize = 10,
   defaultSortKey = '',
-  defaultSortDir = 'asc',
+  defaultSortDir = 'desc',
   title = 'export',
   actions = null,
   emptyMessage = 'No matching records found.'
@@ -25,7 +25,10 @@ function DataTable({
   const [searchTerm, setSearchTerm] = useState('');
   const [pageSize, setPageSize] = useState(defaultPageSize);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortKey, setSortKey] = useState(defaultSortKey || (columns[0]?.key || ''));
+  const initialSortKey = defaultSortKey !== undefined && defaultSortKey !== ''
+    ? defaultSortKey
+    : (columns.find(c => c.key === 'created_at' || c.key === 'id')?.key || (columns[0]?.key || ''));
+  const [sortKey, setSortKey] = useState(initialSortKey);
   const [sortDir, setSortDir] = useState(defaultSortDir);
 
   // Filter rows across all fields
@@ -41,7 +44,7 @@ function DataTable({
     });
   }, [data, searchTerm, columns]);
 
-  // Sort rows
+  // Sort rows (Default Descending: latest/newest first)
   const sortedData = useMemo(() => {
     if (!sortKey) return filteredData;
     return [...filteredData].sort((a, b) => {
@@ -53,9 +56,16 @@ function DataTable({
       if (typeof aVal === 'number' && typeof bVal === 'number') {
         return sortDir === 'asc' ? aVal - bVal : bVal - aVal;
       }
+
+      const numA = Number(aVal);
+      const numB = Number(bVal);
+      if (!isNaN(numA) && !isNaN(numB) && typeof aVal !== 'boolean' && typeof bVal !== 'boolean' && aVal !== '' && bVal !== '') {
+        return sortDir === 'asc' ? numA - numB : numB - numA;
+      }
+
       return sortDir === 'asc'
-        ? String(aVal).localeCompare(String(bVal), undefined, { numeric: true })
-        : String(bVal).localeCompare(String(aVal), undefined, { numeric: true });
+        ? String(aVal).localeCompare(String(bVal), undefined, { numeric: true, sensitivity: 'base' })
+        : String(bVal).localeCompare(String(aVal), undefined, { numeric: true, sensitivity: 'base' });
     });
   }, [filteredData, sortKey, sortDir]);
 
@@ -75,7 +85,7 @@ function DataTable({
       setSortDir(prev => (prev === 'asc' ? 'desc' : 'asc'));
     } else {
       setSortKey(key);
-      setSortDir('asc');
+      setSortDir('desc');
     }
   };
 
@@ -1672,6 +1682,8 @@ function MessageLogsView({ showToast, globalSettings }) {
           searchPlaceholder="Search phone or latest message..."
           defaultPageSize={10}
           pageSizeOptions={[10, 25, 50, 100]}
+          defaultSortKey="created_at"
+          defaultSortDir="desc"
           actions={customFilterBar}
           emptyMessage={loading ? 'Loading conversations...' : 'No conversations found matching criteria.'}
         />
@@ -1683,6 +1695,8 @@ function MessageLogsView({ showToast, globalSettings }) {
           searchPlaceholder="Search phone, wamid, content..."
           defaultPageSize={10}
           pageSizeOptions={[10, 25, 50, 100]}
+          defaultSortKey="created_at"
+          defaultSortDir="desc"
           actions={customFilterBar}
           emptyMessage={loading ? 'Loading telemetry logs...' : 'No messages found matching criteria.'}
         />
@@ -1900,6 +1914,8 @@ function TemplatesView({ showToast }) {
         searchPlaceholder="Search template title, category..."
         defaultPageSize={10}
         pageSizeOptions={[5, 10, 20]}
+        defaultSortKey="id"
+        defaultSortDir="desc"
       />
 
       {/* Register & Edit Template Modal */}
@@ -2151,9 +2167,9 @@ def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div className="api-hub-grid">
         {/* Left: Interactive API Request Runner */}
-        <div className="card">
+        <div className="card" style={{ minWidth: 0, margin: 0 }}>
           <div className="card-header">
             <span className="card-title"><span>🧪</span> Live API Tester</span>
           </div>
@@ -2188,15 +2204,15 @@ def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_
           {responseOutput && (
             <div style={{ marginTop: '16px' }}>
               <label className="form-label">Response Body (HTTP 200/201)</label>
-              <div className="code-box">
-                <pre>{responseOutput}</pre>
+              <div className="code-box" style={{ maxHeight: '350px', overflowY: 'auto' }}>
+                <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{responseOutput}</pre>
               </div>
             </div>
           )}
         </div>
 
         {/* Right: Odoo Python Snippet */}
-        <div className="card">
+        <div className="card" style={{ minWidth: 0, margin: 0 }}>
           <div className="card-header">
             <span className="card-title"><span>🐍</span> Odoo ERP Python Model Action Code</span>
             <button className="btn-copy-code" onClick={() => {
@@ -2204,11 +2220,11 @@ def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_
               showToast('Python snippet copied to clipboard!');
             }}>Copy Code</button>
           </div>
-          <div className="code-box" style={{ minHeight: '380px' }}>
+          <div className="code-box" style={{ minHeight: '380px', maxHeight: '560px', overflowY: 'auto' }}>
             <div className="code-box-header">
               <span>odoo_whatsapp_connector.py</span>
             </div>
-            <pre>{pythonSnippet}</pre>
+            <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{pythonSnippet}</pre>
           </div>
         </div>
       </div>
@@ -2343,6 +2359,8 @@ function ApiKeysView({ showToast }) {
         searchPlaceholder="Search system name, token..."
         defaultPageSize={10}
         pageSizeOptions={[5, 10, 20]}
+        defaultSortKey="id"
+        defaultSortDir="desc"
       />
     </div>
   );
@@ -2477,6 +2495,8 @@ function UsersView({ currentUser, showToast }) {
         searchPlaceholder="Search users by name, email, role..."
         defaultPageSize={10}
         pageSizeOptions={[5, 10, 20]}
+        defaultSortKey="id"
+        defaultSortDir="desc"
       />
 
       {showAddModal && (
@@ -2910,6 +2930,8 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
         searchPlaceholder="Search reference ID, description, user..."
         defaultPageSize={10}
         pageSizeOptions={[10, 25, 50, 100]}
+        defaultSortKey="created_at"
+        defaultSortDir="desc"
         actions={
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <select

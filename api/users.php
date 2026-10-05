@@ -16,7 +16,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        $stmt = $db->query("SELECT id, name, email, role, status, avatar_color, last_login, created_at FROM users ORDER BY id ASC");
+        $stmt = $db->query("SELECT id, name, email, role, status, avatar_color, last_login, created_at FROM users ORDER BY id DESC");
         sendJsonResponse(['success' => true, 'data' => $stmt->fetchAll()]);
         break;
 

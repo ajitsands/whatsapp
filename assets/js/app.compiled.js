@@ -7,7 +7,7 @@ function DataTable({
   pageSizeOptions = [5, 10, 25, 50],
   defaultPageSize = 10,
   defaultSortKey = "",
-  defaultSortDir = "asc",
+  defaultSortDir = "desc",
   title = "export",
   actions = null,
   emptyMessage = "No matching records found."
@@ -15,7 +15,8 @@ function DataTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [pageSize, setPageSize] = useState(defaultPageSize);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortKey, setSortKey] = useState(defaultSortKey || (columns[0]?.key || ""));
+  const initialSortKey = defaultSortKey !== void 0 && defaultSortKey !== "" ? defaultSortKey : columns.find((c) => c.key === "created_at" || c.key === "id")?.key || (columns[0]?.key || "");
+  const [sortKey, setSortKey] = useState(initialSortKey);
   const [sortDir, setSortDir] = useState(defaultSortDir);
   const filteredData = useMemo(() => {
     if (!searchTerm.trim()) return data;
@@ -38,7 +39,12 @@ function DataTable({
       if (typeof aVal === "number" && typeof bVal === "number") {
         return sortDir === "asc" ? aVal - bVal : bVal - aVal;
       }
-      return sortDir === "asc" ? String(aVal).localeCompare(String(bVal), void 0, { numeric: true }) : String(bVal).localeCompare(String(aVal), void 0, { numeric: true });
+      const numA = Number(aVal);
+      const numB = Number(bVal);
+      if (!isNaN(numA) && !isNaN(numB) && typeof aVal !== "boolean" && typeof bVal !== "boolean" && aVal !== "" && bVal !== "") {
+        return sortDir === "asc" ? numA - numB : numB - numA;
+      }
+      return sortDir === "asc" ? String(aVal).localeCompare(String(bVal), void 0, { numeric: true, sensitivity: "base" }) : String(bVal).localeCompare(String(aVal), void 0, { numeric: true, sensitivity: "base" });
     });
   }, [filteredData, sortKey, sortDir]);
   const totalEntries = sortedData.length;
@@ -54,7 +60,7 @@ function DataTable({
       setSortDir((prev) => prev === "asc" ? "desc" : "asc");
     } else {
       setSortKey(key);
-      setSortDir("asc");
+      setSortDir("desc");
     }
   };
   const exportCSV = () => {
@@ -904,6 +910,8 @@ function MessageLogsView({ showToast, globalSettings }) {
       searchPlaceholder: "Search phone or latest message...",
       defaultPageSize: 10,
       pageSizeOptions: [10, 25, 50, 100],
+      defaultSortKey: "created_at",
+      defaultSortDir: "desc",
       actions: customFilterBar,
       emptyMessage: loading ? "Loading conversations..." : "No conversations found matching criteria."
     }
@@ -916,6 +924,8 @@ function MessageLogsView({ showToast, globalSettings }) {
       searchPlaceholder: "Search phone, wamid, content...",
       defaultPageSize: 10,
       pageSizeOptions: [10, 25, 50, 100],
+      defaultSortKey: "created_at",
+      defaultSortDir: "desc",
       actions: customFilterBar,
       emptyMessage: loading ? "Loading telemetry logs..." : "No messages found matching criteria."
     }
@@ -1087,7 +1097,9 @@ function TemplatesView({ showToast }) {
       title: "whatsapp_templates",
       searchPlaceholder: "Search template title, category...",
       defaultPageSize: 10,
-      pageSizeOptions: [5, 10, 20]
+      pageSizeOptions: [5, 10, 20],
+      defaultSortKey: "id",
+      defaultSortDir: "desc"
     }
   ), editingTemplate && /* @__PURE__ */ React.createElement("div", { style: {
     position: "fixed",
@@ -1252,7 +1264,7 @@ def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_
     }
     response = requests.post(API_URL, json=payload, headers=headers, timeout=10)
     return response.json()`;
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo ERP Integration & API Hub"), /* @__PURE__ */ React.createElement("p", null, "REST API documentation, live testing console, and copyable Python integration snippets for Odoo developers."))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" } }, /* @__PURE__ */ React.createElement("div", { className: "card" }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F9EA}"), " Live API Tester")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "API Key Header (X-API-Key)"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: apiKey, onChange: (e) => setApiKey(e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "HTTP Method & Endpoint"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge cat-utility", style: { padding: "8px 12px", fontSize: "12px" } }, "POST"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: endpoint, readOnly: true }))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Request Body (JSON)"), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo ERP Integration & API Hub"), /* @__PURE__ */ React.createElement("p", null, "REST API documentation, live testing console, and copyable Python integration snippets for Odoo developers."))), /* @__PURE__ */ React.createElement("div", { className: "api-hub-grid" }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { minWidth: 0, margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F9EA}"), " Live API Tester")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "API Key Header (X-API-Key)"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: apiKey, onChange: (e) => setApiKey(e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "HTTP Method & Endpoint"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge cat-utility", style: { padding: "8px 12px", fontSize: "12px" } }, "POST"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: endpoint, readOnly: true }))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Request Body (JSON)"), /* @__PURE__ */ React.createElement(
     "textarea",
     {
       className: "form-textarea",
@@ -1260,10 +1272,10 @@ def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_
       value: requestPayload,
       onChange: (e) => setRequestPayload(e.target.value)
     }
-  )), /* @__PURE__ */ React.createElement("button", { className: "btn btn-success", style: { width: "100%" }, onClick: runLiveTest, disabled: loading }, loading ? "Executing..." : "\u25B6 Execute API Call"), responseOutput && /* @__PURE__ */ React.createElement("div", { style: { marginTop: "16px" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Response Body (HTTP 200/201)"), /* @__PURE__ */ React.createElement("div", { className: "code-box" }, /* @__PURE__ */ React.createElement("pre", null, responseOutput)))), /* @__PURE__ */ React.createElement("div", { className: "card" }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F40D}"), " Odoo ERP Python Model Action Code"), /* @__PURE__ */ React.createElement("button", { className: "btn-copy-code", onClick: () => {
+  )), /* @__PURE__ */ React.createElement("button", { className: "btn btn-success", style: { width: "100%" }, onClick: runLiveTest, disabled: loading }, loading ? "Executing..." : "\u25B6 Execute API Call"), responseOutput && /* @__PURE__ */ React.createElement("div", { style: { marginTop: "16px" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Response Body (HTTP 200/201)"), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { maxHeight: "350px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, responseOutput)))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { minWidth: 0, margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F40D}"), " Odoo ERP Python Model Action Code"), /* @__PURE__ */ React.createElement("button", { className: "btn-copy-code", onClick: () => {
     navigator.clipboard.writeText(pythonSnippet);
     showToast("Python snippet copied to clipboard!");
-  } }, "Copy Code")), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { minHeight: "380px" } }, /* @__PURE__ */ React.createElement("div", { className: "code-box-header" }, /* @__PURE__ */ React.createElement("span", null, "odoo_whatsapp_connector.py")), /* @__PURE__ */ React.createElement("pre", null, pythonSnippet)))));
+  } }, "Copy Code")), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { minHeight: "380px", maxHeight: "560px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "code-box-header" }, /* @__PURE__ */ React.createElement("span", null, "odoo_whatsapp_connector.py")), /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, pythonSnippet)))));
 }
 function ApiKeysView({ showToast }) {
   const [keys, setKeys] = useState([]);
@@ -1358,7 +1370,9 @@ function ApiKeysView({ showToast }) {
       title: "api_keys",
       searchPlaceholder: "Search system name, token...",
       defaultPageSize: 10,
-      pageSizeOptions: [5, 10, 20]
+      pageSizeOptions: [5, 10, 20],
+      defaultSortKey: "id",
+      defaultSortDir: "desc"
     }
   ));
 }
@@ -1450,7 +1464,9 @@ function UsersView({ currentUser, showToast }) {
       title: "platform_users",
       searchPlaceholder: "Search users by name, email, role...",
       defaultPageSize: 10,
-      pageSizeOptions: [5, 10, 20]
+      pageSizeOptions: [5, 10, 20],
+      defaultSortKey: "id",
+      defaultSortDir: "desc"
     }
   ), showAddModal && /* @__PURE__ */ React.createElement("div", { style: {
     position: "fixed",
@@ -1688,6 +1704,8 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
       searchPlaceholder: "Search reference ID, description, user...",
       defaultPageSize: 10,
       pageSizeOptions: [10, 25, 50, 100],
+      defaultSortKey: "created_at",
+      defaultSortDir: "desc",
       actions: /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
         "select",
         {

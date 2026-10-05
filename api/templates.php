@@ -35,7 +35,7 @@ switch ($method) {
             ")->execute([$offerBody]);
         } catch (Throwable $ignore) {}
 
-        $stmt = $db->query("SELECT * FROM whatsapp_templates ORDER BY category ASC, id ASC");
+        $stmt = $db->query("SELECT * FROM whatsapp_templates ORDER BY id DESC");
         $templates = $stmt->fetchAll();
 
         // Dynamically verify and auto-heal variable_count & sample parameters for any existing template
