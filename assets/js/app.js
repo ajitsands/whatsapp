@@ -1110,7 +1110,7 @@ function ComposerView({ showToast, onSent }) {
 // 4. MESSAGE LO// -----------------------------------------------------------------------------
 // 3.5. INTERACTIVE LIVE WHATSAPP CONVERSATION CHAT CONSOLE
 // -----------------------------------------------------------------------------
-function ConversationChatModal({ phone, onClose, showToast }) {
+function ConversationChatModal({ phone, onClose, showToast, globalSettings }) {
   const [thread, setThread] = useState([]);
   const [replyText, setReplyText] = useState('');
   const [sending, setSending] = useState(false);
@@ -1259,7 +1259,7 @@ function ConversationChatModal({ phone, onClose, showToast }) {
                     <div style={{ whiteSpace: 'pre-wrap' }}>{msg.message_body}</div>
 
                     <div className="chat-bubble-footer">
-                      <span>{msg.created_at ? msg.created_at.split(' ')[1] : ''}</span>
+                      <span>{formatDateTime(msg.created_at, globalSettings?.system_date_format)}</span>
                       {isOutbound && (
                         <span>
                           {msg.status === 'read' ? (
@@ -1306,7 +1306,7 @@ function ConversationChatModal({ phone, onClose, showToast }) {
 // -----------------------------------------------------------------------------
 // 4. MESSAGE LOGS VIEW (WITH DATATABLE & LIVE CONVERSATIONS)
 // -----------------------------------------------------------------------------
-function MessageLogsView({ showToast }) {
+function MessageLogsView({ showToast, globalSettings }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -1466,7 +1466,11 @@ function MessageLogsView({ showToast }) {
     {
       key: 'created_at',
       label: 'Last Message Time',
-      render: (c) => <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>{c.created_at}</span>
+      render: (c) => (
+        <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>
+          {formatDateTime(c.created_at, globalSettings?.system_date_format)}
+        </span>
+      )
     },
     {
       key: 'actions',
@@ -1554,7 +1558,11 @@ function MessageLogsView({ showToast }) {
     {
       key: 'created_at',
       label: 'Timestamp',
-      render: (m) => <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>{m.created_at}</span>
+      render: (m) => (
+        <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>
+          {formatDateTime(m.created_at, globalSettings?.system_date_format)}
+        </span>
+      )
     },
     {
       key: 'actions',
@@ -1689,6 +1697,7 @@ function MessageLogsView({ showToast }) {
             fetchLogs(true);
           }}
           showToast={showToast}
+          globalSettings={globalSettings}
         />
       )}
 
@@ -2526,7 +2535,11 @@ function formatCurrency(amount, currency = 'BHD', decimals = 3) {
 function formatDateTime(dateStr, format = 'YYYY-MM-DD HH:mm:ss') {
   if (!dateStr) return '';
   try {
-    const d = new Date(dateStr);
+    let cleanStr = String(dateStr).trim();
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(cleanStr)) {
+      cleanStr = cleanStr.replace(' ', 'T');
+    }
+    const d = new Date(cleanStr);
     if (isNaN(d.getTime())) return dateStr;
     const YYYY = d.getFullYear();
     const MM = String(d.getMonth() + 1).padStart(2, '0');

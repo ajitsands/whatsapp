@@ -591,7 +591,7 @@ function ComposerView({ showToast, onSent }) {
     }
   )), /* @__PURE__ */ React.createElement("div", { className: "tariff-estimate-banner" }, /* @__PURE__ */ React.createElement("div", { className: "tariff-info" }, /* @__PURE__ */ React.createElement("span", { className: "title" }, "Category: ", category), /* @__PURE__ */ React.createElement("span", { className: "breakdown" }, "Meta Cost: ", tariffEstimate.meta.toFixed(4), " BHD | Platform Charges: +", tariffEstimate.platform.toFixed(4), " BHD")), /* @__PURE__ */ React.createElement("div", { className: "tariff-rate-badge" }, "BHD ", tariffEstimate.client.toFixed(4), " / msg")), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-success", style: { width: "100%", marginTop: "20px", padding: "12px" }, disabled: sending }, sending ? "Dispatching via Meta API..." : "\u{1F680} Send WhatsApp Notification Now"))), /* @__PURE__ */ React.createElement("div", { className: "phone-mockup-wrapper" }, /* @__PURE__ */ React.createElement("div", { className: "phone-device" }, /* @__PURE__ */ React.createElement("div", { className: "phone-notch" }, /* @__PURE__ */ React.createElement("div", { className: "phone-speaker" })), /* @__PURE__ */ React.createElement("div", { className: "phone-screen" }, /* @__PURE__ */ React.createElement("div", { className: "wa-chat-header" }, /* @__PURE__ */ React.createElement("div", { className: "wa-avatar" }, "UG"), /* @__PURE__ */ React.createElement("div", { className: "wa-user-info" }, /* @__PURE__ */ React.createElement("div", { className: "wa-contact-name" }, "UniGlobal Consultancy ", /* @__PURE__ */ React.createElement("span", { className: "wa-verified-icon" }, "\u2713")), /* @__PURE__ */ React.createElement("div", { className: "wa-status-text" }, "Official Business Account"))), /* @__PURE__ */ React.createElement("div", { className: "wa-chat-body" }, /* @__PURE__ */ React.createElement("div", { className: "wa-date-pill" }, "TODAY"), /* @__PURE__ */ React.createElement("div", { className: "wa-bubble" }, currentTemplateObj?.header_type === "DOCUMENT" && /* @__PURE__ */ React.createElement("div", { className: "wa-bubble-doc" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4C4}"), /* @__PURE__ */ React.createElement("div", { style: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, mediaName || "INV_9941.pdf", /* @__PURE__ */ React.createElement("div", { style: { fontSize: "9px", color: "#4B5563" } }, "PDF Document \u2022 345 KB"))), /* @__PURE__ */ React.createElement("div", { style: { whiteSpace: "pre-line" } }, renderedText), currentTemplateObj?.footer_text && /* @__PURE__ */ React.createElement("div", { className: "wa-bubble-footer" }, currentTemplateObj.footer_text), /* @__PURE__ */ React.createElement("div", { className: "wa-bubble-meta" }, /* @__PURE__ */ React.createElement("span", null, "10:42 AM"), /* @__PURE__ */ React.createElement("span", { className: "wa-ticks" }, "\u2713\u2713")))), /* @__PURE__ */ React.createElement("div", { className: "wa-chat-input-bar" }, /* @__PURE__ */ React.createElement("div", { className: "wa-dummy-input" }, "Message"), /* @__PURE__ */ React.createElement("span", { style: { color: "#075E54", fontSize: "14px" } }, "\u{1F3A4}")))))));
 }
-function ConversationChatModal({ phone, onClose, showToast }) {
+function ConversationChatModal({ phone, onClose, showToast, globalSettings }) {
   const [thread, setThread] = useState([]);
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
@@ -676,7 +676,7 @@ function ConversationChatModal({ phone, onClose, showToast }) {
     if (e.target === e.currentTarget) onClose();
   } }, /* @__PURE__ */ React.createElement("div", { className: "chat-modal-box" }, /* @__PURE__ */ React.createElement("div", { className: "chat-modal-header" }, /* @__PURE__ */ React.createElement("div", { className: "chat-header-user" }, /* @__PURE__ */ React.createElement("div", { className: "chat-avatar" }, cleanPhone.slice(-2), /* @__PURE__ */ React.createElement("span", { className: "chat-avatar-online", title: "WhatsApp Connected" })), /* @__PURE__ */ React.createElement("div", { className: "chat-user-meta" }, /* @__PURE__ */ React.createElement("span", { className: "chat-user-phone" }, cleanPhone), /* @__PURE__ */ React.createElement("span", { className: "chat-user-sub" }, "Official WhatsApp Gateway \u2022 ", hasRecentInbound ? /* @__PURE__ */ React.createElement("span", { className: "chat-window-pill" }, "\u{1F7E2} 24h Window Active") : /* @__PURE__ */ React.createElement("span", { className: "chat-window-pill", style: { background: "rgba(234, 179, 8, 0.2)", color: "#FEF08A" } }, "\u{1F7E1} Outbound Session")))), /* @__PURE__ */ React.createElement("div", { className: "chat-header-actions" }, /* @__PURE__ */ React.createElement("button", { className: "btn-chat-close", onClick: onClose, title: "Close Chat" }, "\u2715"))), /* @__PURE__ */ React.createElement("div", { className: "chat-messages-canvas" }, /* @__PURE__ */ React.createElement("div", { className: "chat-date-separator" }, "\u{1F512} WhatsApp Cloud API Live Conversation Thread"), loading && thread.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", color: "#64748B", padding: "30px" } }, "Loading conversation history...") : thread.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", color: "#64748B", padding: "30px" } }, "No messages exchanged with ", cleanPhone, " yet.") : thread.map((msg, idx) => {
     const isOutbound = msg.direction === "outbound";
-    return /* @__PURE__ */ React.createElement("div", { key: msg.id || idx, className: `chat-bubble-row ${isOutbound ? "outbound" : "inbound"}` }, /* @__PURE__ */ React.createElement("div", { className: "chat-bubble" }, msg.template_name && /* @__PURE__ */ React.createElement("span", { className: "chat-bubble-template-tag" }, "\u{1F4CB} ", msg.template_name, " [", msg.category, "]"), msg.header_media_name && /* @__PURE__ */ React.createElement("div", { className: "chat-bubble-media" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CE}"), /* @__PURE__ */ React.createElement("span", null, msg.header_media_name)), /* @__PURE__ */ React.createElement("div", { style: { whiteSpace: "pre-wrap" } }, msg.message_body), /* @__PURE__ */ React.createElement("div", { className: "chat-bubble-footer" }, /* @__PURE__ */ React.createElement("span", null, msg.created_at ? msg.created_at.split(" ")[1] : ""), isOutbound && /* @__PURE__ */ React.createElement("span", null, msg.status === "read" ? /* @__PURE__ */ React.createElement("span", { className: "chat-tick-read", title: "Read" }, "\u2713\u2713") : msg.status === "delivered" ? /* @__PURE__ */ React.createElement("span", { className: "chat-tick-delivered", title: "Delivered" }, "\u2713\u2713") : msg.status === "sent" ? /* @__PURE__ */ React.createElement("span", { title: "Sent" }, "\u2713") : msg.status === "failed" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" }, title: msg.error_message || "Failed" }, "\u26A0\uFE0F") : /* @__PURE__ */ React.createElement("span", { style: { color: "#94A3B8" }, title: "Queued" }, "\u23F1\uFE0F")))));
+    return /* @__PURE__ */ React.createElement("div", { key: msg.id || idx, className: `chat-bubble-row ${isOutbound ? "outbound" : "inbound"}` }, /* @__PURE__ */ React.createElement("div", { className: "chat-bubble" }, msg.template_name && /* @__PURE__ */ React.createElement("span", { className: "chat-bubble-template-tag" }, "\u{1F4CB} ", msg.template_name, " [", msg.category, "]"), msg.header_media_name && /* @__PURE__ */ React.createElement("div", { className: "chat-bubble-media" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CE}"), /* @__PURE__ */ React.createElement("span", null, msg.header_media_name)), /* @__PURE__ */ React.createElement("div", { style: { whiteSpace: "pre-wrap" } }, msg.message_body), /* @__PURE__ */ React.createElement("div", { className: "chat-bubble-footer" }, /* @__PURE__ */ React.createElement("span", null, formatDateTime(msg.created_at, globalSettings?.system_date_format)), isOutbound && /* @__PURE__ */ React.createElement("span", null, msg.status === "read" ? /* @__PURE__ */ React.createElement("span", { className: "chat-tick-read", title: "Read" }, "\u2713\u2713") : msg.status === "delivered" ? /* @__PURE__ */ React.createElement("span", { className: "chat-tick-delivered", title: "Delivered" }, "\u2713\u2713") : msg.status === "sent" ? /* @__PURE__ */ React.createElement("span", { title: "Sent" }, "\u2713") : msg.status === "failed" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" }, title: msg.error_message || "Failed" }, "\u26A0\uFE0F") : /* @__PURE__ */ React.createElement("span", { style: { color: "#94A3B8" }, title: "Queued" }, "\u23F1\uFE0F")))));
   }), /* @__PURE__ */ React.createElement("div", { ref: messagesEndRef })), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSendReply, className: "chat-input-bar" }, /* @__PURE__ */ React.createElement(
     "textarea",
     {
@@ -689,7 +689,7 @@ function ConversationChatModal({ phone, onClose, showToast }) {
     }
   ), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn-chat-send", disabled: sending || !replyText.trim(), title: "Send WhatsApp Message" }, sending ? "\u23F3" : "\u27A4"))));
 }
-function MessageLogsView({ showToast }) {
+function MessageLogsView({ showToast, globalSettings }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -792,7 +792,7 @@ function MessageLogsView({ showToast }) {
     {
       key: "created_at",
       label: "Last Message Time",
-      render: (c) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, c.created_at)
+      render: (c) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, formatDateTime(c.created_at, globalSettings?.system_date_format))
     },
     {
       key: "actions",
@@ -842,7 +842,7 @@ function MessageLogsView({ showToast }) {
     {
       key: "created_at",
       label: "Timestamp",
-      render: (m) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, m.created_at)
+      render: (m) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, formatDateTime(m.created_at, globalSettings?.system_date_format))
     },
     {
       key: "actions",
@@ -927,7 +927,8 @@ function MessageLogsView({ showToast }) {
         setActiveChatPhone(null);
         fetchLogs(true);
       },
-      showToast
+      showToast,
+      globalSettings
     }
   ), selectedLog && /* @__PURE__ */ React.createElement("div", { style: {
     position: "fixed",
@@ -1475,7 +1476,11 @@ function formatCurrency(amount, currency = "BHD", decimals = 3) {
 function formatDateTime(dateStr, format = "YYYY-MM-DD HH:mm:ss") {
   if (!dateStr) return "";
   try {
-    const d = new Date(dateStr);
+    let cleanStr = String(dateStr).trim();
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(cleanStr)) {
+      cleanStr = cleanStr.replace(" ", "T");
+    }
+    const d = new Date(cleanStr);
     if (isNaN(d.getTime())) return dateStr;
     const YYYY = d.getFullYear();
     const MM = String(d.getMonth() + 1).padStart(2, "0");
