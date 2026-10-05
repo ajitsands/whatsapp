@@ -158,11 +158,42 @@ function handleSendMessage(PDO $db, array $auth): void {
 
     $systemCurrency = $settingsMap['system_currency'] ?? 'BHD';
     $walletEnforcement = ($settingsMap['wallet_enforcement'] ?? '1') === '1';
+    $billingModel = $settingsMap['billing_model'] ?? 'per_message';
 
     // Dynamic Category Tariffs from System Settings (Configured by Superadmin)
     $catKey = strtolower($category === 'AUTHENTICATION' ? 'auth' : $category);
     $metaRate = (float)($settingsMap["tariff_{$catKey}_meta"] ?? ($category === 'MARKETING' ? 0.0270 : ($category === 'AUTHENTICATION' ? 0.0110 : ($category === 'SERVICE' ? 0.0075 : 0.0140))));
     $platformRate = (float)($settingsMap["tariff_{$catKey}_platform"] ?? ($category === 'MARKETING' ? 0.0070 : ($category === 'AUTHENTICATION' ? 0.0035 : ($category === 'SERVICE' ? 0.0025 : 0.0045))));
+
+    // Check 24-Hour Active Conversation Session Window (Option B)
+    $isSessionReused = false;
+    $sessionNote = null;
+
+    if ($billingModel === '24h_session') {
+        $cleanRecipient = preg_replace('/[^0-9]/', '', $toPhone);
+        $sessionStmt = $db->prepare("
+            SELECT id, created_at, category, status 
+            FROM whatsapp_messages 
+            WHERE (to_phone = ? OR REPLACE(REPLACE(to_phone, '+', ''), ' ', '') = ?)
+              AND category = ? 
+              AND status IN ('sent', 'delivered', 'read', 'queued')
+              AND created_at >= (NOW() - INTERVAL 24 HOUR)
+            ORDER BY created_at DESC 
+            LIMIT 1
+        ");
+        $sessionStmt->execute([$toPhone, $cleanRecipient, $category]);
+        $activeSession = $sessionStmt->fetch();
+
+        if ($activeSession) {
+            $isSessionReused = true;
+            $metaRate = 0.0000;
+            $sessionNote = "24h Session Active (Opened at {$activeSession['created_at']}) - Meta Fee Waived (0.0000 {$systemCurrency})";
+        } else {
+            $sessionNote = "New 24h Meta Conversation Session Opened";
+        }
+    } else {
+        $sessionNote = "Standard Per-Message Billing (Option A)";
+    }
 
     $resolvedTariff = [
         'meta'     => $metaRate,
@@ -184,10 +215,14 @@ function handleSendMessage(PDO $db, array $auth): void {
             $category = $tmpl['category'];
             $tMeta = (float)$tmpl['meta_cost_bhd'];
             $tPlat = (float)$tmpl['platform_charge_bhd'];
+
+            $finalMeta = $isSessionReused ? 0.0000 : ($tMeta > 0 ? $tMeta : $metaRate);
+            $finalPlat = $tPlat > 0 ? $tPlat : $platformRate;
+
             $resolvedTariff = [
-                'meta'     => $tMeta > 0 ? $tMeta : $metaRate,
-                'platform' => $tPlat > 0 ? $tPlat : $platformRate,
-                'client'   => ($tMeta > 0 || $tPlat > 0) ? ($tMeta + $tPlat) : ($metaRate + $platformRate)
+                'meta'     => $finalMeta,
+                'platform' => $finalPlat,
+                'client'   => $finalMeta + $finalPlat
             ];
             // Extract template variable names
             preg_match_all('/\{\{([a-zA-Z0-9_]+)\}\}/', $tmpl['body_text'], $varMatches);
@@ -490,7 +525,7 @@ function handleSendMessage(PDO $db, array $auth): void {
                     $balBefore,
                     $balAfter,
                     $wamid,
-                    "WhatsApp {$category} dispatch to {$toPhone}",
+                    "WhatsApp {$category} dispatch to {$toPhone}" . ($isSessionReused ? " [24h Window Active: Meta Fee Waived]" : ""),
                     $senderUserId
                 ]);
             }
@@ -500,22 +535,25 @@ function handleSendMessage(PDO $db, array $auth): void {
     }
 
     sendJsonResponse([
-        'success'      => true,
-        'message_id'   => $wamid,
-        'db_id'        => $insertedId,
-        'status'       => $status,
-        'recipient'    => $toPhone,
-        'from_number'  => $businessPhone,
-        'category'     => $category,
-        'rendered_body'=> $finalBody,
-        'meta_error'   => $metaError,
-        'wallet_balance'=> $newWalletBalance,
-        'tariff'       => [
+        'success'           => true,
+        'message_id'        => $wamid,
+        'db_id'             => $insertedId,
+        'status'            => $status,
+        'recipient'         => $toPhone,
+        'from_number'       => $businessPhone,
+        'category'          => $category,
+        'billing_model'     => $billingModel,
+        'is_session_reused' => $isSessionReused,
+        'rendered_body'     => $finalBody,
+        'meta_error'        => $metaError,
+        'wallet_balance'    => $newWalletBalance,
+        'tariff'            => [
             'meta_cost'       => number_format($resolvedTariff['meta'], 4) . " {$systemCurrency}",
             'platform_charge' => '+' . number_format($resolvedTariff['platform'], 4) . " {$systemCurrency}",
-            'client_rate'     => number_format($resolvedTariff['client'], 4) . " {$systemCurrency}"
+            'client_rate'     => number_format($resolvedTariff['client'], 4) . " {$systemCurrency}",
+            'session_status'  => $sessionNote
         ],
-        'timestamp'    => $sentAt
+        'timestamp'         => $sentAt
     ], 201);
     } catch (Throwable $e) {
         sendJsonResponse(['success' => false, 'error' => 'Server error: ' . $e->getMessage()], 500);

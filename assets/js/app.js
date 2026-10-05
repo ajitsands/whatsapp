@@ -521,7 +521,7 @@ function App() {
         {activeTab === 'api_hub' && <OdooApiHubView showToast={showToast} globalSettings={globalSettings} />}
         {activeTab === 'api_keys' && <ApiKeysView showToast={showToast} />}
         {activeTab === 'users' && <UsersView currentUser={currentUser} showToast={showToast} />}
-        {activeTab === 'settings' && <SettingsView showToast={showToast} onSettingsChange={(s) => { setGlobalSettings(prev => ({ ...prev, ...s })); loadWalletBalance(); }} />}
+        {activeTab === 'settings' && <SettingsView currentUser={currentUser} showToast={showToast} onSettingsChange={(s) => { setGlobalSettings(prev => ({ ...prev, ...s })); loadWalletBalance(); }} />}
       </main>
 
       {/* Footer */}
@@ -3364,9 +3364,11 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
 // -----------------------------------------------------------------------------
 // 9. ENHANCED SYSTEM & TARIFF SETTINGS VIEW (SUPERADMIN / ADMIN)
 // -----------------------------------------------------------------------------
-function SettingsView({ showToast, onSettingsChange }) {
+function SettingsView({ currentUser, showToast, onSettingsChange }) {
+  const isSuperadmin = !currentUser || currentUser.role === 'superadmin';
   const [activeSubTab, setActiveSubTab] = useState('tariffs'); // 'meta', 'tariffs', 'currency', 'datetime'
   const [settings, setSettings] = useState({
+    billing_model: 'per_message',
     meta_phone_number_id: '',
     meta_waba_account_id: '',
     meta_access_token: '',
@@ -3495,9 +3497,94 @@ function SettingsView({ showToast, onSettingsChange }) {
       <form onSubmit={handleSave}>
         {/* TAB 1: TARIFFS & PRICING ENGINE */}
         {activeSubTab === 'tariffs' && (
-          <div className="card" style={{ maxWidth: '900px' }}>
+          <div className="card" style={{ maxWidth: '950px' }}>
+            {/* Superadmin Only: Billing Model Selection (Option A vs Option B) */}
+            {isSuperadmin && (
+              <div style={{ background: '#F8FAFC', border: '1.5px solid #0D9488', borderRadius: '12px', padding: '18px', marginBottom: '22px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '18px' }}>⚡</span>
+                    <strong style={{ fontSize: '15px', color: '#0F172A' }}>WhatsApp Tariff & Charging Engine Model</strong>
+                  </div>
+                  <span className="badge" style={{ background: '#CCFBF1', color: '#0F766E', fontWeight: '800', fontSize: '11px', padding: '4px 9px' }}>
+                    👑 Superadmin Exclusive Rule
+                  </span>
+                </div>
+                <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', margin: '0 0 16px 0', lineHeight: '1.4' }}>
+                  Choose how the platform calculates Meta tariffs and debits client prepaid balances for outgoing messages:
+                </p>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
+                  {/* Option A */}
+                  <div
+                    onClick={() => setSettings({ ...settings, billing_model: 'per_message' })}
+                    style={{
+                      border: (settings.billing_model === 'per_message' || !settings.billing_model) ? '2px solid #10B981' : '1px solid #E2E8F0',
+                      background: (settings.billing_model === 'per_message' || !settings.billing_model) ? '#FFFFFF' : '#F8FAFC',
+                      borderRadius: '10px',
+                      padding: '14px',
+                      cursor: 'pointer',
+                      boxShadow: (settings.billing_model === 'per_message' || !settings.billing_model) ? '0 4px 12px rgba(16, 185, 129, 0.15)' : 'none',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                      <input
+                        type="radio"
+                        name="billing_model"
+                        value="per_message"
+                        checked={settings.billing_model === 'per_message' || !settings.billing_model}
+                        onChange={() => setSettings({ ...settings, billing_model: 'per_message' })}
+                        style={{ width: '16px', height: '16px', accentColor: '#10B981', cursor: 'pointer' }}
+                      />
+                      <strong style={{ fontSize: '13.5px', color: '#0F172A' }}>Option A: Standard Per-Message Billing</strong>
+                    </div>
+                    <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '4px 0 0 26px', lineHeight: '1.4' }}>
+                      Every single outgoing message debits the full <strong>Meta Base Cost + Platform Margin</strong>.
+                    </p>
+                    <div style={{ margin: '8px 0 0 26px', fontSize: '11px', color: '#059669', fontWeight: '700' }}>
+                      ✓ Standard SaaS / Reseller model (Maximum platform margin).
+                    </div>
+                  </div>
+
+                  {/* Option B */}
+                  <div
+                    onClick={() => setSettings({ ...settings, billing_model: '24h_session' })}
+                    style={{
+                      border: settings.billing_model === '24h_session' ? '2px solid #3B82F6' : '1px solid #E2E8F0',
+                      background: settings.billing_model === '24h_session' ? '#FFFFFF' : '#F8FAFC',
+                      borderRadius: '10px',
+                      padding: '14px',
+                      cursor: 'pointer',
+                      boxShadow: settings.billing_model === '24h_session' ? '0 4px 12px rgba(59, 130, 246, 0.15)' : 'none',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                      <input
+                        type="radio"
+                        name="billing_model"
+                        value="24h_session"
+                        checked={settings.billing_model === '24h_session'}
+                        onChange={() => setSettings({ ...settings, billing_model: '24h_session' })}
+                        style={{ width: '16px', height: '16px', accentColor: '#3B82F6', cursor: 'pointer' }}
+                      />
+                      <strong style={{ fontSize: '13.5px', color: '#0F172A' }}>Option B: Meta 24-Hour Session Billing</strong>
+                    </div>
+                    <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '4px 0 0 26px', lineHeight: '1.4' }}>
+                      <strong>1st Message:</strong> Opens a 24h window (Full Meta Cost + Platform Margin).<br/>
+                      <strong>Subsequent Messages in 24h:</strong> Meta Cost is waived (<strong>0.0000 {curr}</strong>) and only Platform Margin is debited.
+                    </p>
+                    <div style={{ margin: '8px 0 0 26px', fontSize: '11px', color: '#2563EB', fontWeight: '700' }}>
+                      ✓ Official Meta Conversation Window Alignment.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--wa-dark-teal)', marginBottom: '8px' }}>
-              Dynamic Meta Cost & Platform Charges Engine
+              Dynamic Meta Cost & Platform Charges per Category
             </h3>
             <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', marginBottom: '18px' }}>
               Configure the exact Meta Cost and SaNDS Platform Margin per message category. These tariffs take effect dynamically across all outgoing message dispatches, wallet debits, and client billing.
