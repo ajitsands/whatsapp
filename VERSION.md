@@ -5,8 +5,8 @@
 ---
 
 ## 📌 Active Version Status
-- **Current Version:** `2.2.1`
-- **Development Stage:** `v2.2.1 Real Meta Broadcast Dispatch & Verified Delivery Tracking (Active)`
+- **Current Version:** `2.2.2`
+- **Development Stage:** `v2.2.2 Modern Confirmation Dialog System (Active & Live on Server)`
 - **Locked Baseline Version:** `1.0.0`
 - **Git Baseline Tags:** `v1.0.0` & `v1.0` (Locked on Commit `9dd6ebc`)
 - **Live Production URL:** `https://whatsapp.sandslab.com`
@@ -44,7 +44,7 @@ Starting from Version 2.0, the platform adheres strictly to **Semantic Versionin
 ```
 v2 . [MINOR] . [PATCH]
 │      │         │
-│      │         └── Bug fixes, security patches, styling touch-ups (e.g., 2.0.1, 2.1.1)
+│      │         └── Bug fixes, security patches, styling touch-ups (e.g., 2.0.1, 2.1.1, 2.2.2)
 │      └─────────── Roadmap feature releases (e.g., 2.1.0 Live Chat, 2.2.0 Campaigns, 2.3.0 Odoo Sync)
 └────────────────── Major platform architecture generation
 ```
@@ -63,11 +63,18 @@ v2 . [MINOR] . [PATCH]
 | **v2.1.0** | **Inbound Live Chat & Two-Way Agent Inbox** | ✅ **COMPLETED & LIVE** | Two-way agent console (`#inbox`), Meta 24-hour customer care session window tracking, canned replies, free-form text messaging, and simulated inbound testing. |
 | **v2.2.0** | **Bulk Campaign Broadcasts & Queue Pacing** | ✅ **COMPLETED & LIVE** | CSV contact upload with dynamic variable mapping, anti-spam dispatch queue pacing (20/50/100 msgs/min), live animated monitor, and exportable recipient reports. |
 | **v2.2.1** | **Meta Cloud API Live Dispatch & Webhook Delivery Tracking** | ✅ **COMPLETED & LIVE** | True Meta Graph API cURL dispatch, prevention of premature delivery counting, real `wamid` tracking, and webhook-driven delivery updates. |
-| **v2.3.0** | **Odoo ERP Automated Action Webhook & Model Sync** | 🔄 **Next Priority** | Inbound triggers for automated invoice generation (`account.move`), payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP. |
+| **v2.2.2** | **Enterprise UI Popups & Rich Confirmation Dialog System** | ✅ **COMPLETED & LIVE** | Replaced all native browser alert/confirm dialogues with modern frosted-glass modals with glowing status badges and responsive actions. |
+| **v2.3.0** | **Odoo ERP Automated Action Webhook & Model Sync** | 🔄 **Next Priority (Scheduled in 8 Hrs)** | Inbound triggers for automated invoice generation (`account.move`), payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP. |
 
 ---
 
 ## 📜 Release Changelog History
+
+### [2.2.2] — 2026-10-13 (Enterprise UI Popups & Rich Confirmation Dialog System)
+- **Modern Reusable `<ConfirmDialog>` Modal:** Eliminated jarring browser-native `window.confirm()` and `alert()` popups in favor of an enterprise dark-glass animated dialog.
+- **Glowing Visual Badges:** Integrated thematic modal icon badges with ambient glow (`danger` for cancellation/deletion, `warning` for broadcast re-run, `info` for notices).
+- **Smooth Interaction & Focus Control:** Added backdrop blur, scale-in CSS keyframe animations, and escape key listener for seamless user experience.
+- **Component Replacement:** Applied throughout Campaign Re-run, Broadcast Cancellation, WhatsApp Template Deletion, and User Deletion actions.
 
 ### [2.2.1] — 2026-10-13 (Real Meta Broadcast Dispatch & Verified Delivery Tracking)
 - **Live Meta Graph API Dispatch:** Connected `handleProcessBatch()` in `api/campaigns.php` to direct Meta Graph API (`https://graph.facebook.com/v20.0/{metaPhoneId}/messages`).

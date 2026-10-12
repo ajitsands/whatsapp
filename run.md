@@ -4,94 +4,99 @@
 ---
 
 ## 📌 Development Checkpoint & Milestone Snapshot (All Verified & Tested)
-- **Checkpoint Timestamp:** `2026-10-13 01:38:00 (Local Time)`
-- **Active Platform Generation:** `Version 2.2.0` (Bulk Campaign Broadcasts & Queue Pacing Released & Live)
+- **Checkpoint Timestamp:** `2026-10-13 02:45:00 (Local Time)`
+- **Session Status:** `⏸️ Paused for Today (Scheduled to Resume in 8 Hours)`
+- **Active Platform Generation:** `Version 2.2.2` (Modern Confirmation Dialogs & Verified Meta Dispatch Live on Server)
 - **Locked Baseline Milestone:** `Version 1.0.0` (Permanently locked in Git with tags `v1.0.0` & `v1.0` on commit `9dd6ebc`)
 - **Live Production URL:** `https://whatsapp.sandslab.com`
 - **GitHub Repository:** `https://github.com/ajitsands/whatsapp.git` (`branch: main`)
+- **Latest Commit Pushed:** `d6994bef` (`Replace native browser alerts with modern confirmation popup dialog (v2.2.2)`)
 - **PHP Compatibility:** PHP 7.4+ compatible (with custom polyfills in `config/db.php`)
 - **Frontend Stack:** React 18 (Standalone transpiled bundle `assets/js/app.compiled.js` via `esbuild`)
 
 ---
 
-## 🚀 Key Features Implemented in Version 2.2.0
+## 🏆 Summary of Releases Completed & Deployed Today
 
-1. **Bulk Broadcast Campaigns (`#campaigns`):**
-   - Centralized campaign manager with high-level KPI cards (Total Broadcasts, Audience Reached, Delivery Rate, Read Rate).
-   - Reusable `<DataTable>` listing all campaigns with live progress bars, status badges (`RUNNING`, `COMPLETED`, `PAUSED`, `DRAFT`), and financial spend metrics.
-   - Dedicated Recipient Inspection modal with full status audit log and CSV export.
+### 1. Version 2.1.0 — Inbound Live Chat & Two-Way Agent Inbox (`#inbox`)
+- **Two-Column Workspace:** WhatsApp Web-inspired desktop layout with real-time thread search, filter chips (`All`, `Unread`, `24h Active 🟢`), and unread badge counters.
+- **Official Meta 24-Hour Customer Care Window Engine:**
+  - Real-time countdown tracking of active session window (`🟢 24h Window Active (X.X hrs left) • Free-Text Allowed`).
+  - Dynamic fallback restriction banner when session closes (`⚠️ 24h Session Closed • Pre-Approved Template Required`).
+  - Seamless 1-click template selector fallback when outside the 24h window.
+- **Agent Productivity Suite:** Canned quick responses toolbar (`👋 Support Greeting`, `📄 Reviewing Inquiry`, `✅ Payment Confirmed`, `🙏 Resolution Closing`).
+- **Interactive Simulator:** Built-in modal (`api/inbox.php?action=simulate_inbound`) for instant inbound customer message simulation.
 
-2. **New Broadcast Campaign Wizard:**
-   - 4-step wizard: Template selection with live previews, CSV upload / paste records with 1-click tailored Sample CSV download, dynamic column mapping, and budget review.
-   - Financial safety pre-check verifying sender wallet balance before queue creation.
+### 2. Version 2.2.0 — Bulk Campaign Broadcasts & Anti-Spam Queue Pacing (`#campaigns`)
+- **Campaign Manager Hub:** Aggregate KPI metric cards (Total Broadcasts, Audience Reached, Delivery Rate, Read Rate) and interactive `<DataTable>`.
+- **4-Step Campaign Creation Wizard:**
+  1. Template selection with real-time variable previews.
+  2. CSV contact upload or raw data paste with 1-click tailored Sample CSV download.
+  3. Dynamic column-to-variable parameter mapping.
+  4. Real-time budget review and wallet balance pre-check validation.
+- **Anti-Spam Queue Throttle Engine:** Selectable dispatch pacing speeds (Conservative 20, Standard 50, Turbo 100 msgs/min) with live animated queue progress monitor.
+- **Recipient Inspection Audit Modal:** Full recipient audit log with search, status filters, and exportable CSV reports.
 
-3. **Anti-Spam Queue Pacing & Live Execution Monitor:**
-   - Multi-tier queue throttle presets (20, 50, 100 msgs/min) preventing Meta spam flags.
-   - Real-time animated execution banner with pulsing status indicator, live progress bar, and pause/resume/cancel controls.
+### 3. Version 2.2.1 — Real Meta Cloud API Dispatch & Webhook Delivery Tracking
+- **Direct Meta Graph API Dispatch:** Connected campaign processor (`api/campaigns.php`) directly to Meta Cloud API (`https://graph.facebook.com/v20.0/{metaPhoneId}/messages`).
+- **Media Header & Variable Substitution:** Dynamic mapping of header images/documents and body text template variables during campaign queue processing.
+- **Authentic Delivery Lifecycle:** Fixed counter discrepancy where sent messages were previously marked delivered prematurely; messages now stay at `sent` until physical handset receipt is verified by Meta webhooks (`api/webhook.php`).
+- **Webhook Campaign Synchronization:** Real-time incoming Meta delivery and read receipts automatically synchronize with `campaign_recipients` records and aggregate campaign counters.
+- **Campaign Re-run:** Added 1-click **Re-run Broadcast** capability to reset recipient delivery states and re-queue campaigns.
 
-4. **Dedicated Backend API (`api/campaigns.php`):**
-   - Endpoints for `list`, `details`, `create`, `process_batch`, `pause`, `resume`, `cancel`, and `sample_csv`.
-
----
-
-## 🚀 Key Features Implemented in Version 2.1.0
-
-1. **Inbound Live Chat & Two-Way Agent Inbox (`#inbox`):**
-   - Full two-column desktop workspace inspired by WhatsApp Web and enterprise customer service consoles.
-   - Contact threads list with instant search, unread badge counters, and filter chips (`All`, `Unread`, `24h Active 🟢`).
-   - Chronological message stream with custom WhatsApp chat bubbles, delivery/read tick indicators (`✓`, `✓✓`, blue read ticks), and media attachment badges.
-
-2. **Official Meta 24-Hour Customer Care Session Window Engine:**
-   - Real-time countdown tracking of customer service window (`🟢 24h Window Active (X.X hrs left) • Free-Text Allowed (Meta Fee Waived)`).
-   - Dynamic restriction banner when 24h window expires (`⚠️ 24h Session Closed • Pre-Approved Template Required`).
-   - Seamless 1-click fallback template selector when the 24-hour window has expired.
-
-3. **Agent Productivity Tools:**
-   - Canned Quick Replies toolbar (`👋 Support Greeting`, `📄 Reviewing Inquiry`, `✅ Payment Confirmed`, `🙏 Resolution Closing`) for 1-click response injection.
-   - Interactive Inbound Message Simulator (`api/inbox.php?action=simulate_inbound`) for instant end-to-end testing of customer incoming replies.
-
-4. **Dedicated Backend API (`api/inbox.php`):**
-   - Endpoints for `threads`, `messages`, `send_reply`, `mark_read`, `simulate_inbound`, and `canned_replies`.
+### 4. Version 2.2.2 — Modern Confirmation Dialog System
+- **Enterprise Frosted-Glass `<ConfirmDialog>` Modal:** Eliminated jarring browser-native `window.confirm()` and `alert()` popups in favor of an animated dark-glass modal.
+- **Thematic Icon Badges:** Integrated glowing ambient status badges (`danger` for broadcast cancellation/deletion, `warning` for broadcast re-run, `info` for alerts).
+- **Smooth Animation & UX:** Backdrop blur, scale-in animation, and keyboard `Escape` dismissal.
+- **Universal Application:** Applied across Campaign Re-run, Broadcast Cancellation, WhatsApp Template Deletion, and User Account Deletion.
 
 ---
 
 ## 🔒 Version 1.0 Milestone (Locked Baseline)
 
-All Version 1.0 features have been thoroughly verified, tested, and locked in Git:
-
-1. **Enterprise DataTables with Default Descending Sort (`DESC`):**
-   - Message Telemetry (`#logs`), Financial Statements & Wallet Ledger (`#wallet`), Templates (`#templates`), API Keys, and User Accounts all automatically sort newest/latest records first (`DESC`).
-   - Reusable `<DataTable>` component supports dynamic field sorting, instant search, page size selection, and CSV export.
-
-2. **Developer API Hub & Multi-Language Connectors:**
-   - Interactive code generator with 1-click language switcher for **Python (Odoo Automated Actions)**, **PHP**, **cURL**, **.NET (C#)**, and **Node.js**.
-   - API Tester with layout-contained grid (`.api-hub-grid`) preventing overflow on JSON response execution.
-
-3. **Dual Charging Engine (Superadmin Selectable):**
-   - **Option A (Standard Per-Message):** Debits full Meta Cost + Platform Margin on every single dispatch.
-   - **Option B (Meta 24-Hour Session Deduplication):** 1st message debited full tariff; subsequent messages to same contact/category within 24h waive Meta Cost (`0.0000 BHD`) and only debit platform margin.
-
-4. **Strict Superadmin RBAC Security:**
-   - Meta Cloud API credentials & Tariffs restricted exclusively to Superadmin edit-only.
-
-5. **Prepaid Wallet & Financial Audit Ledger:**
-   - Multi-currency support (BHD 3 decimals, SAR, AED, KWD, QAR, OMR, INR, USD).
+All Version 1.0 core features remain fully tested and operational:
+1. **Enterprise DataTables with Default Descending Sort (`DESC`):** Telemetry (`#logs`), Wallet Ledger (`#wallet`), Templates (`#templates`), API Keys, and Users.
+2. **Developer API Hub:** Interactive code generator for Python (Odoo), PHP, cURL, .NET (C#), and Node.js.
+3. **Dual Charging Engine:** Superadmin selectable between Option A (Standard Per-Message) and Option B (Meta 24h Deduplication).
+4. **Prepaid Wallet & Financial Audit Ledger:** Multi-currency support with BHD 3-decimal precision and ledger rollback security.
+5. **Strict RBAC Security:** Meta credentials and tariff pricing restricted to Superadmin edit-only.
 
 ---
 
-## 📋 Next Development Tasks (Version 2.0 Roadmap Progress)
+## 📋 Roadmap Status & Next Immediate Milestone (In 8 Hours)
 
 | Milestone Target | Module / Feature Name | Status | Description |
 |---|---|---|---|
-| **v2.1.0** | **Inbound Live Chat & Two-Way Agent Inbox** | ✅ **COMPLETED** | Dedicated agent inbox (`#inbox`), 24h customer care session tracking, free-text replies, canned responses, and simulator. |
-| **v2.2.0** | **Odoo ERP Automated Action Webhook & Model Sync** | 🔄 **Next Priority** | Inbound triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP. |
-| **v2.3.0** | **Bulk Campaign Broadcasts & Queue Pacing** | ⏳ **Scheduled** | CSV contact list upload with dynamic variable mapping, segmentation, and throttled queue pacing (50 msgs/min). |
+| **v2.1.0** | **Inbound Live Chat & Two-Way Agent Inbox** | ✅ **COMPLETED & LIVE** | Dedicated agent inbox (`#inbox`), 24h customer care session tracking, free-text replies, canned responses, and simulator. |
+| **v2.2.0** | **Bulk Campaign Broadcasts & Queue Pacing** | ✅ **COMPLETED & LIVE** | CSV contact upload with dynamic variable mapping, anti-spam dispatch queue pacing, live animated monitor, and recipient reports. |
+| **v2.2.1** | **Meta Cloud API Live Dispatch & Webhook Delivery Tracking** | ✅ **COMPLETED & LIVE** | Direct Meta Graph API cURL dispatch, real `wamid` generation, and webhook-driven delivery/read status updates. |
+| **v2.2.2** | **Enterprise UI Popups & Rich Confirmation Dialog System** | ✅ **COMPLETED & LIVE** | Replaced all native browser alert/confirm dialogues with modern frosted-glass modals with glowing status badges. |
+| **v2.3.0** | **Odoo ERP Automated Action Webhook & Model Sync** | 🔄 **FINAL TARGET (Resuming in 8 Hrs)** | Inbound triggers for automated invoice generation (`account.move`), payment receipts, and real-time delivery status synchronization with Odoo ERP. |
+
+---
+
+## 🎯 Version 2.3.0: Odoo ERP Integration Execution Plan (When Resuming)
+
+When resuming development in 8 hours, the following work will be executed for the final milestone:
+
+1. **Odoo Inbound Webhook Controller (`api/odoo_webhook.php`):**
+   - Secure token-authenticated endpoint accepting automated webhook dispatches from Odoo ERP.
+   - Payload parsers for key business models:
+     - `account.move`: Customer Invoices, Credit Notes, Customer Statements.
+     - `sale.order`: Quotations, Sales Order Confirmations, Delivery Orders.
+     - `account.payment`: Payment Vouchers, Receipt Acknowledgements.
+2. **Dynamic PDF Attachment Streaming:**
+   - Support streaming or URL hosting of Odoo-generated invoice/quote PDFs directly into WhatsApp header document attachments.
+3. **Bi-Directional Delivery Callbacks to Odoo:**
+   - Webhook callback updating Odoo record chatter / custom fields with WhatsApp delivery timestamps and `wamid` tracking IDs.
+4. **Developer Hub Pre-Built Python Snippets:**
+   - Ready-to-copy Python code snippets for Odoo 14, 15, 16, and 17 Automated Actions (`ir.actions.server`) with zero third-party Python dependencies.
 
 ---
 
 ## 🔑 Live Environment & Meta Configuration
 
-### 1. Database Credentials (cPanel MySQL)
+### 1. Database Credentials (cPanel MySQL — No Structural Changes / Data Preserved)
 - **Host:** `localhost` / `127.0.0.1`
 - **Database:** `sandsl23_whatsapp_db`
 - **Username:** `sandsl23_whatsapp_user`
@@ -113,7 +118,7 @@ All Version 1.0 features have been thoroughly verified, tested, and locked in Gi
 
 ---
 
-## 🛠️ Local Development & Build Commands
+## 🛠️ Local Development & Deployment Commands
 
 ### 1. Run Local PHP Server:
 ```powershell
@@ -126,10 +131,9 @@ cd "e:\integration_with oodu_document\whatsapp"
 npx -y esbuild assets/js/app.js --outfile=assets/js/app.compiled.js --loader:.js=jsx
 ```
 
-### 3. Push Updates to GitHub:
-```powershell
-cd "e:\integration_with oodu_document\whatsapp"
-git add .
-git commit -m "Release v2.1.0: Inbound Live Chat & Two-Way Agent Inbox"
-git push origin main
+### 3. Deploy to Production Server:
+On cPanel terminal / SSH for `whatsapp.sandslab.com`:
+```bash
+cd public_html   # or your subdomain path
+git pull origin main
 ```
