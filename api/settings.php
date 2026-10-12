@@ -44,9 +44,13 @@ switch ($method) {
         }
 
         sendJsonResponse([
-            'success'  => true,
-            'settings' => $settingsMap,
-            'raw_list' => $rows
+            'success'              => true,
+            'settings'             => $settingsMap,
+            'raw_list'             => $rows,
+            'app_version'          => APP_VERSION,
+            'app_version_stage'    => APP_VERSION_STAGE,
+            'app_baseline_version' => APP_BASELINE_VERSION,
+            'app_locked_tag'       => APP_LOCKED_V1_TAG
         ]);
         break;
 

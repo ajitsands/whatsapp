@@ -228,6 +228,172 @@ function DataTable({
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
+// VERSION & ARCHITECTURE INSPECTOR MODAL (V2.0 ACTIVE & V1.0 LOCKED BASELINE)
+// -----------------------------------------------------------------------------
+function VersionArchitectureModal({ isOpen, onClose }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="version-modal-overlay" onClick={onClose}>
+      <div className="version-modal-card" onClick={e => e.stopPropagation()}>
+        <div className="version-modal-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '26px' }}>🚀</span>
+            <div>
+              <h2 style={{ fontSize: '17px', fontWeight: '800', margin: 0, color: '#FFFFFF' }}>
+                WhatsApp Integration Platform — Version Architecture
+              </h2>
+              <p style={{ fontSize: '12px', margin: '2px 0 0 0', opacity: 0.9, color: '#E8F8F5' }}>
+                Engineered by SaNDS Lab Middle East W.L.L. • Enterprise Release Registry
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'rgba(255,255,255,0.2)',
+              border: 'none',
+              color: '#FFFFFF',
+              borderRadius: '8px',
+              width: '32px',
+              height: '32px',
+              cursor: 'pointer',
+              fontSize: '18px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            title="Close"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="version-modal-body">
+          {/* Card 1: Active Version 2.0 */}
+          <div className="version-card-block" style={{ borderLeft: '4px solid #3B82F6', background: '#F0F9FF' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '20px' }}>⚡</span>
+                <strong style={{ fontSize: '15px', color: '#1E3A8A' }}>Active Generation: Version 2.0.0</strong>
+              </div>
+              <span className="version-chip" style={{ background: '#DBEAFE', color: '#1D4ED8', border: '1px solid #BFDBFE' }}>
+                🟢 IN ACTIVE DEVELOPMENT
+              </span>
+            </div>
+            <p style={{ fontSize: '12.5px', color: '#1E40AF', margin: 0, lineHeight: '1.5' }}>
+              Platform architecture refreshed for <strong>Version 2.0</strong>. All ongoing developments strictly follow semantic minor versioning (<code style={{ background: '#E0F2FE', padding: '1px 5px', borderRadius: '4px', fontWeight: '600' }}>v2.x.x</code>) aligned with the scheduled integration roadmap.
+            </p>
+          </div>
+
+          {/* Card 2: Locked Baseline Version 1.0 */}
+          <div className="version-card-block" style={{ borderLeft: '4px solid #10B981', background: '#F0FDF4' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '20px' }}>🔒</span>
+                <strong style={{ fontSize: '15px', color: '#065F46' }}>Baseline Milestone: Version 1.0.0 (LOCKED)</strong>
+              </div>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <span className="version-chip" style={{ background: '#DCFCE7', color: '#166534', border: '1px solid #BBF7D0' }}>
+                  GIT TAG: v1.0.0
+                </span>
+                <span className="version-chip" style={{ background: '#DCFCE7', color: '#166534', border: '1px solid #BBF7D0' }}>
+                  GIT TAG: v1.0
+                </span>
+              </div>
+            </div>
+            <p style={{ fontSize: '12px', color: '#047857', marginBottom: '10px', lineHeight: '1.4' }}>
+              <strong>Commit Hash:</strong> <code style={{ background: '#E2E8F0', padding: '1px 5px', borderRadius: '4px', color: '#0F172A' }}>9dd6ebc</code> | Production verified & deployed on <code style={{ background: '#E2E8F0', padding: '1px 5px', borderRadius: '4px', color: '#0F172A' }}>https://whatsapp.sandslab.com</code>.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '8px', fontSize: '11.5px', color: '#065F46' }}>
+              <div>✓ Superadmin RBAC Security Restrictions</div>
+              <div>✓ Dual Charging Engine (Option A vs B)</div>
+              <div>✓ Meta WhatsApp Cloud API v19.0 Dispatch</div>
+              <div>✓ Multi-Language Odoo API Hub</div>
+              <div>✓ Prepaid Wallet & BHD 3-Dec Audit Ledger</div>
+              <div>✓ Enterprise DataTables (DESC Sort)</div>
+            </div>
+          </div>
+
+          {/* Card 3: Minor Version Management Protocol */}
+          <div className="version-card-block" style={{ background: '#FFFFFF' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+              <span style={{ fontSize: '18px' }}>📐</span>
+              <strong style={{ fontSize: '14px', color: '#0F172A' }}>Minor Version Management Protocol (SemVer 2.0.0)</strong>
+            </div>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+              Starting from Version 2.0, all ongoing changes are version-controlled using structured semantic numbering:
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '10px' }}>
+                <strong style={{ color: '#2563EB', fontSize: '12px' }}>v2.0.0 (MAJOR)</strong>
+                <p style={{ fontSize: '11px', color: '#64748B', margin: '4px 0 0 0' }}>Major generation architecture shift & foundational framework upgrades.</p>
+              </div>
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '10px' }}>
+                <strong style={{ color: '#059669', fontSize: '12px' }}>v2.x.0 (MINOR)</strong>
+                <p style={{ fontSize: '11px', color: '#64748B', margin: '4px 0 0 0' }}>Scheduled roadmap feature milestones (e.g. v2.1 for Odoo Webhooks, v2.2 for Campaigns, v2.3 for Live Chat).</p>
+              </div>
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '10px' }}>
+                <strong style={{ color: '#D97706', fontSize: '12px' }}>v2.x.y (PATCH)</strong>
+                <p style={{ fontSize: '11px', color: '#64748B', margin: '4px 0 0 0' }}>Targeted bug fixes, security patches, styling polish, and maintenance hotfixes.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 4: Scheduled Version 2.0 Roadmap Checklist */}
+          <div className="version-card-block" style={{ background: '#FFFFFF' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <span style={{ fontSize: '18px' }}>📋</span>
+              <strong style={{ fontSize: '14px', color: '#0F172A' }}>Version 2.0 Execution Roadmap (Next Development Steps)</strong>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '8px' }}>
+                <span className="version-chip" style={{ background: '#0284C7', color: '#FFFFFF', marginTop: '2px' }}>v2.1.0</span>
+                <div>
+                  <strong style={{ fontSize: '12.5px', color: '#0369A1' }}>Odoo ERP Automated Action Webhook & Model Sync (Phase 1 — In Design)</strong>
+                  <p style={{ fontSize: '11.5px', color: '#0C4A6E', margin: '2px 0 0 0' }}>
+                    Inbound triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP.
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                <span className="version-chip" style={{ background: '#64748B', color: '#FFFFFF', marginTop: '2px' }}>v2.2.0</span>
+                <div>
+                  <strong style={{ fontSize: '12.5px', color: '#334155' }}>Bulk Campaign Broadcasts & Queue Pacing (Phase 2 — Scheduled)</strong>
+                  <p style={{ fontSize: '11.5px', color: '#64748B', margin: '2px 0 0 0' }}>
+                    CSV contact list upload with dynamic variable mapping, segmentation, and throttled queue pacing (50 msgs/min).
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                <span className="version-chip" style={{ background: '#64748B', color: '#FFFFFF', marginTop: '2px' }}>v2.3.0</span>
+                <div>
+                  <strong style={{ fontSize: '12.5px', color: '#334155' }}>Inbound Live Chat & Two-Way Agent Inbox (Phase 3 — Scheduled)</strong>
+                  <p style={{ fontSize: '11.5px', color: '#64748B', margin: '2px 0 0 0' }}>
+                    Interactive two-way conversation window allowing support agents to reply directly within the Meta 24-hour customer care session window.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ padding: '14px 24px', background: '#F8FAFC', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={onClose}
+            style={{ padding: '8px 20px', fontSize: '13px', fontWeight: '700' }}
+          >
+            Close Version Inspector
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
 // MAIN APP CONTAINER
 // -----------------------------------------------------------------------------
 function App() {
@@ -241,6 +407,7 @@ function App() {
   });
 
   const [loading, setLoading] = useState(!currentUser);
+  const [showVersionModal, setShowVersionModal] = useState(false);
 
   const [globalSettings, setGlobalSettings] = useState({
     system_currency: 'BHD',
@@ -438,6 +605,15 @@ function App() {
               <div className="brand-badge">
                 <span className="dot"></span> WhatsApp Gateway
               </div>
+              <button
+                type="button"
+                className="version-pill-btn"
+                onClick={() => setShowVersionModal(true)}
+                title="Click to view Version Architecture, Git Tags & Future Roadmap"
+              >
+                <span className="version-pill-dot"></span>
+                <span>v2.0.0</span>
+              </button>
             </div>
 
             {/* Header Right Actions: Live Wallet Balance Pill & User Profile */}
@@ -531,12 +707,22 @@ function App() {
             All Rights Reserved | Engineered By SaNDS Lab Middle East W.L.L.
           </div>
           <div className="footer-right">
+            <span
+              className="footer-badge version-footer-clickable"
+              onClick={() => setShowVersionModal(true)}
+              title="Click to inspect Version 2.0.0 Architecture & Locked v1.0.0 Baseline"
+            >
+              Platform v2.0.0 (v1.0.0 Locked 🔒)
+            </span>
             <span className="footer-badge">WhatsApp Cloud API v19.0</span>
             <span className="footer-badge">Odoo ERP Connector Active</span>
             <span>Bahrain (BHD) Tariff Active</span>
           </div>
         </div>
       </footer>
+
+      {/* Interactive Version Architecture & Roadmap Modal */}
+      <VersionArchitectureModal isOpen={showVersionModal} onClose={() => setShowVersionModal(false)} />
     </div>
   );
 }
@@ -3492,6 +3678,13 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
         >
           <span>⚡</span> Meta Cloud API Credentials
         </button>
+        <button
+          type="button"
+          className={`settings-tab-btn ${activeSubTab === 'version' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('version')}
+        >
+          <span>🏷️</span> Version & Roadmap Architecture
+        </button>
       </div>
 
       <form onSubmit={handleSave}>
@@ -3986,22 +4179,135 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
           </div>
         )}
 
-        <div style={{ marginTop: '20px' }}>
-          <button
-            type="submit"
-            className={`btn ${isSuperadmin || (activeSubTab !== 'tariffs' && activeSubTab !== 'meta') ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ padding: '10px 24px', fontSize: '14px', fontWeight: '700' }}
-            disabled={loading || (!isSuperadmin && (activeSubTab === 'tariffs' || activeSubTab === 'meta'))}
-          >
-            {loading
-              ? 'Saving...'
-              : (!isSuperadmin && activeSubTab === 'tariffs'
-                  ? '🔒 Tariffs Managed by Superadmin (Read Only)'
-                  : (!isSuperadmin && activeSubTab === 'meta'
-                      ? '🔒 Meta Credentials Managed by Superadmin (Read Only)'
-                      : '💾 Save & Apply System Configuration'))}
-          </button>
-        </div>
+        {/* TAB 5: VERSION & ROADMAP ARCHITECTURE */}
+        {activeSubTab === 'version' && (
+          <div className="card" style={{ maxWidth: '950px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div>
+                <h3 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--wa-dark-teal)', margin: 0 }}>
+                  WhatsApp Platform — Version & Release Architecture
+                </h3>
+                <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                  Permanent specification of active Version 2.0 generation, locked Version 1.0 baseline, and Minor version handling.
+                </p>
+              </div>
+              <span className="version-chip" style={{ background: '#DBEAFE', color: '#1D4ED8', border: '1px solid #BFDBFE', padding: '6px 14px', fontSize: '12px' }}>
+                Active: v2.0.0
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Active v2.0 Block */}
+              <div style={{ background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '12px', padding: '18px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <strong style={{ fontSize: '14.5px', color: '#0369A1' }}>⚡ Active Generation: Version 2.0.0</strong>
+                  <span className="badge" style={{ background: '#0284C7', color: '#FFFFFF' }}>IN PROGRESS</span>
+                </div>
+                <p style={{ fontSize: '12.5px', color: '#0C4A6E', margin: '0 0 8px 0', lineHeight: '1.5' }}>
+                  The application architecture has officially transitioned to <strong>Version 2.0</strong>. Upcoming features will be released as minor updates (<code style={{ background: '#E0F2FE', padding: '1px 5px', borderRadius: '4px', fontWeight: '700' }}>v2.x.0</code>) following the scheduled roadmap.
+                </p>
+                <div style={{ fontSize: '11.5px', color: '#0284C7', fontWeight: '600' }}>
+                  Git Branch: <code>main</code> • Target Host: <code>https://whatsapp.sandslab.com</code>
+                </div>
+              </div>
+
+              {/* Locked v1.0 Baseline Block */}
+              <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '12px', padding: '18px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <strong style={{ fontSize: '14.5px', color: '#15803D' }}>🔒 Locked Baseline Milestone: Version 1.0.0</strong>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <span className="badge" style={{ background: '#16A34A', color: '#FFFFFF' }}>TAG: v1.0.0</span>
+                    <span className="badge" style={{ background: '#16A34A', color: '#FFFFFF' }}>TAG: v1.0</span>
+                  </div>
+                </div>
+                <p style={{ fontSize: '12px', color: '#166534', margin: '0 0 10px 0', lineHeight: '1.4' }}>
+                  <strong>Commit Hash:</strong> <code>9dd6ebc</code> • Permanent Git checkpoint. Fully tested, production-ready, and verified.
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '8px', fontSize: '12px', color: '#14532D' }}>
+                  <div>✓ Superadmin RBAC Security Restrictions</div>
+                  <div>✓ Dual Charging Engine (Option A vs B)</div>
+                  <div>✓ Meta WhatsApp Cloud API v19.0 Dispatch</div>
+                  <div>✓ Multi-Language Odoo API Hub</div>
+                  <div>✓ Prepaid Wallet & BHD 3-Dec Audit Ledger</div>
+                  <div>✓ Enterprise DataTables (DESC Sort)</div>
+                </div>
+              </div>
+
+              {/* Minor Version Protocol */}
+              <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '18px' }}>
+                <strong style={{ fontSize: '13.5px', color: '#0F172A', display: 'block', marginBottom: '8px' }}>
+                  📐 Semantic Minor Versioning (SemVer 2.0.0) Protocol
+                </strong>
+                <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                  Every new update from now onward must be versioned according to standard semantic versioning rules:
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                  <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '12px' }}>
+                    <strong style={{ fontSize: '12.5px', color: '#2563EB' }}>v2.0.0 (MAJOR)</strong>
+                    <div style={{ fontSize: '11px', color: '#64748B', marginTop: '4px' }}>Major architecture shift & foundational framework upgrades.</div>
+                  </div>
+                  <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '12px' }}>
+                    <strong style={{ fontSize: '12.5px', color: '#059669' }}>v2.x.0 (MINOR)</strong>
+                    <div style={{ fontSize: '11px', color: '#64748B', marginTop: '4px' }}>New roadmap modules (e.g., v2.1 for Odoo Webhooks, v2.2 for Campaigns, v2.3 for Live Chat).</div>
+                  </div>
+                  <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '12px' }}>
+                    <strong style={{ fontSize: '12.5px', color: '#D97706' }}>v2.x.y (PATCH)</strong>
+                    <div style={{ fontSize: '11px', color: '#64748B', marginTop: '4px' }}>Targeted bug fixes, security patches, styling polish, or urgent hotfixes.</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Version 2.0 Roadmap Table */}
+              <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '18px' }}>
+                <strong style={{ fontSize: '13.5px', color: '#0F172A', display: 'block', marginBottom: '10px' }}>
+                  📋 Scheduled Development Roadmap (Next Milestones)
+                </strong>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '8px' }}>
+                    <div>
+                      <strong style={{ fontSize: '12.5px', color: '#0369A1' }}>1. Odoo ERP Automated Action Webhook & Model Sync</strong>
+                      <div style={{ fontSize: '11.5px', color: '#0C4A6E' }}>Inbound triggers for automated invoice generation, payment receipts, and delivery status sync.</div>
+                    </div>
+                    <span className="badge" style={{ background: '#0284C7', color: '#FFFFFF' }}>Target: v2.1.0</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                    <div>
+                      <strong style={{ fontSize: '12.5px', color: '#334155' }}>2. Bulk Campaign Broadcasts & Queue Pacing</strong>
+                      <div style={{ fontSize: '11.5px', color: '#64748B' }}>CSV contact list upload, dynamic variable mapping, and queue pacing (50 msgs/min).</div>
+                    </div>
+                    <span className="badge" style={{ background: '#64748B', color: '#FFFFFF' }}>Target: v2.2.0</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                    <div>
+                      <strong style={{ fontSize: '12.5px', color: '#334155' }}>3. Inbound Live Chat & Two-Way Agent Inbox</strong>
+                      <div style={{ fontSize: '11.5px', color: '#64748B' }}>Interactive two-way chat window allowing agents to reply inside the 24-hour Meta session window.</div>
+                    </div>
+                    <span className="badge" style={{ background: '#64748B', color: '#FFFFFF' }}>Target: v2.3.0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeSubTab !== 'version' && (
+          <div style={{ marginTop: '20px' }}>
+            <button
+              type="submit"
+              className={`btn ${isSuperadmin || (activeSubTab !== 'tariffs' && activeSubTab !== 'meta') ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ padding: '10px 24px', fontSize: '14px', fontWeight: '700' }}
+              disabled={loading || (!isSuperadmin && (activeSubTab === 'tariffs' || activeSubTab === 'meta'))}
+            >
+              {loading
+                ? 'Saving...'
+                : (!isSuperadmin && activeSubTab === 'tariffs'
+                    ? '🔒 Tariffs Managed by Superadmin (Read Only)'
+                    : (!isSuperadmin && activeSubTab === 'meta'
+                        ? '🔒 Meta Credentials Managed by Superadmin (Read Only)'
+                        : '💾 Save & Apply System Configuration'))}
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );

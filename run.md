@@ -4,16 +4,19 @@
 ---
 
 ## 📌 Development Checkpoint & Milestone Snapshot (All Verified & Tested)
-- **Checkpoint Timestamp:** `2026-10-06 14:10:00 (Local Time)`
+- **Checkpoint Timestamp:** `2026-10-13 00:25:00 (Local Time)`
+- **Active Platform Generation:** `Version 2.0.0` (Roadmap Active)
+- **Locked Baseline Milestone:** `Version 1.0.0` (Permanently locked in Git with tags `v1.0.0` & `v1.0` on commit `9dd6ebc`)
 - **Live Production URL:** `https://whatsapp.sandslab.com`
 - **GitHub Repository:** `https://github.com/ajitsands/whatsapp.git` (`branch: main`)
-- **Latest Commit Hash:** `e89c45b` (`origin/main` is clean & up to date)
 - **PHP Compatibility:** PHP 7.4+ compatible (with custom polyfills in `config/db.php`)
 - **Frontend Stack:** React 18 (Standalone transpiled bundle `assets/js/app.compiled.js` via `esbuild`)
 
 ---
 
-## 🚀 Key Features Implemented in Current Build
+## 🔒 Version 1.0 Milestone (Locked Baseline)
+
+All Version 1.0 features have been thoroughly verified, tested, and locked in Git:
 
 1. **Enterprise DataTables with Default Descending Sort (`DESC`):**
    - Message Telemetry (`#logs`), Financial Statements & Wallet Ledger (`#wallet`), Templates (`#templates`), API Keys, and User Accounts all automatically sort newest/latest records first (`DESC`).
@@ -41,6 +44,34 @@
 6. **Live Meta WhatsApp Cloud API Dispatch & Webhooks:**
    - Verified end-to-end delivery with media headers and named/positional parameters.
    - Real-time polling telemetry (every 2.5s) and webhook delivery/read receipts (`api/webhook.php`).
+
+---
+
+## 🚀 Version 2.0 & Minor Version Management Protocol
+
+Starting from Version 2.0, all ongoing changes follow strict **Semantic Versioning 2.0.0** (`vMAJOR.MINOR.PATCH`):
+
+```
+v2 . [MINOR] . [PATCH]
+│      │         │
+│      │         └── Bug fixes, security patches, styling polish (e.g., 2.0.1, 2.1.1)
+│      └─────────── Roadmap feature releases (e.g., 2.1.0 for Odoo sync, 2.2.0 for Campaigns)
+└────────────────── Major platform architecture generation
+```
+
+* **System Constants:** Configured in `config/db.php` (`APP_VERSION`, `APP_VERSION_MAJOR`, `APP_VERSION_MINOR`, `APP_VERSION_PATCH`, `APP_BASELINE_VERSION`).
+* **API Exposure:** Accessible via `/api/version.php` and `/api/settings.php`.
+* **In-App Inspection:** Interactive Version Inspector modal in the top header and footer, plus dedicated "Version & Roadmap Architecture" tab in Engine Settings.
+
+---
+
+## 📋 Next Development Tasks (Version 2.0 Roadmap)
+
+| Milestone Target | Module / Feature Name | Priority | Scope Description |
+|---|---|---|---|
+| **v2.1.0** | **Odoo ERP Automated Action Webhook & Model Sync** | 🔄 Phase 1 (Next Priority) | Inbound triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP. |
+| **v2.2.0** | **Bulk Campaign Broadcasts & Queue Pacing** | ⏳ Phase 2 (Scheduled) | CSV contact list upload with variable mapping, segmentation, and throttled queue pacing (50 msgs/min). |
+| **v2.3.0** | **Inbound Live Chat & Two-Way Agent Inbox** | ⏳ Phase 3 (Scheduled) | Interactive two-way conversation window allowing support agents to reply directly within the Meta 24-hour customer care session window. |
 
 ---
 
@@ -88,13 +119,3 @@ git add .
 git commit -m "Your update description"
 git push origin main
 ```
-
----
-
-## 📋 Next Development Tasks (Resume Checklist)
-1. **Odoo ERP Automated Action Webhook & Model Sync:**
-   - Inbound triggers for automated invoice generation, payment receipt dispatch, and order status notifications.
-2. **Bulk Campaign Broadcasts:**
-   - CSV contact list upload with variable mapping and scheduled queue pacing (e.g. 50 msgs/min).
-3. **Inbound Live Chat & Agent Inbox:**
-   - Interactive two-way conversation window allowing support agents to reply directly within the 24-hour customer care session window.
