@@ -2682,10 +2682,10 @@ function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, cu
           {step === 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div className="form-group">
-                <label>Campaign Title <span style={{ color: '#EF4444' }}>*</span></label>
+                <label className="form-label">Campaign Title <span style={{ color: '#EF4444' }}>*</span></label>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-input"
                   placeholder="e.g. October Partner Special Promo Blast"
                   value={name}
                   onChange={e => setName(e.target.value)}
@@ -2694,9 +2694,9 @@ function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, cu
               </div>
 
               <div className="form-group">
-                <label>Select Approved WhatsApp Template <span style={{ color: '#EF4444' }}>*</span></label>
+                <label className="form-label">Select Approved WhatsApp Template <span style={{ color: '#EF4444' }}>*</span></label>
                 <select
-                  className="form-control"
+                  className="form-select"
                   value={selectedTemplateName}
                   onChange={e => setSelectedTemplateName(e.target.value)}
                 >
@@ -2796,7 +2796,7 @@ function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, cu
 
               <div className="form-group">
                 <textarea
-                  className="form-control"
+                  className="form-textarea"
                   rows="4"
                   placeholder={`phone,name,param_1,param_2\n+97335078079,Ali Al-Hassan,Valued Partner,+97317008899\n+97339000001,Ahmed Al-Khalifa,Executive,+97317008899`}
                   value={rawText}

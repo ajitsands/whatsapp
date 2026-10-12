@@ -434,23 +434,37 @@ body {
   margin-top: 4px;
 }
 
-.form-input, .form-select, .form-textarea {
+.form-input, .form-select, .form-textarea, .form-control {
   width: 100%;
-  padding: 9px 13px;
+  padding: 10px 14px;
   background: var(--bg-input);
-  border: 1px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
   border-radius: var(--radius-md);
-  font-size: 13px;
+  font-size: 13.5px;
   font-family: inherit;
   color: var(--text-primary);
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  display: block;
 }
 
-.form-input:focus, .form-select:focus, .form-textarea:focus {
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #FFFFFF;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px;
+  padding-right: 38px;
+  cursor: pointer;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus, .form-control:focus {
   outline: none;
   background: #fff;
   border-color: var(--wa-teal);
-  box-shadow: 0 0 0 3px rgba(18, 140, 126, 0.15);
+  box-shadow: 0 0 0 3px rgba(18, 140, 126, 0.18);
 }
 
 .form-textarea {
