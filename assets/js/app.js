@@ -2652,13 +2652,13 @@ function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, cu
   const estimatedTotalCost = recipients.length * clientRate;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content" style={{ maxWidth: '780px', width: '95%' }}>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ maxWidth: '780px', width: '95%' }} onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span>📢</span> Create Broadcast Campaign
           </h3>
-          <button type="button" className="close-btn" onClick={onClose}>&times;</button>
+          <button type="button" className="close-btn" onClick={onClose}>✕</button>
         </div>
 
         {/* Wizard Steps Indicator */}
@@ -3039,13 +3039,13 @@ function CampaignReportModal({ campaignId, onClose, globalSettings, showToast })
   ];
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content" style={{ maxWidth: '850px', width: '95%' }}>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ maxWidth: '850px', width: '95%' }} onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span>📊</span> Campaign Report: {campaign?.name || 'Loading...'}
           </h3>
-          <button type="button" className="close-btn" onClick={onClose}>&times;</button>
+          <button type="button" className="close-btn" onClick={onClose}>✕</button>
         </div>
 
         <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
