@@ -359,7 +359,7 @@ function App() {
     padding: "1px 6px",
     borderRadius: "10px",
     marginLeft: "6px"
-  } }, inboxUnreadTotal)), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "composer" ? "active" : ""}`, onClick: () => navigateToTab("composer") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4E4}"), " Send Message"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "logs" ? "active" : ""}`, onClick: () => navigateToTab("logs") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Message Logs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "templates" ? "active" : ""}`, onClick: () => navigateToTab("templates") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Templates & Tariffs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "wallet" ? "active" : ""}`, onClick: () => navigateToTab("wallet") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Wallet & Billing"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_hub" ? "active" : ""}`, onClick: () => navigateToTab("api_hub") }, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo API Hub"), ["superadmin", "admin"].includes(currentUser.role) && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_keys" ? "active" : ""}`, onClick: () => navigateToTab("api_keys") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"), " API Keys"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "users" ? "active" : ""}`, onClick: () => navigateToTab("users") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " Users"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "settings" ? "active" : ""}`, onClick: () => navigateToTab("settings") }, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Engine Settings")))))), /* @__PURE__ */ React.createElement("main", { className: "app-body" }, activeTab === "dashboard" && /* @__PURE__ */ React.createElement(DashboardView, { onNavigate: navigateToTab, globalSettings }), activeTab === "inbox" && /* @__PURE__ */ React.createElement(LiveAgentInboxView, { currentUser, showToast, globalSettings, onUnreadCountChange: setInboxUnreadTotal, onNavigate: navigateToTab }), activeTab === "composer" && /* @__PURE__ */ React.createElement(ComposerView, { showToast, onSent: () => {
+  } }, inboxUnreadTotal)), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "campaigns" ? "active" : ""}`, onClick: () => navigateToTab("campaigns") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4E2}"), " Bulk Broadcasts"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "composer" ? "active" : ""}`, onClick: () => navigateToTab("composer") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4E4}"), " Send Message"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "logs" ? "active" : ""}`, onClick: () => navigateToTab("logs") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Message Logs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "templates" ? "active" : ""}`, onClick: () => navigateToTab("templates") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Templates & Tariffs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "wallet" ? "active" : ""}`, onClick: () => navigateToTab("wallet") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Wallet & Billing"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_hub" ? "active" : ""}`, onClick: () => navigateToTab("api_hub") }, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo API Hub"), ["superadmin", "admin"].includes(currentUser.role) && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_keys" ? "active" : ""}`, onClick: () => navigateToTab("api_keys") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"), " API Keys"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "users" ? "active" : ""}`, onClick: () => navigateToTab("users") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " Users"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "settings" ? "active" : ""}`, onClick: () => navigateToTab("settings") }, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Engine Settings")))))), /* @__PURE__ */ React.createElement("main", { className: "app-body" }, activeTab === "dashboard" && /* @__PURE__ */ React.createElement(DashboardView, { onNavigate: navigateToTab, globalSettings }), activeTab === "inbox" && /* @__PURE__ */ React.createElement(LiveAgentInboxView, { currentUser, showToast, globalSettings, onUnreadCountChange: setInboxUnreadTotal, onNavigate: navigateToTab }), activeTab === "campaigns" && /* @__PURE__ */ React.createElement(CampaignsView, { currentUser, showToast, globalSettings, onNavigate: navigateToTab, loadWalletBalance }), activeTab === "composer" && /* @__PURE__ */ React.createElement(ComposerView, { showToast, onSent: () => {
     navigateToTab("inbox");
     loadWalletBalance();
   }, globalSettings }), activeTab === "logs" && /* @__PURE__ */ React.createElement(MessageLogsView, { showToast, globalSettings, onOpenInbox: (phone) => {
@@ -1062,6 +1062,600 @@ function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCo
       showToast
     }
   ));
+}
+function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loadWalletBalance }) {
+  const [campaigns, setCampaigns] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showWizard, setShowWizard] = useState(false);
+  const [inspectCampaignId, setInspectCampaignId] = useState(null);
+  const [templates, setTemplates] = useState([]);
+  const [processingId, setProcessingId] = useState(null);
+  const fetchCampaigns = async (silent = false) => {
+    if (!silent) setLoading(true);
+    try {
+      const res = await fetch("./api/campaigns.php?action=list");
+      const data = await res.json();
+      if (data.success) {
+        setCampaigns(data.campaigns || []);
+        setSummary(data.summary || null);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      if (!silent) setLoading(false);
+    }
+  };
+  const fetchTemplates = async () => {
+    try {
+      const res = await fetch("./api/templates.php");
+      const data = await res.json();
+      if (data.success && data.data) {
+        setTemplates(data.data);
+      }
+    } catch (e) {
+    }
+  };
+  useEffect(() => {
+    fetchCampaigns(false);
+    fetchTemplates();
+  }, []);
+  const runningCampaign = useMemo(() => {
+    return campaigns.find((c) => c.status === "running") || null;
+  }, [campaigns]);
+  useEffect(() => {
+    if (!runningCampaign) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch("./api/campaigns.php?action=process_batch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ campaign_id: runningCampaign.id, batch_size: 5 })
+        });
+        const data = await res.json();
+        if (data.success) {
+          fetchCampaigns(true);
+          if (loadWalletBalance) loadWalletBalance();
+          if (data.status === "completed") {
+            showToast(`Campaign "${runningCampaign.name}" broadcast completed!`, "success");
+          }
+        }
+      } catch (err) {
+      }
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [runningCampaign]);
+  const handleStartCampaign = async (id) => {
+    setProcessingId(id);
+    try {
+      const res = await fetch("./api/campaigns.php?action=process_batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaign_id: id, batch_size: 5 })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("Campaign queue started! Processing recipients...", "success");
+        fetchCampaigns(true);
+      } else {
+        showToast(data.error || "Failed to start campaign", "error");
+      }
+    } catch (e) {
+      showToast("Network error", "error");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+  const handlePauseCampaign = async (id) => {
+    try {
+      const res = await fetch("./api/campaigns.php?action=pause", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaign_id: id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("Campaign paused");
+        fetchCampaigns(true);
+      }
+    } catch (e) {
+    }
+  };
+  const handleCancelCampaign = async (id) => {
+    if (!confirm("Are you sure you want to cancel this campaign broadcast?")) return;
+    try {
+      const res = await fetch("./api/campaigns.php?action=cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaign_id: id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("Campaign cancelled");
+        fetchCampaigns(true);
+      }
+    } catch (e) {
+    }
+  };
+  const columns = [
+    {
+      key: "name",
+      label: "Campaign Details",
+      sortable: true,
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", fontSize: "13.5px", color: "var(--text-color)" } }, c.name), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)", marginTop: "2px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB} ", c.template_title || c.template_name), " \u2022 ", /* @__PURE__ */ React.createElement("span", { className: `badge category-${c.category?.toLowerCase()}` }, c.category)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "var(--text-muted)", marginTop: "2px" } }, "Created: ", formatDateTime(c.created_at, globalSettings?.system_date_format)))
+    },
+    {
+      key: "pace_per_minute",
+      label: "Queue Pacing",
+      sortable: true,
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: "700", color: "#0369A1" } }, "\u23F1\uFE0F ", c.pace_per_minute, " msgs/min"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Anti-spam rate"))
+    },
+    {
+      key: "progress_percent",
+      label: "Broadcast Progress",
+      sortable: true,
+      render: (c) => /* @__PURE__ */ React.createElement("div", { style: { minWidth: "140px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "11.5px", fontWeight: "700", marginBottom: "3px" } }, /* @__PURE__ */ React.createElement("span", null, c.sent_count + c.failed_count, " / ", c.total_recipients), /* @__PURE__ */ React.createElement("span", null, c.progress_percent, "%")), /* @__PURE__ */ React.createElement("div", { style: { width: "100%", height: "8px", background: "#E2E8F0", borderRadius: "4px", overflow: "hidden" } }, /* @__PURE__ */ React.createElement("div", { style: {
+        width: `${c.progress_percent}%`,
+        height: "100%",
+        background: c.status === "completed" ? "#10B981" : c.status === "running" ? "linear-gradient(90deg, #10B981, #0284C7)" : "#94A3B8",
+        borderRadius: "4px",
+        transition: "width 0.3s ease"
+      } })), c.failed_count > 0 && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "#EF4444", marginTop: "2px" } }, "\u26A0\uFE0F ", c.failed_count, " failed"))
+    },
+    {
+      key: "delivery_rate",
+      label: "Delivery & Reads",
+      sortable: true,
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px" } }, /* @__PURE__ */ React.createElement("strong", null, "\u2713\u2713 ", c.delivery_rate, "%"), " Delivered (", c.delivered_count, ")"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#0284C7", marginTop: "2px" } }, /* @__PURE__ */ React.createElement("strong", null, "\u2713\u2713 ", c.read_rate, "%"), " Read (", c.read_count, ")"))
+    },
+    {
+      key: "actual_cost",
+      label: "Total Spend",
+      sortable: true,
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { color: "var(--text-color)" } }, formatCurrency(c.actual_cost, globalSettings?.system_currency, globalSettings?.currency_decimals)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Est: ", formatCurrency(c.estimated_cost, globalSettings?.system_currency, globalSettings?.currency_decimals)))
+    },
+    {
+      key: "status",
+      label: "Status",
+      sortable: true,
+      render: (c) => {
+        const statusMap = {
+          completed: { label: "\u2713 Completed", cls: "status-read", bg: "#DCFCE7", color: "#166534" },
+          running: { label: "\u25CF Running", cls: "status-sent", bg: "#DBEAFE", color: "#1E40AF" },
+          paused: { label: "\u23F8 Paused", cls: "status-queued", bg: "#FEF3C7", color: "#92400E" },
+          draft: { label: "\u{1F4DD} Draft", cls: "status-queued", bg: "#F1F5F9", color: "#475569" },
+          cancelled: { label: "\u2715 Cancelled", cls: "status-failed", bg: "#FEE2E2", color: "#991B1B" }
+        };
+        const s = statusMap[c.status] || statusMap.draft;
+        return /* @__PURE__ */ React.createElement("span", { style: {
+          background: s.bg,
+          color: s.color,
+          padding: "3px 8px",
+          borderRadius: "6px",
+          fontSize: "11px",
+          fontWeight: "700",
+          textTransform: "uppercase"
+        } }, s.label);
+      }
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      sortable: false,
+      render: (c) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          type: "button",
+          className: "btn btn-secondary btn-sm",
+          onClick: () => setInspectCampaignId(c.id),
+          title: "Inspect Recipients Log"
+        },
+        "\u{1F441}\uFE0F Inspect"
+      ), c.status === "draft" && /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          type: "button",
+          className: "btn btn-primary btn-sm",
+          disabled: processingId === c.id,
+          onClick: () => handleStartCampaign(c.id),
+          title: "Start Broadcast"
+        },
+        "\u{1F680} Launch"
+      ), c.status === "running" && /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          type: "button",
+          className: "btn btn-warning btn-sm",
+          onClick: () => handlePauseCampaign(c.id),
+          title: "Pause Queue"
+        },
+        "\u23F8 Pause"
+      ), c.status === "paused" && /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          type: "button",
+          className: "btn btn-primary btn-sm",
+          onClick: () => handleStartCampaign(c.id),
+          title: "Resume Queue"
+        },
+        "\u25B6 Resume"
+      ))
+    }
+  ];
+  return /* @__PURE__ */ React.createElement("div", { className: "campaigns-view-container" }, /* @__PURE__ */ React.createElement("div", { className: "view-header", style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h2", { style: { margin: 0, display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4E2}"), " Bulk Broadcast Campaigns"), /* @__PURE__ */ React.createElement("p", { style: { margin: "4px 0 0 0", color: "var(--text-muted)", fontSize: "13px" } }, "Schedule mass WhatsApp campaigns with CSV contact mapping and anti-spam queue pacing.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary",
+      onClick: () => fetchCampaigns(false),
+      title: "Refresh List"
+    },
+    "\u{1F504} Refresh"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary",
+      onClick: () => setShowWizard(true),
+      style: { display: "flex", alignItems: "center", gap: "6px" }
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F680}"),
+    " Create Broadcast Campaign"
+  ))), /* @__PURE__ */ React.createElement("div", { className: "campaigns-stats-grid" }, /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-card" }, /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-icon", style: { background: "#EFF6FF", color: "#2563EB" } }, "\u{1F4E2}"), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-info" }, /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-label" }, "Total Campaigns"), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-val" }, summary?.total_campaigns || 0), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-sub" }, "Active broadcast programs"))), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-card" }, /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-icon", style: { background: "#F0FDF4", color: "#16A34A" } }, "\u{1F465}"), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-info" }, /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-label" }, "Total Audience"), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-val" }, summary?.total_recipients || 0), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-sub" }, summary?.total_sent || 0, " dispatched"))), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-card" }, /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-icon", style: { background: "#ECFDF5", color: "#059669" } }, "\u2713\u2713"), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-info" }, /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-label" }, "Delivery Success"), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-val" }, summary?.overall_delivery_rate || 0, "%"), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-sub" }, summary?.total_delivered || 0, " verified delivered"))), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-card" }, /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-icon", style: { background: "#F5F3FF", color: "#7C3AED" } }, "\u{1F441}\uFE0F"), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-info" }, /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-label" }, "Average Read Rate"), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-val" }, summary?.overall_read_rate || 0, "%"), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-sub" }, summary?.total_read || 0, " customer reads")))), runningCampaign && /* @__PURE__ */ React.createElement("div", { className: "campaign-live-monitor" }, /* @__PURE__ */ React.createElement("div", { className: "monitor-header" }, /* @__PURE__ */ React.createElement("div", { className: "monitor-title" }, /* @__PURE__ */ React.createElement("span", { className: "monitor-pulse-dot" }), /* @__PURE__ */ React.createElement("span", null, "Broadcasting: ", runningCampaign.name)), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-warning btn-sm",
+      onClick: () => handlePauseCampaign(runningCampaign.id)
+    },
+    "\u23F8 Pause Queue"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-danger btn-sm",
+      onClick: () => handleCancelCampaign(runningCampaign.id)
+    },
+    "\u2715 Cancel"
+  ))), /* @__PURE__ */ React.createElement("div", { className: "campaign-progress-bar-wrap" }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: "campaign-progress-bar-fill",
+      style: { width: `${runningCampaign.progress_percent}%` }
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "monitor-meta-grid" }, /* @__PURE__ */ React.createElement("div", null, "\u{1F4C8} Progress: ", /* @__PURE__ */ React.createElement("strong", null, runningCampaign.sent_count + runningCampaign.failed_count, " / ", runningCampaign.total_recipients, " (", runningCampaign.progress_percent, "%)")), /* @__PURE__ */ React.createElement("div", null, "\u23F1\uFE0F Pacing Rate: ", /* @__PURE__ */ React.createElement("strong", null, runningCampaign.pace_per_minute, " messages/min")), /* @__PURE__ */ React.createElement("div", null, "\u{1F4CB} Template: ", /* @__PURE__ */ React.createElement("strong", null, runningCampaign.template_title || runningCampaign.template_name)), /* @__PURE__ */ React.createElement("div", null, "\u{1F4B3} Total Spent: ", /* @__PURE__ */ React.createElement("strong", null, formatCurrency(runningCampaign.actual_cost, globalSettings?.system_currency, globalSettings?.currency_decimals))))), /* @__PURE__ */ React.createElement("div", { className: "card" }, /* @__PURE__ */ React.createElement(
+    DataTable,
+    {
+      columns,
+      data: campaigns,
+      searchPlaceholder: "Search campaigns by name, template, status...",
+      defaultSortKey: "id",
+      defaultSortDir: "desc",
+      emptyMessage: "No broadcast campaigns created yet. Click 'Create Broadcast Campaign' to launch your first mass WhatsApp announcement."
+    }
+  )), showWizard && /* @__PURE__ */ React.createElement(
+    NewCampaignWizardModal,
+    {
+      isOpen: showWizard,
+      onClose: () => setShowWizard(false),
+      templates,
+      globalSettings,
+      currentUser,
+      showToast,
+      onCampaignCreated: (newId) => {
+        setShowWizard(false);
+        fetchCampaigns(false);
+        handleStartCampaign(newId);
+      }
+    }
+  ), inspectCampaignId && /* @__PURE__ */ React.createElement(
+    CampaignReportModal,
+    {
+      campaignId: inspectCampaignId,
+      onClose: () => setInspectCampaignId(null),
+      globalSettings,
+      showToast
+    }
+  ));
+}
+function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, currentUser, showToast, onCampaignCreated }) {
+  const [step, setStep] = useState(1);
+  const [name, setName] = useState("");
+  const [selectedTemplateName, setSelectedTemplateName] = useState(templates[0]?.template_name || "offer_sandslab");
+  const [headerMediaUrl, setHeaderMediaUrl] = useState("");
+  const [headerMediaName, setHeaderMediaName] = useState("");
+  const [pacePerMinute, setPacePerMinute] = useState(50);
+  const [rawText, setRawText] = useState("");
+  const [recipients, setRecipients] = useState([]);
+  const [csvColumns, setCsvColumns] = useState([]);
+  const [creating, setCreating] = useState(false);
+  const selectedTemplate = useMemo(() => {
+    return templates.find((t) => t.template_name === selectedTemplateName) || templates[0] || null;
+  }, [templates, selectedTemplateName]);
+  useEffect(() => {
+    if (selectedTemplate && selectedTemplate.header_sample) {
+      setHeaderMediaUrl(selectedTemplate.header_sample);
+      setHeaderMediaName(selectedTemplate.header_sample.split("/").pop() || "header_image.jpg");
+    }
+  }, [selectedTemplate]);
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result;
+      if (typeof text === "string") {
+        processCsvText(text);
+      }
+    };
+    reader.readAsText(file);
+  };
+  const processCsvText = (text) => {
+    setRawText(text);
+    const lines = text.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
+    if (lines.length === 0) return;
+    const firstLineCols = lines[0].split(",").map((c) => c.trim().replace(/^["']|["']$/g, ""));
+    setCsvColumns(firstLineCols);
+    const startIdx = firstLineCols[0].toLowerCase().includes("phone") ? 1 : 0;
+    const parsed = [];
+    for (let i = startIdx; i < lines.length; i++) {
+      const parts = lines[i].split(",").map((c) => c.trim().replace(/^["']|["']$/g, ""));
+      if (!parts[0]) continue;
+      parsed.push({
+        phone: parts[0],
+        name: parts[1] || "",
+        variables: parts.slice(2)
+      });
+    }
+    setRecipients(parsed);
+    if (parsed.length > 0) {
+      setStep(3);
+    }
+  };
+  const handleManualParse = () => {
+    if (!rawText.trim()) {
+      showToast("Please paste recipient records or upload a CSV file", "error");
+      return;
+    }
+    processCsvText(rawText);
+  };
+  const handleLaunch = async () => {
+    if (!name.trim()) {
+      showToast("Please enter a campaign name", "error");
+      setStep(1);
+      return;
+    }
+    if (recipients.length === 0) {
+      showToast("Please provide at least one valid recipient", "error");
+      setStep(2);
+      return;
+    }
+    setCreating(true);
+    try {
+      const payload = {
+        name: name.trim(),
+        template_name: selectedTemplateName,
+        pace_per_minute: pacePerMinute,
+        header_media_url: headerMediaUrl || null,
+        header_media_name: headerMediaName || null,
+        recipients
+      };
+      const res = await fetch("./api/campaigns.php?action=create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Broadcast campaign "${name}" created with ${data.total_recipients} recipients!`, "success");
+        onCampaignCreated(data.campaign_id);
+      } else {
+        showToast(data.error || "Failed to create campaign", "error");
+      }
+    } catch (err) {
+      showToast("Network error creating campaign", "error");
+    } finally {
+      setCreating(false);
+    }
+  };
+  const clientRate = parseFloat(selectedTemplate?.client_rate_bhd || 0.034);
+  const estimatedTotalCost = recipients.length * clientRate;
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay" }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "780px", width: "95%" } }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4E2}"), " Create Broadcast Campaign"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "close-btn", onClick: onClose }, "\xD7")), /* @__PURE__ */ React.createElement("div", { className: "wizard-steps-indicator", style: { padding: "0 24px 16px 24px", margin: "16px 0" } }, /* @__PURE__ */ React.createElement("div", { className: `wizard-step-node ${step === 1 ? "active" : ""}`, onClick: () => setStep(1), style: { cursor: "pointer" } }, /* @__PURE__ */ React.createElement("span", { className: "step-num" }, "1"), " Template & Info"), /* @__PURE__ */ React.createElement("div", { className: `wizard-step-node ${step === 2 ? "active" : ""}`, onClick: () => setStep(2), style: { cursor: "pointer" } }, /* @__PURE__ */ React.createElement("span", { className: "step-num" }, "2"), " Upload Recipients"), /* @__PURE__ */ React.createElement("div", { className: `wizard-step-node ${step === 3 ? "active" : ""}`, onClick: () => setStep(3), style: { cursor: "pointer" } }, /* @__PURE__ */ React.createElement("span", { className: "step-num" }, "3"), " Column Mapping & Preview"), /* @__PURE__ */ React.createElement("div", { className: `wizard-step-node ${step === 4 ? "active" : ""}`, onClick: () => setStep(4), style: { cursor: "pointer" } }, /* @__PURE__ */ React.createElement("span", { className: "step-num" }, "4"), " Pacing & Launch")), /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { maxHeight: "65vh", overflowY: "auto", padding: "0 24px" } }, step === 1 && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", null, "Campaign Title ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-control",
+      placeholder: "e.g. October Partner Special Promo Blast",
+      value: name,
+      onChange: (e) => setName(e.target.value),
+      autoFocus: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", null, "Select Approved WhatsApp Template ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-control",
+      value: selectedTemplateName,
+      onChange: (e) => setSelectedTemplateName(e.target.value)
+    },
+    templates.map((t) => /* @__PURE__ */ React.createElement("option", { key: t.template_name, value: t.template_name }, t.display_title || t.template_name, " [", t.category, "] \u2022 Rate: ", t.client_rate_bhd, " BHD (", t.variable_count, " variables)"))
+  )), selectedTemplate && /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#F8FAFC",
+    border: "1px solid #E2E8F0",
+    borderRadius: "10px",
+    padding: "16px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px"
+  } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: "700", fontSize: "13px", color: "#0369A1" } }, "\u{1F4CB} Template Preview: ", selectedTemplate.display_title), /* @__PURE__ */ React.createElement("span", { className: `badge category-${selectedTemplate.category?.toLowerCase()}` }, selectedTemplate.category)), selectedTemplate.header_sample && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#059669", background: "#ECFDF5", padding: "6px 10px", borderRadius: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F5BC}\uFE0F Header Media:"), /* @__PURE__ */ React.createElement("a", { href: selectedTemplate.header_sample, target: "_blank", rel: "noreferrer", style: { color: "#059669", textDecoration: "underline" } }, selectedTemplate.header_sample.split("/").pop())), /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#FFFFFF",
+    border: "1px solid #CBD5E1",
+    borderRadius: "8px",
+    padding: "12px",
+    whiteSpace: "pre-wrap",
+    fontSize: "13px",
+    lineHeight: "1.5",
+    fontFamily: "inherit"
+  } }, selectedTemplate.body_text), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "var(--text-muted)" } }, "Requires ", /* @__PURE__ */ React.createElement("strong", null, selectedTemplate.variable_count, " dynamic variable(s)"), " per contact row."))), step === 2 && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: "700", fontSize: "13.5px" } }, "Upload Contact Audience"), /* @__PURE__ */ React.createElement(
+    "a",
+    {
+      href: `./api/campaigns.php?action=sample_csv&template_name=${encodeURIComponent(selectedTemplateName)}`,
+      className: "btn btn-secondary btn-sm",
+      download: true,
+      style: { display: "flex", alignItems: "center", gap: "4px" }
+    },
+    "\u{1F4E5} Download Sample CSV"
+  )), /* @__PURE__ */ React.createElement("label", { className: "csv-upload-dropzone" }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "file",
+      accept: ".csv,text/csv",
+      onChange: handleFileUpload,
+      style: { display: "none" }
+    }
+  ), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "28px", marginBottom: "8px" } }, "\u{1F4C2}"), /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", fontSize: "14px", color: "var(--text-color)" } }, "Click to select CSV File or Drag & Drop here"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" } }, "Supports CSV with international phone numbers and parameters")), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", color: "var(--text-muted)", fontSize: "12px", fontWeight: "700" } }, "\u2014 OR PASTE RECIPIENT DATA BELOW \u2014"), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement(
+    "textarea",
+    {
+      className: "form-control",
+      rows: "4",
+      placeholder: `phone,name,param_1,param_2
++97335078079,Ali Al-Hassan,Valued Partner,+97317008899
++97339000001,Ahmed Al-Khalifa,Executive,+97317008899`,
+      value: rawText,
+      onChange: (e) => setRawText(e.target.value),
+      style: { fontFamily: "monospace", fontSize: "12.5px" }
+    }
+  ), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "One contact per line (Comma separated)"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary btn-sm", onClick: handleManualParse }, "\u26A1 Parse Records"))), recipients.length > 0 && /* @__PURE__ */ React.createElement("div", { style: { background: "#F0FDF4", border: "1px solid #86EFAC", borderRadius: "8px", padding: "10px 14px", fontSize: "13px", color: "#166534", display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", null, "\u2713"), " Successfully parsed ", /* @__PURE__ */ React.createElement("strong", null, recipients.length, " recipients"), " ready for broadcast!")), step === 3 && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: "700", fontSize: "14px" } }, "Audience Dynamic Preview"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "var(--text-muted)" } }, "Found ", /* @__PURE__ */ React.createElement("strong", null, recipients.length, " recipients"), ". Previewing first 3 rows with template parameters:"))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "10px" } }, recipients.slice(0, 3).map((r, idx) => /* @__PURE__ */ React.createElement("div", { key: idx, style: {
+    background: "#FFFFFF",
+    border: "1px solid #CBD5E1",
+    borderRadius: "8px",
+    padding: "12px 14px"
+  } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: "6px", fontSize: "12.5px" } }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("strong", null, "Recipient #", idx + 1, ":"), " ", /* @__PURE__ */ React.createElement("code", { style: { color: "#0369A1" } }, r.phone), " ", r.name && `(${r.name})`), /* @__PURE__ */ React.createElement("span", { className: "badge badge-success", style: { fontSize: "10px" } }, "Valid")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", padding: "8px 10px", borderRadius: "6px", fontSize: "12px", color: "#334155" } }, /* @__PURE__ */ React.createElement("strong", null, "Substituted Variables:"), " ", r.variables && r.variables.length > 0 ? r.variables.map((v, i) => `{{${i + 1}}}: "${v}"`).join(", ") : "None")))), recipients.length > 3 && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "var(--text-muted)", textAlign: "center" } }, "... and ", recipients.length - 3, " more recipients queued.")), step === 4 && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "18px" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { style: { fontWeight: "700", fontSize: "13.5px", marginBottom: "8px", display: "block" } }, "Anti-Spam Dispatch Queue Pacing"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-muted)", margin: "0 0 12px 0" } }, "Throttle broadcast dispatch rate to stay within Meta Cloud API tier limits and protect your phone number reputation."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px" } }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `pace-option-card ${pacePerMinute === 20 ? "selected" : ""}`,
+      onClick: () => setPacePerMinute(20)
+    },
+    /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", color: "#047857", fontSize: "14px" } }, "\u{1F422} Conservative"),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", fontWeight: "800", margin: "4px 0" } }, "20 msgs / min"),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Safe for new numbers")
+  ), /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `pace-option-card ${pacePerMinute === 50 ? "selected" : ""}`,
+      onClick: () => setPacePerMinute(50)
+    },
+    /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", color: "#0369A1", fontSize: "14px" } }, "\u26A1 Standard"),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", fontWeight: "800", margin: "4px 0" } }, "50 msgs / min"),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Meta Tier 1 recommended")
+  ), /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `pace-option-card ${pacePerMinute === 100 ? "selected" : ""}`,
+      onClick: () => setPacePerMinute(100)
+    },
+    /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", color: "#7C3AED", fontSize: "14px" } }, "\u{1F680} Turbo"),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", fontWeight: "800", margin: "4px 0" } }, "100 msgs / min"),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Meta Tier 2+ high volume")
+  ))), /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#F0FDF4",
+    border: "1px solid #86EFAC",
+    borderRadius: "10px",
+    padding: "16px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px"
+  } }, /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", fontSize: "13.5px", color: "#166534", borderBottom: "1px solid #BBF7D0", paddingBottom: "6px" } }, "\u{1F4B3} Financial Budget Breakdown"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "13px" } }, /* @__PURE__ */ React.createElement("span", null, "Total Recipients:"), /* @__PURE__ */ React.createElement("strong", null, recipients.length, " contacts")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "13px" } }, /* @__PURE__ */ React.createElement("span", null, "Template Client Rate (", selectedTemplate?.category, "):"), /* @__PURE__ */ React.createElement("strong", null, formatCurrency(clientRate, globalSettings?.system_currency, globalSettings?.currency_decimals), " / msg")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "14px", fontWeight: "800", color: "#166534", borderTop: "1px solid #BBF7D0", paddingTop: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "Estimated Total Budget:"), /* @__PURE__ */ React.createElement("span", null, formatCurrency(estimatedTotalCost, globalSettings?.system_currency, globalSettings?.currency_decimals)))))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { display: "flex", justifyContent: "space-between", padding: "16px 24px" } }, /* @__PURE__ */ React.createElement("div", null, step > 1 && /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary",
+      onClick: () => setStep(step - 1),
+      disabled: creating
+    },
+    "\u2190 Back"
+  )), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose, disabled: creating }, "Cancel"), step < 4 ? /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary",
+      onClick: () => {
+        if (step === 1 && !name.trim()) {
+          showToast("Please enter a campaign name", "error");
+          return;
+        }
+        if (step === 2 && recipients.length === 0) {
+          showToast("Please upload or paste recipient contacts", "error");
+          return;
+        }
+        setStep(step + 1);
+      }
+    },
+    "Next Step \u2192"
+  ) : /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary",
+      onClick: handleLaunch,
+      disabled: creating,
+      style: { background: "#059669", borderColor: "#059669" }
+    },
+    creating ? "Creating Broadcast..." : "\u{1F680} Launch Broadcast Now"
+  )))));
+}
+function CampaignReportModal({ campaignId, onClose, globalSettings, showToast }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    fetch(`./api/campaigns.php?action=details&id=${campaignId}`).then((res) => res.json()).then((d) => {
+      if (d.success) setData(d);
+    }).catch(() => {
+    }).finally(() => setLoading(false));
+  }, [campaignId]);
+  const campaign = data?.campaign;
+  const recipients = data?.recipients || [];
+  const recipientColumns = [
+    { key: "recipient_phone", label: "Recipient Phone", sortable: true, render: (r) => /* @__PURE__ */ React.createElement("strong", null, r.recipient_phone) },
+    { key: "contact_name", label: "Contact Name", sortable: true, render: (r) => r.contact_name || "-" },
+    {
+      key: "status",
+      label: "Dispatch Status",
+      sortable: true,
+      render: (r) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: `badge status-${r.status}` }, r.status === "sent" ? "\u2713 Dispatched" : r.status === "failed" ? "\u26A0\uFE0F Failed" : r.status), r.error_message && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "#EF4444", marginTop: "2px" } }, r.error_message))
+    },
+    {
+      key: "cost_deducted",
+      label: "Debited Tariff",
+      sortable: true,
+      render: (r) => formatCurrency(r.cost_deducted, globalSettings?.system_currency, globalSettings?.currency_decimals)
+    },
+    {
+      key: "sent_at",
+      label: "Sent Timestamp",
+      sortable: true,
+      render: (r) => formatDateTime(r.sent_at || r.created_at, globalSettings?.system_date_format)
+    }
+  ];
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay" }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "850px", width: "95%" } }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CA}"), " Campaign Report: ", campaign?.name || "Loading..."), /* @__PURE__ */ React.createElement("button", { type: "button", className: "close-btn", onClick: onClose }, "\xD7")), /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { maxHeight: "70vh", overflowY: "auto" } }, loading ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "30px" } }, "Loading campaign report...") : campaign ? /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#F8FAFC",
+    border: "1px solid #E2E8F0",
+    borderRadius: "8px",
+    padding: "14px 18px",
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+    gap: "12px"
+  } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Template"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, campaign.template_title || campaign.template_name)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Total Audience"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, campaign.total_recipients, " recipients")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Sent / Failed"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px", color: "#16A34A" } }, campaign.sent_count, " sent"), " \u2022 ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, campaign.failed_count, " failed")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Actual Spend"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, formatCurrency(campaign.actual_cost, globalSettings?.system_currency, globalSettings?.currency_decimals)))), /* @__PURE__ */ React.createElement(
+    DataTable,
+    {
+      columns: recipientColumns,
+      data: recipients,
+      searchPlaceholder: "Search recipient phone, contact name, status...",
+      defaultSortKey: "id",
+      defaultSortDir: "asc",
+      title: `campaign_${campaign.id}_recipients`,
+      emptyMessage: "No recipients found for this campaign."
+    }
+  )) : null), /* @__PURE__ */ React.createElement("div", { className: "modal-footer" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose }, "Close"))));
 }
 function MessageLogsView({ showToast, globalSettings, onOpenInbox }) {
   const [messages, setMessages] = useState([]);

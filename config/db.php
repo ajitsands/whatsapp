@@ -29,11 +29,11 @@ if (!function_exists('str_ends_with')) {
 }
 
 // Application Version & Milestone Constants (SemVer 2.0.0)
-define('APP_VERSION', '2.1.0');
+define('APP_VERSION', '2.2.0');
 define('APP_VERSION_MAJOR', 2);
-define('APP_VERSION_MINOR', 1);
+define('APP_VERSION_MINOR', 2);
 define('APP_VERSION_PATCH', 0);
-define('APP_VERSION_STAGE', 'v2.1.0 Live Agent Inbox Released');
+define('APP_VERSION_STAGE', 'v2.2.0 Bulk Campaign Broadcasts & Queue Pacing Released');
 define('APP_BASELINE_VERSION', '1.0.0');
 define('APP_LOCKED_V1_TAG', 'v1.0.0');
 
@@ -167,6 +167,79 @@ class Database {
             $stmtSetting = $pdo->prepare("INSERT INTO system_settings (setting_key, setting_value, setting_group, description) VALUES (?, ?, 'general', 'Default Setting') ON DUPLICATE KEY UPDATE setting_key=setting_key");
             foreach ($defaultSettings as $sk => $sv) {
                 $stmtSetting->execute([$sk, $sv]);
+            }
+
+            // 4. Ensure campaigns and campaign_recipients tables exist (v2.2.0)
+            $pdo->exec("
+                CREATE TABLE IF NOT EXISTS campaigns (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(150) NOT NULL,
+                    template_name VARCHAR(100) NOT NULL,
+                    category ENUM('MARKETING', 'UTILITY', 'AUTHENTICATION', 'SERVICE') NOT NULL DEFAULT 'MARKETING',
+                    header_media_url TEXT NULL,
+                    header_media_name VARCHAR(255) NULL,
+                    pace_per_minute INT NOT NULL DEFAULT 50,
+                    total_recipients INT NOT NULL DEFAULT 0,
+                    sent_count INT NOT NULL DEFAULT 0,
+                    delivered_count INT NOT NULL DEFAULT 0,
+                    read_count INT NOT NULL DEFAULT 0,
+                    failed_count INT NOT NULL DEFAULT 0,
+                    estimated_cost DECIMAL(12, 4) NOT NULL DEFAULT 0.0000,
+                    actual_cost DECIMAL(12, 4) NOT NULL DEFAULT 0.0000,
+                    status ENUM('draft', 'scheduled', 'running', 'paused', 'completed', 'cancelled') NOT NULL DEFAULT 'draft',
+                    created_by INT NULL,
+                    started_at DATETIME NULL,
+                    completed_at DATETIME NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_status (status),
+                    INDEX idx_created_at (created_at)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            ");
+
+            $pdo->exec("
+                CREATE TABLE IF NOT EXISTS campaign_recipients (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    campaign_id INT NOT NULL,
+                    recipient_phone VARCHAR(30) NOT NULL,
+                    contact_name VARCHAR(100) NULL,
+                    variables_json JSON NULL,
+                    status ENUM('pending', 'processing', 'sent', 'failed', 'skipped') NOT NULL DEFAULT 'pending',
+                    error_message TEXT NULL,
+                    message_id VARCHAR(100) NULL,
+                    cost_deducted DECIMAL(10, 4) NOT NULL DEFAULT 0.0000,
+                    sent_at DATETIME NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_campaign (campaign_id),
+                    INDEX idx_status (status),
+                    INDEX idx_recipient (recipient_phone)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            ");
+
+            // Seed a sample completed campaign if table is empty
+            $hasCampaigns = $pdo->query("SELECT id FROM campaigns LIMIT 1")->fetch();
+            if (!$hasCampaigns) {
+                $pdo->exec("
+                    INSERT INTO campaigns (
+                        name, template_name, category, header_media_url, header_media_name,
+                        pace_per_minute, total_recipients, sent_count, delivered_count, read_count, failed_count,
+                        estimated_cost, actual_cost, status, started_at, completed_at
+                    ) VALUES (
+                        'Q4 Enterprise Year-End Special Offer', 'offer_sandslab', 'MARKETING',
+                        'https://whatsapp.sandslab.com/assets/images/QRCodePoster.jpg', 'QRCodePoster.jpg',
+                        50, 4, 4, 3, 2, 0,
+                        0.1360, 0.1360, 'completed', NOW() - INTERVAL 2 HOUR, NOW() - INTERVAL 1 HOUR
+                    )
+                ");
+                $newCampId = (int)$pdo->lastInsertId();
+                if ($newCampId > 0) {
+                    $pdo->exec("
+                        INSERT INTO campaign_recipients (campaign_id, recipient_phone, contact_name, variables_json, status, cost_deducted, sent_at) VALUES
+                        ({$newCampId}, '+97339000001', 'Ahmed Al-Khalifa', '[\"Ahmed Al-Khalifa\", \"+97317008899\"]', 'sent', 0.0340, NOW() - INTERVAL 1 HOUR),
+                        ({$newCampId}, '+97339000002', 'Dr. Tariq Salman', '[\"Dr. Tariq Salman\", \"+97317008899\"]', 'sent', 0.0340, NOW() - INTERVAL 1 HOUR),
+                        ({$newCampId}, '+97339000003', 'Fatima Noor', '[\"Fatima Noor\", \"+97317008899\"]', 'sent', 0.0340, NOW() - INTERVAL 1 HOUR),
+                        ({$newCampId}, '+97335078079', 'UniGlobal Executive', '[\"Valued Partner\", \"+97317008899\"]', 'sent', 0.0340, NOW() - INTERVAL 1 HOUR)
+                    ");
+                }
             }
 
         } catch (Throwable $e) {

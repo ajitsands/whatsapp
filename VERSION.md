@@ -5,8 +5,8 @@
 ---
 
 ## 📌 Active Version Status
-- **Current Version:** `2.1.0`
-- **Development Stage:** `v2.1.0 Inbound Live Chat & Two-Way Agent Inbox (Released & Active)`
+- **Current Version:** `2.2.0`
+- **Development Stage:** `v2.2.0 Bulk Campaign Broadcasts & Queue Pacing (Released & Active)`
 - **Locked Baseline Version:** `1.0.0`
 - **Git Baseline Tags:** `v1.0.0` & `v1.0` (Locked on Commit `9dd6ebc`)
 - **Live Production URL:** `https://whatsapp.sandslab.com`
@@ -45,7 +45,7 @@ Starting from Version 2.0, the platform adheres strictly to **Semantic Versionin
 v2 . [MINOR] . [PATCH]
 │      │         │
 │      │         └── Bug fixes, security patches, styling touch-ups (e.g., 2.0.1, 2.1.1)
-│      └─────────── Roadmap feature releases (e.g., 2.1.0 Live Chat, 2.2.0 Odoo sync, 2.3.0 Campaigns)
+│      └─────────── Roadmap feature releases (e.g., 2.1.0 Live Chat, 2.2.0 Campaigns, 2.3.0 Odoo Sync)
 └────────────────── Major platform architecture generation
 ```
 
@@ -61,12 +61,20 @@ v2 . [MINOR] . [PATCH]
 | Milestone Target | Module / Feature Name | Status | Description |
 |---|---|---|---|
 | **v2.1.0** | **Inbound Live Chat & Two-Way Agent Inbox** | ✅ **COMPLETED & LIVE** | Two-way agent console (`#inbox`), Meta 24-hour customer care session window tracking, canned replies, free-form text messaging, and simulated inbound testing. |
-| **v2.2.0** | **Odoo ERP Automated Action Webhook & Model Sync** | 🔄 **Next Priority** | Inbound triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP. |
-| **v2.3.0** | **Bulk Campaign Broadcasts & Queue Pacing** | ⏳ **Scheduled** | CSV contact list upload with dynamic template variable mapping, contact segmentation, and throttled queue pacing (50 msgs/min). |
+| **v2.2.0** | **Bulk Campaign Broadcasts & Queue Pacing** | ✅ **COMPLETED & LIVE** | CSV contact upload with dynamic variable mapping, anti-spam dispatch queue pacing (20/50/100 msgs/min), live animated monitor, and exportable recipient reports. |
+| **v2.3.0** | **Odoo ERP Automated Action Webhook & Model Sync** | 🔄 **Next Priority** | Inbound triggers for automated invoice generation (`account.move`), payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP. |
 
 ---
 
 ## 📜 Release Changelog History
+
+### [2.2.0] — 2026-10-13 (Bulk Campaign Broadcasts & Queue Pacing Released)
+- **Broadcast Campaigns UI (`#campaigns`):** Dedicated broadcast manager with aggregate KPI cards, active execution monitor, and DataTables listing.
+- **New Campaign Wizard:** 4-step wizard with template preview, CSV drag-and-drop file upload, custom column mapping, and 1-click tailored sample CSV download.
+- **Anti-Spam Queue Pacing Engine:** Multi-tier dispatch throttle presets (Conservative 20, Standard 50, Turbo 100 msgs/min) with live queue pause/resume controls.
+- **Financial Pre-Check & Ledger:** Automatic wallet budget calculation and balance validation preventing campaign launch without sufficient balance.
+- **Campaign Analytics & Inspection Modal:** Detailed recipient log with status tracking (`sent`, `delivered`, `read`, `failed`) and CSV report export.
+- **Backend API (`api/campaigns.php`):** High-performance endpoints for campaign creation, batch processing, queue status toggles, and sample CSV generation.
 
 ### [2.1.0] — 2026-10-13 (Inbound Live Chat & Two-Way Agent Inbox Released)
 - **Live Agent Inbox UI:** Built dedicated two-column desktop workspace (`#inbox`) with contact search, unread badge counter, and filter tabs.

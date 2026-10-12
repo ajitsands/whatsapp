@@ -669,6 +669,9 @@ function App() {
                   </span>
                 )}
               </button>
+              <button className={`nav-item ${activeTab === 'campaigns' ? 'active' : ''}`} onClick={() => navigateToTab('campaigns')}>
+                <span>📢</span> Bulk Broadcasts
+              </button>
               <button className={`nav-item ${activeTab === 'composer' ? 'active' : ''}`} onClick={() => navigateToTab('composer')}>
                 <span>📤</span> Send Message
               </button>
@@ -708,6 +711,7 @@ function App() {
       <main className="app-body">
         {activeTab === 'dashboard' && <DashboardView onNavigate={navigateToTab} globalSettings={globalSettings} />}
         {activeTab === 'inbox' && <LiveAgentInboxView currentUser={currentUser} showToast={showToast} globalSettings={globalSettings} onUnreadCountChange={setInboxUnreadTotal} onNavigate={navigateToTab} />}
+        {activeTab === 'campaigns' && <CampaignsView currentUser={currentUser} showToast={showToast} globalSettings={globalSettings} onNavigate={navigateToTab} loadWalletBalance={loadWalletBalance} />}
         {activeTab === 'composer' && <ComposerView showToast={showToast} onSent={() => { navigateToTab('inbox'); loadWalletBalance(); }} globalSettings={globalSettings} />}
         {activeTab === 'logs' && <MessageLogsView showToast={showToast} globalSettings={globalSettings} onOpenInbox={(phone) => { navigateToTab('inbox'); }} />}
         {activeTab === 'templates' && <TemplatesView showToast={showToast} globalSettings={globalSettings} />}
@@ -2090,6 +2094,1013 @@ function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCo
         }}
         showToast={showToast}
       />
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 3.5 BROADCAST CAMPAIGNS & QUEUE PACING VIEW (v2.2.0)
+// -----------------------------------------------------------------------------
+function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loadWalletBalance }) {
+  const [campaigns, setCampaigns] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showWizard, setShowWizard] = useState(false);
+  const [inspectCampaignId, setInspectCampaignId] = useState(null);
+  const [templates, setTemplates] = useState([]);
+  const [processingId, setProcessingId] = useState(null);
+
+  const fetchCampaigns = async (silent = false) => {
+    if (!silent) setLoading(true);
+    try {
+      const res = await fetch('./api/campaigns.php?action=list');
+      const data = await res.json();
+      if (data.success) {
+        setCampaigns(data.campaigns || []);
+        setSummary(data.summary || null);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      if (!silent) setLoading(false);
+    }
+  };
+
+  const fetchTemplates = async () => {
+    try {
+      const res = await fetch('./api/templates.php');
+      const data = await res.json();
+      if (data.success && data.data) {
+        setTemplates(data.data);
+      }
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    fetchCampaigns(false);
+    fetchTemplates();
+  }, []);
+
+  // Check if any campaign is currently running
+  const runningCampaign = useMemo(() => {
+    return campaigns.find(c => c.status === 'running') || null;
+  }, [campaigns]);
+
+  // Active Queue Processor loop
+  useEffect(() => {
+    if (!runningCampaign) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch('./api/campaigns.php?action=process_batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ campaign_id: runningCampaign.id, batch_size: 5 })
+        });
+        const data = await res.json();
+        if (data.success) {
+          fetchCampaigns(true);
+          if (loadWalletBalance) loadWalletBalance();
+          if (data.status === 'completed') {
+            showToast(`Campaign "${runningCampaign.name}" broadcast completed!`, 'success');
+          }
+        }
+      } catch (err) {}
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [runningCampaign]);
+
+  const handleStartCampaign = async (id) => {
+    setProcessingId(id);
+    try {
+      const res = await fetch('./api/campaigns.php?action=process_batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ campaign_id: id, batch_size: 5 })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Campaign queue started! Processing recipients...', 'success');
+        fetchCampaigns(true);
+      } else {
+        showToast(data.error || 'Failed to start campaign', 'error');
+      }
+    } catch (e) {
+      showToast('Network error', 'error');
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handlePauseCampaign = async (id) => {
+    try {
+      const res = await fetch('./api/campaigns.php?action=pause', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ campaign_id: id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Campaign paused');
+        fetchCampaigns(true);
+      }
+    } catch (e) {}
+  };
+
+  const handleCancelCampaign = async (id) => {
+    if (!confirm('Are you sure you want to cancel this campaign broadcast?')) return;
+    try {
+      const res = await fetch('./api/campaigns.php?action=cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ campaign_id: id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Campaign cancelled');
+        fetchCampaigns(true);
+      }
+    } catch (e) {}
+  };
+
+  const columns = [
+    {
+      key: 'name',
+      label: 'Campaign Details',
+      sortable: true,
+      render: (c) => (
+        <div>
+          <div style={{ fontWeight: '700', fontSize: '13.5px', color: 'var(--text-color)' }}>{c.name}</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+            <span>📋 {c.template_title || c.template_name}</span> • <span className={`badge category-${c.category?.toLowerCase()}`}>{c.category}</span>
+          </div>
+          <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
+            Created: {formatDateTime(c.created_at, globalSettings?.system_date_format)}
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'pace_per_minute',
+      label: 'Queue Pacing',
+      sortable: true,
+      render: (c) => (
+        <div>
+          <span style={{ fontWeight: '700', color: '#0369A1' }}>⏱️ {c.pace_per_minute} msgs/min</span>
+          <div style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>Anti-spam rate</div>
+        </div>
+      )
+    },
+    {
+      key: 'progress_percent',
+      label: 'Broadcast Progress',
+      sortable: true,
+      render: (c) => (
+        <div style={{ minWidth: '140px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', fontWeight: '700', marginBottom: '3px' }}>
+            <span>{c.sent_count + c.failed_count} / {c.total_recipients}</span>
+            <span>{c.progress_percent}%</span>
+          </div>
+          <div style={{ width: '100%', height: '8px', background: '#E2E8F0', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{
+              width: `${c.progress_percent}%`,
+              height: '100%',
+              background: c.status === 'completed' ? '#10B981' : c.status === 'running' ? 'linear-gradient(90deg, #10B981, #0284C7)' : '#94A3B8',
+              borderRadius: '4px',
+              transition: 'width 0.3s ease'
+            }} />
+          </div>
+          {c.failed_count > 0 && (
+            <div style={{ fontSize: '10px', color: '#EF4444', marginTop: '2px' }}>⚠️ {c.failed_count} failed</div>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'delivery_rate',
+      label: 'Delivery & Reads',
+      sortable: true,
+      render: (c) => (
+        <div>
+          <div style={{ fontSize: '12px' }}><strong>✓✓ {c.delivery_rate}%</strong> Delivered ({c.delivered_count})</div>
+          <div style={{ fontSize: '11.5px', color: '#0284C7', marginTop: '2px' }}><strong>✓✓ {c.read_rate}%</strong> Read ({c.read_count})</div>
+        </div>
+      )
+    },
+    {
+      key: 'actual_cost',
+      label: 'Total Spend',
+      sortable: true,
+      render: (c) => (
+        <div>
+          <strong style={{ color: 'var(--text-color)' }}>{formatCurrency(c.actual_cost, globalSettings?.system_currency, globalSettings?.currency_decimals)}</strong>
+          <div style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>Est: {formatCurrency(c.estimated_cost, globalSettings?.system_currency, globalSettings?.currency_decimals)}</div>
+        </div>
+      )
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      sortable: true,
+      render: (c) => {
+        const statusMap = {
+          completed: { label: '✓ Completed', cls: 'status-read', bg: '#DCFCE7', color: '#166534' },
+          running: { label: '● Running', cls: 'status-sent', bg: '#DBEAFE', color: '#1E40AF' },
+          paused: { label: '⏸ Paused', cls: 'status-queued', bg: '#FEF3C7', color: '#92400E' },
+          draft: { label: '📝 Draft', cls: 'status-queued', bg: '#F1F5F9', color: '#475569' },
+          cancelled: { label: '✕ Cancelled', cls: 'status-failed', bg: '#FEE2E2', color: '#991B1B' }
+        };
+        const s = statusMap[c.status] || statusMap.draft;
+        return (
+          <span style={{
+            background: s.bg,
+            color: s.color,
+            padding: '3px 8px',
+            borderRadius: '6px',
+            fontSize: '11px',
+            fontWeight: '700',
+            textTransform: 'uppercase'
+          }}>
+            {s.label}
+          </span>
+        );
+      }
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      sortable: false,
+      render: (c) => (
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={() => setInspectCampaignId(c.id)}
+            title="Inspect Recipients Log"
+          >
+            👁️ Inspect
+          </button>
+          {c.status === 'draft' && (
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              disabled={processingId === c.id}
+              onClick={() => handleStartCampaign(c.id)}
+              title="Start Broadcast"
+            >
+              🚀 Launch
+            </button>
+          )}
+          {c.status === 'running' && (
+            <button
+              type="button"
+              className="btn btn-warning btn-sm"
+              onClick={() => handlePauseCampaign(c.id)}
+              title="Pause Queue"
+            >
+              ⏸ Pause
+            </button>
+          )}
+          {c.status === 'paused' && (
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={() => handleStartCampaign(c.id)}
+              title="Resume Queue"
+            >
+              ▶ Resume
+            </button>
+          )}
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <div className="campaigns-view-container">
+      {/* Top Header & Launch Button */}
+      <div className="view-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>📢</span> Bulk Broadcast Campaigns
+          </h2>
+          <p style={{ margin: '4px 0 0 0', color: 'var(--text-muted)', fontSize: '13px' }}>
+            Schedule mass WhatsApp campaigns with CSV contact mapping and anti-spam queue pacing.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => fetchCampaigns(false)}
+            title="Refresh List"
+          >
+            🔄 Refresh
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => setShowWizard(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <span>🚀</span> Create Broadcast Campaign
+          </button>
+        </div>
+      </div>
+
+      {/* Aggregate KPI Cards */}
+      <div className="campaigns-stats-grid">
+        <div className="campaign-stat-card">
+          <div className="campaign-stat-icon" style={{ background: '#EFF6FF', color: '#2563EB' }}>📢</div>
+          <div className="campaign-stat-info">
+            <span className="campaign-stat-label">Total Campaigns</span>
+            <span className="campaign-stat-val">{summary?.total_campaigns || 0}</span>
+            <span className="campaign-stat-sub">Active broadcast programs</span>
+          </div>
+        </div>
+
+        <div className="campaign-stat-card">
+          <div className="campaign-stat-icon" style={{ background: '#F0FDF4', color: '#16A34A' }}>👥</div>
+          <div className="campaign-stat-info">
+            <span className="campaign-stat-label">Total Audience</span>
+            <span className="campaign-stat-val">{summary?.total_recipients || 0}</span>
+            <span className="campaign-stat-sub">{summary?.total_sent || 0} dispatched</span>
+          </div>
+        </div>
+
+        <div className="campaign-stat-card">
+          <div className="campaign-stat-icon" style={{ background: '#ECFDF5', color: '#059669' }}>✓✓</div>
+          <div className="campaign-stat-info">
+            <span className="campaign-stat-label">Delivery Success</span>
+            <span className="campaign-stat-val">{summary?.overall_delivery_rate || 0}%</span>
+            <span className="campaign-stat-sub">{summary?.total_delivered || 0} verified delivered</span>
+          </div>
+        </div>
+
+        <div className="campaign-stat-card">
+          <div className="campaign-stat-icon" style={{ background: '#F5F3FF', color: '#7C3AED' }}>👁️</div>
+          <div className="campaign-stat-info">
+            <span className="campaign-stat-label">Average Read Rate</span>
+            <span className="campaign-stat-val">{summary?.overall_read_rate || 0}%</span>
+            <span className="campaign-stat-sub">{summary?.total_read || 0} customer reads</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Live Broadcast Monitor (If a campaign is actively running) */}
+      {runningCampaign && (
+        <div className="campaign-live-monitor">
+          <div className="monitor-header">
+            <div className="monitor-title">
+              <span className="monitor-pulse-dot" />
+              <span>Broadcasting: {runningCampaign.name}</span>
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                className="btn btn-warning btn-sm"
+                onClick={() => handlePauseCampaign(runningCampaign.id)}
+              >
+                ⏸ Pause Queue
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger btn-sm"
+                onClick={() => handleCancelCampaign(runningCampaign.id)}
+              >
+                ✕ Cancel
+              </button>
+            </div>
+          </div>
+
+          <div className="campaign-progress-bar-wrap">
+            <div
+              className="campaign-progress-bar-fill"
+              style={{ width: `${runningCampaign.progress_percent}%` }}
+            />
+          </div>
+
+          <div className="monitor-meta-grid">
+            <div>📈 Progress: <strong>{runningCampaign.sent_count + runningCampaign.failed_count} / {runningCampaign.total_recipients} ({runningCampaign.progress_percent}%)</strong></div>
+            <div>⏱️ Pacing Rate: <strong>{runningCampaign.pace_per_minute} messages/min</strong></div>
+            <div>📋 Template: <strong>{runningCampaign.template_title || runningCampaign.template_name}</strong></div>
+            <div>💳 Total Spent: <strong>{formatCurrency(runningCampaign.actual_cost, globalSettings?.system_currency, globalSettings?.currency_decimals)}</strong></div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Campaigns DataTable */}
+      <div className="card">
+        <DataTable
+          columns={columns}
+          data={campaigns}
+          searchPlaceholder="Search campaigns by name, template, status..."
+          defaultSortKey="id"
+          defaultSortDir="desc"
+          emptyMessage="No broadcast campaigns created yet. Click 'Create Broadcast Campaign' to launch your first mass WhatsApp announcement."
+        />
+      </div>
+
+      {/* Create Campaign Wizard Modal */}
+      {showWizard && (
+        <NewCampaignWizardModal
+          isOpen={showWizard}
+          onClose={() => setShowWizard(false)}
+          templates={templates}
+          globalSettings={globalSettings}
+          currentUser={currentUser}
+          showToast={showToast}
+          onCampaignCreated={(newId) => {
+            setShowWizard(false);
+            fetchCampaigns(false);
+            handleStartCampaign(newId);
+          }}
+        />
+      )}
+
+      {/* Inspect Campaign Report Modal */}
+      {inspectCampaignId && (
+        <CampaignReportModal
+          campaignId={inspectCampaignId}
+          onClose={() => setInspectCampaignId(null)}
+          globalSettings={globalSettings}
+          showToast={showToast}
+        />
+      )}
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// NEW CAMPAIGN WIZARD MODAL
+// -----------------------------------------------------------------------------
+function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, currentUser, showToast, onCampaignCreated }) {
+  const [step, setStep] = useState(1);
+  const [name, setName] = useState('');
+  const [selectedTemplateName, setSelectedTemplateName] = useState(templates[0]?.template_name || 'offer_sandslab');
+  const [headerMediaUrl, setHeaderMediaUrl] = useState('');
+  const [headerMediaName, setHeaderMediaName] = useState('');
+  const [pacePerMinute, setPacePerMinute] = useState(50);
+  const [rawText, setRawText] = useState('');
+  const [recipients, setRecipients] = useState([]);
+  const [csvColumns, setCsvColumns] = useState([]);
+  const [creating, setCreating] = useState(false);
+
+  const selectedTemplate = useMemo(() => {
+    return templates.find(t => t.template_name === selectedTemplateName) || templates[0] || null;
+  }, [templates, selectedTemplateName]);
+
+  useEffect(() => {
+    if (selectedTemplate && selectedTemplate.header_sample) {
+      setHeaderMediaUrl(selectedTemplate.header_sample);
+      setHeaderMediaName(selectedTemplate.header_sample.split('/').pop() || 'header_image.jpg');
+    }
+  }, [selectedTemplate]);
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result;
+      if (typeof text === 'string') {
+        processCsvText(text);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const processCsvText = (text) => {
+    setRawText(text);
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length === 0) return;
+
+    const firstLineCols = lines[0].split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
+    setCsvColumns(firstLineCols);
+
+    const startIdx = firstLineCols[0].toLowerCase().includes('phone') ? 1 : 0;
+    const parsed = [];
+
+    for (let i = startIdx; i < lines.length; i++) {
+      const parts = lines[i].split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
+      if (!parts[0]) continue;
+      parsed.push({
+        phone: parts[0],
+        name: parts[1] || '',
+        variables: parts.slice(2)
+      });
+    }
+
+    setRecipients(parsed);
+    if (parsed.length > 0) {
+      setStep(3);
+    }
+  };
+
+  const handleManualParse = () => {
+    if (!rawText.trim()) {
+      showToast('Please paste recipient records or upload a CSV file', 'error');
+      return;
+    }
+    processCsvText(rawText);
+  };
+
+  const handleLaunch = async () => {
+    if (!name.trim()) {
+      showToast('Please enter a campaign name', 'error');
+      setStep(1);
+      return;
+    }
+    if (recipients.length === 0) {
+      showToast('Please provide at least one valid recipient', 'error');
+      setStep(2);
+      return;
+    }
+
+    setCreating(true);
+    try {
+      const payload = {
+        name: name.trim(),
+        template_name: selectedTemplateName,
+        pace_per_minute: pacePerMinute,
+        header_media_url: headerMediaUrl || null,
+        header_media_name: headerMediaName || null,
+        recipients: recipients
+      };
+
+      const res = await fetch('./api/campaigns.php?action=create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Broadcast campaign "${name}" created with ${data.total_recipients} recipients!`, 'success');
+        onCampaignCreated(data.campaign_id);
+      } else {
+        showToast(data.error || 'Failed to create campaign', 'error');
+      }
+    } catch (err) {
+      showToast('Network error creating campaign', 'error');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const clientRate = parseFloat(selectedTemplate?.client_rate_bhd || 0.0340);
+  const estimatedTotalCost = recipients.length * clientRate;
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content" style={{ maxWidth: '780px', width: '95%' }}>
+        <div className="modal-header">
+          <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>📢</span> Create Broadcast Campaign
+          </h3>
+          <button type="button" className="close-btn" onClick={onClose}>&times;</button>
+        </div>
+
+        {/* Wizard Steps Indicator */}
+        <div className="wizard-steps-indicator" style={{ padding: '0 24px 16px 24px', margin: '16px 0' }}>
+          <div className={`wizard-step-node ${step === 1 ? 'active' : ''}`} onClick={() => setStep(1)} style={{ cursor: 'pointer' }}>
+            <span className="step-num">1</span> Template & Info
+          </div>
+          <div className={`wizard-step-node ${step === 2 ? 'active' : ''}`} onClick={() => setStep(2)} style={{ cursor: 'pointer' }}>
+            <span className="step-num">2</span> Upload Recipients
+          </div>
+          <div className={`wizard-step-node ${step === 3 ? 'active' : ''}`} onClick={() => setStep(3)} style={{ cursor: 'pointer' }}>
+            <span className="step-num">3</span> Column Mapping & Preview
+          </div>
+          <div className={`wizard-step-node ${step === 4 ? 'active' : ''}`} onClick={() => setStep(4)} style={{ cursor: 'pointer' }}>
+            <span className="step-num">4</span> Pacing & Launch
+          </div>
+        </div>
+
+        <div className="modal-body" style={{ maxHeight: '65vh', overflowY: 'auto', padding: '0 24px' }}>
+          {/* STEP 1: CAMPAIGN DETAILS & TEMPLATE */}
+          {step === 1 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="form-group">
+                <label>Campaign Title <span style={{ color: '#EF4444' }}>*</span></label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="e.g. October Partner Special Promo Blast"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  autoFocus
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Select Approved WhatsApp Template <span style={{ color: '#EF4444' }}>*</span></label>
+                <select
+                  className="form-control"
+                  value={selectedTemplateName}
+                  onChange={e => setSelectedTemplateName(e.target.value)}
+                >
+                  {templates.map(t => (
+                    <option key={t.template_name} value={t.template_name}>
+                      {t.display_title || t.template_name} [{t.category}] • Rate: {t.client_rate_bhd} BHD ({t.variable_count} variables)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Template Live Preview Card */}
+              {selectedTemplate && (
+                <div style={{
+                  background: '#F8FAFC',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: '700', fontSize: '13px', color: '#0369A1' }}>
+                      📋 Template Preview: {selectedTemplate.display_title}
+                    </span>
+                    <span className={`badge category-${selectedTemplate.category?.toLowerCase()}`}>
+                      {selectedTemplate.category}
+                    </span>
+                  </div>
+
+                  {selectedTemplate.header_sample && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#059669', background: '#ECFDF5', padding: '6px 10px', borderRadius: '6px' }}>
+                      <span>🖼️ Header Media:</span>
+                      <a href={selectedTemplate.header_sample} target="_blank" rel="noreferrer" style={{ color: '#059669', textDecoration: 'underline' }}>
+                        {selectedTemplate.header_sample.split('/').pop()}
+                      </a>
+                    </div>
+                  )}
+
+                  <div style={{
+                    background: '#FFFFFF',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    whiteSpace: 'pre-wrap',
+                    fontSize: '13px',
+                    lineHeight: '1.5',
+                    fontFamily: 'inherit'
+                  }}>
+                    {selectedTemplate.body_text}
+                  </div>
+
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                    Requires <strong>{selectedTemplate.variable_count} dynamic variable(s)</strong> per contact row.
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* STEP 2: CSV UPLOAD / RECIPIENTS */}
+          {step === 2 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: '700', fontSize: '13.5px' }}>Upload Contact Audience</span>
+                <a
+                  href={`./api/campaigns.php?action=sample_csv&template_name=${encodeURIComponent(selectedTemplateName)}`}
+                  className="btn btn-secondary btn-sm"
+                  download
+                  style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
+                  📥 Download Sample CSV
+                </a>
+              </div>
+
+              {/* Drag and Drop Zone */}
+              <label className="csv-upload-dropzone">
+                <input
+                  type="file"
+                  accept=".csv,text/csv"
+                  onChange={handleFileUpload}
+                  style={{ display: 'none' }}
+                />
+                <div style={{ fontSize: '28px', marginBottom: '8px' }}>📂</div>
+                <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-color)' }}>
+                  Click to select CSV File or Drag & Drop here
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                  Supports CSV with international phone numbers and parameters
+                </div>
+              </label>
+
+              <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '12px', fontWeight: '700' }}>
+                — OR PASTE RECIPIENT DATA BELOW —
+              </div>
+
+              <div className="form-group">
+                <textarea
+                  className="form-control"
+                  rows="4"
+                  placeholder={`phone,name,param_1,param_2\n+97335078079,Ali Al-Hassan,Valued Partner,+97317008899\n+97339000001,Ahmed Al-Khalifa,Executive,+97317008899`}
+                  value={rawText}
+                  onChange={e => setRawText(e.target.value)}
+                  style={{ fontFamily: 'monospace', fontSize: '12.5px' }}
+                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                    One contact per line (Comma separated)
+                  </span>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={handleManualParse}>
+                    ⚡ Parse Records
+                  </button>
+                </div>
+              </div>
+
+              {recipients.length > 0 && (
+                <div style={{ background: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: '8px', padding: '10px 14px', fontSize: '13px', color: '#166534', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>✓</span> Successfully parsed <strong>{recipients.length} recipients</strong> ready for broadcast!
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* STEP 3: COLUMN MAPPING & PREVIEW */}
+          {step === 3 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <span style={{ fontWeight: '700', fontSize: '14px' }}>Audience Dynamic Preview</span>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                    Found <strong>{recipients.length} recipients</strong>. Previewing first 3 rows with template parameters:
+                  </div>
+                </div>
+              </div>
+
+              {/* Sample Previews */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {recipients.slice(0, 3).map((r, idx) => (
+                  <div key={idx} style={{
+                    background: '#FFFFFF',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: '8px',
+                    padding: '12px 14px'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '12.5px' }}>
+                      <span><strong>Recipient #{idx + 1}:</strong> <code style={{ color: '#0369A1' }}>{r.phone}</code> {r.name && `(${r.name})`}</span>
+                      <span className="badge badge-success" style={{ fontSize: '10px' }}>Valid</span>
+                    </div>
+                    <div style={{ background: '#F8FAFC', padding: '8px 10px', borderRadius: '6px', fontSize: '12px', color: '#334155' }}>
+                      <strong>Substituted Variables:</strong> {r.variables && r.variables.length > 0 ? r.variables.map((v, i) => `{{${i+1}}}: "${v}"`).join(', ') : 'None'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {recipients.length > 3 && (
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center' }}>
+                  ... and {recipients.length - 3} more recipients queued.
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* STEP 4: PACING & BUDGET REVIEW */}
+          {step === 4 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              <div>
+                <label style={{ fontWeight: '700', fontSize: '13.5px', marginBottom: '8px', display: 'block' }}>
+                  Anti-Spam Dispatch Queue Pacing
+                </label>
+                <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>
+                  Throttle broadcast dispatch rate to stay within Meta Cloud API tier limits and protect your phone number reputation.
+                </p>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  <div
+                    className={`pace-option-card ${pacePerMinute === 20 ? 'selected' : ''}`}
+                    onClick={() => setPacePerMinute(20)}
+                  >
+                    <div style={{ fontWeight: '700', color: '#047857', fontSize: '14px' }}>🐢 Conservative</div>
+                    <div style={{ fontSize: '12px', fontWeight: '800', margin: '4px 0' }}>20 msgs / min</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Safe for new numbers</div>
+                  </div>
+
+                  <div
+                    className={`pace-option-card ${pacePerMinute === 50 ? 'selected' : ''}`}
+                    onClick={() => setPacePerMinute(50)}
+                  >
+                    <div style={{ fontWeight: '700', color: '#0369A1', fontSize: '14px' }}>⚡ Standard</div>
+                    <div style={{ fontSize: '12px', fontWeight: '800', margin: '4px 0' }}>50 msgs / min</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Meta Tier 1 recommended</div>
+                  </div>
+
+                  <div
+                    className={`pace-option-card ${pacePerMinute === 100 ? 'selected' : ''}`}
+                    onClick={() => setPacePerMinute(100)}
+                  >
+                    <div style={{ fontWeight: '700', color: '#7C3AED', fontSize: '14px' }}>🚀 Turbo</div>
+                    <div style={{ fontSize: '12px', fontWeight: '800', margin: '4px 0' }}>100 msgs / min</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Meta Tier 2+ high volume</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Budget Calculation Summary Card */}
+              <div style={{
+                background: '#F0FDF4',
+                border: '1px solid #86EFAC',
+                borderRadius: '10px',
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <div style={{ fontWeight: '700', fontSize: '13.5px', color: '#166534', borderBottom: '1px solid #BBF7D0', paddingBottom: '6px' }}>
+                  💳 Financial Budget Breakdown
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                  <span>Total Recipients:</span>
+                  <strong>{recipients.length} contacts</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                  <span>Template Client Rate ({selectedTemplate?.category}):</span>
+                  <strong>{formatCurrency(clientRate, globalSettings?.system_currency, globalSettings?.currency_decimals)} / msg</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: '800', color: '#166534', borderTop: '1px solid #BBF7D0', paddingTop: '6px' }}>
+                  <span>Estimated Total Budget:</span>
+                  <span>{formatCurrency(estimatedTotalCost, globalSettings?.system_currency, globalSettings?.currency_decimals)}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Modal Footer Controls */}
+        <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 24px' }}>
+          <div>
+            {step > 1 && (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setStep(step - 1)}
+                disabled={creating}
+              >
+                ← Back
+              </button>
+            )}
+          </div>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={creating}>
+              Cancel
+            </button>
+            {step < 4 ? (
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  if (step === 1 && !name.trim()) {
+                    showToast('Please enter a campaign name', 'error');
+                    return;
+                  }
+                  if (step === 2 && recipients.length === 0) {
+                    showToast('Please upload or paste recipient contacts', 'error');
+                    return;
+                  }
+                  setStep(step + 1);
+                }}
+              >
+                Next Step →
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleLaunch}
+                disabled={creating}
+                style={{ background: '#059669', borderColor: '#059669' }}
+              >
+                {creating ? 'Creating Broadcast...' : '🚀 Launch Broadcast Now'}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// CAMPAIGN REPORT MODAL
+// -----------------------------------------------------------------------------
+function CampaignReportModal({ campaignId, onClose, globalSettings, showToast }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`./api/campaigns.php?action=details&id=${campaignId}`)
+      .then(res => res.json())
+      .then(d => {
+        if (d.success) setData(d);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [campaignId]);
+
+  const campaign = data?.campaign;
+  const recipients = data?.recipients || [];
+
+  const recipientColumns = [
+    { key: 'recipient_phone', label: 'Recipient Phone', sortable: true, render: r => <strong>{r.recipient_phone}</strong> },
+    { key: 'contact_name', label: 'Contact Name', sortable: true, render: r => r.contact_name || '-' },
+    {
+      key: 'status',
+      label: 'Dispatch Status',
+      sortable: true,
+      render: r => (
+        <div>
+          <span className={`badge status-${r.status}`}>
+            {r.status === 'sent' ? '✓ Dispatched' : r.status === 'failed' ? '⚠️ Failed' : r.status}
+          </span>
+          {r.error_message && (
+            <div style={{ fontSize: '10px', color: '#EF4444', marginTop: '2px' }}>{r.error_message}</div>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'cost_deducted',
+      label: 'Debited Tariff',
+      sortable: true,
+      render: r => formatCurrency(r.cost_deducted, globalSettings?.system_currency, globalSettings?.currency_decimals)
+    },
+    {
+      key: 'sent_at',
+      label: 'Sent Timestamp',
+      sortable: true,
+      render: r => formatDateTime(r.sent_at || r.created_at, globalSettings?.system_date_format)
+    }
+  ];
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content" style={{ maxWidth: '850px', width: '95%' }}>
+        <div className="modal-header">
+          <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>📊</span> Campaign Report: {campaign?.name || 'Loading...'}
+          </h3>
+          <button type="button" className="close-btn" onClick={onClose}>&times;</button>
+        </div>
+
+        <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '30px' }}>Loading campaign report...</div>
+          ) : campaign ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Campaign summary card */}
+              <div style={{
+                background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: '8px',
+                padding: '14px 18px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+                gap: '12px'
+              }}>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Template</div>
+                  <strong style={{ fontSize: '13px' }}>{campaign.template_title || campaign.template_name}</strong>
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Total Audience</div>
+                  <strong style={{ fontSize: '13px' }}>{campaign.total_recipients} recipients</strong>
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Sent / Failed</div>
+                  <strong style={{ fontSize: '13px', color: '#16A34A' }}>{campaign.sent_count} sent</strong> • <span style={{ color: '#EF4444' }}>{campaign.failed_count} failed</span>
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Actual Spend</div>
+                  <strong style={{ fontSize: '13px' }}>{formatCurrency(campaign.actual_cost, globalSettings?.system_currency, globalSettings?.currency_decimals)}</strong>
+                </div>
+              </div>
+
+              {/* Recipients DataTable */}
+              <DataTable
+                columns={recipientColumns}
+                data={recipients}
+                searchPlaceholder="Search recipient phone, contact name, status..."
+                defaultSortKey="id"
+                defaultSortDir="asc"
+                title={`campaign_${campaign.id}_recipients`}
+                emptyMessage="No recipients found for this campaign."
+              />
+            </div>
+          ) : null}
+        </div>
+
+        <div className="modal-footer">
+          <button type="button" className="btn btn-secondary" onClick={onClose}>
+            Close
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

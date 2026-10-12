@@ -4,13 +4,33 @@
 ---
 
 ## 📌 Development Checkpoint & Milestone Snapshot (All Verified & Tested)
-- **Checkpoint Timestamp:** `2026-10-13 00:41:00 (Local Time)`
-- **Active Platform Generation:** `Version 2.1.0` (Inbound Live Chat & Two-Way Agent Inbox Released & Live)
+- **Checkpoint Timestamp:** `2026-10-13 01:38:00 (Local Time)`
+- **Active Platform Generation:** `Version 2.2.0` (Bulk Campaign Broadcasts & Queue Pacing Released & Live)
 - **Locked Baseline Milestone:** `Version 1.0.0` (Permanently locked in Git with tags `v1.0.0` & `v1.0` on commit `9dd6ebc`)
 - **Live Production URL:** `https://whatsapp.sandslab.com`
 - **GitHub Repository:** `https://github.com/ajitsands/whatsapp.git` (`branch: main`)
 - **PHP Compatibility:** PHP 7.4+ compatible (with custom polyfills in `config/db.php`)
 - **Frontend Stack:** React 18 (Standalone transpiled bundle `assets/js/app.compiled.js` via `esbuild`)
+
+---
+
+## 🚀 Key Features Implemented in Version 2.2.0
+
+1. **Bulk Broadcast Campaigns (`#campaigns`):**
+   - Centralized campaign manager with high-level KPI cards (Total Broadcasts, Audience Reached, Delivery Rate, Read Rate).
+   - Reusable `<DataTable>` listing all campaigns with live progress bars, status badges (`RUNNING`, `COMPLETED`, `PAUSED`, `DRAFT`), and financial spend metrics.
+   - Dedicated Recipient Inspection modal with full status audit log and CSV export.
+
+2. **New Broadcast Campaign Wizard:**
+   - 4-step wizard: Template selection with live previews, CSV upload / paste records with 1-click tailored Sample CSV download, dynamic column mapping, and budget review.
+   - Financial safety pre-check verifying sender wallet balance before queue creation.
+
+3. **Anti-Spam Queue Pacing & Live Execution Monitor:**
+   - Multi-tier queue throttle presets (20, 50, 100 msgs/min) preventing Meta spam flags.
+   - Real-time animated execution banner with pulsing status indicator, live progress bar, and pause/resume/cancel controls.
+
+4. **Dedicated Backend API (`api/campaigns.php`):**
+   - Endpoints for `list`, `details`, `create`, `process_batch`, `pause`, `resume`, `cancel`, and `sample_csv`.
 
 ---
 
