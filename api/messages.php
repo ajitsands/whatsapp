@@ -110,12 +110,12 @@ function handleGetMessages(PDO $db): void {
 /**
  * POST Send Message (Odoo Integration & UI Composer)
  */
-function handleSendMessage(PDO $db, array $auth): void {
+function handleSendMessage(PDO $db, array $auth, ?array $overrideInput = null): void {
     try {
-        $input = getJsonInput();
+        $input = $overrideInput ?? getJsonInput();
 
         // Required fields
-        $toPhone = trim($input['to_phone'] ?? $input['recipient'] ?? '');
+        $toPhone = trim($input['to_phone'] ?? $input['recipient'] ?? $input['phone'] ?? '');
         if (empty($toPhone)) {
             sendJsonResponse(['success' => false, 'error' => 'Field "to_phone" is required (e.g. +97339000000)'], 400);
         }

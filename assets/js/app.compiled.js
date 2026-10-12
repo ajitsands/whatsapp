@@ -890,7 +890,9 @@ function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCo
     setSending(true);
     try {
       const payload = {
+        to_phone: selectedPhone,
         phone: selectedPhone,
+        recipient: selectedPhone,
         message: useTemplateMode ? "" : replyText.trim(),
         template_name: useTemplateMode ? selectedTemplateName : "",
         params: useTemplateMode ? templateParams : []

@@ -256,7 +256,7 @@ function handleSendAgentReply(PDO $db, array $auth): void {
 
     // Delegate directly
     $_POST = $dispatchPayload;
-    handleSendMessage($db, $auth);
+    handleSendMessage($db, $auth, $dispatchPayload);
 }
 
 /**
@@ -363,7 +363,6 @@ function resolveContactName(string $phone): string {
         '97339000001' => 'Ahmed Al-Khalifa',
         '97339000002' => 'Dr. Tariq Salman',
         '97339000003' => 'Fatima Noor',
-        '97335078079' => 'Ali Al-Hassan (UniGlobal VIP)',
         '919995489008' => 'SaNDS Lab Dispatch Gateway',
         '919895765626' => 'Ajit Kumar KV'
     ];
