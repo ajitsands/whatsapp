@@ -86,6 +86,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     $upd = $db->prepare("UPDATE whatsapp_messages SET status = ? {$timeClause} {$errClause} WHERE message_id = ?");
                     $upd->execute($params);
+
+                    // Sync Campaign Recipients & Counters
+                    try {
+                        $findRec = $db->prepare("SELECT id, campaign_id, status FROM campaign_recipients WHERE message_id = ? LIMIT 1");
+                        $findRec->execute([$wamid]);
+                        $recRow = $findRec->fetch();
+                        if ($recRow) {
+                            $oldRecStatus = $recRow['status'];
+                            $campId = (int)$recRow['campaign_id'];
+
+                            $db->prepare("UPDATE campaign_recipients SET status = ?, error_message = IFNULL(?, error_message) WHERE id = ?")
+                               ->execute([$status, !empty($errDetails) ? implode(' - ', array_unique($errDetails)) : null, $recRow['id']]);
+
+                            if ($status === 'delivered' && $oldRecStatus !== 'delivered' && $oldRecStatus !== 'read') {
+                                $db->prepare("UPDATE campaigns SET delivered_count = delivered_count + 1 WHERE id = ?")->execute([$campId]);
+                            } elseif ($status === 'read' && $oldRecStatus !== 'read') {
+                                $addDeliv = ($oldRecStatus !== 'delivered') ? ", delivered_count = delivered_count + 1" : "";
+                                $db->prepare("UPDATE campaigns SET read_count = read_count + 1 {$addDeliv} WHERE id = ?")->execute([$campId]);
+                            }
+                        }
+                    } catch (Throwable $ignoreCampSync) {}
                 }
             }
         }

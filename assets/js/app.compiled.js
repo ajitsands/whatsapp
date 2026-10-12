@@ -1177,6 +1177,26 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
     } catch (e) {
     }
   };
+  const handleRerunCampaign = async (id) => {
+    if (!confirm("Re-run this campaign to re-broadcast to all recipients via Meta Cloud API?")) return;
+    try {
+      const res = await fetch("./api/campaigns.php?action=rerun", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaign_id: id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("Campaign queue reset. Starting real Meta broadcast...", "success");
+        await fetchCampaigns(true);
+        handleStartCampaign(id);
+      } else {
+        showToast(data.error || "Failed to re-run campaign", "error");
+      }
+    } catch (e) {
+      showToast("Error re-running campaign", "error");
+    }
+  };
   const columns = [
     {
       key: "name",
@@ -1279,6 +1299,16 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
           title: "Resume Queue"
         },
         "\u25B6 Resume"
+      ), c.status === "completed" && /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          type: "button",
+          className: "btn btn-secondary btn-sm",
+          disabled: processingId === c.id,
+          onClick: () => handleRerunCampaign(c.id),
+          title: "Re-run broadcast to all recipients via Meta Cloud API"
+        },
+        "\u{1F504} Re-run"
       ))
     }
   ];
@@ -1354,7 +1384,8 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
       campaignId: inspectCampaignId,
       onClose: () => setInspectCampaignId(null),
       globalSettings,
-      showToast
+      showToast,
+      onRerun: handleRerunCampaign
     }
   ));
 }
@@ -1603,7 +1634,7 @@ function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, cu
     creating ? "Creating Broadcast..." : "\u{1F680} Launch Broadcast Now"
   )))));
 }
-function CampaignReportModal({ campaignId, onClose, globalSettings, showToast }) {
+function CampaignReportModal({ campaignId, onClose, globalSettings, showToast, onRerun }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -1621,7 +1652,7 @@ function CampaignReportModal({ campaignId, onClose, globalSettings, showToast })
       key: "status",
       label: "Dispatch Status",
       sortable: true,
-      render: (r) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: `badge status-${r.status}` }, r.status === "sent" ? "\u2713 Dispatched" : r.status === "failed" ? "\u26A0\uFE0F Failed" : r.status), r.error_message && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "#EF4444", marginTop: "2px" } }, r.error_message))
+      render: (r) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: `badge status-${r.status}` }, r.status === "read" ? "\u2713\u2713 Read" : r.status === "delivered" ? "\u2713\u2713 Delivered" : r.status === "sent" ? "\u2713 Dispatched" : r.status === "failed" ? "\u26A0\uFE0F Failed" : r.status), r.error_message && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "#EF4444", marginTop: "2px", wordBreak: "break-word", maxWidth: "280px" } }, r.error_message))
     },
     {
       key: "cost_deducted",
@@ -1655,7 +1686,20 @@ function CampaignReportModal({ campaignId, onClose, globalSettings, showToast })
       title: `campaign_${campaign.id}_recipients`,
       emptyMessage: "No recipients found for this campaign."
     }
-  )) : null), /* @__PURE__ */ React.createElement("div", { className: "modal-footer" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose }, "Close"))));
+  )) : null), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("div", null, campaign?.status === "completed" && onRerun && /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      style: { display: "flex", alignItems: "center", gap: "6px" },
+      onClick: () => {
+        onClose();
+        onRerun(campaign.id);
+      }
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F504}"),
+    " Re-broadcast Campaign"
+  )), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose }, "Close"))));
 }
 function MessageLogsView({ showToast, globalSettings, onOpenInbox }) {
   const [messages, setMessages] = useState([]);

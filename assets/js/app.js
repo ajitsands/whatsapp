@@ -2223,6 +2223,27 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
     } catch (e) {}
   };
 
+  const handleRerunCampaign = async (id) => {
+    if (!confirm('Re-run this campaign to re-broadcast to all recipients via Meta Cloud API?')) return;
+    try {
+      const res = await fetch('./api/campaigns.php?action=rerun', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ campaign_id: id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Campaign queue reset. Starting real Meta broadcast...', 'success');
+        await fetchCampaigns(true);
+        handleStartCampaign(id);
+      } else {
+        showToast(data.error || 'Failed to re-run campaign', 'error');
+      }
+    } catch (e) {
+      showToast('Error re-running campaign', 'error');
+    }
+  };
+
   const columns = [
     {
       key: 'name',
@@ -2369,6 +2390,17 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
               title="Resume Queue"
             >
               ▶ Resume
+            </button>
+          )}
+          {c.status === 'completed' && (
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              disabled={processingId === c.id}
+              onClick={() => handleRerunCampaign(c.id)}
+              title="Re-run broadcast to all recipients via Meta Cloud API"
+            >
+              🔄 Re-run
             </button>
           )}
         </div>
@@ -2525,6 +2557,7 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
           onClose={() => setInspectCampaignId(null)}
           globalSettings={globalSettings}
           showToast={showToast}
+          onRerun={handleRerunCampaign}
         />
       )}
     </div>
@@ -2989,7 +3022,7 @@ function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, cu
 // -----------------------------------------------------------------------------
 // CAMPAIGN REPORT MODAL
 // -----------------------------------------------------------------------------
-function CampaignReportModal({ campaignId, onClose, globalSettings, showToast }) {
+function CampaignReportModal({ campaignId, onClose, globalSettings, showToast, onRerun }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -3016,10 +3049,12 @@ function CampaignReportModal({ campaignId, onClose, globalSettings, showToast })
       render: r => (
         <div>
           <span className={`badge status-${r.status}`}>
-            {r.status === 'sent' ? '✓ Dispatched' : r.status === 'failed' ? '⚠️ Failed' : r.status}
+            {r.status === 'read' ? '✓✓ Read' : r.status === 'delivered' ? '✓✓ Delivered' : r.status === 'sent' ? '✓ Dispatched' : r.status === 'failed' ? '⚠️ Failed' : r.status}
           </span>
           {r.error_message && (
-            <div style={{ fontSize: '10px', color: '#EF4444', marginTop: '2px' }}>{r.error_message}</div>
+            <div style={{ fontSize: '10px', color: '#EF4444', marginTop: '2px', wordBreak: 'break-word', maxWidth: '280px' }}>
+              {r.error_message}
+            </div>
           )}
         </div>
       )
@@ -3095,7 +3130,22 @@ function CampaignReportModal({ campaignId, onClose, globalSettings, showToast })
           ) : null}
         </div>
 
-        <div className="modal-footer">
+        <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            {campaign?.status === 'completed' && onRerun && (
+              <button 
+                type="button" 
+                className="btn btn-secondary btn-sm" 
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                onClick={() => {
+                  onClose();
+                  onRerun(campaign.id);
+                }}
+              >
+                <span>🔄</span> Re-broadcast Campaign
+              </button>
+            )}
+          </div>
           <button type="button" className="btn btn-secondary" onClick={onClose}>
             Close
           </button>

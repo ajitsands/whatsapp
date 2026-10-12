@@ -203,7 +203,7 @@ class Database {
                     recipient_phone VARCHAR(30) NOT NULL,
                     contact_name VARCHAR(100) NULL,
                     variables_json JSON NULL,
-                    status ENUM('pending', 'processing', 'sent', 'failed', 'skipped') NOT NULL DEFAULT 'pending',
+                    status ENUM('pending', 'processing', 'sent', 'delivered', 'read', 'failed', 'skipped') NOT NULL DEFAULT 'pending',
                     error_message TEXT NULL,
                     message_id VARCHAR(100) NULL,
                     cost_deducted DECIMAL(10, 4) NOT NULL DEFAULT 0.0000,
@@ -214,6 +214,10 @@ class Database {
                     INDEX idx_recipient (recipient_phone)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
             ");
+
+            try {
+                $pdo->exec("ALTER TABLE campaign_recipients MODIFY COLUMN status ENUM('pending', 'processing', 'sent', 'delivered', 'read', 'failed', 'skipped') NOT NULL DEFAULT 'pending'");
+            } catch (Throwable $ignoreEnum) {}
 
             // Seed a sample completed campaign if table is empty
             $hasCampaigns = $pdo->query("SELECT id FROM campaigns LIMIT 1")->fetch();

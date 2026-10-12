@@ -43,6 +43,10 @@ switch ($action) {
         handleUpdateCampaignStatus($db, 'cancelled');
         break;
 
+    case 'rerun':
+        handleRerunCampaign($db);
+        break;
+
     case 'sample_csv':
         handleSampleCsv($db);
         break;
@@ -61,7 +65,9 @@ function handleListCampaigns(PDO $db): void {
             c.*,
             t.display_title AS template_title,
             t.client_rate_bhd AS template_rate,
-            (SELECT COUNT(*) FROM campaign_recipients cr WHERE cr.campaign_id = c.id AND cr.status = 'pending') AS pending_count
+            (SELECT COUNT(*) FROM campaign_recipients cr WHERE cr.campaign_id = c.id AND cr.status = 'pending') AS pending_count,
+            (SELECT COUNT(*) FROM campaign_recipients cr LEFT JOIN whatsapp_messages wm ON wm.message_id = cr.message_id WHERE cr.campaign_id = c.id AND (cr.status IN ('delivered', 'read') OR wm.status IN ('delivered', 'read'))) AS live_delivered_count,
+            (SELECT COUNT(*) FROM campaign_recipients cr LEFT JOIN whatsapp_messages wm ON wm.message_id = cr.message_id WHERE cr.campaign_id = c.id AND (cr.status = 'read' OR wm.status = 'read')) AS live_read_count
         FROM campaigns c
         LEFT JOIN whatsapp_templates t ON t.template_name = c.template_name
         ORDER BY c.id DESC
@@ -78,6 +84,16 @@ function handleListCampaigns(PDO $db): void {
     $totalSpend = 0.0;
 
     foreach ($campaigns as &$c) {
+        // Sync live delivery count if higher
+        $liveDeliv = (int)($c['live_delivered_count'] ?? 0);
+        $liveRead  = (int)($c['live_read_count'] ?? 0);
+        if ($liveDeliv > (int)$c['delivered_count']) {
+            $c['delivered_count'] = $liveDeliv;
+        }
+        if ($liveRead > (int)$c['read_count']) {
+            $c['read_count'] = $liveRead;
+        }
+
         $c['progress_percent'] = $c['total_recipients'] > 0
             ? round((($c['sent_count'] + $c['failed_count']) / $c['total_recipients']) * 100, 1)
             : 0;
@@ -137,15 +153,27 @@ function handleCampaignDetails(PDO $db): void {
         sendJsonResponse(['success' => false, 'error' => 'Campaign not found'], 404);
     }
 
-    // Recipients
+    // Recipients with live message status
     $stmtRec = $db->prepare("
-        SELECT * FROM campaign_recipients
-        WHERE campaign_id = ?
-        ORDER BY id ASC
+        SELECT 
+            cr.*,
+            IFNULL(wm.status, cr.status) AS live_delivery_status,
+            wm.delivered_at,
+            wm.read_at
+        FROM campaign_recipients cr
+        LEFT JOIN whatsapp_messages wm ON wm.message_id = cr.message_id
+        WHERE cr.campaign_id = ?
+        ORDER BY cr.id ASC
         LIMIT 500
     ");
     $stmtRec->execute([$id]);
     $recipients = $stmtRec->fetchAll();
+
+    foreach ($recipients as &$r) {
+        if (!empty($r['live_delivery_status']) && in_array($r['live_delivery_status'], ['delivered', 'read'])) {
+            $r['status'] = $r['live_delivery_status'];
+        }
+    }
 
     $campaign['progress_percent'] = $campaign['total_recipients'] > 0
         ? round((($campaign['sent_count'] + $campaign['failed_count']) / $campaign['total_recipients']) * 100, 1)
@@ -335,6 +363,30 @@ function handleProcessBatch(PDO $db, array $auth): void {
     $failedCount    = 0;
     $batchCost      = 0.0;
 
+    // Fetch Meta Settings & credentials
+    $settingsStmt = $db->query("SELECT setting_key, setting_value FROM system_settings");
+    $settingsMap = $settingsStmt->fetchAll(PDO::FETCH_KEY_PAIR);
+
+    $defaultToken = 'EAATLuWFVcZBkBSIQfQ02NV8tXYHXIOLwZC5CZBMngCZB32TH1f5b9HibzLqjDrnWI30GBOuXLwzaH2j9Iju4RZCpNLDZCaZAFAm9hcaTgcBETEXQDyzcQ3oj53dvuLjxG6Wt2rr9cVh0XhRFqbs2C21rRtZCeJPLcS2sQVJtk05qhxSzA2fmmsnU8dJsBcUZAgpWzv05hAGAS4w5hqYEOqQEMY69H14nuzBAZBng86HwjR3AhMepkZCQQSPFqDAPYERoidjae8S94QHXkgJsutN0q8Dsz0gvSVNGWvuU6HhBwZDZD';
+    $defaultPhoneId = '347848611735147';
+    $metaPhoneId     = (!empty($settingsMap['meta_phone_number_id']) && $settingsMap['meta_phone_number_id'] !== '109823471928374') ? $settingsMap['meta_phone_number_id'] : $defaultPhoneId;
+    $metaAccessToken = (!empty($settingsMap['meta_access_token']) && !str_starts_with($settingsMap['meta_access_token'], 'EAAJz9284jklasdf')) ? $settingsMap['meta_access_token'] : $defaultToken;
+    $businessPhone   = $settingsMap['business_phone_number'] ?? '+973 1700 8899';
+
+    // Fetch Template definition
+    $stmtTmpl = $db->prepare("SELECT * FROM whatsapp_templates WHERE template_name = ? LIMIT 1");
+    $stmtTmpl->execute([$campaign['template_name']]);
+    $tmplObj = $stmtTmpl->fetch();
+
+    $msgRate = (float)($tmplObj['client_rate_bhd'] ?? 0.0340);
+    $metaCost = (float)($tmplObj['meta_cost_bhd'] ?? 0.0270);
+    $platCharge = (float)($tmplObj['platform_charge_bhd'] ?? 0.0070);
+    $headerType = strtoupper(trim($tmplObj['header_type'] ?? 'NONE'));
+    $langCode = !empty($tmplObj['language']) ? trim($tmplObj['language']) : 'en';
+    if ($campaign['template_name'] === 'hello_world') {
+        $langCode = 'en_US';
+    }
+
     $stmtUpdRec = $db->prepare("
         UPDATE campaign_recipients
         SET status = ?, error_message = ?, message_id = ?, cost_deducted = ?, sent_at = NOW()
@@ -344,111 +396,235 @@ function handleProcessBatch(PDO $db, array $auth): void {
     foreach ($pendingList as $rec) {
         $processedCount++;
         $phone = $rec['recipient_phone'];
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
         $vars  = !empty($rec['variables_json']) ? json_decode($rec['variables_json'], true) : [];
+        if (!is_array($vars)) $vars = [];
 
-        // Build simulated or real dispatch payload
-        $dispatchPayload = [
-            'to_phone'        => $phone,
-            'template_name'   => $campaign['template_name'],
-            'category'        => $campaign['category'],
-            'body_parameters' => $vars,
-            'header_media'    => !empty($campaign['header_media_url']) ? [
-                'url'      => $campaign['header_media_url'],
-                'filename' => $campaign['header_media_name']
-            ] : null,
-            'source_system'   => 'Campaign #' . $campaignId . ' (' . $campaign['name'] . ')'
-        ];
+        // Auto-fill template variables if offer_sandslab
+        if ($campaign['template_name'] === 'offer_sandslab') {
+            if (empty($vars[0])) {
+                $vars[0] = !empty($rec['contact_name']) ? $rec['contact_name'] : 'Valued Customer';
+            }
+            if (empty($vars[1])) {
+                $vars[1] = '+97317008899';
+            }
+        }
 
-        // Process message through unified messages.php dispatcher
         try {
-            // We use direct DB insertion and wallet debiting to ensure campaign queue reliability
-            $stmtTmpl = $db->prepare("SELECT * FROM whatsapp_templates WHERE template_name = ? LIMIT 1");
-            $stmtTmpl->execute([$campaign['template_name']]);
-            $tmplObj = $stmtTmpl->fetch();
-            $msgRate = (float)($tmplObj['client_rate_bhd'] ?? 0.0340);
-            $metaCost = (float)($tmplObj['meta_cost_bhd'] ?? 0.0270);
-            $platCharge = (float)($tmplObj['platform_charge_bhd'] ?? 0.0070);
+            $components = [];
 
-            // Generate unique wamid
-            $wamid = 'wamid.HBgL' . base64_encode($phone . ':' . bin2hex(random_bytes(12)));
-            $renderedBody = $tmplObj['body_text'] ?? ('Template ' . $campaign['template_name']);
-            if (!empty($vars)) {
-                foreach ($vars as $idx => $v) {
-                    $renderedBody = preg_replace('/\{\{[^}]+\}\}/', (string)$v, $renderedBody, 1);
+            // 1. Header Component (Image, Document, Video)
+            if (!empty($campaign['header_media_url']) && $headerType !== 'NONE') {
+                if ($headerType === 'IMAGE') {
+                    $components[] = [
+                        'type' => 'header',
+                        'parameters' => [
+                            ['type' => 'image', 'image' => ['link' => $campaign['header_media_url']]]
+                        ]
+                    ];
+                } elseif ($headerType === 'DOCUMENT') {
+                    $components[] = [
+                        'type' => 'header',
+                        'parameters' => [
+                            ['type' => 'document', 'document' => ['link' => $campaign['header_media_url'], 'filename' => $campaign['header_media_name'] ?: 'document.pdf']]
+                        ]
+                    ];
+                } elseif ($headerType === 'VIDEO') {
+                    $components[] = [
+                        'type' => 'header',
+                        'parameters' => [
+                            ['type' => 'video', 'video' => ['link' => $campaign['header_media_url']]]
+                        ]
+                    ];
                 }
             }
 
-            // Insert into whatsapp_messages
-            $stmtInsertMsg = $db->prepare("
-                INSERT INTO whatsapp_messages (
-                    message_id, direction, source_system, to_phone, from_phone, category,
-                    template_name, message_type, message_body, header_media_url, header_media_name,
-                    parameters_json, status, meta_cost_bhd, platform_charge_bhd, client_rate_bhd,
-                    sent_at, delivered_at
-                ) VALUES (
-                    ?, 'outbound', ?, ?, '+973 1700 8899', ?,
-                    ?, 'template', ?, ?, ?,
-                    ?, 'sent', ?, ?, ?,
-                    NOW(), NOW() + INTERVAL 2 SECOND
-                )
-            ");
-            $stmtInsertMsg->execute([
-                $wamid,
-                'Campaign #' . $campaignId,
-                $phone,
-                $campaign['category'],
-                $campaign['template_name'],
-                $renderedBody,
-                $campaign['header_media_url'],
-                $campaign['header_media_name'],
-                json_encode($vars),
-                $metaCost,
-                $platCharge,
-                $msgRate
+            // 2. Body Parameters
+            if (!empty($vars)) {
+                $paramObjects = [];
+                $isAssoc = array_keys($vars) !== range(0, count($vars) - 1);
+
+                preg_match_all('/\{\{([a-zA-Z0-9_]+)\}\}/', $tmplObj['body_text'] ?? '', $varMatches);
+                $detectedVarNames = $varMatches[1] ?? [];
+                if (empty($detectedVarNames)) {
+                    preg_match_all('/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/', $tmplObj['body_text'] ?? '', $numMatches);
+                    $detectedVarNames = $numMatches[1] ?? [];
+                }
+                if ($campaign['template_name'] === 'offer_sandslab' && (empty($detectedVarNames) || $detectedVarNames === ['1', '2'])) {
+                    $detectedVarNames = ['customer_name', 'contact_number'];
+                }
+
+                $pIdx = 0;
+                foreach ($vars as $pKey => $val) {
+                    $paramItem = ['type' => 'text', 'text' => (string)$val];
+                    $varName = null;
+                    if ($isAssoc && is_string($pKey)) {
+                        $varName = $pKey;
+                    } elseif (isset($detectedVarNames[$pIdx])) {
+                        $varName = $detectedVarNames[$pIdx];
+                    }
+
+                    if (!empty($varName) && !ctype_digit((string)$varName)) {
+                        $paramItem['parameter_name'] = (string)$varName;
+                    }
+                    $paramObjects[] = $paramItem;
+                    $pIdx++;
+                }
+
+                if (!empty($paramObjects)) {
+                    $components[] = [
+                        'type' => 'body',
+                        'parameters' => $paramObjects
+                    ];
+                }
+            }
+
+            // 3. Assemble Meta Cloud API Payload
+            $metaPayload = [
+                'messaging_product' => 'whatsapp',
+                'recipient_type'    => 'individual',
+                'to'                => $cleanPhone,
+                'type'              => 'template',
+                'template'          => [
+                    'name'     => $campaign['template_name'],
+                    'language' => ['code' => $langCode]
+                ]
+            ];
+            if (!empty($components)) {
+                $metaPayload['template']['components'] = $components;
+            }
+
+            // 4. Send cURL request to Meta Cloud API
+            $ch = curl_init("https://graph.facebook.com/v20.0/{$metaPhoneId}/messages");
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($metaPayload));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Authorization: Bearer ' . $metaAccessToken,
+                'Content-Type: application/json'
             ]);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+            $resRaw = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
 
-            // Debit user wallet
-            $userId = (int)($campaign['created_by'] ?: 1);
-            $stmtBal = $db->prepare("SELECT wallet_balance FROM users WHERE id = ?");
-            $stmtBal->execute([$userId]);
-            $oldBal = (float)$stmtBal->fetchColumn();
-            $newBal = max(0, $oldBal - $msgRate);
+            $resJson = json_decode((string)$resRaw, true);
+            if ($httpCode === 200 && isset($resJson['messages'][0]['id'])) {
+                $realWamid = $resJson['messages'][0]['id'];
 
-            $db->prepare("UPDATE users SET wallet_balance = ? WHERE id = ?")->execute([$newBal, $userId]);
-            $db->prepare("
-                INSERT INTO wallet_transactions (
-                    user_id, transaction_type, amount, balance_before, balance_after,
-                    reference_type, reference_id, description
-                ) VALUES (
-                    ?, 'debit', ?, ?, ?,
-                    'campaign_message', ?, ?
-                )
-            ")->execute([
-                $userId, $msgRate, $oldBal, $newBal,
-                $wamid, "Broadcast Message to {$phone} (Campaign #{$campaignId})"
-            ]);
+                // Render body for DB record
+                $renderedBody = $tmplObj['body_text'] ?? ('Template ' . $campaign['template_name']);
+                if (!empty($vars)) {
+                    foreach ($vars as $idx => $v) {
+                        $renderedBody = preg_replace('/\{\{[^}]+\}\}/', (string)$v, $renderedBody, 1);
+                    }
+                }
 
-            // Update recipient status
-            $stmtUpdRec->execute(['sent', null, $wamid, $msgRate, $rec['id']]);
-            $successCount++;
-            $batchCost += $msgRate;
+                // Insert into whatsapp_messages with status = 'sent' and delivered_at = NULL
+                $stmtInsertMsg = $db->prepare("
+                    INSERT INTO whatsapp_messages (
+                        message_id, direction, source_system, to_phone, from_phone, category,
+                        template_name, message_type, message_body, header_media_url, header_media_name,
+                        parameters_json, status, meta_cost_bhd, platform_charge_bhd, client_rate_bhd,
+                        sent_at, delivered_at
+                    ) VALUES (
+                        ?, 'outbound', ?, ?, ?, ?,
+                        ?, 'template', ?, ?, ?,
+                        ?, 'sent', ?, ?, ?,
+                        NOW(), NULL
+                    )
+                ");
+                $stmtInsertMsg->execute([
+                    $realWamid,
+                    'Campaign #' . $campaignId,
+                    $phone,
+                    $businessPhone,
+                    $campaign['category'],
+                    $campaign['template_name'],
+                    $renderedBody,
+                    $campaign['header_media_url'],
+                    $campaign['header_media_name'],
+                    json_encode($vars),
+                    $metaCost,
+                    $platCharge,
+                    $msgRate
+                ]);
 
+                // Debit user wallet
+                $userId = (int)($campaign['created_by'] ?: 1);
+                $stmtBal = $db->prepare("SELECT wallet_balance FROM users WHERE id = ?");
+                $stmtBal->execute([$userId]);
+                $oldBal = (float)$stmtBal->fetchColumn();
+                $newBal = max(0, $oldBal - $msgRate);
+
+                $db->prepare("UPDATE users SET wallet_balance = ? WHERE id = ?")->execute([$newBal, $userId]);
+                $db->prepare("
+                    INSERT INTO wallet_transactions (
+                        user_id, transaction_type, amount, balance_before, balance_after,
+                        reference_type, reference_id, description
+                    ) VALUES (
+                        ?, 'debit', ?, ?, ?,
+                        'campaign_message', ?, ?
+                    )
+                ")->execute([
+                    $userId, $msgRate, $oldBal, $newBal,
+                    $realWamid, "Broadcast Message to {$phone} (Campaign #{$campaignId})"
+                ]);
+
+                // Update recipient status to 'sent'
+                $stmtUpdRec->execute(['sent', null, $realWamid, $msgRate, $rec['id']]);
+                $successCount++;
+                $batchCost += $msgRate;
+            } else {
+                // Meta returned an error
+                $errMsg = $resJson['error']['message'] ?? ($resRaw ?: ('Meta HTTP ' . $httpCode));
+                if (!empty($resJson['error']['error_data']['details'])) {
+                    $errMsg .= ' (' . $resJson['error']['error_data']['details'] . ')';
+                } elseif (!empty($resJson['error']['error_user_msg'])) {
+                    $errMsg .= ' (' . $resJson['error']['error_user_msg'] . ')';
+                }
+
+                $dummyMsgId = 'failed.' . bin2hex(random_bytes(10));
+                $db->prepare("
+                    INSERT INTO whatsapp_messages (
+                        message_id, direction, source_system, to_phone, from_phone, category,
+                        template_name, message_type, message_body, status, error_message,
+                        meta_cost_bhd, platform_charge_bhd, client_rate_bhd, created_at
+                    ) VALUES (
+                        ?, 'outbound', ?, ?, ?, ?,
+                        ?, 'template', 'Campaign Broadcast Failed', 'failed', ?,
+                        0.0000, 0.0000, 0.0000, NOW()
+                    )
+                ")->execute([
+                    $dummyMsgId,
+                    'Campaign #' . $campaignId,
+                    $phone,
+                    $businessPhone,
+                    $campaign['category'],
+                    $campaign['template_name'],
+                    $errMsg
+                ]);
+
+                $stmtUpdRec->execute(['failed', $errMsg, null, 0.0000, $rec['id']]);
+                $failedCount++;
+            }
         } catch (Throwable $dispatchEx) {
             $stmtUpdRec->execute(['failed', $dispatchEx->getMessage(), null, 0.0000, $rec['id']]);
             $failedCount++;
         }
     }
 
-    // Update campaign counters
+    // Update campaign counters: ONLY increment sent_count and failed_count. Do NOT increment delivered_count here!
     $db->prepare("
         UPDATE campaigns
         SET 
             sent_count = sent_count + ?,
-            delivered_count = delivered_count + ?,
             failed_count = failed_count + ?,
             actual_cost = actual_cost + ?
         WHERE id = ?
-    ")->execute([$successCount, $successCount, $failedCount, $batchCost, $campaignId]);
+    ")->execute([$successCount, $failedCount, $batchCost, $campaignId]);
 
     // Check if any remain
     $remStmt = $db->prepare("SELECT COUNT(*) FROM campaign_recipients WHERE campaign_id = ? AND status = 'pending'");
@@ -528,4 +704,37 @@ function handleSampleCsv(PDO $db): void {
     fputcsv($output, ['+97339000002', 'Dr. Tariq Salman', 'Value A', 'Value B']);
     fclose($output);
     exit;
+}
+
+/**
+ * 7. POST Re-run / Reset Completed Campaign
+ */
+function handleRerunCampaign(PDO $db): void {
+    $input = getJsonInput();
+    $id = (int)($input['campaign_id'] ?? $_GET['id'] ?? 0);
+
+    if ($id <= 0) {
+        sendJsonResponse(['success' => false, 'error' => 'Campaign ID is required'], 400);
+    }
+
+    // Reset recipients
+    $db->prepare("
+        UPDATE campaign_recipients 
+        SET status = 'pending', error_message = NULL, message_id = NULL, cost_deducted = 0.0000, sent_at = NULL 
+        WHERE campaign_id = ?
+    ")->execute([$id]);
+
+    // Reset campaign
+    $db->prepare("
+        UPDATE campaigns 
+        SET status = 'draft', sent_count = 0, delivered_count = 0, read_count = 0, failed_count = 0, actual_cost = 0.0000, started_at = NULL, completed_at = NULL 
+        WHERE id = ?
+    ")->execute([$id]);
+
+    sendJsonResponse([
+        'success' => true,
+        'id'      => $id,
+        'status'  => 'draft',
+        'message' => 'Campaign reset to draft queue ready for re-broadcasting'
+    ]);
 }

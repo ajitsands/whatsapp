@@ -5,8 +5,8 @@
 ---
 
 ## 📌 Active Version Status
-- **Current Version:** `2.2.0`
-- **Development Stage:** `v2.2.0 Bulk Campaign Broadcasts & Queue Pacing (Released & Active)`
+- **Current Version:** `2.2.1`
+- **Development Stage:** `v2.2.1 Real Meta Broadcast Dispatch & Verified Delivery Tracking (Active)`
 - **Locked Baseline Version:** `1.0.0`
 - **Git Baseline Tags:** `v1.0.0` & `v1.0` (Locked on Commit `9dd6ebc`)
 - **Live Production URL:** `https://whatsapp.sandslab.com`
@@ -62,11 +62,19 @@ v2 . [MINOR] . [PATCH]
 |---|---|---|---|
 | **v2.1.0** | **Inbound Live Chat & Two-Way Agent Inbox** | ✅ **COMPLETED & LIVE** | Two-way agent console (`#inbox`), Meta 24-hour customer care session window tracking, canned replies, free-form text messaging, and simulated inbound testing. |
 | **v2.2.0** | **Bulk Campaign Broadcasts & Queue Pacing** | ✅ **COMPLETED & LIVE** | CSV contact upload with dynamic variable mapping, anti-spam dispatch queue pacing (20/50/100 msgs/min), live animated monitor, and exportable recipient reports. |
+| **v2.2.1** | **Meta Cloud API Live Dispatch & Webhook Delivery Tracking** | ✅ **COMPLETED & LIVE** | True Meta Graph API cURL dispatch, prevention of premature delivery counting, real `wamid` tracking, and webhook-driven delivery updates. |
 | **v2.3.0** | **Odoo ERP Automated Action Webhook & Model Sync** | 🔄 **Next Priority** | Inbound triggers for automated invoice generation (`account.move`), payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP. |
 
 ---
 
 ## 📜 Release Changelog History
+
+### [2.2.1] — 2026-10-13 (Real Meta Broadcast Dispatch & Verified Delivery Tracking)
+- **Live Meta Graph API Dispatch:** Connected `handleProcessBatch()` in `api/campaigns.php` to direct Meta Graph API (`https://graph.facebook.com/v20.0/{metaPhoneId}/messages`).
+- **Media Header & Parameter Mapping:** Real-time formatting of header images/documents and body text template variables during campaign queue processing.
+- **Accurate Delivery Lifecycle:** Fixed counter bug where `delivered_count` was falsely incremented immediately upon send; messages now stay at `sent` until physical handset receipt is verified by Meta webhooks (`api/webhook.php`).
+- **Webhook Campaign Synchronization:** Synchronized incoming Meta delivery & read receipts with `campaign_recipients` and campaign counters.
+- **Campaign Re-run Capability:** Added 1-click **Re-run Broadcast** button in campaigns list and inspection modal.
 
 ### [2.2.0] — 2026-10-13 (Bulk Campaign Broadcasts & Queue Pacing Released)
 - **Broadcast Campaigns UI (`#campaigns`):** Dedicated broadcast manager with aggregate KPI cards, active execution monitor, and DataTables listing.
