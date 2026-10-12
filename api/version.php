@@ -46,18 +46,33 @@ sendJsonResponse([
             ],
             [
                 'target_version' => '2.2.0',
-                'title'          => 'Odoo ERP Automated Action Webhook & Model Sync',
-                'status'         => 'Next Priority Scheduled',
-                'scope'          => 'Inbound webhook triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP.'
+                'title'          => 'Bulk Campaign Broadcasts & Queue Pacing',
+                'status'         => 'Completed & Production Active (v2.2.0 Released)',
+                'scope'          => 'CSV contact upload with dynamic variable mapping, anti-spam dispatch queue pacing (20/50/100 msgs/min), live animated monitor, and exportable recipient reports.'
             ],
             [
                 'target_version' => '2.3.0',
-                'title'          => 'Bulk Campaign Broadcasts & Queue Pacing',
-                'status'         => 'Phase 3 Scheduled',
-                'scope'          => 'CSV contact list upload with dynamic variable mapping, segmentation, and scheduled queue pacing (50 msgs/min) with deliverability safety.'
+                'title'          => 'Odoo ERP Automated Action Webhook & Model Sync',
+                'status'         => 'Next Priority Scheduled',
+                'scope'          => 'Inbound webhook triggers for automated invoice generation (account.move), payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP.'
             ]
         ],
         'changelog' => [
+            [
+                'version' => '2.2.0',
+                'type'    => 'minor',
+                'date'    => '2026-10-13',
+                'status'  => 'Production Released',
+                'highlights' => [
+                    'Built dedicated Broadcast Campaigns workspace (#campaigns) with aggregate KPI metrics',
+                    'Implemented 4-step New Campaign Wizard with template preview & column mapping',
+                    'Integrated CSV file drag-and-drop parser and 1-click tailored Sample CSV downloads',
+                    'Engineered Anti-Spam Queue Pacing Engine (20, 50, 100 msgs/min)',
+                    'Integrated live animated broadcast execution monitor with pause/resume/cancel controls',
+                    'Added financial safety pre-check verifying wallet balance before queue launch',
+                    'Built Campaign Inspection modal with per-recipient status breakdown and CSV export'
+                ]
+            ],
             [
                 'version' => '2.1.0',
                 'type'    => 'minor',
