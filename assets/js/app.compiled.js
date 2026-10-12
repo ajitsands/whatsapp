@@ -149,7 +149,7 @@ function VersionArchitectureModal({ isOpen, onClose }) {
       title: "Close"
     },
     "\u2715"
-  )), /* @__PURE__ */ React.createElement("div", { className: "version-modal-body" }, /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { borderLeft: "4px solid #3B82F6", background: "#F0F9FF" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u26A1"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#1E3A8A" } }, "Active Generation: Version 2.0.0")), /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DBEAFE", color: "#1D4ED8", border: "1px solid #BFDBFE" } }, "\u{1F7E2} IN ACTIVE DEVELOPMENT")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "#1E40AF", margin: 0, lineHeight: "1.5" } }, "Platform architecture refreshed for ", /* @__PURE__ */ React.createElement("strong", null, "Version 2.0"), ". All ongoing developments strictly follow semantic minor versioning (", /* @__PURE__ */ React.createElement("code", { style: { background: "#E0F2FE", padding: "1px 5px", borderRadius: "4px", fontWeight: "600" } }, "v2.x.x"), ") aligned with the scheduled integration roadmap.")), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { borderLeft: "4px solid #10B981", background: "#F0FDF4" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F512}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#065F46" } }, "Baseline Milestone: Version 1.0.0 (LOCKED)")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "GIT TAG: v1.0.0"), /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "GIT TAG: v1.0"))), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "#047857", marginBottom: "10px", lineHeight: "1.4" } }, /* @__PURE__ */ React.createElement("strong", null, "Commit Hash:"), " ", /* @__PURE__ */ React.createElement("code", { style: { background: "#E2E8F0", padding: "1px 5px", borderRadius: "4px", color: "#0F172A" } }, "9dd6ebc"), " | Production verified & deployed on ", /* @__PURE__ */ React.createElement("code", { style: { background: "#E2E8F0", padding: "1px 5px", borderRadius: "4px", color: "#0F172A" } }, "https://whatsapp.sandslab.com"), "."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "8px", fontSize: "11.5px", color: "#065F46" } }, /* @__PURE__ */ React.createElement("div", null, "\u2713 Superadmin RBAC Security Restrictions"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Dual Charging Engine (Option A vs B)"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Meta WhatsApp Cloud API v19.0 Dispatch"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Multi-Language Odoo API Hub"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Prepaid Wallet & BHD 3-Dec Audit Ledger"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Enterprise DataTables (DESC Sort)"))), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { background: "#FFFFFF" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u{1F4D0}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "Minor Version Management Protocol (SemVer 2.0.0)")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "Starting from Version 2.0, all ongoing changes are version-controlled using structured semantic numbering:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#2563EB", fontSize: "12px" } }, "v2.0.0 (MAJOR)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Major generation architecture shift & foundational framework upgrades.")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#059669", fontSize: "12px" } }, "v2.x.0 (MINOR)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Scheduled roadmap feature milestones (e.g. v2.1 for Odoo Webhooks, v2.2 for Campaigns, v2.3 for Live Chat).")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#D97706", fontSize: "12px" } }, "v2.x.y (PATCH)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Targeted bug fixes, security patches, styling polish, and maintenance hotfixes.")))), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { background: "#FFFFFF" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u{1F4CB}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "Version 2.0 Execution Roadmap (Next Development Steps)")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F0F9FF", border: "1px solid #BAE6FD", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#0284C7", color: "#FFFFFF", marginTop: "2px" } }, "v2.1.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#0369A1" } }, "Odoo ERP Automated Action Webhook & Model Sync (Phase 1 \u2014 In Design)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#0C4A6E", margin: "2px 0 0 0" } }, "Inbound triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#64748B", color: "#FFFFFF", marginTop: "2px" } }, "v2.2.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#334155" } }, "Bulk Campaign Broadcasts & Queue Pacing (Phase 2 \u2014 Scheduled)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#64748B", margin: "2px 0 0 0" } }, "CSV contact list upload with dynamic variable mapping, segmentation, and throttled queue pacing (50 msgs/min)."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#64748B", color: "#FFFFFF", marginTop: "2px" } }, "v2.3.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#334155" } }, "Inbound Live Chat & Two-Way Agent Inbox (Phase 3 \u2014 Scheduled)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#64748B", margin: "2px 0 0 0" } }, "Interactive two-way conversation window allowing support agents to reply directly within the Meta 24-hour customer care session window.")))))), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 24px", background: "#F8FAFC", borderTop: "1px solid #E2E8F0", display: "flex", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement(
+  )), /* @__PURE__ */ React.createElement("div", { className: "version-modal-body" }, /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { borderLeft: "4px solid #3B82F6", background: "#F0F9FF" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u26A1"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#1E3A8A" } }, "Active Release: Version 2.1.0")), /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "\u{1F7E2} v2.1.0 INBOUND LIVE CHAT ACTIVE")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "#1E40AF", margin: 0, lineHeight: "1.5" } }, "Inbound Live Chat & Two-Way Agent Inbox with 24-hour Meta Customer Care session window tracking is officially released. All upcoming modules adhere to minor versioning (", /* @__PURE__ */ React.createElement("code", { style: { background: "#E0F2FE", padding: "1px 5px", borderRadius: "4px", fontWeight: "600" } }, "v2.x.x"), ").")), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { borderLeft: "4px solid #10B981", background: "#F0FDF4" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F512}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#065F46" } }, "Baseline Milestone: Version 1.0.0 (LOCKED)")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "GIT TAG: v1.0.0"), /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "GIT TAG: v1.0"))), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "#047857", marginBottom: "10px", lineHeight: "1.4" } }, /* @__PURE__ */ React.createElement("strong", null, "Commit Hash:"), " ", /* @__PURE__ */ React.createElement("code", { style: { background: "#E2E8F0", padding: "1px 5px", borderRadius: "4px", color: "#0F172A" } }, "9dd6ebc"), " | Production verified & deployed on ", /* @__PURE__ */ React.createElement("code", { style: { background: "#E2E8F0", padding: "1px 5px", borderRadius: "4px", color: "#0F172A" } }, "https://whatsapp.sandslab.com"), "."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "8px", fontSize: "11.5px", color: "#065F46" } }, /* @__PURE__ */ React.createElement("div", null, "\u2713 Superadmin RBAC Security Restrictions"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Dual Charging Engine (Option A vs B)"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Meta WhatsApp Cloud API v19.0 Dispatch"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Multi-Language Odoo API Hub"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Prepaid Wallet & BHD 3-Dec Audit Ledger"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Enterprise DataTables (DESC Sort)"))), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { background: "#FFFFFF" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u{1F4D0}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "Minor Version Management Protocol (SemVer 2.0.0)")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "Starting from Version 2.0, all ongoing changes are version-controlled using structured semantic numbering:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#2563EB", fontSize: "12px" } }, "v2.0.0 (MAJOR)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Major generation architecture shift & foundational framework upgrades.")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#059669", fontSize: "12px" } }, "v2.x.0 (MINOR)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Scheduled roadmap feature milestones (e.g. v2.1 for Odoo Webhooks, v2.2 for Campaigns, v2.3 for Live Chat).")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#D97706", fontSize: "12px" } }, "v2.x.y (PATCH)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Targeted bug fixes, security patches, styling polish, and maintenance hotfixes.")))), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { background: "#FFFFFF" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u{1F4CB}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "Version 2.0 Execution Roadmap (Next Development Steps)")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.1.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "Inbound Live Chat & Two-Way Agent Inbox (Completed & Released \u2705)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#166534", margin: "2px 0 0 0" } }, "Two-way conversational workspace, Meta 24-hour customer care session window tracking, canned replies, free-text replies, and simulated inbound testing."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F0F9FF", border: "1px solid #BAE6FD", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#0284C7", color: "#FFFFFF", marginTop: "2px" } }, "v2.2.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#0369A1" } }, "Odoo ERP Automated Action Webhook & Model Sync (Phase 2 \u2014 Next Priority)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#0C4A6E", margin: "2px 0 0 0" } }, "Inbound triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#64748B", color: "#FFFFFF", marginTop: "2px" } }, "v2.3.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#334155" } }, "Bulk Campaign Broadcasts & Queue Pacing (Phase 3 \u2014 Scheduled)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#64748B", margin: "2px 0 0 0" } }, "CSV contact list upload with dynamic variable mapping, segmentation, and throttled queue pacing (50 msgs/min).")))))), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 24px", background: "#F8FAFC", borderTop: "1px solid #E2E8F0", display: "flex", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "button",
@@ -190,12 +190,13 @@ function App() {
   const [activeTab, setActiveTab] = useState(() => {
     const hash = window.location.hash.replace("#", "").trim();
     const saved = localStorage.getItem("wa_tab");
-    const validTabs = ["dashboard", "composer", "logs", "templates", "api_hub", "api_keys", "users", "wallet", "settings"];
+    const validTabs = ["dashboard", "inbox", "composer", "logs", "templates", "api_hub", "api_keys", "users", "wallet", "settings"];
     if (hash && validTabs.includes(hash)) return hash;
     if (saved && validTabs.includes(saved)) return saved;
     return "dashboard";
   });
   const [toast, setToast] = useState(null);
+  const [inboxUnreadTotal, setInboxUnreadTotal] = useState(0);
   const navigateToTab = (tab) => {
     setActiveTab(tab);
     try {
@@ -207,7 +208,7 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace("#", "").trim();
-      const validTabs = ["dashboard", "composer", "logs", "templates", "api_hub", "api_keys", "users", "wallet", "settings"];
+      const validTabs = ["dashboard", "inbox", "composer", "logs", "templates", "api_hub", "api_keys", "users", "wallet", "settings"];
       if (hash && validTabs.includes(hash)) {
         setActiveTab(hash);
         localStorage.setItem("wa_tab", hash);
@@ -340,7 +341,7 @@ function App() {
       title: "Click to view Version Architecture, Git Tags & Future Roadmap"
     },
     /* @__PURE__ */ React.createElement("span", { className: "version-pill-dot" }),
-    /* @__PURE__ */ React.createElement("span", null, "v2.0.0")
+    /* @__PURE__ */ React.createElement("span", null, "v2.1.0")
   )), /* @__PURE__ */ React.createElement("div", { className: "header-actions" }, /* @__PURE__ */ React.createElement(
     "div",
     {
@@ -350,10 +351,20 @@ function App() {
     },
     /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"),
     /* @__PURE__ */ React.createElement("span", null, "Wallet: ", /* @__PURE__ */ React.createElement("strong", null, formatCurrency(walletBalance, curr, dec)))
-  ), /* @__PURE__ */ React.createElement("div", { className: "user-profile-pill", title: `Logged in as ${currentUser.email}` }, /* @__PURE__ */ React.createElement("div", { className: "avatar", style: { background: currentUser.avatar_color || "#128C7E" } }, currentUser.name.charAt(0)), /* @__PURE__ */ React.createElement("div", { className: "user-details" }, /* @__PURE__ */ React.createElement("span", { className: "user-name" }, currentUser.name), /* @__PURE__ */ React.createElement("span", { className: "user-role-badge" }, currentUser.role))), /* @__PURE__ */ React.createElement("button", { className: "btn-logout", onClick: handleLogout, title: "Sign Out" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6AA}"), " Logout")))), /* @__PURE__ */ React.createElement("div", { className: "header-nav-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-nav-inner" }, /* @__PURE__ */ React.createElement("nav", { className: "horizontal-nav" }, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "dashboard" ? "active" : ""}`, onClick: () => navigateToTab("dashboard") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CA}"), " Dashboard"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "composer" ? "active" : ""}`, onClick: () => navigateToTab("composer") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"), " Send Message"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "logs" ? "active" : ""}`, onClick: () => navigateToTab("logs") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Message Logs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "templates" ? "active" : ""}`, onClick: () => navigateToTab("templates") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Templates & Tariffs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "wallet" ? "active" : ""}`, onClick: () => navigateToTab("wallet") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Wallet & Billing"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_hub" ? "active" : ""}`, onClick: () => navigateToTab("api_hub") }, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo API Hub"), ["superadmin", "admin"].includes(currentUser.role) && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_keys" ? "active" : ""}`, onClick: () => navigateToTab("api_keys") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"), " API Keys"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "users" ? "active" : ""}`, onClick: () => navigateToTab("users") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " Users"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "settings" ? "active" : ""}`, onClick: () => navigateToTab("settings") }, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Engine Settings")))))), /* @__PURE__ */ React.createElement("main", { className: "app-body" }, activeTab === "dashboard" && /* @__PURE__ */ React.createElement(DashboardView, { onNavigate: navigateToTab, globalSettings }), activeTab === "composer" && /* @__PURE__ */ React.createElement(ComposerView, { showToast, onSent: () => {
-    navigateToTab("logs");
+  ), /* @__PURE__ */ React.createElement("div", { className: "user-profile-pill", title: `Logged in as ${currentUser.email}` }, /* @__PURE__ */ React.createElement("div", { className: "avatar", style: { background: currentUser.avatar_color || "#128C7E" } }, currentUser.name.charAt(0)), /* @__PURE__ */ React.createElement("div", { className: "user-details" }, /* @__PURE__ */ React.createElement("span", { className: "user-name" }, currentUser.name), /* @__PURE__ */ React.createElement("span", { className: "user-role-badge" }, currentUser.role))), /* @__PURE__ */ React.createElement("button", { className: "btn-logout", onClick: handleLogout, title: "Sign Out" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6AA}"), " Logout")))), /* @__PURE__ */ React.createElement("div", { className: "header-nav-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-nav-inner" }, /* @__PURE__ */ React.createElement("nav", { className: "horizontal-nav" }, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "dashboard" ? "active" : ""}`, onClick: () => navigateToTab("dashboard") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CA}"), " Dashboard"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "inbox" ? "active" : ""}`, onClick: () => navigateToTab("inbox") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"), " Live Agent Inbox", inboxUnreadTotal > 0 && /* @__PURE__ */ React.createElement("span", { style: {
+    background: "#25D366",
+    color: "#FFFFFF",
+    fontSize: "10px",
+    fontWeight: "800",
+    padding: "1px 6px",
+    borderRadius: "10px",
+    marginLeft: "6px"
+  } }, inboxUnreadTotal)), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "composer" ? "active" : ""}`, onClick: () => navigateToTab("composer") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4E4}"), " Send Message"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "logs" ? "active" : ""}`, onClick: () => navigateToTab("logs") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Message Logs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "templates" ? "active" : ""}`, onClick: () => navigateToTab("templates") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Templates & Tariffs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "wallet" ? "active" : ""}`, onClick: () => navigateToTab("wallet") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Wallet & Billing"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_hub" ? "active" : ""}`, onClick: () => navigateToTab("api_hub") }, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo API Hub"), ["superadmin", "admin"].includes(currentUser.role) && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_keys" ? "active" : ""}`, onClick: () => navigateToTab("api_keys") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"), " API Keys"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "users" ? "active" : ""}`, onClick: () => navigateToTab("users") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " Users"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "settings" ? "active" : ""}`, onClick: () => navigateToTab("settings") }, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Engine Settings")))))), /* @__PURE__ */ React.createElement("main", { className: "app-body" }, activeTab === "dashboard" && /* @__PURE__ */ React.createElement(DashboardView, { onNavigate: navigateToTab, globalSettings }), activeTab === "inbox" && /* @__PURE__ */ React.createElement(LiveAgentInboxView, { currentUser, showToast, globalSettings, onUnreadCountChange: setInboxUnreadTotal, onNavigate: navigateToTab }), activeTab === "composer" && /* @__PURE__ */ React.createElement(ComposerView, { showToast, onSent: () => {
+    navigateToTab("inbox");
     loadWalletBalance();
-  }, globalSettings }), activeTab === "logs" && /* @__PURE__ */ React.createElement(MessageLogsView, { showToast, globalSettings }), activeTab === "templates" && /* @__PURE__ */ React.createElement(TemplatesView, { showToast, globalSettings }), activeTab === "wallet" && /* @__PURE__ */ React.createElement(WalletView, { currentUser, showToast, globalSettings, onBalanceChange: setWalletBalance }), activeTab === "api_hub" && /* @__PURE__ */ React.createElement(OdooApiHubView, { showToast, globalSettings }), activeTab === "api_keys" && /* @__PURE__ */ React.createElement(ApiKeysView, { showToast }), activeTab === "users" && /* @__PURE__ */ React.createElement(UsersView, { currentUser, showToast }), activeTab === "settings" && /* @__PURE__ */ React.createElement(SettingsView, { currentUser, showToast, onSettingsChange: (s) => {
+  }, globalSettings }), activeTab === "logs" && /* @__PURE__ */ React.createElement(MessageLogsView, { showToast, globalSettings, onOpenInbox: (phone) => {
+    navigateToTab("inbox");
+  } }), activeTab === "templates" && /* @__PURE__ */ React.createElement(TemplatesView, { showToast, globalSettings }), activeTab === "wallet" && /* @__PURE__ */ React.createElement(WalletView, { currentUser, showToast, globalSettings, onBalanceChange: setWalletBalance }), activeTab === "api_hub" && /* @__PURE__ */ React.createElement(OdooApiHubView, { showToast, globalSettings }), activeTab === "api_keys" && /* @__PURE__ */ React.createElement(ApiKeysView, { showToast }), activeTab === "users" && /* @__PURE__ */ React.createElement(UsersView, { currentUser, showToast }), activeTab === "settings" && /* @__PURE__ */ React.createElement(SettingsView, { currentUser, showToast, onSettingsChange: (s) => {
     setGlobalSettings((prev) => ({ ...prev, ...s }));
     loadWalletBalance();
   } })), /* @__PURE__ */ React.createElement("footer", { className: "app-footer" }, /* @__PURE__ */ React.createElement("div", { className: "footer-inner" }, /* @__PURE__ */ React.createElement("div", { className: "footer-left" }, "All Rights Reserved | Engineered By SaNDS Lab Middle East W.L.L."), /* @__PURE__ */ React.createElement("div", { className: "footer-right" }, /* @__PURE__ */ React.createElement(
@@ -361,9 +372,9 @@ function App() {
     {
       className: "footer-badge version-footer-clickable",
       onClick: () => setShowVersionModal(true),
-      title: "Click to inspect Version 2.0.0 Architecture & Locked v1.0.0 Baseline"
+      title: "Click to inspect Version 2.1.0 Architecture & Locked v1.0.0 Baseline"
     },
-    "Platform v2.0.0 (v1.0.0 Locked \u{1F512})"
+    "Platform v2.1.0 (v1.0.0 Locked \u{1F512})"
   ), /* @__PURE__ */ React.createElement("span", { className: "footer-badge" }, "WhatsApp Cloud API v19.0"), /* @__PURE__ */ React.createElement("span", { className: "footer-badge" }, "Odoo ERP Connector Active"), /* @__PURE__ */ React.createElement("span", null, "Bahrain (BHD) Tariff Active")))), /* @__PURE__ */ React.createElement(VersionArchitectureModal, { isOpen: showVersionModal, onClose: () => setShowVersionModal(false) }));
 }
 function LoginView({ onLogin, onSwitchDemo }) {
@@ -747,7 +758,310 @@ function ConversationChatModal({ phone, onClose, showToast, globalSettings }) {
     }
   ), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn-chat-send", disabled: sending || !replyText.trim(), title: "Send WhatsApp Message" }, sending ? "\u23F3" : "\u27A4"))));
 }
-function MessageLogsView({ showToast, globalSettings }) {
+function SimulateInboundModal({ isOpen, onClose, onSimulated, showToast }) {
+  const [phone, setPhone] = useState("+97335078079");
+  const [message, setMessage] = useState("Hello UniGlobal Support! I received my invoice and need to confirm my payment details.");
+  const [submitting, setSubmitting] = useState(false);
+  if (!isOpen) return null;
+  const handleSimulate = async (e) => {
+    e.preventDefault();
+    if (!phone || !message.trim()) {
+      showToast("Phone and message text are required", "error");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch("./api/inbox.php?action=simulate_inbound", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, message: message.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Simulated customer inbound message from ${phone}! 24h window active.`);
+        if (onSimulated) onSimulated(phone);
+        onClose();
+      } else {
+        showToast(data.error || "Failed to simulate message", "error");
+      }
+    } catch (err) {
+      showToast("Network error simulating message", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  return /* @__PURE__ */ React.createElement("div", { className: "version-modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("div", { className: "version-modal-card", style: { maxWidth: "520px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "version-modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "22px" } }, "\u{1F9EA}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", margin: 0, color: "#FFFFFF" } }, "Simulate Inbound WhatsApp Message"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", margin: "2px 0 0 0", opacity: 0.9, color: "#E8F8F5" } }, "Test customer inbound reply & trigger 24h session window"))), /* @__PURE__ */ React.createElement("button", { onClick: onClose, style: { background: "rgba(255,255,255,0.2)", border: "none", color: "#FFFFFF", borderRadius: "6px", width: "28px", height: "28px", cursor: "pointer" } }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSimulate, style: { padding: "20px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Customer Mobile Phone"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: phone, onChange: (e) => setPhone(e.target.value), placeholder: "+97335078079", required: true }), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "E.164 formatted international WhatsApp number.")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Customer Message Text"), /* @__PURE__ */ React.createElement("textarea", { className: "form-input", rows: "3", value: message, onChange: (e) => setMessage(e.target.value), placeholder: "Type customer reply here...", required: true })), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", marginTop: "20px" } }, /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { flex: 1 }, disabled: submitting }, submitting ? "Simulating..." : "\u{1F4E5} Ingest Inbound Message"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose }, "Cancel")))));
+}
+function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCountChange, onNavigate }) {
+  const [threads, setThreads] = useState([]);
+  const [loadingThreads, setLoadingThreads] = useState(true);
+  const [selectedPhone, setSelectedPhone] = useState(null);
+  const [activeThreadData, setActiveThreadData] = useState(null);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [replyText, setReplyText] = useState("");
+  const [sending, setSending] = useState(false);
+  const [autoSync, setAutoSync] = useState(true);
+  const [showSimulateModal, setShowSimulateModal] = useState(false);
+  const [cannedReplies, setCannedReplies] = useState([]);
+  const [templates, setTemplates] = useState([]);
+  const [useTemplateMode, setUseTemplateMode] = useState(false);
+  const [selectedTemplateName, setSelectedTemplateName] = useState("");
+  const [templateParams, setTemplateParams] = useState({});
+  const messagesEndRef = useRef(null);
+  const fetchThreads = async (silent = false) => {
+    if (!silent) setLoadingThreads(true);
+    try {
+      const res = await fetch(`./api/inbox.php?action=threads&search=${encodeURIComponent(search)}&filter=${filter}`);
+      const data = await res.json();
+      if (data.success && data.threads) {
+        setThreads(data.threads);
+        const totalUnread = data.threads.reduce((acc, t) => acc + (t.unread_inbound || 0), 0);
+        if (onUnreadCountChange) onUnreadCountChange(totalUnread);
+        if (!selectedPhone && data.threads.length > 0) {
+          setSelectedPhone(data.threads[0].contact_phone);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      if (!silent) setLoadingThreads(false);
+    }
+  };
+  const fetchThreadMessages = async (phone, silent = false) => {
+    if (!phone) return;
+    if (!silent) setLoadingMessages(true);
+    try {
+      const res = await fetch(`./api/inbox.php?action=messages&phone=${encodeURIComponent(phone)}`);
+      const data = await res.json();
+      if (data.success) {
+        setActiveThreadData(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      if (!silent) setLoadingMessages(false);
+    }
+  };
+  useEffect(() => {
+    fetchThreads(false);
+    fetch("./api/inbox.php?action=canned_replies").then((res) => res.json()).then((data) => {
+      if (data.success && data.canned_replies) setCannedReplies(data.canned_replies);
+    });
+    fetch("./api/templates.php").then((res) => res.json()).then((data) => {
+      if (data.success && data.data) setTemplates(data.data);
+    });
+  }, []);
+  useEffect(() => {
+    fetchThreads(false);
+  }, [search, filter]);
+  useEffect(() => {
+    if (selectedPhone) {
+      fetchThreadMessages(selectedPhone, false);
+      setUseTemplateMode(false);
+      setReplyText("");
+    }
+  }, [selectedPhone]);
+  useEffect(() => {
+    if (!autoSync) return;
+    const timer = setInterval(() => {
+      fetchThreads(true);
+      if (selectedPhone) {
+        fetchThreadMessages(selectedPhone, true);
+      }
+    }, 2500);
+    return () => clearInterval(timer);
+  }, [autoSync, selectedPhone, search, filter]);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [activeThreadData?.messages]);
+  const handleSendReply = async (e) => {
+    if (e) e.preventDefault();
+    if (!selectedPhone) return;
+    if (useTemplateMode) {
+      if (!selectedTemplateName) {
+        showToast("Please select an approved template", "error");
+        return;
+      }
+    } else if (!replyText.trim()) {
+      return;
+    }
+    setSending(true);
+    try {
+      const payload = {
+        phone: selectedPhone,
+        message: useTemplateMode ? "" : replyText.trim(),
+        template_name: useTemplateMode ? selectedTemplateName : "",
+        params: useTemplateMode ? templateParams : []
+      };
+      const res = await fetch("./api/inbox.php?action=send_reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setReplyText("");
+        setUseTemplateMode(false);
+        showToast(`Reply sent to ${selectedPhone}`);
+        fetchThreadMessages(selectedPhone, true);
+        fetchThreads(true);
+      } else {
+        showToast(data.error || "Failed to dispatch reply", "error");
+      }
+    } catch (err) {
+      showToast("Network error sending reply", "error");
+    } finally {
+      setSending(false);
+    }
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendReply();
+    }
+  };
+  const handleMarkRead = async () => {
+    if (!selectedPhone) return;
+    try {
+      await fetch("./api/inbox.php?action=mark_read", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: selectedPhone })
+      });
+      showToast("Marked thread as read");
+      fetchThreads(true);
+      fetchThreadMessages(selectedPhone, true);
+    } catch (e) {
+    }
+  };
+  const selectedThread = threads.find((t) => t.contact_phone === selectedPhone);
+  const is24hActive = activeThreadData?.is_24h_active ?? selectedThread?.is_24h_active ?? false;
+  const hoursLeft = activeThreadData?.hours_remaining ?? selectedThread?.hours_remaining ?? 0;
+  const contactName = activeThreadData?.contact_name ?? selectedThread?.contact_name ?? selectedPhone ?? "Customer";
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row", style: { marginBottom: "16px" } }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"), " Inbound Live Chat & Two-Way Agent Inbox"), /* @__PURE__ */ React.createElement("p", null, "Real-time customer care console with official Meta 24-hour conversational session window tracking and instant replies.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      className: `btn ${autoSync ? "btn-success" : "btn-secondary"}`,
+      style: { fontSize: "12px", padding: "6px 12px", display: "flex", alignItems: "center", gap: "6px" },
+      onClick: () => setAutoSync(!autoSync),
+      title: autoSync ? "Live Sync Active (2.5s)" : "Live Sync Paused"
+    },
+    /* @__PURE__ */ React.createElement("span", { style: { display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: autoSync ? "#22C55E" : "#9CA3AF", boxShadow: autoSync ? "0 0 8px #22C55E" : "none" } }),
+    autoSync ? "\u{1F7E2} Live Auto-Sync Active" : "\u23F8\uFE0F Paused"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      className: "btn btn-primary",
+      style: { fontSize: "12.5px", padding: "6px 14px", display: "flex", alignItems: "center", gap: "6px" },
+      onClick: () => setShowSimulateModal(true)
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F9EA}"),
+    " Simulate Inbound"
+  ), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary", onClick: () => {
+    fetchThreads(false);
+    if (selectedPhone) fetchThreadMessages(selectedPhone, false);
+  } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F504}"), " Refresh"))), /* @__PURE__ */ React.createElement("div", { className: "inbox-wrapper" }, /* @__PURE__ */ React.createElement("div", { className: "inbox-sidebar" }, /* @__PURE__ */ React.createElement("div", { className: "inbox-sidebar-header" }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "inbox-search-input",
+      placeholder: "Search contacts, phone, text...",
+      value: search,
+      onChange: (e) => setSearch(e.target.value)
+    }
+  ), /* @__PURE__ */ React.createElement("div", { className: "inbox-filters-bar" }, /* @__PURE__ */ React.createElement("button", { className: `inbox-filter-btn ${filter === "all" ? "active" : ""}`, onClick: () => setFilter("all") }, "All (", threads.length, ")"), /* @__PURE__ */ React.createElement("button", { className: `inbox-filter-btn ${filter === "unread" ? "active" : ""}`, onClick: () => setFilter("unread") }, "Unread"), /* @__PURE__ */ React.createElement("button", { className: `inbox-filter-btn ${filter === "active_24h" ? "active" : ""}`, onClick: () => setFilter("active_24h") }, "24h Active \u{1F7E2}"))), /* @__PURE__ */ React.createElement("div", { className: "inbox-threads-list" }, loadingThreads && threads.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "30px", color: "#64748B", fontSize: "12.5px" } }, "Loading conversations...") : threads.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "30px", color: "#64748B", fontSize: "12.5px" } }, "No conversations match this filter.") : threads.map((t) => {
+    const isSelected = t.contact_phone === selectedPhone;
+    return /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        key: t.contact_phone,
+        className: `inbox-thread-item ${isSelected ? "active" : ""}`,
+        onClick: () => setSelectedPhone(t.contact_phone)
+      },
+      /* @__PURE__ */ React.createElement("div", { className: `inbox-thread-avatar ${t.is_24h_active ? "online" : ""}` }, t.avatar_letter),
+      /* @__PURE__ */ React.createElement("div", { className: "inbox-thread-info" }, /* @__PURE__ */ React.createElement("div", { className: "inbox-thread-top" }, /* @__PURE__ */ React.createElement("span", { className: "inbox-thread-name" }, t.contact_name), /* @__PURE__ */ React.createElement("span", { className: "inbox-thread-time" }, formatDateTime(t.latest_message?.created_at, "HH:mm"))), /* @__PURE__ */ React.createElement("div", { className: "inbox-thread-bottom" }, /* @__PURE__ */ React.createElement("span", { className: "inbox-thread-snippet" }, t.latest_message?.direction === "inbound" ? "\u{1F4E5} " : "\u{1F4E4} ", t.latest_message?.message_body || "Attachment"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "4px" } }, t.is_24h_active ? /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10px", background: "#DCFCE7", color: "#166534", padding: "1px 5px", borderRadius: "4px", fontWeight: "700" }, title: `24h Window: ${t.hours_remaining}h left` }, t.hours_remaining, "h") : /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10px", background: "#F1F5F9", color: "#64748B", padding: "1px 5px", borderRadius: "4px" }, title: "Session Expired" }, "\u23F1\uFE0F"), t.unread_inbound > 0 && /* @__PURE__ */ React.createElement("span", { className: "inbox-unread-badge" }, t.unread_inbound))))
+    );
+  }))), /* @__PURE__ */ React.createElement("div", { className: "inbox-main-pane" }, !selectedPhone ? /* @__PURE__ */ React.createElement("div", { className: "inbox-pane-empty" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "48px", marginBottom: "12px" } }, "\u{1F4AC}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "16px", color: "#0F172A", marginBottom: "4px" } }, "No Conversation Selected"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", maxWidth: "340px" } }, 'Select a customer conversation from the left to read live messages, or click "Simulate Inbound" to test two-way communication.')) : /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", height: "100%" } }, /* @__PURE__ */ React.createElement("div", { className: "inbox-chat-header" }, /* @__PURE__ */ React.createElement("div", { className: "inbox-chat-user" }, /* @__PURE__ */ React.createElement("div", { className: "inbox-thread-avatar", style: { width: "40px", height: "40px", fontSize: "13px" } }, selectedThread?.avatar_letter || "WA"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14.5px", color: "#0F172A" } }, contactName), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "#64748B" } }, "(", selectedPhone, ")")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "6px", marginTop: "3px" } }, is24hActive ? /* @__PURE__ */ React.createElement("span", { className: "inbox-session-pill active" }, /* @__PURE__ */ React.createElement("span", { style: { width: "6px", height: "6px", borderRadius: "50%", background: "#16A34A" } }), "\u{1F7E2} 24h Customer Care Window Active (", hoursLeft, "h left) \u2022 Free-Text Allowed (Meta Fee Waived)") : /* @__PURE__ */ React.createElement("span", { className: "inbox-session-pill expired" }, "\u26A0\uFE0F 24h Session Closed \u2022 Pre-Approved Template Required by Meta")))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: handleMarkRead, title: "Mark All Read" }, "\u2713 Read"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setShowSimulateModal(true), title: "Simulate reply from this customer" }, "\u{1F9EA} Simulate Reply"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => onNavigate && onNavigate("logs"), title: "View In Message Telemetry" }, "\u{1F4DC} Telemetry"))), /* @__PURE__ */ React.createElement("div", { className: "inbox-chat-canvas" }, /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", margin: "6px 0" } }, /* @__PURE__ */ React.createElement("span", { style: { background: "#FFFFFF", padding: "4px 12px", borderRadius: "12px", fontSize: "11px", color: "#64748B", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" } }, "\u{1F512} Official WhatsApp Cloud API End-to-End Encrypted Session")), loadingMessages && (!activeThreadData || activeThreadData.messages?.length === 0) ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "40px", color: "#64748B" } }, "Loading messages...") : activeThreadData?.messages?.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "40px", color: "#64748B" } }, "No messages exchanged yet. Send a greeting to start!") : activeThreadData?.messages?.map((msg, idx) => {
+    const isOutbound = msg.direction === "outbound";
+    return /* @__PURE__ */ React.createElement("div", { key: msg.id || idx, className: `inbox-bubble-row ${isOutbound ? "outbound" : "inbound"}` }, /* @__PURE__ */ React.createElement("div", { className: `inbox-bubble ${isOutbound ? "outbound" : "inbound"}` }, msg.template_name && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", fontWeight: "700", color: "#0369A1", marginBottom: "3px" } }, "\u{1F4CB} ", msg.template_name, " [", msg.category, "]"), msg.header_media_name && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", fontWeight: "600", color: "#059669", marginBottom: "4px" } }, "\u{1F4CE} [", msg.header_media_name, "]"), /* @__PURE__ */ React.createElement("div", { style: { whiteSpace: "pre-wrap" } }, msg.message_body), /* @__PURE__ */ React.createElement("div", { className: "inbox-bubble-footer" }, /* @__PURE__ */ React.createElement("span", null, formatDateTime(msg.created_at, globalSettings?.system_date_format || "HH:mm")), isOutbound && /* @__PURE__ */ React.createElement("span", null, msg.status === "read" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#0284C7", fontWeight: "800" } }, "\u2713\u2713") : msg.status === "delivered" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#64748B", fontWeight: "800" } }, "\u2713\u2713") : msg.status === "sent" ? /* @__PURE__ */ React.createElement("span", null, "\u2713") : msg.status === "failed" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" }, title: msg.error_message || "Failed" }, "\u26A0\uFE0F") : /* @__PURE__ */ React.createElement("span", null, "\u23F1\uFE0F")))));
+  }), /* @__PURE__ */ React.createElement("div", { ref: messagesEndRef })), /* @__PURE__ */ React.createElement("div", { className: "inbox-canned-bar" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", fontWeight: "700", color: "#64748B", alignSelf: "center", marginRight: "4px" } }, "\u26A1 Quick:"), cannedReplies.map((cr) => /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      key: cr.id,
+      type: "button",
+      className: "inbox-canned-chip",
+      onClick: () => {
+        setReplyText(cr.text);
+        setUseTemplateMode(false);
+      },
+      title: cr.text
+    },
+    cr.title
+  ))), /* @__PURE__ */ React.createElement("div", { className: "inbox-composer-area" }, !is24hActive && !useTemplateMode ? /* @__PURE__ */ React.createElement("div", { style: { flex: 1, background: "#FEF3C7", border: "1px solid #FCD34D", borderRadius: "8px", padding: "10px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "#92400E" } }, "\u26A0\uFE0F ", /* @__PURE__ */ React.createElement("strong", null, "24h Customer Service Window Closed."), " Meta requires an approved template to re-engage this contact."), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary btn-sm",
+      onClick: () => setUseTemplateMode(true)
+    },
+    "\u{1F4CB} Select Approved Template"
+  )) : useTemplateMode ? /* @__PURE__ */ React.createElement("div", { style: { flex: 1, background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: "8px", padding: "12px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#0F172A" } }, "\u{1F4CB} Dispatch Approved WhatsApp Template"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary btn-sm", onClick: () => setUseTemplateMode(false) }, "\u2715 Switch to Free Text")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-input",
+      style: { flex: 1, padding: "7px 10px", fontSize: "12.5px" },
+      value: selectedTemplateName,
+      onChange: (e) => setSelectedTemplateName(e.target.value)
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "" }, "-- Choose Template --"),
+    templates.map((t) => /* @__PURE__ */ React.createElement("option", { key: t.template_name, value: t.template_name }, t.display_title || t.template_name, " (", t.category, ")"))
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary",
+      style: { padding: "8px 18px", fontSize: "12.5px", fontWeight: "700" },
+      disabled: sending || !selectedTemplateName,
+      onClick: handleSendReply
+    },
+    sending ? "Sending..." : "\u{1F680} Send Template"
+  ))) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(
+    "textarea",
+    {
+      className: "inbox-textarea",
+      placeholder: "Type a direct WhatsApp message... (Press Enter to send, Shift+Enter for new line)",
+      value: replyText,
+      onChange: (e) => setReplyText(e.target.value),
+      onKeyDown: handleKeyDown,
+      rows: "1"
+    }
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "inbox-btn-send",
+      disabled: sending || !replyText.trim(),
+      onClick: handleSendReply,
+      title: "Send WhatsApp Message"
+    },
+    sending ? "\u23F3" : "\u27A4"
+  )))))), /* @__PURE__ */ React.createElement(
+    SimulateInboundModal,
+    {
+      isOpen: showSimulateModal,
+      onClose: () => setShowSimulateModal(false),
+      onSimulated: (phone) => {
+        setSelectedPhone(phone);
+        fetchThreads(true);
+        fetchThreadMessages(phone, true);
+      },
+      showToast
+    }
+  ));
+}
+function MessageLogsView({ showToast, globalSettings, onOpenInbox }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -2475,7 +2789,7 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       disabled: !isSuperadmin,
       style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {}
     }
-  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Paste this token into Meta Developer App Dashboard Webhook settings."))), activeSubTab === "version" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "950px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "16px", fontWeight: "800", color: "var(--wa-dark-teal)", margin: 0 } }, "WhatsApp Platform \u2014 Version & Release Architecture"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", margin: "4px 0 0 0" } }, "Permanent specification of active Version 2.0 generation, locked Version 1.0 baseline, and Minor version handling.")), /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DBEAFE", color: "#1D4ED8", border: "1px solid #BFDBFE", padding: "6px 14px", fontSize: "12px" } }, "Active: v2.0.0")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F0F9FF", border: "1px solid #BAE6FD", borderRadius: "12px", padding: "18px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14.5px", color: "#0369A1" } }, "\u26A1 Active Generation: Version 2.0.0"), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#0284C7", color: "#FFFFFF" } }, "IN PROGRESS")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "#0C4A6E", margin: "0 0 8px 0", lineHeight: "1.5" } }, "The application architecture has officially transitioned to ", /* @__PURE__ */ React.createElement("strong", null, "Version 2.0"), ". Upcoming features will be released as minor updates (", /* @__PURE__ */ React.createElement("code", { style: { background: "#E0F2FE", padding: "1px 5px", borderRadius: "4px", fontWeight: "700" } }, "v2.x.0"), ") following the scheduled roadmap."), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#0284C7", fontWeight: "600" } }, "Git Branch: ", /* @__PURE__ */ React.createElement("code", null, "main"), " \u2022 Target Host: ", /* @__PURE__ */ React.createElement("code", null, "https://whatsapp.sandslab.com"))), /* @__PURE__ */ React.createElement("div", { style: { background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "12px", padding: "18px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14.5px", color: "#15803D" } }, "\u{1F512} Locked Baseline Milestone: Version 1.0.0"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#16A34A", color: "#FFFFFF" } }, "TAG: v1.0.0"), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#16A34A", color: "#FFFFFF" } }, "TAG: v1.0"))), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "#166534", margin: "0 0 10px 0", lineHeight: "1.4" } }, /* @__PURE__ */ React.createElement("strong", null, "Commit Hash:"), " ", /* @__PURE__ */ React.createElement("code", null, "9dd6ebc"), " \u2022 Permanent Git checkpoint. Fully tested, production-ready, and verified."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "8px", fontSize: "12px", color: "#14532D" } }, /* @__PURE__ */ React.createElement("div", null, "\u2713 Superadmin RBAC Security Restrictions"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Dual Charging Engine (Option A vs B)"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Meta WhatsApp Cloud API v19.0 Dispatch"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Multi-Language Odoo API Hub"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Prepaid Wallet & BHD 3-Dec Audit Ledger"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Enterprise DataTables (DESC Sort)"))), /* @__PURE__ */ React.createElement("div", { style: { background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "18px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A", display: "block", marginBottom: "8px" } }, "\u{1F4D0} Semantic Minor Versioning (SemVer 2.0.0) Protocol"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "Every new update from now onward must be versioned according to standard semantic versioning rules:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#2563EB" } }, "v2.0.0 (MAJOR)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", marginTop: "4px" } }, "Major architecture shift & foundational framework upgrades.")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#059669" } }, "v2.x.0 (MINOR)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", marginTop: "4px" } }, "New roadmap modules (e.g., v2.1 for Odoo Webhooks, v2.2 for Campaigns, v2.3 for Live Chat).")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#D97706" } }, "v2.x.y (PATCH)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", marginTop: "4px" } }, "Targeted bug fixes, security patches, styling polish, or urgent hotfixes.")))), /* @__PURE__ */ React.createElement("div", { style: { background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "18px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A", display: "block", marginBottom: "10px" } }, "\u{1F4CB} Scheduled Development Roadmap (Next Milestones)"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "#F0F9FF", border: "1px solid #BAE6FD", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#0369A1" } }, "1. Odoo ERP Automated Action Webhook & Model Sync"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#0C4A6E" } }, "Inbound triggers for automated invoice generation, payment receipts, and delivery status sync.")), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#0284C7", color: "#FFFFFF" } }, "Target: v2.1.0")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#334155" } }, "2. Bulk Campaign Broadcasts & Queue Pacing"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#64748B" } }, "CSV contact list upload, dynamic variable mapping, and queue pacing (50 msgs/min).")), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#64748B", color: "#FFFFFF" } }, "Target: v2.2.0")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#334155" } }, "3. Inbound Live Chat & Two-Way Agent Inbox"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#64748B" } }, "Interactive two-way chat window allowing agents to reply inside the 24-hour Meta session window.")), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#64748B", color: "#FFFFFF" } }, "Target: v2.3.0")))))), activeSubTab !== "version" && /* @__PURE__ */ React.createElement("div", { style: { marginTop: "20px" } }, /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Paste this token into Meta Developer App Dashboard Webhook settings."))), activeSubTab === "version" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "950px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "16px", fontWeight: "800", color: "var(--wa-dark-teal)", margin: 0 } }, "WhatsApp Platform \u2014 Version & Release Architecture"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", margin: "4px 0 0 0" } }, "Permanent specification of active Version 2.0 generation, locked Version 1.0 baseline, and Minor version handling.")), /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0", padding: "6px 14px", fontSize: "12px" } }, "Active: v2.1.0")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F0F9FF", border: "1px solid #BAE6FD", borderRadius: "12px", padding: "18px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14.5px", color: "#0369A1" } }, "\u26A1 Active Release: Version 2.1.0"), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#16A34A", color: "#FFFFFF" } }, "LIVE & ACTIVE")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "#0C4A6E", margin: "0 0 8px 0", lineHeight: "1.5" } }, "Inbound Live Chat & Two-Way Agent Inbox is officially released with real-time Meta 24-hour customer care session tracking. Subsequent milestones follow semantic minor increments (", /* @__PURE__ */ React.createElement("code", { style: { background: "#E0F2FE", padding: "1px 5px", borderRadius: "4px", fontWeight: "700" } }, "v2.x.0"), ")."), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#0284C7", fontWeight: "600" } }, "Git Branch: ", /* @__PURE__ */ React.createElement("code", null, "main"), " \u2022 Target Host: ", /* @__PURE__ */ React.createElement("code", null, "https://whatsapp.sandslab.com"))), /* @__PURE__ */ React.createElement("div", { style: { background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "12px", padding: "18px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14.5px", color: "#15803D" } }, "\u{1F512} Locked Baseline Milestone: Version 1.0.0"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#16A34A", color: "#FFFFFF" } }, "TAG: v1.0.0"), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#16A34A", color: "#FFFFFF" } }, "TAG: v1.0"))), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "#166534", margin: "0 0 10px 0", lineHeight: "1.4" } }, /* @__PURE__ */ React.createElement("strong", null, "Commit Hash:"), " ", /* @__PURE__ */ React.createElement("code", null, "9dd6ebc"), " \u2022 Permanent Git checkpoint. Fully tested, production-ready, and verified."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "8px", fontSize: "12px", color: "#14532D" } }, /* @__PURE__ */ React.createElement("div", null, "\u2713 Superadmin RBAC Security Restrictions"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Dual Charging Engine (Option A vs B)"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Meta WhatsApp Cloud API v19.0 Dispatch"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Multi-Language Odoo API Hub"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Prepaid Wallet & BHD 3-Dec Audit Ledger"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Enterprise DataTables (DESC Sort)"))), /* @__PURE__ */ React.createElement("div", { style: { background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "18px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A", display: "block", marginBottom: "8px" } }, "\u{1F4D0} Semantic Minor Versioning (SemVer 2.0.0) Protocol"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "Every new update from now onward must be versioned according to standard semantic versioning rules:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#2563EB" } }, "v2.0.0 (MAJOR)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", marginTop: "4px" } }, "Major architecture shift & foundational framework upgrades.")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#059669" } }, "v2.x.0 (MINOR)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", marginTop: "4px" } }, "New roadmap modules (e.g., v2.1 for Odoo Webhooks, v2.2 for Campaigns, v2.3 for Live Chat).")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#D97706" } }, "v2.x.y (PATCH)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", marginTop: "4px" } }, "Targeted bug fixes, security patches, styling polish, or urgent hotfixes.")))), /* @__PURE__ */ React.createElement("div", { style: { background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "18px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A", display: "block", marginBottom: "10px" } }, "\u{1F4CB} Scheduled Development Roadmap (Next Milestones)"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "#F0F9FF", border: "1px solid #BAE6FD", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#0369A1" } }, "1. Odoo ERP Automated Action Webhook & Model Sync"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#0C4A6E" } }, "Inbound triggers for automated invoice generation, payment receipts, and delivery status sync.")), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#0284C7", color: "#FFFFFF" } }, "Target: v2.1.0")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#334155" } }, "2. Bulk Campaign Broadcasts & Queue Pacing"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#64748B" } }, "CSV contact list upload, dynamic variable mapping, and queue pacing (50 msgs/min).")), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#64748B", color: "#FFFFFF" } }, "Target: v2.2.0")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#334155" } }, "3. Inbound Live Chat & Two-Way Agent Inbox"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#64748B" } }, "Interactive two-way chat window allowing agents to reply inside the 24-hour Meta session window.")), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#64748B", color: "#FFFFFF" } }, "Target: v2.3.0")))))), activeSubTab !== "version" && /* @__PURE__ */ React.createElement("div", { style: { marginTop: "20px" } }, /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "submit",

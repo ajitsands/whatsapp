@@ -5,8 +5,8 @@
 ---
 
 ## 📌 Active Version Status
-- **Current Version:** `2.0.0`
-- **Development Stage:** `Active Development (Roadmap Phase)`
+- **Current Version:** `2.1.0`
+- **Development Stage:** `v2.1.0 Inbound Live Chat & Two-Way Agent Inbox (Released & Active)`
 - **Locked Baseline Version:** `1.0.0`
 - **Git Baseline Tags:** `v1.0.0` & `v1.0` (Locked on Commit `9dd6ebc`)
 - **Live Production URL:** `https://whatsapp.sandslab.com`
@@ -45,36 +45,42 @@ Starting from Version 2.0, the platform adheres strictly to **Semantic Versionin
 v2 . [MINOR] . [PATCH]
 │      │         │
 │      │         └── Bug fixes, security patches, styling touch-ups (e.g., 2.0.1, 2.1.1)
-│      └─────────── Roadmap feature releases (e.g., 2.1.0 for Odoo sync, 2.2.0 for Campaigns)
+│      └─────────── Roadmap feature releases (e.g., 2.1.0 Live Chat, 2.2.0 Odoo sync, 2.3.0 Campaigns)
 └────────────────── Major platform architecture generation
 ```
 
 ### Minor Versioning Rules:
-* **MAJOR (`2.0.0`):** Represents the current generation architecture leap, introducing support for enterprise ERP ecosystems, mass campaigns, and multi-agent inboxes.
+* **MAJOR (`2.0.0`):** Represents the generation architecture leap, introducing support for enterprise ERP ecosystems, mass campaigns, and multi-agent inboxes.
 * **MINOR (`2.1.0`, `2.2.0`, `2.3.0`):** Incremented whenever a scheduled roadmap milestone is completed and verified without breaking existing integrations.
 * **PATCH (`2.x.1`, `2.x.2`):** Incremented for incremental corrections, security updates, styling polish, and hotfixes.
 
 ---
 
-## 📋 Version 2.0 Development Roadmap (Scheduled Milestones)
+## 📋 Version 2.0 Development Roadmap Progress
 
 | Milestone Target | Module / Feature Name | Status | Description |
 |---|---|---|---|
-| **v2.1.0** | **Odoo ERP Automated Action Webhook & Model Sync** | 🔄 Next Priority | Inbound triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP. |
-| **v2.2.0** | **Bulk Campaign Broadcasts & Queue Pacing** | ⏳ Scheduled | CSV contact list upload with dynamic template variable mapping, contact segmentation, and throttled queue pacing (50 msgs/min). |
-| **v2.3.0** | **Inbound Live Chat & Two-Way Agent Inbox** | ⏳ Scheduled | Interactive two-way conversation window allowing support agents to reply directly within the Meta 24-hour customer care session window. |
+| **v2.1.0** | **Inbound Live Chat & Two-Way Agent Inbox** | ✅ **COMPLETED & LIVE** | Two-way agent console (`#inbox`), Meta 24-hour customer care session window tracking, canned replies, free-form text messaging, and simulated inbound testing. |
+| **v2.2.0** | **Odoo ERP Automated Action Webhook & Model Sync** | 🔄 **Next Priority** | Inbound triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP. |
+| **v2.3.0** | **Bulk Campaign Broadcasts & Queue Pacing** | ⏳ **Scheduled** | CSV contact list upload with dynamic template variable mapping, contact segmentation, and throttled queue pacing (50 msgs/min). |
 
 ---
 
 ## 📜 Release Changelog History
 
-### [2.0.0] — 2026-10-13 (Active Roadmap Initiated)
+### [2.1.0] — 2026-10-13 (Inbound Live Chat & Two-Way Agent Inbox Released)
+- **Live Agent Inbox UI:** Built dedicated two-column desktop workspace (`#inbox`) with contact search, unread badge counter, and filter tabs.
+- **24-Hour Customer Care Window:** Real-time countdown tracking of Meta's 24-hour conversational window with session pills and free-text authorization.
+- **Agent Tools:** Implemented 1-click Canned Quick Responses toolbar and dynamic template fallback switcher when the 24h window is closed.
+- **Backend API:** Created `/api/inbox.php` with thread grouping, message fetching, agent reply dispatching, and mark-as-read handlers.
+- **Inbound Simulator:** Added modal allowing instant simulation of customer inbound replies for rapid testing and demonstrations.
+
+### [2.0.0] — 2026-10-13 (Architecture Baseline Initialized)
 - **Architecture:** Initialized Version 2.0 Platform Architecture.
 - **Git Lock:** Locked Milestone 1 permanently under Git tags `v1.0.0` and `v1.0`.
-- **Versioning Engine:** Implemented Semantic Minor Versioning framework (`APP_VERSION`, `APP_VERSION_MAJOR`, `APP_VERSION_MINOR`, `APP_VERSION_PATCH`) in `config/db.php`.
-- **System API:** Created dedicated `/api/version.php` endpoint exposing runtime release information, roadmap, and changelog.
-- **In-App Documentation:** Embedded interactive Version & Release Architecture Inspector modal in the application header and footer.
-- **Preparation:** Initialized roadmap pipeline for Version 2.1.0 (Odoo ERP Automated Action Webhook & Model Sync).
+- **Versioning Engine:** Implemented Semantic Minor Versioning framework in `config/db.php`.
+- **System API:** Created dedicated `/api/version.php` endpoint.
+- **In-App Documentation:** Embedded interactive Version & Release Architecture Inspector modal in application header and footer.
 
 ### [1.0.0] — 2026-10-06 (Baseline Locked & Production Verified)
 - Initial production release verified and deployed at `https://whatsapp.sandslab.com`.

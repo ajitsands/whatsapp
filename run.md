@@ -4,13 +4,34 @@
 ---
 
 ## 📌 Development Checkpoint & Milestone Snapshot (All Verified & Tested)
-- **Checkpoint Timestamp:** `2026-10-13 00:25:00 (Local Time)`
-- **Active Platform Generation:** `Version 2.0.0` (Roadmap Active)
+- **Checkpoint Timestamp:** `2026-10-13 00:41:00 (Local Time)`
+- **Active Platform Generation:** `Version 2.1.0` (Inbound Live Chat & Two-Way Agent Inbox Released & Live)
 - **Locked Baseline Milestone:** `Version 1.0.0` (Permanently locked in Git with tags `v1.0.0` & `v1.0` on commit `9dd6ebc`)
 - **Live Production URL:** `https://whatsapp.sandslab.com`
 - **GitHub Repository:** `https://github.com/ajitsands/whatsapp.git` (`branch: main`)
 - **PHP Compatibility:** PHP 7.4+ compatible (with custom polyfills in `config/db.php`)
 - **Frontend Stack:** React 18 (Standalone transpiled bundle `assets/js/app.compiled.js` via `esbuild`)
+
+---
+
+## 🚀 Key Features Implemented in Version 2.1.0
+
+1. **Inbound Live Chat & Two-Way Agent Inbox (`#inbox`):**
+   - Full two-column desktop workspace inspired by WhatsApp Web and enterprise customer service consoles.
+   - Contact threads list with instant search, unread badge counters, and filter chips (`All`, `Unread`, `24h Active 🟢`).
+   - Chronological message stream with custom WhatsApp chat bubbles, delivery/read tick indicators (`✓`, `✓✓`, blue read ticks), and media attachment badges.
+
+2. **Official Meta 24-Hour Customer Care Session Window Engine:**
+   - Real-time countdown tracking of customer service window (`🟢 24h Window Active (X.X hrs left) • Free-Text Allowed (Meta Fee Waived)`).
+   - Dynamic restriction banner when 24h window expires (`⚠️ 24h Session Closed • Pre-Approved Template Required`).
+   - Seamless 1-click fallback template selector when the 24-hour window has expired.
+
+3. **Agent Productivity Tools:**
+   - Canned Quick Replies toolbar (`👋 Support Greeting`, `📄 Reviewing Inquiry`, `✅ Payment Confirmed`, `🙏 Resolution Closing`) for 1-click response injection.
+   - Interactive Inbound Message Simulator (`api/inbox.php?action=simulate_inbound`) for instant end-to-end testing of customer incoming replies.
+
+4. **Dedicated Backend API (`api/inbox.php`):**
+   - Endpoints for `threads`, `messages`, `send_reply`, `mark_read`, `simulate_inbound`, and `canned_replies`.
 
 ---
 
@@ -29,49 +50,22 @@ All Version 1.0 features have been thoroughly verified, tested, and locked in Gi
 3. **Dual Charging Engine (Superadmin Selectable):**
    - **Option A (Standard Per-Message):** Debits full Meta Cost + Platform Margin on every single dispatch.
    - **Option B (Meta 24-Hour Session Deduplication):** 1st message debited full tariff; subsequent messages to same contact/category within 24h waive Meta Cost (`0.0000 BHD`) and only debit platform margin.
-   - Real-time detection and audit tagging in transaction records.
 
 4. **Strict Superadmin RBAC Security:**
-   - **Tariff & Pricing Engine:** Superadmin edit-only. Admins have a read-only view with lock banners.
-   - **Meta WhatsApp Business Cloud API Credentials:** Superadmin edit-only. Admins have a read-only view with disabled inputs.
-   - **Backend API Security:** `api/settings.php` strips restricted fields server-side if submitted by non-superadmins.
+   - Meta Cloud API credentials & Tariffs restricted exclusively to Superadmin edit-only.
 
 5. **Prepaid Wallet & Financial Audit Ledger:**
    - Multi-currency support (BHD 3 decimals, SAR, AED, KWD, QAR, OMR, INR, USD).
-   - Superadmin Top-Up modal with automatic ledger debiting and balance management.
-   - Custom delete confirmation modal with automated balance adjustments.
-
-6. **Live Meta WhatsApp Cloud API Dispatch & Webhooks:**
-   - Verified end-to-end delivery with media headers and named/positional parameters.
-   - Real-time polling telemetry (every 2.5s) and webhook delivery/read receipts (`api/webhook.php`).
 
 ---
 
-## 🚀 Version 2.0 & Minor Version Management Protocol
+## 📋 Next Development Tasks (Version 2.0 Roadmap Progress)
 
-Starting from Version 2.0, all ongoing changes follow strict **Semantic Versioning 2.0.0** (`vMAJOR.MINOR.PATCH`):
-
-```
-v2 . [MINOR] . [PATCH]
-│      │         │
-│      │         └── Bug fixes, security patches, styling polish (e.g., 2.0.1, 2.1.1)
-│      └─────────── Roadmap feature releases (e.g., 2.1.0 for Odoo sync, 2.2.0 for Campaigns)
-└────────────────── Major platform architecture generation
-```
-
-* **System Constants:** Configured in `config/db.php` (`APP_VERSION`, `APP_VERSION_MAJOR`, `APP_VERSION_MINOR`, `APP_VERSION_PATCH`, `APP_BASELINE_VERSION`).
-* **API Exposure:** Accessible via `/api/version.php` and `/api/settings.php`.
-* **In-App Inspection:** Interactive Version Inspector modal in the top header and footer, plus dedicated "Version & Roadmap Architecture" tab in Engine Settings.
-
----
-
-## 📋 Next Development Tasks (Version 2.0 Roadmap)
-
-| Milestone Target | Module / Feature Name | Priority | Scope Description |
+| Milestone Target | Module / Feature Name | Status | Description |
 |---|---|---|---|
-| **v2.1.0** | **Odoo ERP Automated Action Webhook & Model Sync** | 🔄 Phase 1 (Next Priority) | Inbound triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP. |
-| **v2.2.0** | **Bulk Campaign Broadcasts & Queue Pacing** | ⏳ Phase 2 (Scheduled) | CSV contact list upload with variable mapping, segmentation, and throttled queue pacing (50 msgs/min). |
-| **v2.3.0** | **Inbound Live Chat & Two-Way Agent Inbox** | ⏳ Phase 3 (Scheduled) | Interactive two-way conversation window allowing support agents to reply directly within the Meta 24-hour customer care session window. |
+| **v2.1.0** | **Inbound Live Chat & Two-Way Agent Inbox** | ✅ **COMPLETED** | Dedicated agent inbox (`#inbox`), 24h customer care session tracking, free-text replies, canned responses, and simulator. |
+| **v2.2.0** | **Odoo ERP Automated Action Webhook & Model Sync** | 🔄 **Next Priority** | Inbound triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP. |
+| **v2.3.0** | **Bulk Campaign Broadcasts & Queue Pacing** | ⏳ **Scheduled** | CSV contact list upload with dynamic variable mapping, segmentation, and throttled queue pacing (50 msgs/min). |
 
 ---
 
@@ -116,6 +110,6 @@ npx -y esbuild assets/js/app.js --outfile=assets/js/app.compiled.js --loader:.js
 ```powershell
 cd "e:\integration_with oodu_document\whatsapp"
 git add .
-git commit -m "Your update description"
+git commit -m "Release v2.1.0: Inbound Live Chat & Two-Way Agent Inbox"
 git push origin main
 ```

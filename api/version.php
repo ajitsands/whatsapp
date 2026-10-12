@@ -40,35 +40,48 @@ sendJsonResponse([
         'v2_roadmap_milestones' => [
             [
                 'target_version' => '2.1.0',
-                'title'          => 'Odoo ERP Automated Action Webhook & Model Sync',
-                'status'         => 'Phase 1 Scheduled (Next Priority)',
-                'scope'          => 'Inbound webhook triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP.'
+                'title'          => 'Inbound Live Chat & Two-Way Agent Inbox',
+                'status'         => 'Completed & Production Active (v2.1.0 Released)',
+                'scope'          => 'Full two-way agent console, 24-hour customer care session window tracking, canned replies, free-form text messaging, and simulated inbound testing.'
             ],
             [
                 'target_version' => '2.2.0',
-                'title'          => 'Bulk Campaign Broadcasts & Queue Pacing',
-                'status'         => 'Phase 2 Scheduled',
-                'scope'          => 'CSV contact list upload with dynamic variable mapping and scheduled queue pacing (50 msgs/min) with deliverability safety.'
+                'title'          => 'Odoo ERP Automated Action Webhook & Model Sync',
+                'status'         => 'Next Priority Scheduled',
+                'scope'          => 'Inbound webhook triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP.'
             ],
             [
                 'target_version' => '2.3.0',
-                'title'          => 'Inbound Live Chat & Two-Way Agent Inbox',
+                'title'          => 'Bulk Campaign Broadcasts & Queue Pacing',
                 'status'         => 'Phase 3 Scheduled',
-                'scope'          => 'Interactive two-way conversation window allowing support agents to reply directly within the Meta 24-hour customer care session window.'
+                'scope'          => 'CSV contact list upload with dynamic variable mapping, segmentation, and scheduled queue pacing (50 msgs/min) with deliverability safety.'
             ]
         ],
         'changelog' => [
             [
+                'version' => '2.1.0',
+                'type'    => 'minor',
+                'date'    => '2026-10-13',
+                'status'  => 'Production Released',
+                'highlights' => [
+                    'Built dedicated Inbound Live Chat & Two-Way Agent Inbox workspace',
+                    'Implemented real-time 24-Hour Customer Care session window tracking and countdown pill',
+                    'Added free-form text messaging capability within 24h Meta window',
+                    'Added Canned Quick Responses toolbar for support agents',
+                    'Created dedicated backend API (/api/inbox.php)',
+                    'Integrated inbound message simulator for testing and demonstrations'
+                ]
+            ],
+            [
                 'version' => '2.0.0',
                 'type'    => 'major',
                 'date'    => '2026-10-13',
-                'status'  => 'Active Development Initiated',
+                'status'  => 'Architecture Baselined',
                 'highlights' => [
                     'Initialized Version 2.0 Platform Architecture',
                     'Locked Version 1.0 Milestone as permanent Git tag (v1.0.0 / v1.0)',
                     'Established Semantic Minor Versioning (v2.x.x) guidelines',
-                    'Embedded interactive in-app Version & Architecture inspector for future reference',
-                    'Prepared execution pipeline for Odoo ERP Webhooks (v2.1.0)'
+                    'Embedded interactive in-app Version & Architecture inspector for future reference'
                 ]
             ],
             [

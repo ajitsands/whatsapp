@@ -270,19 +270,19 @@ function VersionArchitectureModal({ isOpen, onClose }) {
         </div>
 
         <div className="version-modal-body">
-          {/* Card 1: Active Version 2.0 */}
+          {/* Card 1: Active Version 2.1 */}
           <div className="version-card-block" style={{ borderLeft: '4px solid #3B82F6', background: '#F0F9FF' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '20px' }}>⚡</span>
-                <strong style={{ fontSize: '15px', color: '#1E3A8A' }}>Active Generation: Version 2.0.0</strong>
+                <strong style={{ fontSize: '15px', color: '#1E3A8A' }}>Active Release: Version 2.1.0</strong>
               </div>
-              <span className="version-chip" style={{ background: '#DBEAFE', color: '#1D4ED8', border: '1px solid #BFDBFE' }}>
-                🟢 IN ACTIVE DEVELOPMENT
+              <span className="version-chip" style={{ background: '#DCFCE7', color: '#166534', border: '1px solid #BBF7D0' }}>
+                🟢 v2.1.0 INBOUND LIVE CHAT ACTIVE
               </span>
             </div>
             <p style={{ fontSize: '12.5px', color: '#1E40AF', margin: 0, lineHeight: '1.5' }}>
-              Platform architecture refreshed for <strong>Version 2.0</strong>. All ongoing developments strictly follow semantic minor versioning (<code style={{ background: '#E0F2FE', padding: '1px 5px', borderRadius: '4px', fontWeight: '600' }}>v2.x.x</code>) aligned with the scheduled integration roadmap.
+              Inbound Live Chat & Two-Way Agent Inbox with 24-hour Meta Customer Care session window tracking is officially released. All upcoming modules adhere to minor versioning (<code style={{ background: '#E0F2FE', padding: '1px 5px', borderRadius: '4px', fontWeight: '600' }}>v2.x.x</code>).
             </p>
           </div>
 
@@ -347,30 +347,30 @@ function VersionArchitectureModal({ isOpen, onClose }) {
               <strong style={{ fontSize: '14px', color: '#0F172A' }}>Version 2.0 Execution Roadmap (Next Development Steps)</strong>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '8px' }}>
-                <span className="version-chip" style={{ background: '#0284C7', color: '#FFFFFF', marginTop: '2px' }}>v2.1.0</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px' }}>
+                <span className="version-chip" style={{ background: '#16A34A', color: '#FFFFFF', marginTop: '2px' }}>v2.1.0</span>
                 <div>
-                  <strong style={{ fontSize: '12.5px', color: '#0369A1' }}>Odoo ERP Automated Action Webhook & Model Sync (Phase 1 — In Design)</strong>
+                  <strong style={{ fontSize: '12.5px', color: '#15803D' }}>Inbound Live Chat & Two-Way Agent Inbox (Completed & Released ✅)</strong>
+                  <p style={{ fontSize: '11.5px', color: '#166534', margin: '2px 0 0 0' }}>
+                    Two-way conversational workspace, Meta 24-hour customer care session window tracking, canned replies, free-text replies, and simulated inbound testing.
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '8px' }}>
+                <span className="version-chip" style={{ background: '#0284C7', color: '#FFFFFF', marginTop: '2px' }}>v2.2.0</span>
+                <div>
+                  <strong style={{ fontSize: '12.5px', color: '#0369A1' }}>Odoo ERP Automated Action Webhook & Model Sync (Phase 2 — Next Priority)</strong>
                   <p style={{ fontSize: '11.5px', color: '#0C4A6E', margin: '2px 0 0 0' }}>
                     Inbound triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP.
                   </p>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
-                <span className="version-chip" style={{ background: '#64748B', color: '#FFFFFF', marginTop: '2px' }}>v2.2.0</span>
-                <div>
-                  <strong style={{ fontSize: '12.5px', color: '#334155' }}>Bulk Campaign Broadcasts & Queue Pacing (Phase 2 — Scheduled)</strong>
-                  <p style={{ fontSize: '11.5px', color: '#64748B', margin: '2px 0 0 0' }}>
-                    CSV contact list upload with dynamic variable mapping, segmentation, and throttled queue pacing (50 msgs/min).
-                  </p>
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
                 <span className="version-chip" style={{ background: '#64748B', color: '#FFFFFF', marginTop: '2px' }}>v2.3.0</span>
                 <div>
-                  <strong style={{ fontSize: '12.5px', color: '#334155' }}>Inbound Live Chat & Two-Way Agent Inbox (Phase 3 — Scheduled)</strong>
+                  <strong style={{ fontSize: '12.5px', color: '#334155' }}>Bulk Campaign Broadcasts & Queue Pacing (Phase 3 — Scheduled)</strong>
                   <p style={{ fontSize: '11.5px', color: '#64748B', margin: '2px 0 0 0' }}>
-                    Interactive two-way conversation window allowing support agents to reply directly within the Meta 24-hour customer care session window.
+                    CSV contact list upload with dynamic variable mapping, segmentation, and throttled queue pacing (50 msgs/min).
                   </p>
                 </div>
               </div>
@@ -430,13 +430,14 @@ function App() {
   const [activeTab, setActiveTab] = useState(() => {
     const hash = window.location.hash.replace('#', '').trim();
     const saved = localStorage.getItem('wa_tab');
-    const validTabs = ['dashboard', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'wallet', 'settings'];
+    const validTabs = ['dashboard', 'inbox', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'wallet', 'settings'];
     if (hash && validTabs.includes(hash)) return hash;
     if (saved && validTabs.includes(saved)) return saved;
     return 'dashboard';
   });
 
   const [toast, setToast] = useState(null);
+  const [inboxUnreadTotal, setInboxUnreadTotal] = useState(0);
 
   const navigateToTab = (tab) => {
     setActiveTab(tab);
@@ -449,7 +450,7 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '').trim();
-      const validTabs = ['dashboard', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'wallet', 'settings'];
+      const validTabs = ['dashboard', 'inbox', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'wallet', 'settings'];
       if (hash && validTabs.includes(hash)) {
         setActiveTab(hash);
         localStorage.setItem('wa_tab', hash);
@@ -612,7 +613,7 @@ function App() {
                 title="Click to view Version Architecture, Git Tags & Future Roadmap"
               >
                 <span className="version-pill-dot"></span>
-                <span>v2.0.0</span>
+                <span>v2.1.0</span>
               </button>
             </div>
 
@@ -652,8 +653,24 @@ function App() {
               <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => navigateToTab('dashboard')}>
                 <span>📊</span> Dashboard
               </button>
+              <button className={`nav-item ${activeTab === 'inbox' ? 'active' : ''}`} onClick={() => navigateToTab('inbox')}>
+                <span>💬</span> Live Agent Inbox
+                {inboxUnreadTotal > 0 && (
+                  <span style={{
+                    background: '#25D366',
+                    color: '#FFFFFF',
+                    fontSize: '10px',
+                    fontWeight: '800',
+                    padding: '1px 6px',
+                    borderRadius: '10px',
+                    marginLeft: '6px'
+                  }}>
+                    {inboxUnreadTotal}
+                  </span>
+                )}
+              </button>
               <button className={`nav-item ${activeTab === 'composer' ? 'active' : ''}`} onClick={() => navigateToTab('composer')}>
-                <span>💬</span> Send Message
+                <span>📤</span> Send Message
               </button>
               <button className={`nav-item ${activeTab === 'logs' ? 'active' : ''}`} onClick={() => navigateToTab('logs')}>
                 <span>📜</span> Message Logs
@@ -690,8 +707,9 @@ function App() {
       {/* Main App Body */}
       <main className="app-body">
         {activeTab === 'dashboard' && <DashboardView onNavigate={navigateToTab} globalSettings={globalSettings} />}
-        {activeTab === 'composer' && <ComposerView showToast={showToast} onSent={() => { navigateToTab('logs'); loadWalletBalance(); }} globalSettings={globalSettings} />}
-        {activeTab === 'logs' && <MessageLogsView showToast={showToast} globalSettings={globalSettings} />}
+        {activeTab === 'inbox' && <LiveAgentInboxView currentUser={currentUser} showToast={showToast} globalSettings={globalSettings} onUnreadCountChange={setInboxUnreadTotal} onNavigate={navigateToTab} />}
+        {activeTab === 'composer' && <ComposerView showToast={showToast} onSent={() => { navigateToTab('inbox'); loadWalletBalance(); }} globalSettings={globalSettings} />}
+        {activeTab === 'logs' && <MessageLogsView showToast={showToast} globalSettings={globalSettings} onOpenInbox={(phone) => { navigateToTab('inbox'); }} />}
         {activeTab === 'templates' && <TemplatesView showToast={showToast} globalSettings={globalSettings} />}
         {activeTab === 'wallet' && <WalletView currentUser={currentUser} showToast={showToast} globalSettings={globalSettings} onBalanceChange={setWalletBalance} />}
         {activeTab === 'api_hub' && <OdooApiHubView showToast={showToast} globalSettings={globalSettings} />}
@@ -710,9 +728,9 @@ function App() {
             <span
               className="footer-badge version-footer-clickable"
               onClick={() => setShowVersionModal(true)}
-              title="Click to inspect Version 2.0.0 Architecture & Locked v1.0.0 Baseline"
+              title="Click to inspect Version 2.1.0 Architecture & Locked v1.0.0 Baseline"
             >
-              Platform v2.0.0 (v1.0.0 Locked 🔒)
+              Platform v2.1.0 (v1.0.0 Locked 🔒)
             </span>
             <span className="footer-badge">WhatsApp Cloud API v19.0</span>
             <span className="footer-badge">Odoo ERP Connector Active</span>
@@ -1500,9 +1518,584 @@ function ConversationChatModal({ phone, onClose, showToast, globalSettings }) {
 }
 
 // -----------------------------------------------------------------------------
+// SIMULATE INBOUND MESSAGE MODAL (TESTING & VERIFICATION)
+// -----------------------------------------------------------------------------
+function SimulateInboundModal({ isOpen, onClose, onSimulated, showToast }) {
+  const [phone, setPhone] = useState('+97335078079');
+  const [message, setMessage] = useState('Hello UniGlobal Support! I received my invoice and need to confirm my payment details.');
+  const [submitting, setSubmitting] = useState(false);
+
+  if (!isOpen) return null;
+
+  const handleSimulate = async (e) => {
+    e.preventDefault();
+    if (!phone || !message.trim()) {
+      showToast('Phone and message text are required', 'error');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch('./api/inbox.php?action=simulate_inbound', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, message: message.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Simulated customer inbound message from ${phone}! 24h window active.`);
+        if (onSimulated) onSimulated(phone);
+        onClose();
+      } else {
+        showToast(data.error || 'Failed to simulate message', 'error');
+      }
+    } catch (err) {
+      showToast('Network error simulating message', 'error');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="version-modal-overlay" onClick={onClose}>
+      <div className="version-modal-card" style={{ maxWidth: '520px' }} onClick={e => e.stopPropagation()}>
+        <div className="version-modal-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '22px' }}>🧪</span>
+            <div>
+              <h3 style={{ fontSize: '15px', fontWeight: '800', margin: 0, color: '#FFFFFF' }}>Simulate Inbound WhatsApp Message</h3>
+              <p style={{ fontSize: '11.5px', margin: '2px 0 0 0', opacity: 0.9, color: '#E8F8F5' }}>Test customer inbound reply & trigger 24h session window</p>
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: '#FFFFFF', borderRadius: '6px', width: '28px', height: '28px', cursor: 'pointer' }}>✕</button>
+        </div>
+        <form onSubmit={handleSimulate} style={{ padding: '20px' }}>
+          <div className="form-group">
+            <label className="form-label">Customer Mobile Phone</label>
+            <input type="text" className="form-input" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+97335078079" required />
+            <span className="form-hint">E.164 formatted international WhatsApp number.</span>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Customer Message Text</label>
+            <textarea className="form-input" rows="3" value={message} onChange={e => setMessage(e.target.value)} placeholder="Type customer reply here..." required />
+          </div>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+            <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={submitting}>
+              {submitting ? 'Simulating...' : '📥 Ingest Inbound Message'}
+            </button>
+            <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 3.5 LIVE AGENT INBOX & TWO-WAY CHAT WORKSPACE (PHASE 3 / VERSION 2.1.0)
+// -----------------------------------------------------------------------------
+function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCountChange, onNavigate }) {
+  const [threads, setThreads] = useState([]);
+  const [loadingThreads, setLoadingThreads] = useState(true);
+  const [selectedPhone, setSelectedPhone] = useState(null);
+  const [activeThreadData, setActiveThreadData] = useState(null);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all'); // 'all', 'unread', 'active_24h'
+  const [replyText, setReplyText] = useState('');
+  const [sending, setSending] = useState(false);
+  const [autoSync, setAutoSync] = useState(true);
+  const [showSimulateModal, setShowSimulateModal] = useState(false);
+  const [cannedReplies, setCannedReplies] = useState([]);
+  const [templates, setTemplates] = useState([]);
+  const [useTemplateMode, setUseTemplateMode] = useState(false);
+  const [selectedTemplateName, setSelectedTemplateName] = useState('');
+  const [templateParams, setTemplateParams] = useState({});
+  const messagesEndRef = useRef(null);
+
+  // Fetch threads
+  const fetchThreads = async (silent = false) => {
+    if (!silent) setLoadingThreads(true);
+    try {
+      const res = await fetch(`./api/inbox.php?action=threads&search=${encodeURIComponent(search)}&filter=${filter}`);
+      const data = await res.json();
+      if (data.success && data.threads) {
+        setThreads(data.threads);
+        const totalUnread = data.threads.reduce((acc, t) => acc + (t.unread_inbound || 0), 0);
+        if (onUnreadCountChange) onUnreadCountChange(totalUnread);
+
+        // Auto select first thread if none selected
+        if (!selectedPhone && data.threads.length > 0) {
+          setSelectedPhone(data.threads[0].contact_phone);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      if (!silent) setLoadingThreads(false);
+    }
+  };
+
+  // Fetch thread messages
+  const fetchThreadMessages = async (phone, silent = false) => {
+    if (!phone) return;
+    if (!silent) setLoadingMessages(true);
+    try {
+      const res = await fetch(`./api/inbox.php?action=messages&phone=${encodeURIComponent(phone)}`);
+      const data = await res.json();
+      if (data.success) {
+        setActiveThreadData(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      if (!silent) setLoadingMessages(false);
+    }
+  };
+
+  // Initial load
+  useEffect(() => {
+    fetchThreads(false);
+    fetch('./api/inbox.php?action=canned_replies')
+      .then(res => res.json())
+      .then(data => { if (data.success && data.canned_replies) setCannedReplies(data.canned_replies); });
+    fetch('./api/templates.php')
+      .then(res => res.json())
+      .then(data => { if (data.success && data.data) setTemplates(data.data); });
+  }, []);
+
+  // When search or filter changes
+  useEffect(() => {
+    fetchThreads(false);
+  }, [search, filter]);
+
+  // When selected phone changes
+  useEffect(() => {
+    if (selectedPhone) {
+      fetchThreadMessages(selectedPhone, false);
+      setUseTemplateMode(false);
+      setReplyText('');
+    }
+  }, [selectedPhone]);
+
+  // Auto polling every 2.5 seconds
+  useEffect(() => {
+    if (!autoSync) return;
+    const timer = setInterval(() => {
+      fetchThreads(true);
+      if (selectedPhone) {
+        fetchThreadMessages(selectedPhone, true);
+      }
+    }, 2500);
+    return () => clearInterval(timer);
+  }, [autoSync, selectedPhone, search, filter]);
+
+  // Auto scroll to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [activeThreadData?.messages]);
+
+  // Send reply
+  const handleSendReply = async (e) => {
+    if (e) e.preventDefault();
+    if (!selectedPhone) return;
+
+    if (useTemplateMode) {
+      if (!selectedTemplateName) {
+        showToast('Please select an approved template', 'error');
+        return;
+      }
+    } else if (!replyText.trim()) {
+      return;
+    }
+
+    setSending(true);
+    try {
+      const payload = {
+        phone: selectedPhone,
+        message: useTemplateMode ? '' : replyText.trim(),
+        template_name: useTemplateMode ? selectedTemplateName : '',
+        params: useTemplateMode ? templateParams : []
+      };
+
+      const res = await fetch('./api/inbox.php?action=send_reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setReplyText('');
+        setUseTemplateMode(false);
+        showToast(`Reply sent to ${selectedPhone}`);
+        fetchThreadMessages(selectedPhone, true);
+        fetchThreads(true);
+      } else {
+        showToast(data.error || 'Failed to dispatch reply', 'error');
+      }
+    } catch (err) {
+      showToast('Network error sending reply', 'error');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendReply();
+    }
+  };
+
+  const handleMarkRead = async () => {
+    if (!selectedPhone) return;
+    try {
+      await fetch('./api/inbox.php?action=mark_read', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: selectedPhone })
+      });
+      showToast('Marked thread as read');
+      fetchThreads(true);
+      fetchThreadMessages(selectedPhone, true);
+    } catch (e) {}
+  };
+
+  const selectedThread = threads.find(t => t.contact_phone === selectedPhone);
+  const is24hActive = activeThreadData?.is_24h_active ?? selectedThread?.is_24h_active ?? false;
+  const hoursLeft = activeThreadData?.hours_remaining ?? selectedThread?.hours_remaining ?? 0;
+  const contactName = activeThreadData?.contact_name ?? selectedThread?.contact_name ?? selectedPhone ?? 'Customer';
+
+  return (
+    <div>
+      {/* Top Header Bar */}
+      <div className="page-header-row" style={{ marginBottom: '16px' }}>
+        <div className="page-title-group">
+          <h1><span>💬</span> Inbound Live Chat & Two-Way Agent Inbox</h1>
+          <p>Real-time customer care console with official Meta 24-hour conversational session window tracking and instant replies.</p>
+        </div>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <button
+            className={`btn ${autoSync ? 'btn-success' : 'btn-secondary'}`}
+            style={{ fontSize: '12px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '6px' }}
+            onClick={() => setAutoSync(!autoSync)}
+            title={autoSync ? 'Live Sync Active (2.5s)' : 'Live Sync Paused'}
+          >
+            <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: autoSync ? '#22C55E' : '#9CA3AF', boxShadow: autoSync ? '0 0 8px #22C55E' : 'none' }}></span>
+            {autoSync ? '🟢 Live Auto-Sync Active' : '⏸️ Paused'}
+          </button>
+          <button
+            className="btn btn-primary"
+            style={{ fontSize: '12.5px', padding: '6px 14px', display: 'flex', alignItems: 'center', gap: '6px' }}
+            onClick={() => setShowSimulateModal(true)}
+          >
+            <span>🧪</span> Simulate Inbound
+          </button>
+          <button className="btn btn-secondary" onClick={() => { fetchThreads(false); if (selectedPhone) fetchThreadMessages(selectedPhone, false); }}>
+            <span>🔄</span> Refresh
+          </button>
+        </div>
+      </div>
+
+      {/* Main 2-Panel Workspace */}
+      <div className="inbox-wrapper">
+        {/* Left Sidebar: Threads List */}
+        <div className="inbox-sidebar">
+          <div className="inbox-sidebar-header">
+            <input
+              type="text"
+              className="inbox-search-input"
+              placeholder="Search contacts, phone, text..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+            <div className="inbox-filters-bar">
+              <button className={`inbox-filter-btn ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>
+                All ({threads.length})
+              </button>
+              <button className={`inbox-filter-btn ${filter === 'unread' ? 'active' : ''}`} onClick={() => setFilter('unread')}>
+                Unread
+              </button>
+              <button className={`inbox-filter-btn ${filter === 'active_24h' ? 'active' : ''}`} onClick={() => setFilter('active_24h')}>
+                24h Active 🟢
+              </button>
+            </div>
+          </div>
+
+          <div className="inbox-threads-list">
+            {loadingThreads && threads.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '30px', color: '#64748B', fontSize: '12.5px' }}>
+                Loading conversations...
+              </div>
+            ) : threads.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '30px', color: '#64748B', fontSize: '12.5px' }}>
+                No conversations match this filter.
+              </div>
+            ) : (
+              threads.map(t => {
+                const isSelected = t.contact_phone === selectedPhone;
+                return (
+                  <div
+                    key={t.contact_phone}
+                    className={`inbox-thread-item ${isSelected ? 'active' : ''}`}
+                    onClick={() => setSelectedPhone(t.contact_phone)}
+                  >
+                    <div className={`inbox-thread-avatar ${t.is_24h_active ? 'online' : ''}`}>
+                      {t.avatar_letter}
+                    </div>
+                    <div className="inbox-thread-info">
+                      <div className="inbox-thread-top">
+                        <span className="inbox-thread-name">{t.contact_name}</span>
+                        <span className="inbox-thread-time">
+                          {formatDateTime(t.latest_message?.created_at, 'HH:mm')}
+                        </span>
+                      </div>
+                      <div className="inbox-thread-bottom">
+                        <span className="inbox-thread-snippet">
+                          {t.latest_message?.direction === 'inbound' ? '📥 ' : '📤 '}
+                          {t.latest_message?.message_body || 'Attachment'}
+                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          {t.is_24h_active ? (
+                            <span style={{ fontSize: '10px', background: '#DCFCE7', color: '#166534', padding: '1px 5px', borderRadius: '4px', fontWeight: '700' }} title={`24h Window: ${t.hours_remaining}h left`}>
+                              {t.hours_remaining}h
+                            </span>
+                          ) : (
+                            <span style={{ fontSize: '10px', background: '#F1F5F9', color: '#64748B', padding: '1px 5px', borderRadius: '4px' }} title="Session Expired">
+                              ⏱️
+                            </span>
+                          )}
+                          {t.unread_inbound > 0 && (
+                            <span className="inbox-unread-badge">{t.unread_inbound}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Right Main Pane: Conversation Chat Window */}
+        <div className="inbox-main-pane">
+          {!selectedPhone ? (
+            <div className="inbox-pane-empty">
+              <span style={{ fontSize: '48px', marginBottom: '12px' }}>💬</span>
+              <strong style={{ fontSize: '16px', color: '#0F172A', marginBottom: '4px' }}>No Conversation Selected</strong>
+              <p style={{ fontSize: '12.5px', maxWidth: '340px' }}>
+                Select a customer conversation from the left to read live messages, or click "Simulate Inbound" to test two-way communication.
+              </p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              {/* Chat Top Header */}
+              <div className="inbox-chat-header">
+                <div className="inbox-chat-user">
+                  <div className="inbox-thread-avatar" style={{ width: '40px', height: '40px', fontSize: '13px' }}>
+                    {selectedThread?.avatar_letter || 'WA'}
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <strong style={{ fontSize: '14.5px', color: '#0F172A' }}>{contactName}</strong>
+                      <span style={{ fontSize: '12px', color: '#64748B' }}>({selectedPhone})</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
+                      {is24hActive ? (
+                        <span className="inbox-session-pill active">
+                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16A34A' }}></span>
+                          🟢 24h Customer Care Window Active ({hoursLeft}h left) • Free-Text Allowed (Meta Fee Waived)
+                        </span>
+                      ) : (
+                        <span className="inbox-session-pill expired">
+                          ⚠️ 24h Session Closed • Pre-Approved Template Required by Meta
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button className="btn btn-secondary btn-sm" onClick={handleMarkRead} title="Mark All Read">
+                    ✓ Read
+                  </button>
+                  <button className="btn btn-secondary btn-sm" onClick={() => setShowSimulateModal(true)} title="Simulate reply from this customer">
+                    🧪 Simulate Reply
+                  </button>
+                  <button className="btn btn-secondary btn-sm" onClick={() => onNavigate && onNavigate('logs')} title="View In Message Telemetry">
+                    📜 Telemetry
+                  </button>
+                </div>
+              </div>
+
+              {/* Chat Messages Canvas */}
+              <div className="inbox-chat-canvas">
+                <div style={{ textAlign: 'center', margin: '6px 0' }}>
+                  <span style={{ background: '#FFFFFF', padding: '4px 12px', borderRadius: '12px', fontSize: '11px', color: '#64748B', boxShadow: '0 1px 2px rgba(0,0,0,0.06)' }}>
+                    🔒 Official WhatsApp Cloud API End-to-End Encrypted Session
+                  </span>
+                </div>
+
+                {loadingMessages && (!activeThreadData || activeThreadData.messages?.length === 0) ? (
+                  <div style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>Loading messages...</div>
+                ) : activeThreadData?.messages?.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>No messages exchanged yet. Send a greeting to start!</div>
+                ) : (
+                  activeThreadData?.messages?.map((msg, idx) => {
+                    const isOutbound = msg.direction === 'outbound';
+                    return (
+                      <div key={msg.id || idx} className={`inbox-bubble-row ${isOutbound ? 'outbound' : 'inbound'}`}>
+                        <div className={`inbox-bubble ${isOutbound ? 'outbound' : 'inbound'}`}>
+                          {msg.template_name && (
+                            <div style={{ fontSize: '11px', fontWeight: '700', color: '#0369A1', marginBottom: '3px' }}>
+                              📋 {msg.template_name} [{msg.category}]
+                            </div>
+                          )}
+                          {msg.header_media_name && (
+                            <div style={{ fontSize: '11.5px', fontWeight: '600', color: '#059669', marginBottom: '4px' }}>
+                              📎 [{msg.header_media_name}]
+                            </div>
+                          )}
+                          <div style={{ whiteSpace: 'pre-wrap' }}>{msg.message_body}</div>
+                          <div className="inbox-bubble-footer">
+                            <span>{formatDateTime(msg.created_at, globalSettings?.system_date_format || 'HH:mm')}</span>
+                            {isOutbound && (
+                              <span>
+                                {msg.status === 'read' ? (
+                                  <span style={{ color: '#0284C7', fontWeight: '800' }}>✓✓</span>
+                                ) : msg.status === 'delivered' ? (
+                                  <span style={{ color: '#64748B', fontWeight: '800' }}>✓✓</span>
+                                ) : msg.status === 'sent' ? (
+                                  <span>✓</span>
+                                ) : msg.status === 'failed' ? (
+                                  <span style={{ color: '#EF4444' }} title={msg.error_message || 'Failed'}>⚠️</span>
+                                ) : (
+                                  <span>⏱️</span>
+                                )}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Quick Canned Replies Bar */}
+              <div className="inbox-canned-bar">
+                <span style={{ fontSize: '11px', fontWeight: '700', color: '#64748B', alignSelf: 'center', marginRight: '4px' }}>
+                  ⚡ Quick:
+                </span>
+                {cannedReplies.map(cr => (
+                  <button
+                    key={cr.id}
+                    type="button"
+                    className="inbox-canned-chip"
+                    onClick={() => {
+                      setReplyText(cr.text);
+                      setUseTemplateMode(false);
+                    }}
+                    title={cr.text}
+                  >
+                    {cr.title}
+                  </button>
+                ))}
+              </div>
+
+              {/* Bottom Composer Area */}
+              <div className="inbox-composer-area">
+                {!is24hActive && !useTemplateMode ? (
+                  <div style={{ flex: 1, background: '#FEF3C7', border: '1px solid #FCD34D', borderRadius: '8px', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                    <div style={{ fontSize: '12px', color: '#92400E' }}>
+                      ⚠️ <strong>24h Customer Service Window Closed.</strong> Meta requires an approved template to re-engage this contact.
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      onClick={() => setUseTemplateMode(true)}
+                    >
+                      📋 Select Approved Template
+                    </button>
+                  </div>
+                ) : useTemplateMode ? (
+                  <div style={{ flex: 1, background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <strong style={{ fontSize: '12.5px', color: '#0F172A' }}>📋 Dispatch Approved WhatsApp Template</strong>
+                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => setUseTemplateMode(false)}>✕ Switch to Free Text</button>
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <select
+                        className="form-input"
+                        style={{ flex: 1, padding: '7px 10px', fontSize: '12.5px' }}
+                        value={selectedTemplateName}
+                        onChange={e => setSelectedTemplateName(e.target.value)}
+                      >
+                        <option value="">-- Choose Template --</option>
+                        {templates.map(t => (
+                          <option key={t.template_name} value={t.template_name}>
+                            {t.display_title || t.template_name} ({t.category})
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '700' }}
+                        disabled={sending || !selectedTemplateName}
+                        onClick={handleSendReply}
+                      >
+                        {sending ? 'Sending...' : '🚀 Send Template'}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <textarea
+                      className="inbox-textarea"
+                      placeholder="Type a direct WhatsApp message... (Press Enter to send, Shift+Enter for new line)"
+                      value={replyText}
+                      onChange={e => setReplyText(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      rows="1"
+                    />
+                    <button
+                      type="button"
+                      className="inbox-btn-send"
+                      disabled={sending || !replyText.trim()}
+                      onClick={handleSendReply}
+                      title="Send WhatsApp Message"
+                    >
+                      {sending ? '⏳' : '➤'}
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Simulate Inbound Modal */}
+      <SimulateInboundModal
+        isOpen={showSimulateModal}
+        onClose={() => setShowSimulateModal(false)}
+        onSimulated={(phone) => {
+          setSelectedPhone(phone);
+          fetchThreads(true);
+          fetchThreadMessages(phone, true);
+        }}
+        showToast={showToast}
+      />
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
 // 4. MESSAGE LOGS VIEW (WITH DATATABLE & LIVE CONVERSATIONS)
 // -----------------------------------------------------------------------------
-function MessageLogsView({ showToast, globalSettings }) {
+function MessageLogsView({ showToast, globalSettings, onOpenInbox }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -4191,20 +4784,20 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                   Permanent specification of active Version 2.0 generation, locked Version 1.0 baseline, and Minor version handling.
                 </p>
               </div>
-              <span className="version-chip" style={{ background: '#DBEAFE', color: '#1D4ED8', border: '1px solid #BFDBFE', padding: '6px 14px', fontSize: '12px' }}>
-                Active: v2.0.0
+              <span className="version-chip" style={{ background: '#DCFCE7', color: '#166534', border: '1px solid #BBF7D0', padding: '6px 14px', fontSize: '12px' }}>
+                Active: v2.1.0
               </span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {/* Active v2.0 Block */}
+              {/* Active v2.1 Block */}
               <div style={{ background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '12px', padding: '18px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <strong style={{ fontSize: '14.5px', color: '#0369A1' }}>⚡ Active Generation: Version 2.0.0</strong>
-                  <span className="badge" style={{ background: '#0284C7', color: '#FFFFFF' }}>IN PROGRESS</span>
+                  <strong style={{ fontSize: '14.5px', color: '#0369A1' }}>⚡ Active Release: Version 2.1.0</strong>
+                  <span className="badge" style={{ background: '#16A34A', color: '#FFFFFF' }}>LIVE & ACTIVE</span>
                 </div>
                 <p style={{ fontSize: '12.5px', color: '#0C4A6E', margin: '0 0 8px 0', lineHeight: '1.5' }}>
-                  The application architecture has officially transitioned to <strong>Version 2.0</strong>. Upcoming features will be released as minor updates (<code style={{ background: '#E0F2FE', padding: '1px 5px', borderRadius: '4px', fontWeight: '700' }}>v2.x.0</code>) following the scheduled roadmap.
+                  Inbound Live Chat & Two-Way Agent Inbox is officially released with real-time Meta 24-hour customer care session tracking. Subsequent milestones follow semantic minor increments (<code style={{ background: '#E0F2FE', padding: '1px 5px', borderRadius: '4px', fontWeight: '700' }}>v2.x.0</code>).
                 </p>
                 <div style={{ fontSize: '11.5px', color: '#0284C7', fontWeight: '600' }}>
                   Git Branch: <code>main</code> • Target Host: <code>https://whatsapp.sandslab.com</code>
