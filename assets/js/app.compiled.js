@@ -127,6 +127,39 @@ function DataTable({
     );
   }), /* @__PURE__ */ React.createElement("button", { className: "page-btn", disabled: safeCurrentPage >= totalPages, onClick: () => setCurrentPage((prev) => Math.min(totalPages, prev + 1)) }, "Next \u203A"))));
 }
+function ConfirmDialog({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  subtitle,
+  icon = "\u{1F504}",
+  badgeClass = "primary",
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  isProcessing = false
+}) {
+  if (!isOpen) return null;
+  return /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-overlay", onClick: onClose, style: { zIndex: 12e3 } }, /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-card", onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-body" }, /* @__PURE__ */ React.createElement("div", { className: `confirm-modal-icon-badge ${badgeClass}` }, /* @__PURE__ */ React.createElement("span", null, icon)), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-title" }, title), subtitle && /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-subtitle", style: { fontSize: "13.5px", color: "#64748B", lineHeight: "1.55", marginTop: "6px" } }, subtitle)), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-actions" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn-confirm-cancel",
+      onClick: onClose,
+      disabled: isProcessing
+    },
+    cancelText
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: badgeClass === "danger" ? "btn-confirm-delete" : "btn-confirm-primary",
+      onClick: onConfirm,
+      disabled: isProcessing
+    },
+    isProcessing ? "Processing..." : confirmText
+  ))));
+}
 function VersionArchitectureModal({ isOpen, onClose }) {
   if (!isOpen) return null;
   return /* @__PURE__ */ React.createElement("div", { className: "version-modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("div", { className: "version-modal-card", onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "version-modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "26px" } }, "\u{1F680}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h2", { style: { fontSize: "17px", fontWeight: "800", margin: 0, color: "#FFFFFF" } }, "WhatsApp Integration Platform \u2014 Version Architecture"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", margin: "2px 0 0 0", opacity: 0.9, color: "#E8F8F5" } }, "Engineered by SaNDS Lab Middle East W.L.L. \u2022 Enterprise Release Registry"))), /* @__PURE__ */ React.createElement(
@@ -1071,6 +1104,7 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
   const [inspectCampaignId, setInspectCampaignId] = useState(null);
   const [templates, setTemplates] = useState([]);
   const [processingId, setProcessingId] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
   const fetchCampaigns = async (silent = false) => {
     if (!silent) setLoading(true);
     try {
@@ -1161,41 +1195,66 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
     } catch (e) {
     }
   };
-  const handleCancelCampaign = async (id) => {
-    if (!confirm("Are you sure you want to cancel this campaign broadcast?")) return;
-    try {
-      const res = await fetch("./api/campaigns.php?action=cancel", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ campaign_id: id })
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast("Campaign cancelled");
-        fetchCampaigns(true);
+  const handleCancelCampaign = (id) => {
+    setConfirmDialog({
+      title: "Cancel Broadcast Campaign?",
+      subtitle: "Are you sure you want to cancel this broadcast? Any unsent recipients remaining in the queue will be halted.",
+      icon: "\u{1F6D1}",
+      badgeClass: "danger",
+      confirmText: "Yes, Cancel Broadcast",
+      cancelText: "Keep Running",
+      onConfirm: async () => {
+        try {
+          const res = await fetch("./api/campaigns.php?action=cancel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ campaign_id: id })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast("Campaign cancelled");
+            fetchCampaigns(true);
+          }
+        } catch (e) {
+        } finally {
+          setConfirmDialog(null);
+        }
       }
-    } catch (e) {
-    }
+    });
   };
-  const handleRerunCampaign = async (id) => {
-    if (!confirm("Re-run this campaign to re-broadcast to all recipients via Meta Cloud API?")) return;
-    try {
-      const res = await fetch("./api/campaigns.php?action=rerun", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ campaign_id: id })
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast("Campaign queue reset. Starting real Meta broadcast...", "success");
-        await fetchCampaigns(true);
-        handleStartCampaign(id);
-      } else {
-        showToast(data.error || "Failed to re-run campaign", "error");
+  const handleRerunCampaign = (id) => {
+    const targetCamp = campaigns.find((c) => c.id === id);
+    const campName = targetCamp ? `"${targetCamp.name}"` : "this campaign";
+    const recCount = targetCamp?.total_recipients || "all";
+    setConfirmDialog({
+      title: "Re-run Broadcast Campaign?",
+      subtitle: `Reset the broadcast queue for ${campName} and re-dispatch official template messages to ${recCount} recipients via Meta Cloud API?`,
+      icon: "\u{1F504}",
+      badgeClass: "primary",
+      confirmText: "Yes, Re-broadcast Now",
+      cancelText: "Cancel",
+      onConfirm: async () => {
+        try {
+          const res = await fetch("./api/campaigns.php?action=rerun", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ campaign_id: id })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast("Campaign queue reset. Starting Meta broadcast...", "success");
+            await fetchCampaigns(true);
+            handleStartCampaign(id);
+          } else {
+            showToast(data.error || "Failed to re-run campaign", "error");
+          }
+        } catch (e) {
+          showToast("Error re-running campaign", "error");
+        } finally {
+          setConfirmDialog(null);
+        }
       }
-    } catch (e) {
-      showToast("Error re-running campaign", "error");
-    }
+    });
   };
   const columns = [
     {
@@ -1386,6 +1445,19 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
       globalSettings,
       showToast,
       onRerun: handleRerunCampaign
+    }
+  ), confirmDialog && /* @__PURE__ */ React.createElement(
+    ConfirmDialog,
+    {
+      isOpen: !!confirmDialog,
+      title: confirmDialog.title,
+      subtitle: confirmDialog.subtitle,
+      icon: confirmDialog.icon,
+      badgeClass: confirmDialog.badgeClass,
+      confirmText: confirmDialog.confirmText,
+      cancelText: confirmDialog.cancelText,
+      onClose: () => setConfirmDialog(null),
+      onConfirm: confirmDialog.onConfirm
     }
   ));
 }
@@ -1963,6 +2035,7 @@ function TemplatesView({ showToast }) {
   const [templates, setTemplates] = useState([]);
   const [editingTemplate, setEditingTemplate] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState(null);
   const loadTemplates = () => {
     fetch("./api/templates.php").then((res) => res.json()).then((res) => {
       if (res.success) setTemplates(res.data);
@@ -1998,20 +2071,31 @@ function TemplatesView({ showToast }) {
       setSaving(false);
     }
   };
-  const handleDeleteTemplate = async (id, name) => {
-    if (!confirm(`Are you sure you want to delete template "${name}"?`)) return;
-    try {
-      const res = await fetch(`./api/templates.php?id=${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (data.success) {
-        showToast("Template deleted successfully");
-        loadTemplates();
-      } else {
-        showToast(data.error || "Failed to delete template", "error");
+  const handleDeleteTemplate = (id, name) => {
+    setConfirmDialog({
+      title: "Delete WhatsApp Template?",
+      subtitle: `Are you sure you want to permanently remove template "${name}" from your catalog?`,
+      icon: "\u{1F5D1}\uFE0F",
+      badgeClass: "danger",
+      confirmText: "Yes, Delete Template",
+      cancelText: "Cancel",
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`./api/templates.php?id=${id}`, { method: "DELETE" });
+          const data = await res.json();
+          if (data.success) {
+            showToast("Template deleted successfully");
+            loadTemplates();
+          } else {
+            showToast(data.error || "Failed to delete template", "error");
+          }
+        } catch (err) {
+          showToast("Error deleting template", "error");
+        } finally {
+          setConfirmDialog(null);
+        }
       }
-    } catch (err) {
-      showToast("Error deleting template", "error");
-    }
+    });
   };
   const modalTariffs = {
     AUTHENTICATION: { meta: 0.011, platform: 35e-4, client: 0.0145 },
@@ -2205,7 +2289,20 @@ function TemplatesView({ showToast }) {
       value: editingTemplate.footer_text || "",
       onChange: (e) => setEditingTemplate({ ...editingTemplate, footer_text: e.target.value })
     }
-  )), /* @__PURE__ */ React.createElement("div", { className: "tariff-estimate-banner", style: { margin: "14px 0" } }, /* @__PURE__ */ React.createElement("div", { className: "tariff-info" }, /* @__PURE__ */ React.createElement("span", { className: "title" }, "Bahrain Tariff (", editingTemplate.category, ")"), /* @__PURE__ */ React.createElement("span", { className: "breakdown" }, "Meta Cost: ", activeTariff.meta.toFixed(4), " BHD | Platform Fee: +", activeTariff.platform.toFixed(4), " BHD")), /* @__PURE__ */ React.createElement("div", { className: "tariff-rate-badge" }, "BHD ", activeTariff.client.toFixed(4), " / msg")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "16px" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: () => setEditingTemplate(null) }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: saving }, saving ? "Saving..." : editingTemplate.id ? "\u{1F4BE} Update Template" : "\u{1F680} Register Template"))))));
+  )), /* @__PURE__ */ React.createElement("div", { className: "tariff-estimate-banner", style: { margin: "14px 0" } }, /* @__PURE__ */ React.createElement("div", { className: "tariff-info" }, /* @__PURE__ */ React.createElement("span", { className: "title" }, "Bahrain Tariff (", editingTemplate.category, ")"), /* @__PURE__ */ React.createElement("span", { className: "breakdown" }, "Meta Cost: ", activeTariff.meta.toFixed(4), " BHD | Platform Fee: +", activeTariff.platform.toFixed(4), " BHD")), /* @__PURE__ */ React.createElement("div", { className: "tariff-rate-badge" }, "BHD ", activeTariff.client.toFixed(4), " / msg")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "16px" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: () => setEditingTemplate(null) }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: saving }, saving ? "Saving..." : editingTemplate.id ? "\u{1F4BE} Update Template" : "\u{1F680} Register Template"))))), confirmDialog && /* @__PURE__ */ React.createElement(
+    ConfirmDialog,
+    {
+      isOpen: !!confirmDialog,
+      title: confirmDialog.title,
+      subtitle: confirmDialog.subtitle,
+      icon: confirmDialog.icon,
+      badgeClass: confirmDialog.badgeClass,
+      confirmText: confirmDialog.confirmText,
+      cancelText: confirmDialog.cancelText,
+      onClose: () => setConfirmDialog(null),
+      onConfirm: confirmDialog.onConfirm
+    }
+  ));
 }
 function OdooApiHubView({ showToast }) {
   const [responseOutput, setResponseOutput] = useState("");
@@ -2624,6 +2721,7 @@ function UsersView({ currentUser, showToast }) {
   const [users, setUsers] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "Password@123", role: "user", status: "active" });
+  const [confirmDialog, setConfirmDialog] = useState(null);
   const loadUsers = () => {
     fetch("./api/users.php").then((res) => res.json()).then((res) => {
       if (res.success) setUsers(res.data);
@@ -2653,20 +2751,33 @@ function UsersView({ currentUser, showToast }) {
       showToast("Error creating user", "error");
     }
   };
-  const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this user?")) return;
-    try {
-      const res = await fetch(`./api/users.php?id=${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (data.success) {
-        showToast("User deleted");
-        loadUsers();
-      } else {
-        showToast(data.error, "error");
+  const handleDelete = (id) => {
+    const targetUser = users.find((u) => u.id === id);
+    const userName = targetUser ? `"${targetUser.name}"` : "this user";
+    setConfirmDialog({
+      title: "Delete User Account?",
+      subtitle: `Are you sure you want to permanently delete user account ${userName}? They will no longer be able to log in.`,
+      icon: "\u{1F464}",
+      badgeClass: "danger",
+      confirmText: "Yes, Delete User",
+      cancelText: "Cancel",
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`./api/users.php?id=${id}`, { method: "DELETE" });
+          const data = await res.json();
+          if (data.success) {
+            showToast("User deleted");
+            loadUsers();
+          } else {
+            showToast(data.error, "error");
+          }
+        } catch (e) {
+          showToast("Error deleting user", "error");
+        } finally {
+          setConfirmDialog(null);
+        }
       }
-    } catch (e) {
-      showToast("Error deleting user", "error");
-    }
+    });
   };
   const userColumns = [
     {
@@ -2723,7 +2834,20 @@ function UsersView({ currentUser, showToast }) {
     alignItems: "center",
     justifyContent: "center",
     zIndex: 1e4
-  } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { width: "480px" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "Create New User"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setShowAddModal(false) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Full Name"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: form.name, onChange: (e) => setForm({ ...form, name: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Email Address"), /* @__PURE__ */ React.createElement("input", { type: "email", className: "form-input", value: form.email, onChange: (e) => setForm({ ...form, email: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Password"), /* @__PURE__ */ React.createElement("input", { type: "password", className: "form-input", value: form.password, onChange: (e) => setForm({ ...form, password: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Role"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: form.role, onChange: (e) => setForm({ ...form, role: e.target.value }) }, /* @__PURE__ */ React.createElement("option", { value: "user" }, "User (Standard Access)"), /* @__PURE__ */ React.createElement("option", { value: "admin" }, "Admin (Full Client Access)"), /* @__PURE__ */ React.createElement("option", { value: "superadmin" }, "Superadmin (SaNDS Lab Platform)"))), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { width: "100%", marginTop: "10px" } }, "Save User")))));
+  } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { width: "480px" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "Create New User"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setShowAddModal(false) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Full Name"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: form.name, onChange: (e) => setForm({ ...form, name: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Email Address"), /* @__PURE__ */ React.createElement("input", { type: "email", className: "form-input", value: form.email, onChange: (e) => setForm({ ...form, email: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Password"), /* @__PURE__ */ React.createElement("input", { type: "password", className: "form-input", value: form.password, onChange: (e) => setForm({ ...form, password: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Role"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: form.role, onChange: (e) => setForm({ ...form, role: e.target.value }) }, /* @__PURE__ */ React.createElement("option", { value: "user" }, "User (Standard Access)"), /* @__PURE__ */ React.createElement("option", { value: "admin" }, "Admin (Full Client Access)"), /* @__PURE__ */ React.createElement("option", { value: "superadmin" }, "Superadmin (SaNDS Lab Platform)"))), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { width: "100%", marginTop: "10px" } }, "Save User")))), confirmDialog && /* @__PURE__ */ React.createElement(
+    ConfirmDialog,
+    {
+      isOpen: !!confirmDialog,
+      title: confirmDialog.title,
+      subtitle: confirmDialog.subtitle,
+      icon: confirmDialog.icon,
+      badgeClass: confirmDialog.badgeClass,
+      confirmText: confirmDialog.confirmText,
+      cancelText: confirmDialog.cancelText,
+      onClose: () => setConfirmDialog(null),
+      onConfirm: confirmDialog.onConfirm
+    }
+  ));
 }
 function formatCurrency(amount, currency = "BHD", decimals = 3) {
   const num = parseFloat(amount || 0);

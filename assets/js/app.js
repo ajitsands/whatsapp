@@ -227,6 +227,59 @@ function DataTable({
 }
 
 // -----------------------------------------------------------------------------
+// BEAUTIFUL CONFIRMATION DIALOG MODAL (REPLACES BROWSER CONFIRM/ALERT POPUPS)
+// -----------------------------------------------------------------------------
+function ConfirmDialog({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  subtitle,
+  icon = '🔄',
+  badgeClass = 'primary',
+  confirmText = 'Confirm',
+  cancelText = 'Cancel',
+  isProcessing = false
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="confirm-modal-overlay" onClick={onClose} style={{ zIndex: 12000 }}>
+      <div className="confirm-modal-card" onClick={e => e.stopPropagation()}>
+        <div className="confirm-modal-body">
+          <div className={`confirm-modal-icon-badge ${badgeClass}`}>
+            <span>{icon}</span>
+          </div>
+          <div className="confirm-modal-title">{title}</div>
+          {subtitle && (
+            <div className="confirm-modal-subtitle" style={{ fontSize: '13.5px', color: '#64748B', lineHeight: '1.55', marginTop: '6px' }}>
+              {subtitle}
+            </div>
+          )}
+        </div>
+        <div className="confirm-modal-actions">
+          <button
+            type="button"
+            className="btn-confirm-cancel"
+            onClick={onClose}
+            disabled={isProcessing}
+          >
+            {cancelText}
+          </button>
+          <button
+            type="button"
+            className={badgeClass === 'danger' ? 'btn-confirm-delete' : 'btn-confirm-primary'}
+            onClick={onConfirm}
+            disabled={isProcessing}
+          >
+            {isProcessing ? 'Processing...' : confirmText}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // -----------------------------------------------------------------------------
 // VERSION & ARCHITECTURE INSPECTOR MODAL (V2.0 ACTIVE & V1.0 LOCKED BASELINE)
 // -----------------------------------------------------------------------------
@@ -2109,6 +2162,7 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
   const [inspectCampaignId, setInspectCampaignId] = useState(null);
   const [templates, setTemplates] = useState([]);
   const [processingId, setProcessingId] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   const fetchCampaigns = async (silent = false) => {
     if (!silent) setLoading(true);
@@ -2207,41 +2261,68 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
     } catch (e) {}
   };
 
-  const handleCancelCampaign = async (id) => {
-    if (!confirm('Are you sure you want to cancel this campaign broadcast?')) return;
-    try {
-      const res = await fetch('./api/campaigns.php?action=cancel', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ campaign_id: id })
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast('Campaign cancelled');
-        fetchCampaigns(true);
+  const handleCancelCampaign = (id) => {
+    setConfirmDialog({
+      title: 'Cancel Broadcast Campaign?',
+      subtitle: 'Are you sure you want to cancel this broadcast? Any unsent recipients remaining in the queue will be halted.',
+      icon: '🛑',
+      badgeClass: 'danger',
+      confirmText: 'Yes, Cancel Broadcast',
+      cancelText: 'Keep Running',
+      onConfirm: async () => {
+        try {
+          const res = await fetch('./api/campaigns.php?action=cancel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ campaign_id: id })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast('Campaign cancelled');
+            fetchCampaigns(true);
+          }
+        } catch (e) {
+        } finally {
+          setConfirmDialog(null);
+        }
       }
-    } catch (e) {}
+    });
   };
 
-  const handleRerunCampaign = async (id) => {
-    if (!confirm('Re-run this campaign to re-broadcast to all recipients via Meta Cloud API?')) return;
-    try {
-      const res = await fetch('./api/campaigns.php?action=rerun', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ campaign_id: id })
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast('Campaign queue reset. Starting real Meta broadcast...', 'success');
-        await fetchCampaigns(true);
-        handleStartCampaign(id);
-      } else {
-        showToast(data.error || 'Failed to re-run campaign', 'error');
+  const handleRerunCampaign = (id) => {
+    const targetCamp = campaigns.find(c => c.id === id);
+    const campName = targetCamp ? `"${targetCamp.name}"` : 'this campaign';
+    const recCount = targetCamp?.total_recipients || 'all';
+
+    setConfirmDialog({
+      title: 'Re-run Broadcast Campaign?',
+      subtitle: `Reset the broadcast queue for ${campName} and re-dispatch official template messages to ${recCount} recipients via Meta Cloud API?`,
+      icon: '🔄',
+      badgeClass: 'primary',
+      confirmText: 'Yes, Re-broadcast Now',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        try {
+          const res = await fetch('./api/campaigns.php?action=rerun', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ campaign_id: id })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast('Campaign queue reset. Starting Meta broadcast...', 'success');
+            await fetchCampaigns(true);
+            handleStartCampaign(id);
+          } else {
+            showToast(data.error || 'Failed to re-run campaign', 'error');
+          }
+        } catch (e) {
+          showToast('Error re-running campaign', 'error');
+        } finally {
+          setConfirmDialog(null);
+        }
       }
-    } catch (e) {
-      showToast('Error re-running campaign', 'error');
-    }
+    });
   };
 
   const columns = [
@@ -2558,6 +2639,21 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
           globalSettings={globalSettings}
           showToast={showToast}
           onRerun={handleRerunCampaign}
+        />
+      )}
+
+      {/* Attractive Modern Confirmation Popup Dialog */}
+      {confirmDialog && (
+        <ConfirmDialog
+          isOpen={!!confirmDialog}
+          title={confirmDialog.title}
+          subtitle={confirmDialog.subtitle}
+          icon={confirmDialog.icon}
+          badgeClass={confirmDialog.badgeClass}
+          confirmText={confirmDialog.confirmText}
+          cancelText={confirmDialog.cancelText}
+          onClose={() => setConfirmDialog(null)}
+          onConfirm={confirmDialog.onConfirm}
         />
       )}
     </div>
@@ -3587,6 +3683,7 @@ function TemplatesView({ showToast }) {
   const [templates, setTemplates] = useState([]);
   const [editingTemplate, setEditingTemplate] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   const loadTemplates = () => {
     fetch('./api/templates.php')
@@ -3624,20 +3721,31 @@ function TemplatesView({ showToast }) {
     }
   };
 
-  const handleDeleteTemplate = async (id, name) => {
-    if (!confirm(`Are you sure you want to delete template "${name}"?`)) return;
-    try {
-      const res = await fetch(`./api/templates.php?id=${id}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (data.success) {
-        showToast('Template deleted successfully');
-        loadTemplates();
-      } else {
-        showToast(data.error || 'Failed to delete template', 'error');
+  const handleDeleteTemplate = (id, name) => {
+    setConfirmDialog({
+      title: 'Delete WhatsApp Template?',
+      subtitle: `Are you sure you want to permanently remove template "${name}" from your catalog?`,
+      icon: '🗑️',
+      badgeClass: 'danger',
+      confirmText: 'Yes, Delete Template',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`./api/templates.php?id=${id}`, { method: 'DELETE' });
+          const data = await res.json();
+          if (data.success) {
+            showToast('Template deleted successfully');
+            loadTemplates();
+          } else {
+            showToast(data.error || 'Failed to delete template', 'error');
+          }
+        } catch (err) {
+          showToast('Error deleting template', 'error');
+        } finally {
+          setConfirmDialog(null);
+        }
       }
-    } catch (err) {
-      showToast('Error deleting template', 'error');
-    }
+    });
   };
 
   // Tariff calculation for modal preview
@@ -3925,6 +4033,21 @@ function TemplatesView({ showToast }) {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Confirmation Dialog */}
+      {confirmDialog && (
+        <ConfirmDialog
+          isOpen={!!confirmDialog}
+          title={confirmDialog.title}
+          subtitle={confirmDialog.subtitle}
+          icon={confirmDialog.icon}
+          badgeClass={confirmDialog.badgeClass}
+          confirmText={confirmDialog.confirmText}
+          cancelText={confirmDialog.cancelText}
+          onClose={() => setConfirmDialog(null)}
+          onConfirm={confirmDialog.onConfirm}
+        />
       )}
     </div>
   );
@@ -4453,6 +4576,7 @@ function UsersView({ currentUser, showToast }) {
   const [users, setUsers] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', password: 'Password@123', role: 'user', status: 'active' });
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   const loadUsers = () => {
     fetch('./api/users.php')
@@ -4484,20 +4608,34 @@ function UsersView({ currentUser, showToast }) {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this user?')) return;
-    try {
-      const res = await fetch(`./api/users.php?id=${id}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (data.success) {
-        showToast('User deleted');
-        loadUsers();
-      } else {
-        showToast(data.error, 'error');
+  const handleDelete = (id) => {
+    const targetUser = users.find(u => u.id === id);
+    const userName = targetUser ? `"${targetUser.name}"` : 'this user';
+
+    setConfirmDialog({
+      title: 'Delete User Account?',
+      subtitle: `Are you sure you want to permanently delete user account ${userName}? They will no longer be able to log in.`,
+      icon: '👤',
+      badgeClass: 'danger',
+      confirmText: 'Yes, Delete User',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`./api/users.php?id=${id}`, { method: 'DELETE' });
+          const data = await res.json();
+          if (data.success) {
+            showToast('User deleted');
+            loadUsers();
+          } else {
+            showToast(data.error, 'error');
+          }
+        } catch (e) {
+          showToast('Error deleting user', 'error');
+        } finally {
+          setConfirmDialog(null);
+        }
       }
-    } catch (e) {
-      showToast('Error deleting user', 'error');
-    }
+    });
   };
 
   const userColumns = [
@@ -4614,6 +4752,21 @@ function UsersView({ currentUser, showToast }) {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Confirmation Dialog */}
+      {confirmDialog && (
+        <ConfirmDialog
+          isOpen={!!confirmDialog}
+          title={confirmDialog.title}
+          subtitle={confirmDialog.subtitle}
+          icon={confirmDialog.icon}
+          badgeClass={confirmDialog.badgeClass}
+          confirmText={confirmDialog.confirmText}
+          cancelText={confirmDialog.cancelText}
+          onClose={() => setConfirmDialog(null)}
+          onConfirm={confirmDialog.onConfirm}
+        />
       )}
     </div>
   );
