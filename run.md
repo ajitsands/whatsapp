@@ -4,8 +4,8 @@
 ---
 
 ## 📌 Development Checkpoint & Milestone Snapshot (All Verified & Tested)
-- **Checkpoint Timestamp:** `2026-10-13 13:50:00 (Local Time)`
-- **Active Platform Generation:** `Version 2.3.1` (Streamlined Navigation: Grouped "Messages" Dropdown Menu)
+- **Checkpoint Timestamp:** `2026-10-13 14:45:00 (Local Time)`
+- **Active Platform Generation:** `Version 2.4.0` (WhatsApp Template Studio, Meta Graph API Approval & Active/Inactive Lifecycle Management Released & Live)
 - **Locked Baseline Milestone:** `Version 1.0.0` (Permanently locked in Git with tags `v1.0.0` & `v1.0` on commit `9dd6ebc`)
 - **Live Production URL:** `https://whatsapp.sandslab.com`
 - **GitHub Repository:** `https://github.com/ajitsands/whatsapp.git` (`branch: main`)
@@ -16,12 +16,33 @@
 
 ## 🏆 Summary of Platform Generation Releases
 
-### 1. Version 2.3.1 — Streamlined Navigation & "Messages" Dropdown Menu
+### 1. Version 2.4.0 — WhatsApp Template Studio, Meta Graph API Approval & Active/Inactive Lifecycle Management
+- **Direct Meta Graph API Approval Submission:**
+  - Automated `POST /message_templates` integration communicating with Meta Cloud API (`v20.0`) under WABA `313160575215815`.
+  - Automatic structure validation: enforcing lowercase alphanumeric keys, category selection (`UTILITY`, `MARKETING`, `AUTHENTICATION`), and sequential variable placeholders (`{{1}}`, `{{2}}`).
+  - Automated sample parameter dictionary generator matching Meta AI review requirements.
+- **Pre-Approved Meta Industry Presets Library:**
+  - Curated gallery of 6 standard templates:
+    1. *Tax Invoice Notification with PDF* (`UTILITY` — Document attachment)
+    2. *Sales Order Confirmation & Tracking* (`UTILITY` — Text header)
+    3. *Payment Receipt & Balance Statement* (`UTILITY`)
+    4. *Appointment / Schedule Reminder* (`UTILITY`)
+    5. *Seasonal Promotion & Discount Offer* (`MARKETING` — Image banner & CTA)
+    6. *Security One-Time Passcode (OTP)* (`AUTHENTICATION`)
+- **Live Handset Simulator:**
+  - Real-time mobile phone mockup previewing live speech bubbles, document cards, image banners, and variable interpolation on every keystroke.
+- **Active / Inactive Template Lifecycle Toggle:**
+  - 1-click toggle pills in the Templates table (`api/templates.php?action=toggle_active`) to pause or activate templates with instant DB synchronization.
+  - Automatic exclusion of inactive/paused templates from Composer and Campaign Broadcast wizards.
+- **Live Meta Status Synchronization:**
+  - Single-click **"🔄 Sync with Meta"** button querying Meta WABA to refresh approval statuses (`APPROVED`, `PENDING`, `REJECTED`) and auto-import templates.
+
+### 2. Version 2.3.1 — Streamlined Navigation & "Messages" Dropdown Menu
 - **Navigation Consolidation:** Grouped `inbox`, `campaigns`, `composer`, and `logs` into a single, clean **"💬 Messages ▼"** dropdown in the top navigation bar.
 - **Dynamic State & Badging:** The "Messages" parent button remains highlighted whenever any of the 4 sub-views is active, and automatically displays the live unread message count badge (`{inboxUnreadTotal}`).
 - **Sub-View Descriptions & Polish:** Rich dropdown cards featuring icons, titles, and concise feature descriptions with active item indicator dots and outside-click auto-close.
 
-### 2. Version 2.3.0 — Odoo ERP Automated Action Webhook & Model Sync (`#api_hub` & `api/odoo_webhook.php`)
+### 3. Version 2.3.0 — Odoo ERP Automated Action Webhook & Model Sync (`#api_hub` & `api/odoo_webhook.php`)
 - **Dedicated Inbound Webhook Gateway (`api/odoo_webhook.php`):**
   - Token-authenticated endpoint (`X-API-Key`) receiving automated webhook dispatches from Odoo ERP.
   - Native support for standard Odoo business models:
