@@ -204,7 +204,10 @@ function App() {
   });
   const [loading, setLoading] = useState(!currentUser);
   const [showVersionModal, setShowVersionModal] = useState(false);
-  const [globalSettings, setGlobalSettings] = useState({
+  const [globalSettings2, setGlobalSettings] = useState({
+    company_name: "UniGlobal Consultancy W.L.L",
+    company_logo: "./assets/logos/SaNDSLab-LogoNewUpdated.png",
+    business_display_name: "UniGlobal Consultancy W.L.L",
     system_currency: "BHD",
     currency_decimals: "3",
     system_date_format: "YYYY-MM-DD HH:mm:ss",
@@ -219,6 +222,11 @@ function App() {
     tariff_service_platform: "0.0025",
     wallet_enforcement: "1"
   });
+  useEffect(() => {
+    if (globalSettings2?.company_name) {
+      document.title = `${globalSettings2.company_name} | SaNDS Lab`;
+    }
+  }, [globalSettings2?.company_name]);
   const [walletBalance, setWalletBalance] = useState(0);
   const [activeTab, setActiveTab] = useState(() => {
     const hash = window.location.hash.replace("#", "").trim();
@@ -412,7 +420,7 @@ function App() {
         onLogin: handleLogin,
         onSwitchDemo: switchDemoRole,
         licenseInfo,
-        globalSettings,
+        globalSettings: globalSettings2,
         onOpenLicenseActivation: () => setShowLicenseActivationModal(true)
       }
     ), (showLicenseActivationModal || isLicenseLocked) && /* @__PURE__ */ React.createElement(
@@ -430,8 +438,8 @@ function App() {
       }
     ));
   }
-  const curr = globalSettings?.system_currency || "BHD";
-  const dec = parseInt(globalSettings?.currency_decimals || "3", 10);
+  const curr = globalSettings2?.system_currency || "BHD";
+  const dec = parseInt(globalSettings2?.currency_decimals || "3", 10);
   return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh" } }, toast && /* @__PURE__ */ React.createElement("div", { style: {
     position: "fixed",
     top: "20px",
@@ -447,7 +455,18 @@ function App() {
     display: "flex",
     alignItems: "center",
     gap: "10px"
-  } }, /* @__PURE__ */ React.createElement("span", null, toast.type === "error" ? "\u26A0\uFE0F" : "\u2705"), toast.message), /* @__PURE__ */ React.createElement("header", { className: "app-header" }, /* @__PURE__ */ React.createElement("div", { className: "header-top-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-top-inner" }, /* @__PURE__ */ React.createElement("div", { className: "header-brand" }, /* @__PURE__ */ React.createElement("img", { src: "./assets/logos/SaNDSLab-LogoNewUpdated.png", alt: "SaNDS Lab Middle East", className: "brand-logo" }), /* @__PURE__ */ React.createElement("div", { className: "brand-badge" }, /* @__PURE__ */ React.createElement("span", { className: "dot" }), " WhatsApp Gateway"), /* @__PURE__ */ React.createElement(
+  } }, /* @__PURE__ */ React.createElement("span", null, toast.type === "error" ? "\u26A0\uFE0F" : "\u2705"), toast.message), /* @__PURE__ */ React.createElement("header", { className: "app-header" }, /* @__PURE__ */ React.createElement("div", { className: "header-top-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-top-inner" }, /* @__PURE__ */ React.createElement("div", { className: "header-brand" }, /* @__PURE__ */ React.createElement(
+    "img",
+    {
+      src: globalSettings2?.company_logo || "./assets/logos/SaNDSLab-LogoNewUpdated.png",
+      alt: globalSettings2?.company_name || "Company Logo",
+      className: "brand-logo",
+      style: { maxHeight: "38px", maxWidth: "160px", objectFit: "contain" },
+      onError: (e) => {
+        e.target.src = "./assets/logos/SaNDSLab-LogoNewUpdated.png";
+      }
+    }
+  ), /* @__PURE__ */ React.createElement("div", { className: "brand-badge" }, /* @__PURE__ */ React.createElement("span", { className: "dot" }), " ", globalSettings2?.company_name ? globalSettings2.company_name : "WhatsApp Gateway"), /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "button",
@@ -462,7 +481,7 @@ function App() {
     {
       className: `license-header-pill ${!licenseInfo || !licenseInfo.valid ? "status-unlicensed" : licenseInfo.days_left <= 7 ? "status-expiring-soon" : licenseInfo.days_left <= 30 ? "status-expiring-month" : "status-active"}`,
       onClick: () => setShowLicenseDetailsModal(true),
-      title: licenseInfo?.expires_at ? `Click to view License details (Expires: ${formatExpiryDate(licenseInfo.expires_at, globalSettings?.system_date_format)})` : "Click to view SaNDS Lab Application Key & Expiry details"
+      title: licenseInfo?.expires_at ? `Click to view License details (Expires: ${formatExpiryDate(licenseInfo.expires_at, globalSettings2?.system_date_format)})` : "Click to view SaNDS Lab Application Key & Expiry details"
     },
     /* @__PURE__ */ React.createElement("span", null, !licenseInfo || !licenseInfo.valid ? "\u26A0\uFE0F" : licenseInfo.days_left <= 7 ? "\u23F3" : "\u{1F6E1}\uFE0F"),
     /* @__PURE__ */ React.createElement("span", null, "License: ", /* @__PURE__ */ React.createElement("strong", null, licenseInfo?.duration_text || (checkingLicense ? "Checking..." : "Unlicensed")))
@@ -560,12 +579,12 @@ function App() {
     },
     /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-item-left" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "15px" } }, "\u{1F4DC}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, "Message Logs"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", fontWeight: "400", marginTop: "1px" } }, "Delivery & Status Telemetry"))),
     activeTab === "logs" && /* @__PURE__ */ React.createElement("span", { className: "nav-item-indicator" })
-  ))), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "templates" ? "active" : ""}`, onClick: () => navigateToTab("templates") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Templates & Tariffs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "wallet" ? "active" : ""}`, onClick: () => navigateToTab("wallet") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Wallet & Billing"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_hub" ? "active" : ""}`, onClick: () => navigateToTab("api_hub") }, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo API Hub"), ["superadmin", "admin"].includes(currentUser.role) && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_keys" ? "active" : ""}`, onClick: () => navigateToTab("api_keys") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"), " API Keys"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "users" ? "active" : ""}`, onClick: () => navigateToTab("users") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " Users"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "settings" ? "active" : ""}`, onClick: () => navigateToTab("settings") }, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Engine Settings")))))), /* @__PURE__ */ React.createElement("main", { className: "app-body" }, activeTab === "dashboard" && /* @__PURE__ */ React.createElement(DashboardView, { onNavigate: navigateToTab, globalSettings, currentUser }), activeTab === "inbox" && /* @__PURE__ */ React.createElement(LiveAgentInboxView, { currentUser, showToast, globalSettings, onUnreadCountChange: setInboxUnreadTotal, onNavigate: navigateToTab }), activeTab === "campaigns" && /* @__PURE__ */ React.createElement(CampaignsView, { currentUser, showToast, globalSettings, onNavigate: navigateToTab, loadWalletBalance }), activeTab === "composer" && /* @__PURE__ */ React.createElement(ComposerView, { showToast, onSent: () => {
+  ))), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "templates" ? "active" : ""}`, onClick: () => navigateToTab("templates") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Templates & Tariffs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "wallet" ? "active" : ""}`, onClick: () => navigateToTab("wallet") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Wallet & Billing"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_hub" ? "active" : ""}`, onClick: () => navigateToTab("api_hub") }, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo API Hub"), ["superadmin", "admin"].includes(currentUser.role) && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_keys" ? "active" : ""}`, onClick: () => navigateToTab("api_keys") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"), " API Keys"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "users" ? "active" : ""}`, onClick: () => navigateToTab("users") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " Users"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "settings" ? "active" : ""}`, onClick: () => navigateToTab("settings") }, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Engine Settings")))))), /* @__PURE__ */ React.createElement("main", { className: "app-body" }, activeTab === "dashboard" && /* @__PURE__ */ React.createElement(DashboardView, { onNavigate: navigateToTab, globalSettings: globalSettings2, currentUser }), activeTab === "inbox" && /* @__PURE__ */ React.createElement(LiveAgentInboxView, { currentUser, showToast, globalSettings: globalSettings2, onUnreadCountChange: setInboxUnreadTotal, onNavigate: navigateToTab }), activeTab === "campaigns" && /* @__PURE__ */ React.createElement(CampaignsView, { currentUser, showToast, globalSettings: globalSettings2, onNavigate: navigateToTab, loadWalletBalance }), activeTab === "composer" && /* @__PURE__ */ React.createElement(ComposerView, { showToast, onSent: () => {
     navigateToTab("inbox");
     loadWalletBalance();
-  }, globalSettings }), activeTab === "logs" && /* @__PURE__ */ React.createElement(MessageLogsView, { showToast, globalSettings, currentUser, onOpenInbox: (phone) => {
+  }, globalSettings: globalSettings2 }), activeTab === "logs" && /* @__PURE__ */ React.createElement(MessageLogsView, { showToast, globalSettings: globalSettings2, currentUser, onOpenInbox: (phone) => {
     navigateToTab("inbox");
-  } }), activeTab === "templates" && /* @__PURE__ */ React.createElement(TemplatesView, { showToast, globalSettings, currentUser }), activeTab === "wallet" && /* @__PURE__ */ React.createElement(WalletView, { currentUser, showToast, globalSettings, onBalanceChange: setWalletBalance }), activeTab === "api_hub" && /* @__PURE__ */ React.createElement(OdooApiHubView, { showToast, globalSettings }), activeTab === "api_keys" && /* @__PURE__ */ React.createElement(ApiKeysView, { showToast }), activeTab === "users" && /* @__PURE__ */ React.createElement(UsersView, { currentUser, showToast }), activeTab === "settings" && /* @__PURE__ */ React.createElement(SettingsView, { currentUser, showToast, onSettingsChange: (s) => {
+  } }), activeTab === "templates" && /* @__PURE__ */ React.createElement(TemplatesView, { showToast, globalSettings: globalSettings2, currentUser }), activeTab === "wallet" && /* @__PURE__ */ React.createElement(WalletView, { currentUser, showToast, globalSettings: globalSettings2, onBalanceChange: setWalletBalance }), activeTab === "api_hub" && /* @__PURE__ */ React.createElement(OdooApiHubView, { showToast, globalSettings: globalSettings2 }), activeTab === "api_keys" && /* @__PURE__ */ React.createElement(ApiKeysView, { showToast }), activeTab === "users" && /* @__PURE__ */ React.createElement(UsersView, { currentUser, showToast }), activeTab === "settings" && /* @__PURE__ */ React.createElement(SettingsView, { currentUser, showToast, onSettingsChange: (s) => {
     setGlobalSettings((prev) => ({ ...prev, ...s }));
     loadWalletBalance();
   } })), /* @__PURE__ */ React.createElement("footer", { className: "app-footer" }, /* @__PURE__ */ React.createElement("div", { className: "footer-inner" }, /* @__PURE__ */ React.createElement("div", { className: "footer-left" }, "All Rights Reserved | Engineered By SaNDS Lab Middle East W.L.L."), /* @__PURE__ */ React.createElement("div", { className: "footer-right" }, /* @__PURE__ */ React.createElement(
@@ -599,7 +618,7 @@ function App() {
     LicenseDetailsModal,
     {
       licenseInfo,
-      globalSettings,
+      globalSettings: globalSettings2,
       onClose: () => setShowLicenseDetailsModal(false),
       onChangeKey: () => {
         setShowLicenseDetailsModal(false);
@@ -826,7 +845,7 @@ function formatExpiryDate(dateStr, format = "YYYY-MM-DD HH:mm:ss") {
     return dateStr;
   }
 }
-function LicenseDetailsModal({ licenseInfo, globalSettings, onClose, onChangeKey, onRefresh, showToast }) {
+function LicenseDetailsModal({ licenseInfo, globalSettings: globalSettings2, onClose, onChangeKey, onRefresh, showToast }) {
   const [refreshing, setRefreshing] = useState(false);
   const [showFullKey, setShowFullKey] = useState(false);
   const handleRefresh = async () => {
@@ -870,7 +889,7 @@ function LicenseDetailsModal({ licenseInfo, globalSettings, onClose, onChangeKey
     borderRadius: "20px",
     fontSize: "11.5px",
     fontWeight: "700"
-  } }, licenseInfo?.duration_text || "Unlicensed")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "12px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Expiry Duration Left:"), /* @__PURE__ */ React.createElement("strong", { style: { color: licenseInfo?.days_left <= 7 ? "#DC2626" : "var(--wa-dark-teal)", fontSize: "13px" } }, "\u23F3 ", licenseInfo?.duration_text || "N/A")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Expiration Date:"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, formatExpiryDate(licenseInfo?.expires_at, globalSettings?.system_date_format) || "Lifetime")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Licensed Domain:"), /* @__PURE__ */ React.createElement("strong", { style: { fontFamily: "monospace", fontSize: "13px" } }, licenseInfo?.domain || "localhost")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Product Plan / Tier:"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, licenseInfo?.plan || "Enterprise License")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Remote Server Sync:"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#047857" } }, "\u2713 Every 24h Auto-Check ", licenseInfo?.last_online_check ? `(Last: ${formatExpiryDate(licenseInfo.last_online_check, globalSettings?.system_date_format)})` : "")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "License Key:"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontFamily: "monospace", fontSize: "12px", fontWeight: "700" } }, showFullKey ? licenseInfo?.full_license_key || licenseInfo?.license_key : licenseInfo?.stored_license_key || "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"), /* @__PURE__ */ React.createElement(
+  } }, licenseInfo?.duration_text || "Unlicensed")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "12px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Expiry Duration Left:"), /* @__PURE__ */ React.createElement("strong", { style: { color: licenseInfo?.days_left <= 7 ? "#DC2626" : "var(--wa-dark-teal)", fontSize: "13px" } }, "\u23F3 ", licenseInfo?.duration_text || "N/A")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Expiration Date:"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, formatExpiryDate(licenseInfo?.expires_at, globalSettings2?.system_date_format) || "Lifetime")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Licensed Domain:"), /* @__PURE__ */ React.createElement("strong", { style: { fontFamily: "monospace", fontSize: "13px" } }, licenseInfo?.domain || "localhost")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Product Plan / Tier:"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, licenseInfo?.plan || "Enterprise License")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Remote Server Sync:"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#047857" } }, "\u2713 Every 24h Auto-Check ", licenseInfo?.last_online_check ? `(Last: ${formatExpiryDate(licenseInfo.last_online_check, globalSettings2?.system_date_format)})` : "")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "License Key:"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontFamily: "monospace", fontSize: "12px", fontWeight: "700" } }, showFullKey ? licenseInfo?.full_license_key || licenseInfo?.license_key : licenseInfo?.stored_license_key || "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"), /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "button",
@@ -977,7 +996,7 @@ function ChangePasswordModal({ currentUser, onClose, showToast }) {
     }
   ))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "12px 20px", display: "flex", gap: "8px", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose, disabled: loading }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: loading }, loading ? "Updating..." : "\u{1F4BE} Update Password")))));
 }
-function LoginView({ onLogin, onSwitchDemo, licenseInfo, globalSettings, onOpenLicenseActivation }) {
+function LoginView({ onLogin, onSwitchDemo, licenseInfo, globalSettings: globalSettings2, onOpenLicenseActivation }) {
   const [email, setEmail] = useState("admin@uniglobal.bh");
   const [password, setPassword] = useState("Password@123");
   const [loading, setLoading] = useState(false);
@@ -1019,7 +1038,18 @@ function LoginView({ onLogin, onSwitchDemo, licenseInfo, globalSettings, onOpenL
     setPassword("Password@123");
     onSwitchDemo(role);
   };
-  return /* @__PURE__ */ React.createElement("div", { className: "login-container" }, /* @__PURE__ */ React.createElement("div", { className: "login-card" }, /* @__PURE__ */ React.createElement("div", { className: "login-header" }, /* @__PURE__ */ React.createElement("img", { src: "./assets/logos/SaNDSLab-LogoNewUpdated.png", alt: "SaNDS Lab", className: "login-logo" }), /* @__PURE__ */ React.createElement("h2", null, "WhatsApp Integration Platform"), /* @__PURE__ */ React.createElement("p", null, "Sign in to manage messaging, templates, and Odoo ERP webhooks")), licenseInfo && !licenseInfo.valid && /* @__PURE__ */ React.createElement("div", { style: {
+  return /* @__PURE__ */ React.createElement("div", { className: "login-container" }, /* @__PURE__ */ React.createElement("div", { className: "login-card" }, /* @__PURE__ */ React.createElement("div", { className: "login-header" }, /* @__PURE__ */ React.createElement(
+    "img",
+    {
+      src: globalSettings2?.company_logo || "./assets/logos/SaNDSLab-LogoNewUpdated.png",
+      alt: globalSettings2?.company_name || "Company Logo",
+      className: "login-logo",
+      style: { maxHeight: "60px", maxWidth: "220px", objectFit: "contain", margin: "0 auto 12px auto" },
+      onError: (e) => {
+        e.target.src = "./assets/logos/SaNDSLab-LogoNewUpdated.png";
+      }
+    }
+  ), /* @__PURE__ */ React.createElement("h2", null, globalSettings2?.company_name || "WhatsApp Integration Platform"), /* @__PURE__ */ React.createElement("p", null, "Sign in to manage messaging, templates, and Odoo ERP webhooks")), licenseInfo && !licenseInfo.valid && /* @__PURE__ */ React.createElement("div", { style: {
     background: "#FEF2F2",
     border: "1px solid #FCA5A5",
     color: "#991B1B",
@@ -1052,7 +1082,7 @@ function LoginView({ onLogin, onSwitchDemo, licenseInfo, globalSettings, onOpenL
     alignItems: "center",
     justifyContent: "space-between",
     fontWeight: "600"
-  } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6E1}\uFE0F License: ", /* @__PURE__ */ React.createElement("strong", null, licenseInfo.duration_text), " (", formatExpiryDate(licenseInfo.expires_at, globalSettings?.system_date_format), ")"), /* @__PURE__ */ React.createElement(
+  } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6E1}\uFE0F License: ", /* @__PURE__ */ React.createElement("strong", null, licenseInfo.duration_text), " (", formatExpiryDate(licenseInfo.expires_at, globalSettings2?.system_date_format), ")"), /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "button",
@@ -1081,7 +1111,7 @@ function LoginView({ onLogin, onSwitchDemo, licenseInfo, globalSettings, onOpenL
     }
   )), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { width: "100%", padding: "10px", marginTop: "6px" }, disabled: loading }, loading ? "Authenticating..." : "Sign In to Gateway")), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginTop: "24px", fontSize: "11.5px", color: "var(--text-muted)" } }, "All Rights Reserved | Engineered By SaNDS Lab Middle East W.L.L.")));
 }
-function DashboardView({ onNavigate, globalSettings, currentUser }) {
+function DashboardView({ onNavigate, globalSettings: globalSettings2, currentUser }) {
   const isSuperAdmin = currentUser?.role === "superadmin";
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -1312,9 +1342,11 @@ function ComposerView({ showToast, onSent }) {
       onChange: (e) => setCustomText(e.target.value),
       placeholder: "Type direct WhatsApp message here..."
     }
-  )), /* @__PURE__ */ React.createElement("div", { className: "tariff-estimate-banner" }, /* @__PURE__ */ React.createElement("div", { className: "tariff-info" }, /* @__PURE__ */ React.createElement("span", { className: "title" }, "Category: ", category), /* @__PURE__ */ React.createElement("span", { className: "breakdown" }, "Meta Cost: ", tariffEstimate.meta.toFixed(4), " BHD | Platform Charges: +", tariffEstimate.platform.toFixed(4), " BHD")), /* @__PURE__ */ React.createElement("div", { className: "tariff-rate-badge" }, "BHD ", tariffEstimate.client.toFixed(4), " / msg")), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-success", style: { width: "100%", marginTop: "20px", padding: "12px" }, disabled: sending }, sending ? "Dispatching via Meta API..." : "\u{1F680} Send WhatsApp Notification Now"))), /* @__PURE__ */ React.createElement("div", { className: "phone-mockup-wrapper" }, /* @__PURE__ */ React.createElement("div", { className: "phone-device" }, /* @__PURE__ */ React.createElement("div", { className: "phone-notch" }, /* @__PURE__ */ React.createElement("div", { className: "phone-speaker" })), /* @__PURE__ */ React.createElement("div", { className: "phone-screen" }, /* @__PURE__ */ React.createElement("div", { className: "wa-chat-header" }, /* @__PURE__ */ React.createElement("div", { className: "wa-avatar" }, "UG"), /* @__PURE__ */ React.createElement("div", { className: "wa-user-info" }, /* @__PURE__ */ React.createElement("div", { className: "wa-contact-name" }, "UniGlobal Consultancy ", /* @__PURE__ */ React.createElement("span", { className: "wa-verified-icon" }, "\u2713")), /* @__PURE__ */ React.createElement("div", { className: "wa-status-text" }, "Official Business Account"))), /* @__PURE__ */ React.createElement("div", { className: "wa-chat-body" }, /* @__PURE__ */ React.createElement("div", { className: "wa-date-pill" }, "TODAY"), /* @__PURE__ */ React.createElement("div", { className: "wa-bubble" }, currentTemplateObj?.header_type === "DOCUMENT" && /* @__PURE__ */ React.createElement("div", { className: "wa-bubble-doc" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4C4}"), /* @__PURE__ */ React.createElement("div", { style: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, mediaName || "INV_9941.pdf", /* @__PURE__ */ React.createElement("div", { style: { fontSize: "9px", color: "#4B5563" } }, "PDF Document \u2022 345 KB"))), /* @__PURE__ */ React.createElement("div", { style: { whiteSpace: "pre-line" } }, renderedText), currentTemplateObj?.footer_text && /* @__PURE__ */ React.createElement("div", { className: "wa-bubble-footer" }, currentTemplateObj.footer_text), /* @__PURE__ */ React.createElement("div", { className: "wa-bubble-meta" }, /* @__PURE__ */ React.createElement("span", null, "10:42 AM"), /* @__PURE__ */ React.createElement("span", { className: "wa-ticks" }, "\u2713\u2713")))), /* @__PURE__ */ React.createElement("div", { className: "wa-chat-input-bar" }, /* @__PURE__ */ React.createElement("div", { className: "wa-dummy-input" }, "Message"), /* @__PURE__ */ React.createElement("span", { style: { color: "#075E54", fontSize: "14px" } }, "\u{1F3A4}")))))));
+  )), /* @__PURE__ */ React.createElement("div", { className: "tariff-estimate-banner" }, /* @__PURE__ */ React.createElement("div", { className: "tariff-info" }, /* @__PURE__ */ React.createElement("span", { className: "title" }, "Category: ", category), /* @__PURE__ */ React.createElement("span", { className: "breakdown" }, "Meta Cost: ", tariffEstimate.meta.toFixed(4), " BHD | Platform Charges: +", tariffEstimate.platform.toFixed(4), " BHD")), /* @__PURE__ */ React.createElement("div", { className: "tariff-rate-badge" }, "BHD ", tariffEstimate.client.toFixed(4), " / msg")), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-success", style: { width: "100%", marginTop: "20px", padding: "12px" }, disabled: sending }, sending ? "Dispatching via Meta API..." : "\u{1F680} Send WhatsApp Notification Now"))), /* @__PURE__ */ React.createElement("div", { className: "phone-mockup-wrapper" }, /* @__PURE__ */ React.createElement("div", { className: "phone-device" }, /* @__PURE__ */ React.createElement("div", { className: "phone-notch" }, /* @__PURE__ */ React.createElement("div", { className: "phone-speaker" })), /* @__PURE__ */ React.createElement("div", { className: "phone-screen" }, /* @__PURE__ */ React.createElement("div", { className: "wa-chat-header" }, /* @__PURE__ */ React.createElement("div", { className: "wa-avatar", style: { overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" } }, globalSettings?.company_logo ? /* @__PURE__ */ React.createElement("img", { src: globalSettings.company_logo, alt: "Logo", style: { width: "100%", height: "100%", objectFit: "cover" }, onError: (e) => {
+    e.target.style.display = "none";
+  } }) : (globalSettings?.company_name || "UG").substring(0, 2).toUpperCase()), /* @__PURE__ */ React.createElement("div", { className: "wa-user-info" }, /* @__PURE__ */ React.createElement("div", { className: "wa-contact-name" }, globalSettings?.company_name || globalSettings?.business_display_name || "Business Account", " ", /* @__PURE__ */ React.createElement("span", { className: "wa-verified-icon" }, "\u2713")), /* @__PURE__ */ React.createElement("div", { className: "wa-status-text" }, "Official Business Account"))), /* @__PURE__ */ React.createElement("div", { className: "wa-chat-body" }, /* @__PURE__ */ React.createElement("div", { className: "wa-date-pill" }, "TODAY"), /* @__PURE__ */ React.createElement("div", { className: "wa-bubble" }, currentTemplateObj?.header_type === "DOCUMENT" && /* @__PURE__ */ React.createElement("div", { className: "wa-bubble-doc" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4C4}"), /* @__PURE__ */ React.createElement("div", { style: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, mediaName || "INV_9941.pdf", /* @__PURE__ */ React.createElement("div", { style: { fontSize: "9px", color: "#4B5563" } }, "PDF Document \u2022 345 KB"))), /* @__PURE__ */ React.createElement("div", { style: { whiteSpace: "pre-line" } }, renderedText), currentTemplateObj?.footer_text && /* @__PURE__ */ React.createElement("div", { className: "wa-bubble-footer" }, currentTemplateObj.footer_text), /* @__PURE__ */ React.createElement("div", { className: "wa-bubble-meta" }, /* @__PURE__ */ React.createElement("span", null, "10:42 AM"), /* @__PURE__ */ React.createElement("span", { className: "wa-ticks" }, "\u2713\u2713")))), /* @__PURE__ */ React.createElement("div", { className: "wa-chat-input-bar" }, /* @__PURE__ */ React.createElement("div", { className: "wa-dummy-input" }, "Message"), /* @__PURE__ */ React.createElement("span", { style: { color: "#075E54", fontSize: "14px" } }, "\u{1F3A4}")))))));
 }
-function ConversationChatModal({ phone, onClose, showToast, globalSettings }) {
+function ConversationChatModal({ phone, onClose, showToast, globalSettings: globalSettings2 }) {
   const [thread, setThread] = useState([]);
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
@@ -1399,7 +1431,7 @@ function ConversationChatModal({ phone, onClose, showToast, globalSettings }) {
     if (e.target === e.currentTarget) onClose();
   } }, /* @__PURE__ */ React.createElement("div", { className: "chat-modal-box" }, /* @__PURE__ */ React.createElement("div", { className: "chat-modal-header" }, /* @__PURE__ */ React.createElement("div", { className: "chat-header-user" }, /* @__PURE__ */ React.createElement("div", { className: "chat-avatar" }, cleanPhone.slice(-2), /* @__PURE__ */ React.createElement("span", { className: "chat-avatar-online", title: "WhatsApp Connected" })), /* @__PURE__ */ React.createElement("div", { className: "chat-user-meta" }, /* @__PURE__ */ React.createElement("span", { className: "chat-user-phone" }, cleanPhone), /* @__PURE__ */ React.createElement("span", { className: "chat-user-sub" }, "Official WhatsApp Gateway \u2022 ", hasRecentInbound ? /* @__PURE__ */ React.createElement("span", { className: "chat-window-pill" }, "\u{1F7E2} 24h Window Active") : /* @__PURE__ */ React.createElement("span", { className: "chat-window-pill", style: { background: "rgba(234, 179, 8, 0.2)", color: "#FEF08A" } }, "\u{1F7E1} Outbound Session")))), /* @__PURE__ */ React.createElement("div", { className: "chat-header-actions" }, /* @__PURE__ */ React.createElement("button", { className: "btn-chat-close", onClick: onClose, title: "Close Chat" }, "\u2715"))), /* @__PURE__ */ React.createElement("div", { className: "chat-messages-canvas" }, /* @__PURE__ */ React.createElement("div", { className: "chat-date-separator" }, "\u{1F512} WhatsApp Cloud API Live Conversation Thread"), loading && thread.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", color: "#64748B", padding: "30px" } }, "Loading conversation history...") : thread.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", color: "#64748B", padding: "30px" } }, "No messages exchanged with ", cleanPhone, " yet.") : thread.map((msg, idx) => {
     const isOutbound = msg.direction === "outbound";
-    return /* @__PURE__ */ React.createElement("div", { key: msg.id || idx, className: `chat-bubble-row ${isOutbound ? "outbound" : "inbound"}` }, /* @__PURE__ */ React.createElement("div", { className: "chat-bubble" }, msg.template_name && /* @__PURE__ */ React.createElement("span", { className: "chat-bubble-template-tag" }, "\u{1F4CB} ", msg.template_name, " [", msg.category, "]"), msg.header_media_name && /* @__PURE__ */ React.createElement("div", { className: "chat-bubble-media" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CE}"), /* @__PURE__ */ React.createElement("span", null, msg.header_media_name)), /* @__PURE__ */ React.createElement("div", { style: { whiteSpace: "pre-wrap" } }, msg.message_body), /* @__PURE__ */ React.createElement("div", { className: "chat-bubble-footer" }, /* @__PURE__ */ React.createElement("span", null, formatDateTime(msg.created_at, globalSettings?.system_date_format)), isOutbound && /* @__PURE__ */ React.createElement("span", null, msg.status === "read" ? /* @__PURE__ */ React.createElement("span", { className: "chat-tick-read", title: "Read" }, "\u2713\u2713") : msg.status === "delivered" ? /* @__PURE__ */ React.createElement("span", { className: "chat-tick-delivered", title: "Delivered" }, "\u2713\u2713") : msg.status === "sent" ? /* @__PURE__ */ React.createElement("span", { title: "Sent" }, "\u2713") : msg.status === "failed" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" }, title: msg.error_message || "Failed" }, "\u26A0\uFE0F") : /* @__PURE__ */ React.createElement("span", { style: { color: "#94A3B8" }, title: "Queued" }, "\u23F1\uFE0F")))));
+    return /* @__PURE__ */ React.createElement("div", { key: msg.id || idx, className: `chat-bubble-row ${isOutbound ? "outbound" : "inbound"}` }, /* @__PURE__ */ React.createElement("div", { className: "chat-bubble" }, msg.template_name && /* @__PURE__ */ React.createElement("span", { className: "chat-bubble-template-tag" }, "\u{1F4CB} ", msg.template_name, " [", msg.category, "]"), msg.header_media_name && /* @__PURE__ */ React.createElement("div", { className: "chat-bubble-media" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CE}"), /* @__PURE__ */ React.createElement("span", null, msg.header_media_name)), /* @__PURE__ */ React.createElement("div", { style: { whiteSpace: "pre-wrap" } }, msg.message_body), /* @__PURE__ */ React.createElement("div", { className: "chat-bubble-footer" }, /* @__PURE__ */ React.createElement("span", null, formatDateTime(msg.created_at, globalSettings2?.system_date_format)), isOutbound && /* @__PURE__ */ React.createElement("span", null, msg.status === "read" ? /* @__PURE__ */ React.createElement("span", { className: "chat-tick-read", title: "Read" }, "\u2713\u2713") : msg.status === "delivered" ? /* @__PURE__ */ React.createElement("span", { className: "chat-tick-delivered", title: "Delivered" }, "\u2713\u2713") : msg.status === "sent" ? /* @__PURE__ */ React.createElement("span", { title: "Sent" }, "\u2713") : msg.status === "failed" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" }, title: msg.error_message || "Failed" }, "\u26A0\uFE0F") : /* @__PURE__ */ React.createElement("span", { style: { color: "#94A3B8" }, title: "Queued" }, "\u23F1\uFE0F")))));
   }), /* @__PURE__ */ React.createElement("div", { ref: messagesEndRef })), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSendReply, className: "chat-input-bar" }, /* @__PURE__ */ React.createElement(
     "textarea",
     {
@@ -1412,9 +1444,10 @@ function ConversationChatModal({ phone, onClose, showToast, globalSettings }) {
     }
   ), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn-chat-send", disabled: sending || !replyText.trim(), title: "Send WhatsApp Message" }, sending ? "\u23F3" : "\u27A4"))));
 }
-function SimulateInboundModal({ isOpen, onClose, onSimulated, showToast }) {
+function SimulateInboundModal({ isOpen, onClose, onSimulated, showToast, globalSettings: globalSettings2 }) {
   const [phone, setPhone] = useState("+97335078079");
-  const [message, setMessage] = useState("Hello UniGlobal Support! I received my invoice and need to confirm my payment details.");
+  const companyName = globalSettings2?.company_name || "Customer Support";
+  const [message, setMessage] = useState(`Hello ${companyName}! I received my invoice and need to confirm my payment details.`);
   const [submitting, setSubmitting] = useState(false);
   if (!isOpen) return null;
   const handleSimulate = async (e) => {
@@ -1446,7 +1479,7 @@ function SimulateInboundModal({ isOpen, onClose, onSimulated, showToast }) {
   };
   return /* @__PURE__ */ React.createElement("div", { className: "version-modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("div", { className: "version-modal-card", style: { maxWidth: "520px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "version-modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "22px" } }, "\u{1F9EA}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", margin: 0, color: "#FFFFFF" } }, "Simulate Inbound WhatsApp Message"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", margin: "2px 0 0 0", opacity: 0.9, color: "#E8F8F5" } }, "Test customer inbound reply & trigger 24h session window"))), /* @__PURE__ */ React.createElement("button", { onClick: onClose, style: { background: "rgba(255,255,255,0.2)", border: "none", color: "#FFFFFF", borderRadius: "6px", width: "28px", height: "28px", cursor: "pointer" } }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSimulate, style: { padding: "20px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Customer Mobile Phone"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: phone, onChange: (e) => setPhone(e.target.value), placeholder: "+97335078079", required: true }), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "E.164 formatted international WhatsApp number.")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Customer Message Text"), /* @__PURE__ */ React.createElement("textarea", { className: "form-input", rows: "3", value: message, onChange: (e) => setMessage(e.target.value), placeholder: "Type customer reply here...", required: true })), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", marginTop: "20px" } }, /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { flex: 1 }, disabled: submitting }, submitting ? "Simulating..." : "\u{1F4E5} Ingest Inbound Message"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose }, "Cancel")))));
 }
-function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCountChange, onNavigate }) {
+function LiveAgentInboxView({ currentUser, showToast, globalSettings: globalSettings2, onUnreadCountChange, onNavigate }) {
   const [threads, setThreads] = useState([]);
   const [loadingThreads, setLoadingThreads] = useState(true);
   const [selectedPhone, setSelectedPhone] = useState(null);
@@ -1644,7 +1677,7 @@ function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCo
     );
   }))), /* @__PURE__ */ React.createElement("div", { className: "inbox-main-pane" }, !selectedPhone ? /* @__PURE__ */ React.createElement("div", { className: "inbox-pane-empty" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "48px", marginBottom: "12px" } }, "\u{1F4AC}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "16px", color: "#0F172A", marginBottom: "4px" } }, "No Conversation Selected"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", maxWidth: "340px" } }, 'Select a customer conversation from the left to read live messages, or click "Simulate Inbound" to test two-way communication.')) : /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", height: "100%" } }, /* @__PURE__ */ React.createElement("div", { className: "inbox-chat-header" }, /* @__PURE__ */ React.createElement("div", { className: "inbox-chat-user" }, /* @__PURE__ */ React.createElement("div", { className: "inbox-thread-avatar", style: { width: "40px", height: "40px", fontSize: "13px" } }, selectedThread?.avatar_letter || "WA"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14.5px", color: "#0F172A" } }, contactName), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "#64748B" } }, "(", selectedPhone, ")")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "6px", marginTop: "3px" } }, is24hActive ? /* @__PURE__ */ React.createElement("span", { className: "inbox-session-pill active" }, /* @__PURE__ */ React.createElement("span", { style: { width: "6px", height: "6px", borderRadius: "50%", background: "#16A34A" } }), "\u{1F7E2} 24h Customer Care Window Active (", hoursLeft, "h left) \u2022 Free-Text Allowed (Meta Fee Waived)") : /* @__PURE__ */ React.createElement("span", { className: "inbox-session-pill expired" }, "\u26A0\uFE0F 24h Session Closed \u2022 Pre-Approved Template Required by Meta")))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: handleMarkRead, title: "Mark All Read" }, "\u2713 Read"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setShowSimulateModal(true), title: "Simulate reply from this customer" }, "\u{1F9EA} Simulate Reply"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => onNavigate && onNavigate("logs"), title: "View In Message Telemetry" }, "\u{1F4DC} Telemetry"))), /* @__PURE__ */ React.createElement("div", { className: "inbox-chat-canvas" }, /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", margin: "6px 0" } }, /* @__PURE__ */ React.createElement("span", { style: { background: "#FFFFFF", padding: "4px 12px", borderRadius: "12px", fontSize: "11px", color: "#64748B", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" } }, "\u{1F512} Official WhatsApp Cloud API End-to-End Encrypted Session")), loadingMessages && (!activeThreadData || activeThreadData.messages?.length === 0) ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "40px", color: "#64748B" } }, "Loading messages...") : activeThreadData?.messages?.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "40px", color: "#64748B" } }, "No messages exchanged yet. Send a greeting to start!") : activeThreadData?.messages?.map((msg, idx) => {
     const isOutbound = msg.direction === "outbound";
-    return /* @__PURE__ */ React.createElement("div", { key: msg.id || idx, className: `inbox-bubble-row ${isOutbound ? "outbound" : "inbound"}` }, /* @__PURE__ */ React.createElement("div", { className: `inbox-bubble ${isOutbound ? "outbound" : "inbound"}` }, msg.template_name && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", fontWeight: "700", color: "#0369A1", marginBottom: "3px" } }, "\u{1F4CB} ", msg.template_name, " [", msg.category, "]"), msg.header_media_name && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", fontWeight: "600", color: "#059669", marginBottom: "4px" } }, "\u{1F4CE} [", msg.header_media_name, "]"), /* @__PURE__ */ React.createElement("div", { style: { whiteSpace: "pre-wrap" } }, msg.message_body), /* @__PURE__ */ React.createElement("div", { className: "inbox-bubble-footer" }, /* @__PURE__ */ React.createElement("span", null, formatDateTime(msg.created_at, globalSettings?.system_date_format || "HH:mm")), isOutbound && /* @__PURE__ */ React.createElement("span", null, msg.status === "read" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#0284C7", fontWeight: "800" } }, "\u2713\u2713") : msg.status === "delivered" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#64748B", fontWeight: "800" } }, "\u2713\u2713") : msg.status === "sent" ? /* @__PURE__ */ React.createElement("span", null, "\u2713") : msg.status === "failed" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" }, title: msg.error_message || "Failed" }, "\u26A0\uFE0F") : /* @__PURE__ */ React.createElement("span", null, "\u23F1\uFE0F")))));
+    return /* @__PURE__ */ React.createElement("div", { key: msg.id || idx, className: `inbox-bubble-row ${isOutbound ? "outbound" : "inbound"}` }, /* @__PURE__ */ React.createElement("div", { className: `inbox-bubble ${isOutbound ? "outbound" : "inbound"}` }, msg.template_name && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", fontWeight: "700", color: "#0369A1", marginBottom: "3px" } }, "\u{1F4CB} ", msg.template_name, " [", msg.category, "]"), msg.header_media_name && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", fontWeight: "600", color: "#059669", marginBottom: "4px" } }, "\u{1F4CE} [", msg.header_media_name, "]"), /* @__PURE__ */ React.createElement("div", { style: { whiteSpace: "pre-wrap" } }, msg.message_body), /* @__PURE__ */ React.createElement("div", { className: "inbox-bubble-footer" }, /* @__PURE__ */ React.createElement("span", null, formatDateTime(msg.created_at, globalSettings2?.system_date_format || "HH:mm")), isOutbound && /* @__PURE__ */ React.createElement("span", null, msg.status === "read" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#0284C7", fontWeight: "800" } }, "\u2713\u2713") : msg.status === "delivered" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#64748B", fontWeight: "800" } }, "\u2713\u2713") : msg.status === "sent" ? /* @__PURE__ */ React.createElement("span", null, "\u2713") : msg.status === "failed" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" }, title: msg.error_message || "Failed" }, "\u26A0\uFE0F") : /* @__PURE__ */ React.createElement("span", null, "\u23F1\uFE0F")))));
   }), /* @__PURE__ */ React.createElement("div", { ref: messagesEndRef })), /* @__PURE__ */ React.createElement("div", { className: "inbox-canned-bar" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", fontWeight: "700", color: "#64748B", alignSelf: "center", marginRight: "4px" } }, "\u26A1 Quick:"), cannedReplies.map((cr) => /* @__PURE__ */ React.createElement(
     "button",
     {
@@ -1716,11 +1749,12 @@ function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCo
         fetchThreads(true);
         fetchThreadMessages(phone, true);
       },
-      showToast
+      showToast,
+      globalSettings: globalSettings2
     }
   ));
 }
-function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loadWalletBalance }) {
+function CampaignsView({ currentUser, showToast, globalSettings: globalSettings2, onNavigate, loadWalletBalance }) {
   const [campaigns, setCampaigns] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -1885,7 +1919,7 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
       key: "name",
       label: "Campaign Details",
       sortable: true,
-      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", fontSize: "13.5px", color: "var(--text-color)" } }, c.name), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)", marginTop: "2px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB} ", c.template_title || c.template_name), " \u2022 ", /* @__PURE__ */ React.createElement("span", { className: `badge category-${c.category?.toLowerCase()}` }, c.category)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "var(--text-muted)", marginTop: "2px" } }, "Created: ", formatDateTime(c.created_at, globalSettings?.system_date_format)))
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", fontSize: "13.5px", color: "var(--text-color)" } }, c.name), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)", marginTop: "2px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB} ", c.template_title || c.template_name), " \u2022 ", /* @__PURE__ */ React.createElement("span", { className: `badge category-${c.category?.toLowerCase()}` }, c.category)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "var(--text-muted)", marginTop: "2px" } }, "Created: ", formatDateTime(c.created_at, globalSettings2?.system_date_format)))
     },
     {
       key: "pace_per_minute",
@@ -1915,7 +1949,7 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
       key: "actual_cost",
       label: "Total Spend",
       sortable: true,
-      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { color: "var(--text-color)" } }, formatCurrency(c.actual_cost, globalSettings?.system_currency, globalSettings?.currency_decimals)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Est: ", formatCurrency(c.estimated_cost, globalSettings?.system_currency, globalSettings?.currency_decimals)))
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { color: "var(--text-color)" } }, formatCurrency(c.actual_cost, globalSettings2?.system_currency, globalSettings2?.currency_decimals)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Est: ", formatCurrency(c.estimated_cost, globalSettings2?.system_currency, globalSettings2?.currency_decimals)))
     },
     {
       key: "status",
@@ -2036,7 +2070,7 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
       className: "campaign-progress-bar-fill",
       style: { width: `${runningCampaign.progress_percent}%` }
     }
-  )), /* @__PURE__ */ React.createElement("div", { className: "monitor-meta-grid" }, /* @__PURE__ */ React.createElement("div", null, "\u{1F4C8} Progress: ", /* @__PURE__ */ React.createElement("strong", null, runningCampaign.sent_count + runningCampaign.failed_count, " / ", runningCampaign.total_recipients, " (", runningCampaign.progress_percent, "%)")), /* @__PURE__ */ React.createElement("div", null, "\u23F1\uFE0F Pacing Rate: ", /* @__PURE__ */ React.createElement("strong", null, runningCampaign.pace_per_minute, " messages/min")), /* @__PURE__ */ React.createElement("div", null, "\u{1F4CB} Template: ", /* @__PURE__ */ React.createElement("strong", null, runningCampaign.template_title || runningCampaign.template_name)), /* @__PURE__ */ React.createElement("div", null, "\u{1F4B3} Total Spent: ", /* @__PURE__ */ React.createElement("strong", null, formatCurrency(runningCampaign.actual_cost, globalSettings?.system_currency, globalSettings?.currency_decimals))))), /* @__PURE__ */ React.createElement("div", { className: "card" }, /* @__PURE__ */ React.createElement(
+  )), /* @__PURE__ */ React.createElement("div", { className: "monitor-meta-grid" }, /* @__PURE__ */ React.createElement("div", null, "\u{1F4C8} Progress: ", /* @__PURE__ */ React.createElement("strong", null, runningCampaign.sent_count + runningCampaign.failed_count, " / ", runningCampaign.total_recipients, " (", runningCampaign.progress_percent, "%)")), /* @__PURE__ */ React.createElement("div", null, "\u23F1\uFE0F Pacing Rate: ", /* @__PURE__ */ React.createElement("strong", null, runningCampaign.pace_per_minute, " messages/min")), /* @__PURE__ */ React.createElement("div", null, "\u{1F4CB} Template: ", /* @__PURE__ */ React.createElement("strong", null, runningCampaign.template_title || runningCampaign.template_name)), /* @__PURE__ */ React.createElement("div", null, "\u{1F4B3} Total Spent: ", /* @__PURE__ */ React.createElement("strong", null, formatCurrency(runningCampaign.actual_cost, globalSettings2?.system_currency, globalSettings2?.currency_decimals))))), /* @__PURE__ */ React.createElement("div", { className: "card" }, /* @__PURE__ */ React.createElement(
     DataTable,
     {
       columns,
@@ -2052,7 +2086,7 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
       isOpen: showWizard,
       onClose: () => setShowWizard(false),
       templates,
-      globalSettings,
+      globalSettings: globalSettings2,
       currentUser,
       showToast,
       onCampaignCreated: (newId) => {
@@ -2066,7 +2100,7 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
     {
       campaignId: inspectCampaignId,
       onClose: () => setInspectCampaignId(null),
-      globalSettings,
+      globalSettings: globalSettings2,
       showToast,
       onRerun: handleRerunCampaign
     }
@@ -2085,7 +2119,7 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
     }
   ));
 }
-function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, currentUser, showToast, onCampaignCreated }) {
+function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings: globalSettings2, currentUser, showToast, onCampaignCreated }) {
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [selectedTemplateName, setSelectedTemplateName] = useState(templates[0]?.template_name || "offer_sandslab");
@@ -2291,7 +2325,7 @@ function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, cu
     display: "flex",
     flexDirection: "column",
     gap: "8px"
-  } }, /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", fontSize: "13.5px", color: "#166534", borderBottom: "1px solid #BBF7D0", paddingBottom: "6px" } }, "\u{1F4B3} Financial Budget Breakdown"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "13px" } }, /* @__PURE__ */ React.createElement("span", null, "Total Recipients:"), /* @__PURE__ */ React.createElement("strong", null, recipients.length, " contacts")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "13px" } }, /* @__PURE__ */ React.createElement("span", null, "Template Client Rate (", selectedTemplate?.category, "):"), /* @__PURE__ */ React.createElement("strong", null, formatCurrency(clientRate, globalSettings?.system_currency, globalSettings?.currency_decimals), " / msg")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "14px", fontWeight: "800", color: "#166534", borderTop: "1px solid #BBF7D0", paddingTop: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "Estimated Total Budget:"), /* @__PURE__ */ React.createElement("span", null, formatCurrency(estimatedTotalCost, globalSettings?.system_currency, globalSettings?.currency_decimals)))))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { display: "flex", justifyContent: "space-between", padding: "16px 24px" } }, /* @__PURE__ */ React.createElement("div", null, step > 1 && /* @__PURE__ */ React.createElement(
+  } }, /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", fontSize: "13.5px", color: "#166534", borderBottom: "1px solid #BBF7D0", paddingBottom: "6px" } }, "\u{1F4B3} Financial Budget Breakdown"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "13px" } }, /* @__PURE__ */ React.createElement("span", null, "Total Recipients:"), /* @__PURE__ */ React.createElement("strong", null, recipients.length, " contacts")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "13px" } }, /* @__PURE__ */ React.createElement("span", null, "Template Client Rate (", selectedTemplate?.category, "):"), /* @__PURE__ */ React.createElement("strong", null, formatCurrency(clientRate, globalSettings2?.system_currency, globalSettings2?.currency_decimals), " / msg")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "14px", fontWeight: "800", color: "#166534", borderTop: "1px solid #BBF7D0", paddingTop: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "Estimated Total Budget:"), /* @__PURE__ */ React.createElement("span", null, formatCurrency(estimatedTotalCost, globalSettings2?.system_currency, globalSettings2?.currency_decimals)))))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { display: "flex", justifyContent: "space-between", padding: "16px 24px" } }, /* @__PURE__ */ React.createElement("div", null, step > 1 && /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "button",
@@ -2330,7 +2364,7 @@ function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, cu
     creating ? "Creating Broadcast..." : "\u{1F680} Launch Broadcast Now"
   )))));
 }
-function CampaignReportModal({ campaignId, onClose, globalSettings, showToast, onRerun }) {
+function CampaignReportModal({ campaignId, onClose, globalSettings: globalSettings2, showToast, onRerun }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -2354,13 +2388,13 @@ function CampaignReportModal({ campaignId, onClose, globalSettings, showToast, o
       key: "cost_deducted",
       label: "Debited Tariff",
       sortable: true,
-      render: (r) => formatCurrency(r.cost_deducted, globalSettings?.system_currency, globalSettings?.currency_decimals)
+      render: (r) => formatCurrency(r.cost_deducted, globalSettings2?.system_currency, globalSettings2?.currency_decimals)
     },
     {
       key: "sent_at",
       label: "Sent Timestamp",
       sortable: true,
-      render: (r) => formatDateTime(r.sent_at || r.created_at, globalSettings?.system_date_format)
+      render: (r) => formatDateTime(r.sent_at || r.created_at, globalSettings2?.system_date_format)
     }
   ];
   return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "850px", width: "95%" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CA}"), " Campaign Report: ", campaign?.name || "Loading..."), /* @__PURE__ */ React.createElement("button", { type: "button", className: "close-btn", onClick: onClose }, "\u2715")), /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { maxHeight: "70vh", overflowY: "auto" } }, loading ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "30px" } }, "Loading campaign report...") : campaign ? /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: {
@@ -2371,7 +2405,7 @@ function CampaignReportModal({ campaignId, onClose, globalSettings, showToast, o
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
     gap: "12px"
-  } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Template"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, campaign.template_title || campaign.template_name)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Total Audience"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, campaign.total_recipients, " recipients")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Sent / Failed"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px", color: "#16A34A" } }, campaign.sent_count, " sent"), " \u2022 ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, campaign.failed_count, " failed")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Actual Spend"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, formatCurrency(campaign.actual_cost, globalSettings?.system_currency, globalSettings?.currency_decimals)))), /* @__PURE__ */ React.createElement(
+  } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Template"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, campaign.template_title || campaign.template_name)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Total Audience"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, campaign.total_recipients, " recipients")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Sent / Failed"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px", color: "#16A34A" } }, campaign.sent_count, " sent"), " \u2022 ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, campaign.failed_count, " failed")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Actual Spend"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, formatCurrency(campaign.actual_cost, globalSettings2?.system_currency, globalSettings2?.currency_decimals)))), /* @__PURE__ */ React.createElement(
     DataTable,
     {
       columns: recipientColumns,
@@ -2397,7 +2431,7 @@ function CampaignReportModal({ campaignId, onClose, globalSettings, showToast, o
     " Re-broadcast Campaign"
   )), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose }, "Close"))));
 }
-function MessageLogsView({ showToast, globalSettings, onOpenInbox, currentUser }) {
+function MessageLogsView({ showToast, globalSettings: globalSettings2, onOpenInbox, currentUser }) {
   const isSuperAdmin = currentUser?.role === "superadmin";
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -2501,7 +2535,7 @@ function MessageLogsView({ showToast, globalSettings, onOpenInbox, currentUser }
     {
       key: "created_at",
       label: "Last Message Time",
-      render: (c) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, formatDateTime(c.created_at, globalSettings?.system_date_format))
+      render: (c) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, formatDateTime(c.created_at, globalSettings2?.system_date_format))
     },
     {
       key: "actions",
@@ -2551,7 +2585,7 @@ function MessageLogsView({ showToast, globalSettings, onOpenInbox, currentUser }
     {
       key: "created_at",
       label: "Timestamp",
-      render: (m) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, formatDateTime(m.created_at, globalSettings?.system_date_format))
+      render: (m) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, formatDateTime(m.created_at, globalSettings2?.system_date_format))
     },
     {
       key: "actions",
@@ -2641,7 +2675,7 @@ function MessageLogsView({ showToast, globalSettings, onOpenInbox, currentUser }
         fetchLogs(true);
       },
       showToast,
-      globalSettings
+      globalSettings: globalSettings2
     }
   ), selectedLog && /* @__PURE__ */ React.createElement("div", { style: {
     position: "fixed",
@@ -2736,7 +2770,7 @@ const META_DEFAULT_PRESETS = [
     icon: "\u{1F510}"
   }
 ];
-function TemplateStudioModal({ template, onClose, onSave, showToast, currentUser }) {
+function TemplateStudioModal({ template, onClose, onSave, showToast, currentUser, globalSettings: globalSettings2 }) {
   const isSuperAdmin = currentUser?.role === "superadmin";
   const [studioTab, setStudioTab] = useState(template && template.id ? "custom" : "presets");
   const [formData, setFormData] = useState({
@@ -3006,11 +3040,13 @@ function TemplateStudioModal({ template, onClose, onSave, showToast, currentUser
       {
         type: "text",
         className: "form-input",
-        placeholder: "e.g. UniGlobal Accounts | Powered by SaNDS Lab",
+        placeholder: `e.g. ${globalSettings2?.company_name || "UniGlobal Accounts"} | Powered by SaNDS Lab`,
         value: formData.footer_text || "",
         onChange: (e) => setFormData({ ...formData, footer_text: e.target.value })
       }
-    )), /* @__PURE__ */ React.createElement("div", { className: "tariff-estimate-banner", style: { margin: "14px 0" } }, /* @__PURE__ */ React.createElement("div", { className: "tariff-info" }, /* @__PURE__ */ React.createElement("span", { className: "title" }, "Bahrain Tariff Rate (", formData.category, ")"), /* @__PURE__ */ React.createElement("span", { className: "breakdown" }, isSuperAdmin ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Meta Cost: ", activeTariff.meta.toFixed(4), " BHD | Platform Margin: +", activeTariff.platform.toFixed(4), " BHD") : /* @__PURE__ */ React.createElement(React.Fragment, null, "Official Meta Cloud API Business Messaging Tariff"))), /* @__PURE__ */ React.createElement("div", { className: "tariff-rate-badge" }, "BHD ", activeTariff.client.toFixed(4), " / msg")))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", fontWeight: "700", color: "#475569" } }, "\u{1F4F1} Live WhatsApp Handset Simulator:"), /* @__PURE__ */ React.createElement("span", { className: "badge status-read", style: { fontSize: "10px" } }, "\u25CF Real-Time Mockup")), /* @__PURE__ */ React.createElement("div", { className: "phone-mockup-wrapper" }, /* @__PURE__ */ React.createElement("div", { className: "phone-screen" }, /* @__PURE__ */ React.createElement("div", { className: "phone-header" }, /* @__PURE__ */ React.createElement("div", { className: "phone-header-info" }, /* @__PURE__ */ React.createElement("div", { className: "phone-avatar" }, "SL"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "phone-header-title" }, /* @__PURE__ */ React.createElement("span", null, "SaNDS Lab Business"), /* @__PURE__ */ React.createElement("span", { style: { color: "#25D366", fontSize: "11px" } }, "\u2713")), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "9.5px", color: "rgba(255,255,255,0.8)" } }, "Official Business Account"))), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "14px", color: "rgba(255,255,255,0.7)" } }, "\u22EE")), /* @__PURE__ */ React.createElement("div", { className: "phone-chat-body" }, /* @__PURE__ */ React.createElement("div", { style: { alignSelf: "center", background: "#E1F3FB", color: "#0369A1", fontSize: "9.5px", padding: "3px 8px", borderRadius: "6px", margin: "6px 0 12px 0" } }, "\u{1F512} Messages are end-to-end encrypted"), /* @__PURE__ */ React.createElement("div", { className: "phone-bubble" }, formData.header_type === "DOCUMENT" && /* @__PURE__ */ React.createElement("div", { className: "phone-bubble-media" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F4C4}"), /* @__PURE__ */ React.createElement("div", { style: { overflow: "hidden" } }, /* @__PURE__ */ React.createElement("strong", { style: { display: "block", fontSize: "11px", whiteSpace: "nowrap", textOverflow: "ellipsis" } }, formData.header_sample ? formData.header_sample.split("/").pop() : "Invoice_Document.pdf"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "9.5px", color: "#64748B" } }, "1.2 MB \u2022 PDF Document"))), formData.header_type === "IMAGE" && /* @__PURE__ */ React.createElement("div", { style: { borderRadius: "6px", overflow: "hidden", marginBottom: "8px", maxHeight: "140px", background: "#E2E8F0" } }, /* @__PURE__ */ React.createElement(
+    )), /* @__PURE__ */ React.createElement("div", { className: "tariff-estimate-banner", style: { margin: "14px 0" } }, /* @__PURE__ */ React.createElement("div", { className: "tariff-info" }, /* @__PURE__ */ React.createElement("span", { className: "title" }, "Bahrain Tariff Rate (", formData.category, ")"), /* @__PURE__ */ React.createElement("span", { className: "breakdown" }, isSuperAdmin ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Meta Cost: ", activeTariff.meta.toFixed(4), " BHD | Platform Margin: +", activeTariff.platform.toFixed(4), " BHD") : /* @__PURE__ */ React.createElement(React.Fragment, null, "Official Meta Cloud API Business Messaging Tariff"))), /* @__PURE__ */ React.createElement("div", { className: "tariff-rate-badge" }, "BHD ", activeTariff.client.toFixed(4), " / msg")))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", fontWeight: "700", color: "#475569" } }, "\u{1F4F1} Live WhatsApp Handset Simulator:"), /* @__PURE__ */ React.createElement("span", { className: "badge status-read", style: { fontSize: "10px" } }, "\u25CF Real-Time Mockup")), /* @__PURE__ */ React.createElement("div", { className: "phone-mockup-wrapper" }, /* @__PURE__ */ React.createElement("div", { className: "phone-screen" }, /* @__PURE__ */ React.createElement("div", { className: "phone-header" }, /* @__PURE__ */ React.createElement("div", { className: "phone-header-info" }, /* @__PURE__ */ React.createElement("div", { className: "phone-avatar", style: { overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" } }, globalSettings2?.company_logo ? /* @__PURE__ */ React.createElement("img", { src: globalSettings2.company_logo, alt: "Avatar", style: { width: "100%", height: "100%", objectFit: "cover" }, onError: (e) => {
+      e.target.style.display = "none";
+    } }) : (globalSettings2?.company_name || "SL").substring(0, 2).toUpperCase()), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "phone-header-title" }, /* @__PURE__ */ React.createElement("span", null, globalSettings2?.company_name || "SaNDS Lab Business"), /* @__PURE__ */ React.createElement("span", { style: { color: "#25D366", fontSize: "11px" } }, "\u2713")), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "9.5px", color: "rgba(255,255,255,0.8)" } }, "Official Business Account"))), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "14px", color: "rgba(255,255,255,0.7)" } }, "\u22EE")), /* @__PURE__ */ React.createElement("div", { className: "phone-chat-body" }, /* @__PURE__ */ React.createElement("div", { style: { alignSelf: "center", background: "#E1F3FB", color: "#0369A1", fontSize: "9.5px", padding: "3px 8px", borderRadius: "6px", margin: "6px 0 12px 0" } }, "\u{1F512} Messages are end-to-end encrypted"), /* @__PURE__ */ React.createElement("div", { className: "phone-bubble" }, formData.header_type === "DOCUMENT" && /* @__PURE__ */ React.createElement("div", { className: "phone-bubble-media" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F4C4}"), /* @__PURE__ */ React.createElement("div", { style: { overflow: "hidden" } }, /* @__PURE__ */ React.createElement("strong", { style: { display: "block", fontSize: "11px", whiteSpace: "nowrap", textOverflow: "ellipsis" } }, formData.header_sample ? formData.header_sample.split("/").pop() : "Invoice_Document.pdf"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "9.5px", color: "#64748B" } }, "1.2 MB \u2022 PDF Document"))), formData.header_type === "IMAGE" && /* @__PURE__ */ React.createElement("div", { style: { borderRadius: "6px", overflow: "hidden", marginBottom: "8px", maxHeight: "140px", background: "#E2E8F0" } }, /* @__PURE__ */ React.createElement(
       "img",
       {
         src: formData.header_sample || "./assets/images/QRCodePoster.jpg",
@@ -3045,7 +3081,7 @@ function TemplateStudioModal({ template, onClose, onSave, showToast, currentUser
     )))
   ));
 }
-function TemplatesView({ showToast, globalSettings, currentUser }) {
+function TemplatesView({ showToast, globalSettings: globalSettings2, currentUser }) {
   const isSuperAdmin = currentUser?.role === "superadmin";
   const [templates, setTemplates] = useState([]);
   const [editingTemplate, setEditingTemplate] = useState(null);
@@ -3262,7 +3298,8 @@ function TemplatesView({ showToast, globalSettings, currentUser }) {
       },
       onSave: loadTemplates,
       showToast,
-      currentUser
+      currentUser,
+      globalSettings: globalSettings2
     }
   ), confirmDialog && /* @__PURE__ */ React.createElement(
     ConfirmDialog,
@@ -3529,7 +3566,7 @@ if dest_phone:
     /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "12px 24px" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose, style: { fontSize: "12.5px" } }, "Close Guide"))
   ));
 }
-function OdooApiHubView({ showToast, globalSettings }) {
+function OdooApiHubView({ showToast, globalSettings: globalSettings2 }) {
   const [hubTab, setHubTab] = useState("studio");
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [selectedModel, setSelectedModel] = useState("account.move");
@@ -4599,7 +4636,7 @@ function formatDateTime(dateStr, format = "YYYY-MM-DD HH:mm:ss") {
     return dateStr;
   }
 }
-function WalletView({ currentUser, showToast, globalSettings, onBalanceChange }) {
+function WalletView({ currentUser, showToast, globalSettings: globalSettings2, onBalanceChange }) {
   const [walletData, setWalletData] = useState({
     wallet_balance: 0,
     currency: "BHD",
@@ -4698,13 +4735,13 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
       setDeletingTx(false);
     }
   };
-  const curr = walletData.currency || globalSettings?.system_currency || "BHD";
-  const dec = walletData.currency_decimals ?? globalSettings?.currency_decimals ?? 3;
+  const curr = walletData.currency || globalSettings2?.system_currency || "BHD";
+  const dec = walletData.currency_decimals ?? globalSettings2?.currency_decimals ?? 3;
   const ledgerColumns = [
     {
       key: "created_at",
       label: "Date & Time",
-      render: (t) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "var(--text-secondary)" } }, formatDateTime(t.created_at, globalSettings?.system_date_format))
+      render: (t) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "var(--text-secondary)" } }, formatDateTime(t.created_at, globalSettings2?.system_date_format))
     },
     {
       key: "user_name",
@@ -4886,15 +4923,19 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
 }
 function SettingsView({ currentUser, showToast, onSettingsChange }) {
   const isSuperadmin = !currentUser || currentUser.role === "superadmin";
-  const [activeSubTab, setActiveSubTab] = useState("tariffs");
+  const [activeSubTab, setActiveSubTab] = useState("branding");
+  const fileInputRef = useRef(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [settings, setSettings] = useState({
+    company_name: "UniGlobal Consultancy W.L.L",
+    company_logo: "./assets/logos/SaNDSLab-LogoNewUpdated.png",
+    business_display_name: "UniGlobal Consultancy W.L.L",
+    business_phone_number: "+973 1700 8899",
     billing_model: "per_message",
     meta_phone_number_id: "",
     meta_waba_account_id: "",
     meta_access_token: "",
     webhook_verify_token: "",
-    business_display_name: "UniGlobal Consultancy W.L.L",
-    business_phone_number: "+973 1700 8899",
     system_currency: "BHD",
     currency_decimals: "3",
     system_date_format: "YYYY-MM-DD HH:mm:ss",
@@ -4914,7 +4955,12 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
   useEffect(() => {
     fetch("./api/settings.php").then((res) => res.json()).then((res) => {
       if (res.success && res.settings) {
-        setSettings((prev) => ({ ...prev, ...res.settings }));
+        setSettings((prev) => ({
+          ...prev,
+          ...res.settings,
+          company_name: res.settings.company_name || res.settings.business_display_name || prev.company_name,
+          company_logo: res.settings.company_logo || prev.company_logo
+        }));
       }
     });
   }, []);
@@ -4922,6 +4968,42 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
     const timer = setInterval(() => setCurrentTimePreview((/* @__PURE__ */ new Date()).toISOString()), 1e3);
     return () => clearInterval(timer);
   }, []);
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (!isSuperadmin) {
+      showToast("Only Superadmin can upload or configure company logo", "error");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("Logo file size must be under 5MB", "error");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("logo_file", file);
+    setUploadingLogo(true);
+    try {
+      const res = await fetch("./api/settings.php?action=upload_logo", {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success && data.logo_url) {
+        setSettings((prev) => ({ ...prev, company_logo: data.logo_url }));
+        if (onSettingsChange) {
+          onSettingsChange({ company_logo: data.logo_url });
+        }
+        showToast("Company branding logo uploaded and updated successfully!");
+      } else {
+        showToast(data.error || "Failed to upload company logo", "error");
+      }
+    } catch (err) {
+      showToast("Network error uploading company logo", "error");
+    } finally {
+      setUploadingLogo(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
   const handleSave = async (e) => {
     if (e) e.preventDefault();
     setLoading(true);
@@ -4933,7 +5015,7 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       });
       const data = await res.json();
       if (data.success) {
-        showToast("System configuration & Tariffs updated successfully! Changes are live.");
+        showToast("System configuration & Company Branding updated successfully! Changes are live.");
         if (onSettingsChange) onSettingsChange(settings);
       } else {
         showToast(data.error || "Failed to update settings", "error");
@@ -4963,7 +5045,16 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
     { value: "MM/DD/YYYY hh:mm A", label: "MM/DD/YYYY hh:mm A (10/05/2026 05:45 PM)" },
     { value: "YYYY-MM-DD hh:mm A", label: "YYYY-MM-DD hh:mm A (2026-10-05 05:45 PM)" }
   ];
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Superadmin Platform Engine Configuration"), /* @__PURE__ */ React.createElement("p", null, "Configure Meta Cloud API, message tariffs, GCC/India currencies, prepaid wallet rules, and date formats."))), /* @__PURE__ */ React.createElement("div", { className: "settings-nav-tabs" }, /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Superadmin Platform Engine Configuration"), /* @__PURE__ */ React.createElement("p", null, "Configure Company Branding, Meta Cloud API, message tariffs, GCC/India currencies, prepaid wallet rules, and date formats."))), /* @__PURE__ */ React.createElement("div", { className: "settings-nav-tabs" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `settings-tab-btn ${activeSubTab === "branding" ? "active" : ""}`,
+      onClick: () => setActiveSubTab("branding")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F3E2}"),
+    " Company Profile & Branding"
+  ), /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "button",
@@ -5008,7 +5099,94 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
     },
     /* @__PURE__ */ React.createElement("span", null, "\u{1F3F7}\uFE0F"),
     " Version & Roadmap Architecture"
-  )), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, activeSubTab === "tariffs" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "950px" } }, !isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEF3C7", border: "1.5px solid #FCD34D", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F512}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#92400E" } }, "Read-Only Official Tariff Schedule"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "#78350F", marginTop: "2px" } }, "WhatsApp Meta base costs, platform margins, and billing engine rules are managed exclusively by SaNDS Lab Superadmin. Admin accounts have view-only access."))), !isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A" } }, "Active Charging Engine Model:"), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: settings.billing_model === "24h_session" ? "#DBEAFE" : "#DCFCE7", color: settings.billing_model === "24h_session" ? "#1E40AF" : "#15803D", fontWeight: "700", padding: "5px 12px" } }, settings.billing_model === "24h_session" ? "\u26A1 Option B: Meta 24-Hour Session Billing" : "\u{1F4C4} Option A: Standard Per-Message Billing"))), isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1.5px solid #0D9488", borderRadius: "12px", padding: "18px", marginBottom: "22px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u26A1"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#0F172A" } }, "WhatsApp Tariff & Charging Engine Model")), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#CCFBF1", color: "#0F766E", fontWeight: "800", fontSize: "11px", padding: "4px 9px" } }, "\u{1F451} Superadmin Exclusive Rule")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", margin: "0 0 16px 0", lineHeight: "1.4" } }, "Choose how the platform calculates Meta tariffs and debits client prepaid balances for outgoing messages:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "14px" } }, /* @__PURE__ */ React.createElement(
+  )), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, activeSubTab === "branding" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "950px" } }, !isSuperadmin ? /* @__PURE__ */ React.createElement("div", { style: { background: "#FEF3C7", border: "1.5px solid #FCD34D", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F512}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#92400E" } }, "Read-Only Company Profile & Branding"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "#78350F", marginTop: "2px" } }, "The official Company Name and Branding Logo are fixed and configured exclusively by Superadmin. Admin accounts have view-only access across the platform."))) : /* @__PURE__ */ React.createElement("div", { style: { background: "#ECFDF5", border: "1.5px solid #10B981", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F3E2}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#065F46" } }, "Superadmin Master Branding Configuration"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "#047857", marginTop: "2px" } }, "Fix the official Company Name and Logo. Changes reflect in real-time across the top navigation bar, login screen, phone simulators, page title, and receipts."))), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#10B981", color: "#FFF", fontWeight: "800", padding: "4px 10px", fontSize: "11px" } }, "\u{1F451} Superadmin Exclusive Control")), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "20px" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700", fontSize: "13px" } }, "Company / Organization Name ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: settings.company_name || "",
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, company_name: e.target.value, business_display_name: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      placeholder: "e.g. UniGlobal Consultancy W.L.L",
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : { fontWeight: "600" },
+      required: true
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Primary company identity displayed across header brand badge, browser tab title, login dialog, and message footers.")), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginTop: "16px" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700", fontSize: "13px" } }, "Company Logo"), isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "file",
+      ref: fileInputRef,
+      accept: "image/png,image/jpeg,image/svg+xml,image/webp,image/gif",
+      onChange: handleLogoUpload,
+      style: { display: "none" },
+      disabled: uploadingLogo
+    }
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      onClick: () => fileInputRef.current && fileInputRef.current.click(),
+      disabled: uploadingLogo,
+      style: { display: "flex", alignItems: "center", gap: "6px", fontWeight: "700" }
+    },
+    /* @__PURE__ */ React.createElement("span", null, uploadingLogo ? "\u23F3" : "\u{1F4E4}"),
+    /* @__PURE__ */ React.createElement("span", null, uploadingLogo ? "Uploading Logo..." : "Upload Image (PNG, JPG, SVG, WEBP)")
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-sm",
+      style: { background: "#F1F5F9", color: "#475569", border: "1px solid #CBD5E1", fontSize: "11px" },
+      onClick: () => setSettings({ ...settings, company_logo: "./assets/logos/SaNDSLab-LogoNewUpdated.png" }),
+      title: "Reset to default SaNDS Lab logo"
+    },
+    "Reset Default"
+  )), /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px", color: "#64748B", marginTop: "6px" } }, "Logo Image URL / Local Asset Path"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: settings.company_logo || "",
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, company_logo: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      placeholder: "./assets/logos/SaNDSLab-LogoNewUpdated.png",
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {}
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "PNG, SVG, or WEBP with transparent background recommended (Max 5MB).")), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginTop: "16px" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700", fontSize: "13px" } }, "Business Contact Phone Number"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: settings.business_phone_number || "",
+      onChange: (e) => setSettings({ ...settings, business_phone_number: e.target.value }),
+      placeholder: "+973 1700 8899"
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Official WhatsApp Business contact phone number."))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "13px", fontWeight: "700", color: "#0F172A", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F441}\uFE0F"), " Real-Time Branding Previews"), /* @__PURE__ */ React.createElement("div", { style: { background: "#075E54", borderRadius: "12px", padding: "14px 18px", marginBottom: "14px", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "12px" } }, /* @__PURE__ */ React.createElement(
+    "img",
+    {
+      src: settings.company_logo || "./assets/logos/SaNDSLab-LogoNewUpdated.png",
+      alt: "Brand Preview",
+      style: { maxHeight: "36px", maxWidth: "140px", objectFit: "contain", background: "rgba(255,255,255,0.1)", padding: "2px 6px", borderRadius: "6px" },
+      onError: (e) => {
+        e.target.src = "./assets/logos/SaNDSLab-LogoNewUpdated.png";
+      }
+    }
+  ), /* @__PURE__ */ React.createElement("div", { style: { background: "rgba(255,255,255,0.15)", color: "#FFF", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "700", display: "flex", alignItems: "center", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", { style: { width: "6px", height: "6px", borderRadius: "50%", background: "#25D366" } }), /* @__PURE__ */ React.createElement("span", null, settings.company_name || "WhatsApp Gateway"))), /* @__PURE__ */ React.createElement("span", { style: { color: "rgba(255,255,255,0.7)", fontSize: "10.5px" } }, "Header View")), /* @__PURE__ */ React.createElement("div", { style: { background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px", textAlign: "center", marginBottom: "14px", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" } }, /* @__PURE__ */ React.createElement(
+    "img",
+    {
+      src: settings.company_logo || "./assets/logos/SaNDSLab-LogoNewUpdated.png",
+      alt: "Login Preview",
+      style: { maxHeight: "44px", maxWidth: "160px", objectFit: "contain", margin: "0 auto 8px auto", display: "block" },
+      onError: (e) => {
+        e.target.src = "./assets/logos/SaNDSLab-LogoNewUpdated.png";
+      }
+    }
+  ), /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "800", fontSize: "14px", color: "#0F172A" } }, settings.company_name || "WhatsApp Integration Platform"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", marginTop: "2px" } }, "Sign in to manage messaging, templates, and Odoo ERP webhooks"), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "8px", fontSize: "10.5px", color: "#10B981", fontWeight: "700" } }, "\u2713 Login Card Preview")), /* @__PURE__ */ React.createElement("div", { style: { background: "#005D4B", borderRadius: "10px", padding: "10px 14px", display: "flex", alignItems: "center", gap: "10px", color: "#FFF" } }, /* @__PURE__ */ React.createElement("div", { style: { width: "34px", height: "34px", borderRadius: "50%", background: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" } }, settings.company_logo ? /* @__PURE__ */ React.createElement("img", { src: settings.company_logo, alt: "Handset Avatar", style: { width: "100%", height: "100%", objectFit: "cover" }, onError: (e) => {
+    e.target.src = "./assets/logos/SaNDSLab-LogoNewUpdated.png";
+  } }) : /* @__PURE__ */ React.createElement("span", { style: { color: "#005D4B", fontWeight: "800", fontSize: "12px" } }, (settings.company_name || "UG").substring(0, 2).toUpperCase())), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12.5px", fontWeight: "700", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, settings.company_name || "Business Account", " ", /* @__PURE__ */ React.createElement("span", { style: { color: "#25D366" } }, "\u2713")), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "rgba(255,255,255,0.75)" } }, "Official Business Account")), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10px", color: "rgba(255,255,255,0.6)" } }, "Phone Simulator"))))), activeSubTab === "tariffs" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "950px" } }, !isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEF3C7", border: "1.5px solid #FCD34D", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F512}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#92400E" } }, "Read-Only Official Tariff Schedule"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "#78350F", marginTop: "2px" } }, "WhatsApp Meta base costs, platform margins, and billing engine rules are managed exclusively by SaNDS Lab Superadmin. Admin accounts have view-only access."))), !isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A" } }, "Active Charging Engine Model:"), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: settings.billing_model === "24h_session" ? "#DBEAFE" : "#DCFCE7", color: settings.billing_model === "24h_session" ? "#1E40AF" : "#15803D", fontWeight: "700", padding: "5px 12px" } }, settings.billing_model === "24h_session" ? "\u26A1 Option B: Meta 24-Hour Session Billing" : "\u{1F4C4} Option A: Standard Per-Message Billing"))), isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1.5px solid #0D9488", borderRadius: "12px", padding: "18px", marginBottom: "22px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u26A1"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#0F172A" } }, "WhatsApp Tariff & Charging Engine Model")), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#CCFBF1", color: "#0F766E", fontWeight: "800", fontSize: "11px", padding: "4px 9px" } }, "\u{1F451} Superadmin Exclusive Rule")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", margin: "0 0 16px 0", lineHeight: "1.4" } }, "Choose how the platform calculates Meta tariffs and debits client prepaid balances for outgoing messages:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "14px" } }, /* @__PURE__ */ React.createElement(
     "div",
     {
       onClick: () => setSettings({ ...settings, billing_model: "per_message" }),
@@ -5272,11 +5450,11 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
     "button",
     {
       type: "submit",
-      className: `btn ${isSuperadmin || activeSubTab !== "tariffs" && activeSubTab !== "meta" ? "btn-primary" : "btn-secondary"}`,
+      className: `btn ${isSuperadmin || activeSubTab !== "tariffs" && activeSubTab !== "meta" && activeSubTab !== "branding" ? "btn-primary" : "btn-secondary"}`,
       style: { padding: "10px 24px", fontSize: "14px", fontWeight: "700" },
-      disabled: loading || !isSuperadmin && (activeSubTab === "tariffs" || activeSubTab === "meta")
+      disabled: loading || !isSuperadmin && (activeSubTab === "tariffs" || activeSubTab === "meta" || activeSubTab === "branding")
     },
-    loading ? "Saving..." : !isSuperadmin && activeSubTab === "tariffs" ? "\u{1F512} Tariffs Managed by Superadmin (Read Only)" : !isSuperadmin && activeSubTab === "meta" ? "\u{1F512} Meta Credentials Managed by Superadmin (Read Only)" : "\u{1F4BE} Save & Apply System Configuration"
+    loading ? "Saving..." : !isSuperadmin && activeSubTab === "branding" ? "\u{1F512} Company Branding Managed by Superadmin (Read Only)" : !isSuperadmin && activeSubTab === "tariffs" ? "\u{1F512} Tariffs Managed by Superadmin (Read Only)" : !isSuperadmin && activeSubTab === "meta" ? "\u{1F512} Meta Credentials Managed by Superadmin (Read Only)" : "\u{1F4BE} Save & Apply System Configuration"
   ))));
 }
 const rootElement = document.getElementById("root");

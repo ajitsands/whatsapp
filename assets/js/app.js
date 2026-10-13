@@ -481,6 +481,9 @@ function App() {
   const [showVersionModal, setShowVersionModal] = useState(false);
 
   const [globalSettings, setGlobalSettings] = useState({
+    company_name: 'UniGlobal Consultancy W.L.L',
+    company_logo: './assets/logos/SaNDSLab-LogoNewUpdated.png',
+    business_display_name: 'UniGlobal Consultancy W.L.L',
     system_currency: 'BHD',
     currency_decimals: '3',
     system_date_format: 'YYYY-MM-DD HH:mm:ss',
@@ -495,6 +498,12 @@ function App() {
     tariff_service_platform: '0.0025',
     wallet_enforcement: '1'
   });
+
+  useEffect(() => {
+    if (globalSettings?.company_name) {
+      document.title = `${globalSettings.company_name} | SaNDS Lab`;
+    }
+  }, [globalSettings?.company_name]);
 
   const [walletBalance, setWalletBalance] = useState(0.0000);
 
@@ -766,9 +775,15 @@ function App() {
         <div className="header-top-bar">
           <div className="header-top-inner">
             <div className="header-brand">
-              <img src="./assets/logos/SaNDSLab-LogoNewUpdated.png" alt="SaNDS Lab Middle East" className="brand-logo" />
+              <img
+                src={globalSettings?.company_logo || "./assets/logos/SaNDSLab-LogoNewUpdated.png"}
+                alt={globalSettings?.company_name || "Company Logo"}
+                className="brand-logo"
+                style={{ maxHeight: '38px', maxWidth: '160px', objectFit: 'contain' }}
+                onError={(e) => { e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }}
+              />
               <div className="brand-badge">
-                <span className="dot"></span> WhatsApp Gateway
+                <span className="dot"></span> {globalSettings?.company_name ? globalSettings.company_name : 'WhatsApp Gateway'}
               </div>
               <button
                 type="button"
@@ -1701,8 +1716,14 @@ function LoginView({ onLogin, onSwitchDemo, licenseInfo, globalSettings, onOpenL
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <img src="./assets/logos/SaNDSLab-LogoNewUpdated.png" alt="SaNDS Lab" className="login-logo" />
-          <h2>WhatsApp Integration Platform</h2>
+          <img
+            src={globalSettings?.company_logo || "./assets/logos/SaNDSLab-LogoNewUpdated.png"}
+            alt={globalSettings?.company_name || "Company Logo"}
+            className="login-logo"
+            style={{ maxHeight: '60px', maxWidth: '220px', objectFit: 'contain', margin: '0 auto 12px auto' }}
+            onError={(e) => { e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }}
+          />
+          <h2>{globalSettings?.company_name || "WhatsApp Integration Platform"}</h2>
           <p>Sign in to manage messaging, templates, and Odoo ERP webhooks</p>
         </div>
 
@@ -2247,10 +2268,16 @@ function ComposerView({ showToast, onSent }) {
             <div className="phone-screen">
               {/* WhatsApp Chat Header */}
               <div className="wa-chat-header">
-                <div className="wa-avatar">UG</div>
+                <div className="wa-avatar" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {globalSettings?.company_logo ? (
+                    <img src={globalSettings.company_logo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                  ) : (
+                    (globalSettings?.company_name || 'UG').substring(0, 2).toUpperCase()
+                  )}
+                </div>
                 <div className="wa-user-info">
                   <div className="wa-contact-name">
-                    UniGlobal Consultancy <span className="wa-verified-icon">✓</span>
+                    {globalSettings?.company_name || globalSettings?.business_display_name || 'Business Account'} <span className="wa-verified-icon">✓</span>
                   </div>
                   <div className="wa-status-text">Official Business Account</div>
                 </div>
@@ -2501,9 +2528,10 @@ function ConversationChatModal({ phone, onClose, showToast, globalSettings }) {
 // -----------------------------------------------------------------------------
 // SIMULATE INBOUND MESSAGE MODAL (TESTING & VERIFICATION)
 // -----------------------------------------------------------------------------
-function SimulateInboundModal({ isOpen, onClose, onSimulated, showToast }) {
+function SimulateInboundModal({ isOpen, onClose, onSimulated, showToast, globalSettings }) {
   const [phone, setPhone] = useState('+97335078079');
-  const [message, setMessage] = useState('Hello UniGlobal Support! I received my invoice and need to confirm my payment details.');
+  const companyName = globalSettings?.company_name || 'Customer Support';
+  const [message, setMessage] = useState(`Hello ${companyName}! I received my invoice and need to confirm my payment details.`);
   const [submitting, setSubmitting] = useState(false);
 
   if (!isOpen) return null;
@@ -3077,6 +3105,7 @@ function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCo
           fetchThreadMessages(phone, true);
         }}
         showToast={showToast}
+        globalSettings={globalSettings}
       />
     </div>
   );
@@ -4702,7 +4731,7 @@ const META_DEFAULT_PRESETS = [
 // -----------------------------------------------------------------------------
 // TEMPLATE STUDIO & META APPROVAL MODAL (v2.4.0)
 // -----------------------------------------------------------------------------
-function TemplateStudioModal({ template, onClose, onSave, showToast, currentUser }) {
+function TemplateStudioModal({ template, onClose, onSave, showToast, currentUser, globalSettings }) {
   const isSuperAdmin = currentUser?.role === 'superadmin';
   const [studioTab, setStudioTab] = useState(template && template.id ? 'custom' : 'presets'); // 'presets', 'custom'
   const [formData, setFormData] = useState({
@@ -5110,7 +5139,7 @@ function TemplateStudioModal({ template, onClose, onSave, showToast, currentUser
                   <input
                     type="text"
                     className="form-input"
-                    placeholder="e.g. UniGlobal Accounts | Powered by SaNDS Lab"
+                    placeholder={`e.g. ${globalSettings?.company_name || 'UniGlobal Accounts'} | Powered by SaNDS Lab`}
                     value={formData.footer_text || ''}
                     onChange={(e) => setFormData({ ...formData, footer_text: e.target.value })}
                   />
@@ -5152,10 +5181,16 @@ function TemplateStudioModal({ template, onClose, onSave, showToast, currentUser
                 {/* Simulated Header */}
                 <div className="phone-header">
                   <div className="phone-header-info">
-                    <div className="phone-avatar">SL</div>
+                    <div className="phone-avatar" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {globalSettings?.company_logo ? (
+                        <img src={globalSettings.company_logo} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                      ) : (
+                        (globalSettings?.company_name || 'SL').substring(0, 2).toUpperCase()
+                      )}
+                    </div>
                     <div>
                       <div className="phone-header-title">
-                        <span>SaNDS Lab Business</span>
+                        <span>{globalSettings?.company_name || 'SaNDS Lab Business'}</span>
                         <span style={{ color: '#25D366', fontSize: '11px' }}>✓</span>
                       </div>
                       <div style={{ fontSize: '9.5px', color: 'rgba(255,255,255,0.8)' }}>
@@ -5538,6 +5573,7 @@ function TemplatesView({ showToast, globalSettings, currentUser }) {
           onSave={loadTemplates}
           showToast={showToast}
           currentUser={currentUser}
+          globalSettings={globalSettings}
         />
       )}
 
@@ -8089,15 +8125,19 @@ function WalletView({ currentUser, showToast, globalSettings, onBalanceChange })
 // -----------------------------------------------------------------------------
 function SettingsView({ currentUser, showToast, onSettingsChange }) {
   const isSuperadmin = !currentUser || currentUser.role === 'superadmin';
-  const [activeSubTab, setActiveSubTab] = useState('tariffs'); // 'meta', 'tariffs', 'currency', 'datetime'
+  const [activeSubTab, setActiveSubTab] = useState('branding'); // 'branding', 'tariffs', 'currency', 'datetime', 'meta', 'version'
+  const fileInputRef = useRef(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [settings, setSettings] = useState({
+    company_name: 'UniGlobal Consultancy W.L.L',
+    company_logo: './assets/logos/SaNDSLab-LogoNewUpdated.png',
+    business_display_name: 'UniGlobal Consultancy W.L.L',
+    business_phone_number: '+973 1700 8899',
     billing_model: 'per_message',
     meta_phone_number_id: '',
     meta_waba_account_id: '',
     meta_access_token: '',
     webhook_verify_token: '',
-    business_display_name: 'UniGlobal Consultancy W.L.L',
-    business_phone_number: '+973 1700 8899',
     system_currency: 'BHD',
     currency_decimals: '3',
     system_date_format: 'YYYY-MM-DD HH:mm:ss',
@@ -8120,7 +8160,12 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       .then(res => res.json())
       .then(res => {
         if (res.success && res.settings) {
-          setSettings(prev => ({ ...prev, ...res.settings }));
+          setSettings(prev => ({
+            ...prev,
+            ...res.settings,
+            company_name: res.settings.company_name || res.settings.business_display_name || prev.company_name,
+            company_logo: res.settings.company_logo || prev.company_logo
+          }));
         }
       });
   }, []);
@@ -8129,6 +8174,47 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
     const timer = setInterval(() => setCurrentTimePreview(new Date().toISOString()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    if (!isSuperadmin) {
+      showToast('Only Superadmin can upload or configure company logo', 'error');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Logo file size must be under 5MB', 'error');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('logo_file', file);
+
+    setUploadingLogo(true);
+    try {
+      const res = await fetch('./api/settings.php?action=upload_logo', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success && data.logo_url) {
+        setSettings(prev => ({ ...prev, company_logo: data.logo_url }));
+        if (onSettingsChange) {
+          onSettingsChange({ company_logo: data.logo_url });
+        }
+        showToast('Company branding logo uploaded and updated successfully!');
+      } else {
+        showToast(data.error || 'Failed to upload company logo', 'error');
+      }
+    } catch (err) {
+      showToast('Network error uploading company logo', 'error');
+    } finally {
+      setUploadingLogo(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   const handleSave = async (e) => {
     if (e) e.preventDefault();
@@ -8141,7 +8227,7 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('System configuration & Tariffs updated successfully! Changes are live.');
+        showToast('System configuration & Company Branding updated successfully! Changes are live.');
         if (onSettingsChange) onSettingsChange(settings);
       } else {
         showToast(data.error || 'Failed to update settings', 'error');
@@ -8181,12 +8267,19 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       <div className="page-header-row">
         <div className="page-title-group">
           <h1><span>⚙️</span> Superadmin Platform Engine Configuration</h1>
-          <p>Configure Meta Cloud API, message tariffs, GCC/India currencies, prepaid wallet rules, and date formats.</p>
+          <p>Configure Company Branding, Meta Cloud API, message tariffs, GCC/India currencies, prepaid wallet rules, and date formats.</p>
         </div>
       </div>
 
       {/* Sub-Navigation Tabs */}
       <div className="settings-nav-tabs">
+        <button
+          type="button"
+          className={`settings-tab-btn ${activeSubTab === 'branding' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('branding')}
+        >
+          <span>🏢</span> Company Profile & Branding
+        </button>
         <button
           type="button"
           className={`settings-tab-btn ${activeSubTab === 'tariffs' ? 'active' : ''}`}
@@ -8225,6 +8318,200 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       </div>
 
       <form onSubmit={handleSave}>
+        {/* TAB 0: COMPANY PROFILE & BRANDING (SUPERADMIN ONLY TO EDIT) */}
+        {activeSubTab === 'branding' && (
+          <div className="card" style={{ maxWidth: '950px' }}>
+            {/* Superadmin vs Admin Notice */}
+            {!isSuperadmin ? (
+              <div style={{ background: '#FEF3C7', border: '1.5px solid #FCD34D', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '24px' }}>🔒</span>
+                <div>
+                  <strong style={{ fontSize: '13.5px', color: '#92400E' }}>Read-Only Company Profile & Branding</strong>
+                  <div style={{ fontSize: '12px', color: '#78350F', marginTop: '2px' }}>
+                    The official Company Name and Branding Logo are fixed and configured exclusively by Superadmin. Admin accounts have view-only access across the platform.
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div style={{ background: '#ECFDF5', border: '1.5px solid #10B981', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '24px' }}>🏢</span>
+                  <div>
+                    <strong style={{ fontSize: '14px', color: '#065F46' }}>Superadmin Master Branding Configuration</strong>
+                    <div style={{ fontSize: '12px', color: '#047857', marginTop: '2px' }}>
+                      Fix the official Company Name and Logo. Changes reflect in real-time across the top navigation bar, login screen, phone simulators, page title, and receipts.
+                    </div>
+                  </div>
+                </div>
+                <span className="badge" style={{ background: '#10B981', color: '#FFF', fontWeight: '800', padding: '4px 10px', fontSize: '11px' }}>
+                  👑 Superadmin Exclusive Control
+                </span>
+              </div>
+            )}
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+              {/* Left Column: Form Controls */}
+              <div>
+                {/* Company Name */}
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                    Company / Organization Name <span style={{ color: '#EF4444' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={settings.company_name || ''}
+                    onChange={(e) => isSuperadmin && setSettings({ ...settings, company_name: e.target.value, business_display_name: e.target.value })}
+                    readOnly={!isSuperadmin}
+                    disabled={!isSuperadmin}
+                    placeholder="e.g. UniGlobal Consultancy W.L.L"
+                    style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : { fontWeight: '600' }}
+                    required
+                  />
+                  <span className="form-hint">
+                    Primary company identity displayed across header brand badge, browser tab title, login dialog, and message footers.
+                  </span>
+                </div>
+
+                {/* Company Logo Upload & Path */}
+                <div className="form-group" style={{ marginTop: '16px' }}>
+                  <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                    Company Logo
+                  </label>
+
+                  {/* Upload Controls for Superadmin */}
+                  {isSuperadmin && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        accept="image/png,image/jpeg,image/svg+xml,image/webp,image/gif"
+                        onChange={handleLogoUpload}
+                        style={{ display: 'none' }}
+                        disabled={uploadingLogo}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                        disabled={uploadingLogo}
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700' }}
+                      >
+                        <span>{uploadingLogo ? '⏳' : '📤'}</span>
+                        <span>{uploadingLogo ? 'Uploading Logo...' : 'Upload Image (PNG, JPG, SVG, WEBP)'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn btn-sm"
+                        style={{ background: '#F1F5F9', color: '#475569', border: '1px solid #CBD5E1', fontSize: '11px' }}
+                        onClick={() => setSettings({ ...settings, company_logo: './assets/logos/SaNDSLab-LogoNewUpdated.png' })}
+                        title="Reset to default SaNDS Lab logo"
+                      >
+                        Reset Default
+                      </button>
+                    </div>
+                  )}
+
+                  <label className="form-label" style={{ fontSize: '11.5px', color: '#64748B', marginTop: '6px' }}>
+                    Logo Image URL / Local Asset Path
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={settings.company_logo || ''}
+                    onChange={(e) => isSuperadmin && setSettings({ ...settings, company_logo: e.target.value })}
+                    readOnly={!isSuperadmin}
+                    disabled={!isSuperadmin}
+                    placeholder="./assets/logos/SaNDSLab-LogoNewUpdated.png"
+                    style={!isSuperadmin ? { background: '#F1F5F9', cursor: 'not-allowed', color: '#475569', borderColor: '#CBD5E1' } : {}}
+                  />
+                  <span className="form-hint">
+                    PNG, SVG, or WEBP with transparent background recommended (Max 5MB).
+                  </span>
+                </div>
+
+                {/* Business Phone Number */}
+                <div className="form-group" style={{ marginTop: '16px' }}>
+                  <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                    Business Contact Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={settings.business_phone_number || ''}
+                    onChange={(e) => setSettings({ ...settings, business_phone_number: e.target.value })}
+                    placeholder="+973 1700 8899"
+                  />
+                  <span className="form-hint">Official WhatsApp Business contact phone number.</span>
+                </div>
+              </div>
+
+              {/* Right Column: Live Branding Previews */}
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: '#0F172A', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>👁️</span> Real-Time Branding Previews
+                </div>
+
+                {/* Preview 1: Header Brand Bar */}
+                <div style={{ background: '#075E54', borderRadius: '12px', padding: '14px 18px', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <img
+                      src={settings.company_logo || './assets/logos/SaNDSLab-LogoNewUpdated.png'}
+                      alt="Brand Preview"
+                      style={{ maxHeight: '36px', maxWidth: '140px', objectFit: 'contain', background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '6px' }}
+                      onError={(e) => { e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }}
+                    />
+                    <div style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#25D366' }}></span>
+                      <span>{settings.company_name || 'WhatsApp Gateway'}</span>
+                    </div>
+                  </div>
+                  <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10.5px' }}>Header View</span>
+                </div>
+
+                {/* Preview 2: Login Card Header */}
+                <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px', textAlign: 'center', marginBottom: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                  <img
+                    src={settings.company_logo || './assets/logos/SaNDSLab-LogoNewUpdated.png'}
+                    alt="Login Preview"
+                    style={{ maxHeight: '44px', maxWidth: '160px', objectFit: 'contain', margin: '0 auto 8px auto', display: 'block' }}
+                    onError={(e) => { e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }}
+                  />
+                  <div style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>
+                    {settings.company_name || 'WhatsApp Integration Platform'}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                    Sign in to manage messaging, templates, and Odoo ERP webhooks
+                  </div>
+                  <div style={{ marginTop: '8px', fontSize: '10.5px', color: '#10B981', fontWeight: '700' }}>
+                    ✓ Login Card Preview
+                  </div>
+                </div>
+
+                {/* Preview 3: WhatsApp Handset Header */}
+                <div style={{ background: '#005D4B', borderRadius: '10px', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '10px', color: '#FFF' }}>
+                  <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    {settings.company_logo ? (
+                      <img src={settings.company_logo} alt="Handset Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }} />
+                    ) : (
+                      <span style={{ color: '#005D4B', fontWeight: '800', fontSize: '12px' }}>
+                        {(settings.company_name || 'UG').substring(0, 2).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '12.5px', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {settings.company_name || 'Business Account'} <span style={{ color: '#25D366' }}>✓</span>
+                    </div>
+                    <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.75)' }}>Official Business Account</div>
+                  </div>
+                  <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>Phone Simulator</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         {/* TAB 1: TARIFFS & PRICING ENGINE */}
         {activeSubTab === 'tariffs' && (
           <div className="card" style={{ maxWidth: '950px' }}>
@@ -8855,17 +9142,19 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
           <div style={{ marginTop: '20px' }}>
             <button
               type="submit"
-              className={`btn ${isSuperadmin || (activeSubTab !== 'tariffs' && activeSubTab !== 'meta') ? 'btn-primary' : 'btn-secondary'}`}
+              className={`btn ${isSuperadmin || (activeSubTab !== 'tariffs' && activeSubTab !== 'meta' && activeSubTab !== 'branding') ? 'btn-primary' : 'btn-secondary'}`}
               style={{ padding: '10px 24px', fontSize: '14px', fontWeight: '700' }}
-              disabled={loading || (!isSuperadmin && (activeSubTab === 'tariffs' || activeSubTab === 'meta'))}
+              disabled={loading || (!isSuperadmin && (activeSubTab === 'tariffs' || activeSubTab === 'meta' || activeSubTab === 'branding'))}
             >
               {loading
                 ? 'Saving...'
-                : (!isSuperadmin && activeSubTab === 'tariffs'
+                : (!isSuperadmin && activeSubTab === 'branding'
+                    ? '🔒 Company Branding Managed by Superadmin (Read Only)'
+                    : (!isSuperadmin && activeSubTab === 'tariffs'
                     ? '🔒 Tariffs Managed by Superadmin (Read Only)'
                     : (!isSuperadmin && activeSubTab === 'meta'
                         ? '🔒 Meta Credentials Managed by Superadmin (Read Only)'
-                        : '💾 Save & Apply System Configuration'))}
+                        : '💾 Save & Apply System Configuration')))}
             </button>
           </div>
         )}
