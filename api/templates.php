@@ -183,6 +183,15 @@ switch ($method) {
         }
         unset($tmpl);
 
+        // Security / Privacy: Meta wholesale price is strictly restricted to Superadmin only
+        if (($auth['user']['role'] ?? '') !== 'superadmin') {
+            foreach ($templates as &$tmpl) {
+                unset($tmpl['meta_cost_bhd']);
+                unset($tmpl['platform_charge_bhd']);
+            }
+            unset($tmpl);
+        }
+
         sendJsonResponse(['success' => true, 'data' => $templates]);
         break;
 

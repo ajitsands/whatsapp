@@ -71,6 +71,8 @@ $integrationsSql = "
 ";
 $integrations = $db->query($integrationsSql)->fetchAll() ?: [];
 
+$isSuperAdmin = ($auth['user']['role'] ?? '') === 'superadmin';
+
 sendJsonResponse([
     'success' => true,
     'kpis' => [
@@ -80,8 +82,8 @@ sendJsonResponse([
         'delivery_rate'         => $deliveryRate,
         'read_rate'             => $readRate,
         'failed_count'          => (int)($kpi['failed_count'] ?? 0),
-        'total_meta_cost_bhd'   => number_format((float)($kpi['total_meta_cost_bhd'] ?? 0), 4),
-        'total_platform_bhd'    => number_format((float)($kpi['total_platform_charge_bhd'] ?? 0), 4),
+        'total_meta_cost_bhd'   => $isSuperAdmin ? number_format((float)($kpi['total_meta_cost_bhd'] ?? 0), 4) : null,
+        'total_platform_bhd'    => $isSuperAdmin ? number_format((float)($kpi['total_platform_charge_bhd'] ?? 0), 4) : null,
         'total_client_bhd'      => number_format((float)($kpi['total_client_billed_bhd'] ?? 0), 4)
     ],
     'categories'   => $categories,

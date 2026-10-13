@@ -16,7 +16,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        handleGetMessages($db);
+        handleGetMessages($db, $auth);
         break;
 
     case 'POST':
@@ -35,7 +35,7 @@ switch ($method) {
 /**
  * GET Messages List with Filters & Pagination
  */
-function handleGetMessages(PDO $db): void {
+function handleGetMessages(PDO $db, array $auth = []): void {
     $status    = $_GET['status'] ?? '';
     $category  = $_GET['category'] ?? '';
     $direction = $_GET['direction'] ?? '';
@@ -94,6 +94,15 @@ function handleGetMessages(PDO $db): void {
     $stmt = $db->prepare($sql);
     $stmt->execute($params);
     $records = $stmt->fetchAll();
+
+    // Security / Privacy: Meta wholesale price is strictly restricted to Superadmin only
+    if (($auth['user']['role'] ?? '') !== 'superadmin') {
+        foreach ($records as &$rec) {
+            unset($rec['meta_cost_bhd']);
+            unset($rec['platform_charge_bhd']);
+        }
+        unset($rec);
+    }
 
     sendJsonResponse([
         'success'    => true,

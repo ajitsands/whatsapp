@@ -990,12 +990,12 @@ function App() {
 
       {/* Main App Body */}
       <main className="app-body">
-        {activeTab === 'dashboard' && <DashboardView onNavigate={navigateToTab} globalSettings={globalSettings} />}
+        {activeTab === 'dashboard' && <DashboardView onNavigate={navigateToTab} globalSettings={globalSettings} currentUser={currentUser} />}
         {activeTab === 'inbox' && <LiveAgentInboxView currentUser={currentUser} showToast={showToast} globalSettings={globalSettings} onUnreadCountChange={setInboxUnreadTotal} onNavigate={navigateToTab} />}
         {activeTab === 'campaigns' && <CampaignsView currentUser={currentUser} showToast={showToast} globalSettings={globalSettings} onNavigate={navigateToTab} loadWalletBalance={loadWalletBalance} />}
         {activeTab === 'composer' && <ComposerView showToast={showToast} onSent={() => { navigateToTab('inbox'); loadWalletBalance(); }} globalSettings={globalSettings} />}
-        {activeTab === 'logs' && <MessageLogsView showToast={showToast} globalSettings={globalSettings} onOpenInbox={(phone) => { navigateToTab('inbox'); }} />}
-        {activeTab === 'templates' && <TemplatesView showToast={showToast} globalSettings={globalSettings} />}
+        {activeTab === 'logs' && <MessageLogsView showToast={showToast} globalSettings={globalSettings} currentUser={currentUser} onOpenInbox={(phone) => { navigateToTab('inbox'); }} />}
+        {activeTab === 'templates' && <TemplatesView showToast={showToast} globalSettings={globalSettings} currentUser={currentUser} />}
         {activeTab === 'wallet' && <WalletView currentUser={currentUser} showToast={showToast} globalSettings={globalSettings} onBalanceChange={setWalletBalance} />}
         {activeTab === 'api_hub' && <OdooApiHubView showToast={showToast} globalSettings={globalSettings} />}
         {activeTab === 'api_keys' && <ApiKeysView showToast={showToast} />}
@@ -1820,7 +1820,8 @@ function LoginView({ onLogin, onSwitchDemo, licenseInfo, globalSettings, onOpenL
 // -----------------------------------------------------------------------------
 // 2. DASHBOARD VIEW (WITH DATATABLE)
 // -----------------------------------------------------------------------------
-function DashboardView({ onNavigate }) {
+function DashboardView({ onNavigate, globalSettings, currentUser }) {
+  const isSuperAdmin = currentUser?.role === 'superadmin';
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -1904,13 +1905,23 @@ function DashboardView({ onNavigate }) {
           </span>
         </div>
 
-        <div className="kpi-card accent-amber">
-          <span className="kpi-label">Cost Breakdown</span>
-          <span className="kpi-value">BHD {kpis.total_platform_bhd}</span>
-          <span className="kpi-sub">
-            Platform Margin | Meta Cost: BHD {kpis.total_meta_cost_bhd}
-          </span>
-        </div>
+        {isSuperAdmin ? (
+          <div className="kpi-card accent-amber">
+            <span className="kpi-label">Cost Breakdown</span>
+            <span className="kpi-value">BHD {kpis.total_platform_bhd}</span>
+            <span className="kpi-sub">
+              Platform Margin | Meta Cost: BHD {kpis.total_meta_cost_bhd}
+            </span>
+          </div>
+        ) : (
+          <div className="kpi-card accent-amber">
+            <span className="kpi-label">Gateway Route</span>
+            <span className="kpi-value">Cloud API</span>
+            <span className="kpi-sub positive">
+              Official Bahrain WABA Route
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Grid: Category Breakdown & Integrations DataTable */}
@@ -4176,7 +4187,8 @@ function CampaignReportModal({ campaignId, onClose, globalSettings, showToast, o
 // -----------------------------------------------------------------------------
 // 4. MESSAGE LOGS VIEW (WITH DATATABLE & LIVE CONVERSATIONS)
 // -----------------------------------------------------------------------------
-function MessageLogsView({ showToast, globalSettings, onOpenInbox }) {
+function MessageLogsView({ showToast, globalSettings, onOpenInbox, currentUser }) {
+  const isSuperAdmin = currentUser?.role === 'superadmin';
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -4327,9 +4339,11 @@ function MessageLogsView({ showToast, globalSettings, onOpenInbox }) {
       render: (c) => (
         <div>
           <strong>{parseFloat(c.client_rate_bhd || 0).toFixed(4)} BHD</strong>
-          <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
-            Meta: {parseFloat(c.meta_cost_bhd || 0).toFixed(4)}
-          </div>
+          {isSuperAdmin && c.meta_cost_bhd !== undefined && (
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+              Meta: {parseFloat(c.meta_cost_bhd || 0).toFixed(4)}
+            </div>
+          )}
         </div>
       )
     },
@@ -4419,9 +4433,11 @@ function MessageLogsView({ showToast, globalSettings, onOpenInbox }) {
       render: (m) => (
         <div>
           <strong>{parseFloat(m.client_rate_bhd).toFixed(4)} BHD</strong>
-          <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
-            Meta: {parseFloat(m.meta_cost_bhd).toFixed(4)} | Platform: +{parseFloat(m.platform_charge_bhd).toFixed(4)}
-          </div>
+          {isSuperAdmin && m.meta_cost_bhd !== undefined && (
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+              Meta: {parseFloat(m.meta_cost_bhd).toFixed(4)} | Platform: +{parseFloat(m.platform_charge_bhd || 0).toFixed(4)}
+            </div>
+          )}
         </div>
       )
     },
@@ -4686,7 +4702,8 @@ const META_DEFAULT_PRESETS = [
 // -----------------------------------------------------------------------------
 // TEMPLATE STUDIO & META APPROVAL MODAL (v2.4.0)
 // -----------------------------------------------------------------------------
-function TemplateStudioModal({ template, onClose, onSave, showToast }) {
+function TemplateStudioModal({ template, onClose, onSave, showToast, currentUser }) {
+  const isSuperAdmin = currentUser?.role === 'superadmin';
   const [studioTab, setStudioTab] = useState(template && template.id ? 'custom' : 'presets'); // 'presets', 'custom'
   const [formData, setFormData] = useState({
     id: template?.id || null,
@@ -5104,7 +5121,11 @@ function TemplateStudioModal({ template, onClose, onSave, showToast }) {
                   <div className="tariff-info">
                     <span className="title">Bahrain Tariff Rate ({formData.category})</span>
                     <span className="breakdown">
-                      Meta Cost: {activeTariff.meta.toFixed(4)} BHD | Platform Margin: +{activeTariff.platform.toFixed(4)} BHD
+                      {isSuperAdmin ? (
+                        <>Meta Cost: {activeTariff.meta.toFixed(4)} BHD | Platform Margin: +{activeTariff.platform.toFixed(4)} BHD</>
+                      ) : (
+                        <>Official Meta Cloud API Business Messaging Tariff</>
+                      )}
                     </span>
                   </div>
                   <div className="tariff-rate-badge">
@@ -5247,7 +5268,8 @@ function TemplateStudioModal({ template, onClose, onSave, showToast }) {
 // -----------------------------------------------------------------------------
 // 5. TEMPLATES & TARIFFS VIEW (v2.4.0)
 // -----------------------------------------------------------------------------
-function TemplatesView({ showToast }) {
+function TemplatesView({ showToast, globalSettings, currentUser }) {
+  const isSuperAdmin = currentUser?.role === 'superadmin';
   const [templates, setTemplates] = useState([]);
   const [editingTemplate, setEditingTemplate] = useState(null);
   const [showStudioModal, setShowStudioModal] = useState(false);
@@ -5387,9 +5409,11 @@ function TemplatesView({ showToast }) {
           <strong style={{ color: 'var(--wa-teal)', fontSize: '12.5px' }}>
             {parseFloat(t.client_rate_bhd).toFixed(4)} BHD
           </strong>
-          <div style={{ fontSize: '10.5px', color: '#64748B' }}>
-            Meta: {parseFloat(t.meta_cost_bhd).toFixed(4)}
-          </div>
+          {isSuperAdmin && t.meta_cost_bhd !== undefined && (
+            <div style={{ fontSize: '10.5px', color: '#64748B' }}>
+              Meta: {parseFloat(t.meta_cost_bhd).toFixed(4)}
+            </div>
+          )}
         </div>
       )
     },
@@ -5513,6 +5537,7 @@ function TemplatesView({ showToast }) {
           }}
           onSave={loadTemplates}
           showToast={showToast}
+          currentUser={currentUser}
         />
       )}
 
