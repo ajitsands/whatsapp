@@ -2504,14 +2504,26 @@ function TemplatesView({ showToast }) {
   const [showStudioModal, setShowStudioModal] = useState(false);
   const [syncingMeta, setSyncingMeta] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(null);
-  const loadTemplates = () => {
-    fetch("./api/templates.php").then((res) => res.json()).then((res) => {
+  const loadTemplates = (autoSync = false) => {
+    const url = autoSync ? "./api/templates.php?auto_sync=1" : "./api/templates.php";
+    fetch(url).then((res) => res.json()).then((res) => {
       if (res.success) setTemplates(res.data);
     });
   };
   useEffect(() => {
-    loadTemplates();
+    loadTemplates(true);
   }, []);
+  useEffect(() => {
+    const hasPending = templates.some((t) => (t.meta_status || "").toUpperCase() === "PENDING");
+    if (!hasPending) return;
+    const timer = setInterval(() => {
+      fetch("./api/templates.php?auto_sync=1").then((res) => res.json()).then((res) => {
+        if (res.success) setTemplates(res.data);
+      }).catch(() => {
+      });
+    }, 8e3);
+    return () => clearInterval(timer);
+  }, [templates]);
   const handleToggleActive = async (id, currentStatus, templateName) => {
     const nextStatus = currentStatus ? 0 : 1;
     try {
@@ -2603,23 +2615,30 @@ function TemplatesView({ showToast }) {
     {
       key: "is_active",
       label: "Status & Control",
-      render: (t) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "6px", alignItems: "flex-start" } }, /* @__PURE__ */ React.createElement(
-        "div",
-        {
-          className: `tmpl-toggle-pill ${t.is_active ? "active" : "inactive"}`,
-          onClick: () => handleToggleActive(t.id, t.is_active, t.template_name),
-          title: t.is_active ? "Click to Pause / Deactivate Template" : "Click to Activate Template"
-        },
-        /* @__PURE__ */ React.createElement("span", { className: "tmpl-toggle-dot" }),
-        /* @__PURE__ */ React.createElement("span", null, t.is_active ? "Active" : "Paused")
-      ), /* @__PURE__ */ React.createElement(
-        "span",
-        {
-          className: `badge ${t.meta_status === "APPROVED" ? "status-read" : t.meta_status === "PENDING" ? "cat-auth" : "status-failed"}`,
-          style: { fontSize: "10px" }
-        },
-        t.meta_status === "APPROVED" ? "\u2713 APPROVED" : t.meta_status === "PENDING" ? "\u23F3 PENDING" : "\u2715 REJECTED"
-      ))
+      render: (t) => {
+        const st = (t.meta_status || "").toUpperCase();
+        const isApproved = ["APPROVED", "ACTIVE"].includes(st);
+        const isPending = st === "PENDING";
+        const badgeClass = isApproved ? "status-read" : isPending ? "cat-auth" : "status-failed";
+        const badgeText = isApproved ? "\u2713 APPROVED" : isPending ? "\u23F3 PENDING" : `\u2715 ${st || "REJECTED"}`;
+        return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "6px", alignItems: "flex-start" } }, /* @__PURE__ */ React.createElement(
+          "div",
+          {
+            className: `tmpl-toggle-pill ${t.is_active ? "active" : "inactive"}`,
+            onClick: () => handleToggleActive(t.id, t.is_active, t.template_name),
+            title: t.is_active ? "Click to Pause / Deactivate Template" : "Click to Activate Template"
+          },
+          /* @__PURE__ */ React.createElement("span", { className: "tmpl-toggle-dot" }),
+          /* @__PURE__ */ React.createElement("span", null, t.is_active ? "Active" : "Paused")
+        ), /* @__PURE__ */ React.createElement(
+          "span",
+          {
+            className: `badge ${badgeClass}`,
+            style: { fontSize: "10px", display: "inline-flex", alignItems: "center", gap: "4px" }
+          },
+          badgeText
+        ));
+      }
     },
     {
       key: "actions",

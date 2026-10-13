@@ -30,83 +30,121 @@ function getMetaCredentials(PDO $db): array {
     return ['token' => $token, 'waba_id' => $wabaId];
 }
 
+// Reusable Meta Graph API Template Synchronizer
+function syncTemplatesWithMeta(PDO $db): array {
+    $creds = getMetaCredentials($db);
+    $token = $creds['token'];
+    $wabaId = $creds['waba_id'];
+
+    $ch = curl_init("https://graph.facebook.com/v20.0/{$wabaId}/message_templates?limit=100&fields=name,status,category,language,components");
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => ["Authorization: Bearer {$token}"],
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => 0,
+        CURLOPT_TIMEOUT => 20
+    ]);
+    $raw = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    $metaJson = json_decode((string)$raw, true);
+    if ($httpCode !== 200 || !isset($metaJson['data'])) {
+        return [
+            'success' => false,
+            'error'   => $metaJson['error']['message'] ?? 'Failed to query Meta message templates API (HTTP ' . $httpCode . ')'
+        ];
+    }
+
+    $syncedCount = 0;
+    $stmtCheckExact = $db->prepare("SELECT id, meta_status FROM whatsapp_templates WHERE template_name = ? AND language = ? LIMIT 1");
+    $stmtCheckName  = $db->prepare("SELECT id, meta_status FROM whatsapp_templates WHERE template_name = ? LIMIT 1");
+    $stmtUpdate     = $db->prepare("UPDATE whatsapp_templates SET meta_status = ?, updated_at = NOW() WHERE id = ?");
+    $stmtInsert     = $db->prepare("
+        INSERT INTO whatsapp_templates (
+            template_name, display_title, category, language,
+            header_type, body_text, meta_status, is_active,
+            meta_cost_bhd, platform_charge_bhd, client_rate_bhd
+        ) VALUES (?, ?, ?, ?, 'NONE', ?, ?, 1, 0.0140, 0.0045, 0.0185)
+    ");
+
+    foreach ($metaJson['data'] as $mTmpl) {
+        $mName = $mTmpl['name'] ?? '';
+        $rawStatus = strtoupper($mTmpl['status'] ?? 'APPROVED');
+        // Normalize Meta statuses (e.g. APPROVED, ACTIVE -> APPROVED)
+        $mStatus = in_array($rawStatus, ['APPROVED', 'ACTIVE']) ? 'APPROVED' : $rawStatus;
+        $mCat = strtoupper($mTmpl['category'] ?? 'UTILITY');
+        $mLang = $mTmpl['language'] ?? 'en_US';
+
+        if (empty($mName)) continue;
+
+        // Try exact match (name + language)
+        $stmtCheckExact->execute([$mName, $mLang]);
+        $local = $stmtCheckExact->fetch();
+
+        // Fallback to template_name match
+        if (!$local) {
+            $stmtCheckName->execute([$mName]);
+            $local = $stmtCheckName->fetch();
+        }
+
+        if ($local) {
+            $stmtUpdate->execute([$mStatus, $local['id']]);
+            $syncedCount++;
+        } else {
+            // Extract body text if present
+            $bodyText = "Template {$mName}";
+            if (!empty($mTmpl['components'])) {
+                foreach ($mTmpl['components'] as $c) {
+                    if (($c['type'] ?? '') === 'BODY' && !empty($c['text'])) {
+                        $bodyText = $c['text'];
+                        break;
+                    }
+                }
+            }
+            $dispTitle = ucwords(str_replace('_', ' ', $mName));
+            $stmtInsert->execute([$mName, $dispTitle, $mCat, $mLang, $bodyText, $mStatus]);
+            $syncedCount++;
+        }
+    }
+
+    return [
+        'success'      => true,
+        'synced_count' => $syncedCount,
+        'total_meta'   => count($metaJson['data'])
+    ];
+}
+
 switch ($method) {
     case 'GET':
         // ACTION: Sync Approval Statuses Directly with Meta Graph API
         if ($action === 'sync_meta') {
-            $creds = getMetaCredentials($db);
-            $token = $creds['token'];
-            $wabaId = $creds['waba_id'];
-
-            $ch = curl_init("https://graph.facebook.com/v20.0/{$wabaId}/message_templates?limit=100&fields=name,status,category,language,components");
-            curl_setopt_array($ch, [
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_HTTPHEADER => ["Authorization: Bearer {$token}"],
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_SSL_VERIFYHOST => 0,
-                CURLOPT_TIMEOUT => 25
-            ]);
-            $raw = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-
-            $metaJson = json_decode((string)$raw, true);
-            if ($httpCode !== 200 || !isset($metaJson['data'])) {
+            $syncRes = syncTemplatesWithMeta($db);
+            if (!$syncRes['success']) {
                 sendJsonResponse([
                     'success' => false,
-                    'error'   => $metaJson['error']['message'] ?? 'Failed to query Meta message templates API (HTTP ' . $httpCode . ')'
+                    'error'   => $syncRes['error'] ?? 'Sync failed'
                 ], 500);
-            }
-
-            $syncedCount = 0;
-            $stmtCheck = $db->prepare("SELECT id, meta_status FROM whatsapp_templates WHERE template_name = ? LIMIT 1");
-            $stmtUpdate = $db->prepare("UPDATE whatsapp_templates SET meta_status = ?, updated_at = NOW() WHERE id = ?");
-            $stmtInsert = $db->prepare("
-                INSERT INTO whatsapp_templates (
-                    template_name, display_title, category, language,
-                    header_type, body_text, meta_status, is_active,
-                    meta_cost_bhd, platform_charge_bhd, client_rate_bhd
-                ) VALUES (?, ?, ?, ?, 'NONE', ?, ?, 1, 0.0140, 0.0045, 0.0185)
-            ");
-
-            foreach ($metaJson['data'] as $mTmpl) {
-                $mName = $mTmpl['name'] ?? '';
-                $mStatus = strtoupper($mTmpl['status'] ?? 'APPROVED');
-                $mCat = strtoupper($mTmpl['category'] ?? 'UTILITY');
-                $mLang = $mTmpl['language'] ?? 'en_US';
-
-                if (empty($mName)) continue;
-
-                $stmtCheck->execute([$mName]);
-                $local = $stmtCheck->fetch();
-
-                if ($local) {
-                    $stmtUpdate->execute([$mStatus, $local['id']]);
-                    $syncedCount++;
-                } else {
-                    // Extract body text if present
-                    $bodyText = "Template {$mName}";
-                    if (!empty($mTmpl['components'])) {
-                        foreach ($mTmpl['components'] as $c) {
-                            if (($c['type'] ?? '') === 'BODY' && !empty($c['text'])) {
-                                $bodyText = $c['text'];
-                                break;
-                            }
-                        }
-                    }
-                    $dispTitle = ucwords(str_replace('_', ' ', $mName));
-                    $stmtInsert->execute([$mName, $dispTitle, $mCat, $mLang, $bodyText, $mStatus]);
-                    $syncedCount++;
-                }
             }
 
             sendJsonResponse([
                 'success'      => true,
-                'message'      => "Synced {$syncedCount} templates from Meta WABA successfully",
-                'synced_count' => $syncedCount,
-                'total_meta'   => count($metaJson['data'])
+                'message'      => "Synced {$syncRes['synced_count']} templates from Meta WABA successfully",
+                'synced_count' => $syncRes['synced_count'],
+                'total_meta'   => $syncRes['total_meta']
             ]);
             break;
+        }
+
+        // AUTO-SYNC: If any template in catalog is PENDING or auto_sync parameter is requested,
+        // sync with Meta automatically so user never sees stale PENDING status when Meta has approved it.
+        $hasPending = (int)$db->query("SELECT COUNT(*) FROM whatsapp_templates WHERE meta_status = 'PENDING'")->fetchColumn();
+        if ($hasPending > 0 || !empty($_GET['auto_sync'])) {
+            try {
+                syncTemplatesWithMeta($db);
+            } catch (\Throwable $e) {
+                // Silently swallow network hiccups during list query to ensure UI stays responsive
+            }
         }
 
         // DEFAULT GET: Fetch Template Catalog

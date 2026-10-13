@@ -4433,13 +4433,31 @@ function TemplatesView({ showToast }) {
   const [syncingMeta, setSyncingMeta] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(null);
 
-  const loadTemplates = () => {
-    fetch('./api/templates.php')
+  const loadTemplates = (autoSync = false) => {
+    const url = autoSync ? './api/templates.php?auto_sync=1' : './api/templates.php';
+    fetch(url)
       .then(res => res.json())
       .then(res => { if (res.success) setTemplates(res.data); });
   };
 
-  useEffect(() => { loadTemplates(); }, []);
+  useEffect(() => { loadTemplates(true); }, []);
+
+  // Live auto-polling: If any template is PENDING, poll every 8s to automatically catch Meta approval
+  useEffect(() => {
+    const hasPending = templates.some(t => (t.meta_status || '').toUpperCase() === 'PENDING');
+    if (!hasPending) return;
+
+    const timer = setInterval(() => {
+      fetch('./api/templates.php?auto_sync=1')
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) setTemplates(res.data);
+        })
+        .catch(() => {});
+    }, 8000);
+
+    return () => clearInterval(timer);
+  }, [templates]);
 
   // 1-Click Toggle Active / Paused
   const handleToggleActive = async (id, currentStatus, templateName) => {
@@ -4557,27 +4575,35 @@ function TemplatesView({ showToast }) {
     {
       key: 'is_active',
       label: 'Status & Control',
-      render: (t) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'flex-start' }}>
-          {/* Active / Paused Pill */}
-          <div
-            className={`tmpl-toggle-pill ${t.is_active ? 'active' : 'inactive'}`}
-            onClick={() => handleToggleActive(t.id, t.is_active, t.template_name)}
-            title={t.is_active ? 'Click to Pause / Deactivate Template' : 'Click to Activate Template'}
-          >
-            <span className="tmpl-toggle-dot"></span>
-            <span>{t.is_active ? 'Active' : 'Paused'}</span>
-          </div>
+      render: (t) => {
+        const st = (t.meta_status || '').toUpperCase();
+        const isApproved = ['APPROVED', 'ACTIVE'].includes(st);
+        const isPending = st === 'PENDING';
+        const badgeClass = isApproved ? 'status-read' : (isPending ? 'cat-auth' : 'status-failed');
+        const badgeText = isApproved ? '✓ APPROVED' : (isPending ? '⏳ PENDING' : `✕ ${st || 'REJECTED'}`);
 
-          {/* Meta Status Badge */}
-          <span
-            className={`badge ${t.meta_status === 'APPROVED' ? 'status-read' : (t.meta_status === 'PENDING' ? 'cat-auth' : 'status-failed')}`}
-            style={{ fontSize: '10px' }}
-          >
-            {t.meta_status === 'APPROVED' ? '✓ APPROVED' : (t.meta_status === 'PENDING' ? '⏳ PENDING' : '✕ REJECTED')}
-          </span>
-        </div>
-      )
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'flex-start' }}>
+            {/* Active / Paused Pill */}
+            <div
+              className={`tmpl-toggle-pill ${t.is_active ? 'active' : 'inactive'}`}
+              onClick={() => handleToggleActive(t.id, t.is_active, t.template_name)}
+              title={t.is_active ? 'Click to Pause / Deactivate Template' : 'Click to Activate Template'}
+            >
+              <span className="tmpl-toggle-dot"></span>
+              <span>{t.is_active ? 'Active' : 'Paused'}</span>
+            </div>
+
+            {/* Meta Status Badge */}
+            <span
+              className={`badge ${badgeClass}`}
+              style={{ fontSize: '10px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+            >
+              {badgeText}
+            </span>
+          </div>
+        );
+      }
     },
     {
       key: 'actions',
