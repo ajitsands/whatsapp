@@ -323,19 +323,19 @@ function VersionArchitectureModal({ isOpen, onClose }) {
         </div>
 
         <div className="version-modal-body">
-          {/* Card 1: Active Version 2.3.0 */}
+          {/* Card 1: Active Version 2.5.0 */}
           <div className="version-card-block" style={{ borderLeft: '4px solid #10B981', background: '#F0FDF4' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '20px' }}>⚡</span>
-                <strong style={{ fontSize: '15px', color: '#065F46' }}>Active Release: Version 2.3.0 (Production Live)</strong>
+                <strong style={{ fontSize: '15px', color: '#065F46' }}>Active Release: Version 2.5.0 (Production Live)</strong>
               </div>
               <span className="version-chip" style={{ background: '#DCFCE7', color: '#166534', border: '1px solid #BBF7D0' }}>
-                🟢 v2.3.0 ODOO ERP WEBHOOK & SYNC LIVE
+                🟢 v2.5.0 USER SECURITY & APPLICATION KEY LICENSING LIVE
               </span>
             </div>
             <p style={{ fontSize: '12.5px', color: '#065F46', margin: 0, lineHeight: '1.5' }}>
-              Version 2.3.0 marks the completion of the core roadmap! Inbound Odoo Automated Action Webhook Gateway (<code style={{ background: '#E0F2FE', padding: '1px 5px', borderRadius: '4px', fontWeight: '600' }}>api/odoo_webhook.php</code>), dynamic PDF attachment streaming, bi-directional chatter delivery status callbacks, and visual Automated Action Studio are active.
+              Version 2.5.0 delivers Enterprise User Security Management (Admin Edit, Suspend/Reactivate, and Password Resets) along with the official SaNDS Lab Application Key Licensing Engine with offline asymmetric RSA-SHA256 verification, top header expiry countdown, and strict security lock enforcement.
             </p>
           </div>
 
@@ -384,7 +384,7 @@ function VersionArchitectureModal({ isOpen, onClose }) {
               </div>
               <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '10px' }}>
                 <strong style={{ color: '#059669', fontSize: '12px' }}>v2.x.0 (MINOR)</strong>
-                <p style={{ fontSize: '11px', color: '#64748B', margin: '4px 0 0 0' }}>Scheduled roadmap feature milestones (v2.1 Live Chat, v2.2 Campaigns, v2.3 Odoo Sync).</p>
+                <p style={{ fontSize: '11px', color: '#64748B', margin: '4px 0 0 0' }}>Scheduled roadmap feature milestones (v2.1 Live Chat, v2.2 Campaigns, v2.3 Odoo, v2.4 Templates, v2.5 License).</p>
               </div>
               <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '10px' }}>
                 <strong style={{ color: '#D97706', fontSize: '12px' }}>v2.x.y (PATCH)</strong>
@@ -397,7 +397,7 @@ function VersionArchitectureModal({ isOpen, onClose }) {
           <div className="version-card-block" style={{ background: '#FFFFFF' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <span style={{ fontSize: '18px' }}>📋</span>
-              <strong style={{ fontSize: '14px', color: '#0F172A' }}>Version 2.0 Execution Roadmap (All Milestones Completed)</strong>
+              <strong style={{ fontSize: '14px', color: '#0F172A' }}>Version 2.0 Execution Roadmap (All Milestones Completed & Production Live ✅)</strong>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px' }}>
@@ -424,6 +424,24 @@ function VersionArchitectureModal({ isOpen, onClose }) {
                   <strong style={{ fontSize: '12.5px', color: '#15803D' }}>Odoo ERP Automated Action Webhook & Model Sync (Completed & Released ✅)</strong>
                   <p style={{ fontSize: '11.5px', color: '#166534', margin: '2px 0 0 0' }}>
                     Inbound webhook triggers for automated invoice generation (account.move), sales order confirmations, dynamic PDF attachment streaming, and bi-directional chatter delivery callbacks.
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px' }}>
+                <span className="version-chip" style={{ background: '#16A34A', color: '#FFFFFF', marginTop: '2px' }}>v2.4.0</span>
+                <div>
+                  <strong style={{ fontSize: '12.5px', color: '#15803D' }}>WhatsApp Template Studio & Meta Graph API Live Approval (Completed & Released ✅)</strong>
+                  <p style={{ fontSize: '11.5px', color: '#166534', margin: '2px 0 0 0' }}>
+                    Direct Meta Graph API submission for message templates, curated library of pre-built Meta presets, live handset mockup phone preview, and active/inactive template filtering.
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px' }}>
+                <span className="version-chip" style={{ background: '#16A34A', color: '#FFFFFF', marginTop: '2px' }}>v2.5.0</span>
+                <div>
+                  <strong style={{ fontSize: '12.5px', color: '#15803D' }}>Enterprise User Security & SaNDS Lab Application Key Licensing (Active & Released ✅)</strong>
+                  <p style={{ fontSize: '11.5px', color: '#166534', margin: '2px 0 0 0' }}>
+                    Admin user edit & suspension controls, self and admin password reset flows, SaNDS Lab Application Key licensing engine with offline asymmetric RSA-SHA256 verification, top header expiry duration pill, and strict lock security protection.
                   </p>
                 </div>
               </div>
@@ -758,7 +776,7 @@ function App() {
                 title="Click to view Version Architecture, Git Tags & Future Roadmap"
               >
                 <span className="version-pill-dot"></span>
-                <span>v2.4.0</span>
+                <span>v2.5.0</span>
               </button>
             </div>
 
@@ -994,9 +1012,9 @@ function App() {
             <span
               className="footer-badge version-footer-clickable"
               onClick={() => setShowVersionModal(true)}
-              title="Click to inspect Version 2.1.0 Architecture & Locked v1.0.0 Baseline"
+              title="Click to inspect Version 2.5.0 Architecture & Locked v1.0.0 Baseline"
             >
-              Platform v2.1.0 (v1.0.0 Locked 🔒)
+              Platform v2.5.0 (v1.0.0 Locked 🔒)
             </span>
             <span className="footer-badge">WhatsApp Cloud API v19.0</span>
             <span className="footer-badge">Odoo ERP Connector Active</span>
@@ -8594,21 +8612,21 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                 </p>
               </div>
               <span className="version-chip" style={{ background: '#DCFCE7', color: '#166534', border: '1px solid #BBF7D0', padding: '6px 14px', fontSize: '12px' }}>
-                Active: v2.1.0
+                Active: v2.5.0
               </span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {/* Active v2.1 Block */}
-              <div style={{ background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '12px', padding: '18px' }}>
+              {/* Active v2.5 Block */}
+              <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '12px', padding: '18px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <strong style={{ fontSize: '14.5px', color: '#0369A1' }}>⚡ Active Release: Version 2.1.0</strong>
+                  <strong style={{ fontSize: '14.5px', color: '#15803D' }}>⚡ Active Release: Version 2.5.0 (Production Live)</strong>
                   <span className="badge" style={{ background: '#16A34A', color: '#FFFFFF' }}>LIVE & ACTIVE</span>
                 </div>
-                <p style={{ fontSize: '12.5px', color: '#0C4A6E', margin: '0 0 8px 0', lineHeight: '1.5' }}>
-                  Inbound Live Chat & Two-Way Agent Inbox is officially released with real-time Meta 24-hour customer care session tracking. Subsequent milestones follow semantic minor increments (<code style={{ background: '#E0F2FE', padding: '1px 5px', borderRadius: '4px', fontWeight: '700' }}>v2.x.0</code>).
+                <p style={{ fontSize: '12.5px', color: '#166534', margin: '0 0 8px 0', lineHeight: '1.5' }}>
+                  Enterprise User Security (Edit, Suspend, Password Reset) and SaNDS Lab Application Key Licensing Engine with offline asymmetric RSA-SHA256 verification are live. All scheduled Version 2.0 roadmap milestones are officially completed and deployed in production.
                 </p>
-                <div style={{ fontSize: '11.5px', color: '#0284C7', fontWeight: '600' }}>
+                <div style={{ fontSize: '11.5px', color: '#15803D', fontWeight: '600' }}>
                   Git Branch: <code>main</code> • Target Host: <code>https://whatsapp.sandslab.com</code>
                 </div>
               </div>
@@ -8650,7 +8668,7 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                   </div>
                   <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '12px' }}>
                     <strong style={{ fontSize: '12.5px', color: '#059669' }}>v2.x.0 (MINOR)</strong>
-                    <div style={{ fontSize: '11px', color: '#64748B', marginTop: '4px' }}>New roadmap modules (e.g., v2.1 for Odoo Webhooks, v2.2 for Campaigns, v2.3 for Live Chat).</div>
+                    <div style={{ fontSize: '11px', color: '#64748B', marginTop: '4px' }}>Scheduled roadmap feature milestones (v2.1 Live Chat, v2.2 Campaigns, v2.3 Odoo, v2.4 Templates, v2.5 License).</div>
                   </div>
                   <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '12px' }}>
                     <strong style={{ fontSize: '12.5px', color: '#D97706' }}>v2.x.y (PATCH)</strong>
@@ -8661,30 +8679,54 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
 
               {/* Version 2.0 Roadmap Table */}
               <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '18px' }}>
-                <strong style={{ fontSize: '13.5px', color: '#0F172A', display: 'block', marginBottom: '10px' }}>
-                  📋 Scheduled Development Roadmap (Next Milestones)
+                <strong style={{ fontSize: '13.5px', color: '#0F172A', display: 'block', marginBottom: '12px' }}>
+                  📋 Version 2.0 Execution Roadmap (All Milestones Completed & Production Live ✅)
                 </strong>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px 14px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px' }}>
+                    <span className="badge" style={{ background: '#16A34A', color: '#FFFFFF', marginTop: '2px' }}>v2.1.0</span>
                     <div>
-                      <strong style={{ fontSize: '12.5px', color: '#0369A1' }}>1. Odoo ERP Automated Action Webhook & Model Sync</strong>
-                      <div style={{ fontSize: '11.5px', color: '#0C4A6E' }}>Inbound triggers for automated invoice generation, payment receipts, and delivery status sync.</div>
+                      <strong style={{ fontSize: '12.5px', color: '#15803D' }}>1. Inbound Live Chat & Two-Way Agent Inbox (Completed & Released ✅)</strong>
+                      <div style={{ fontSize: '11.5px', color: '#166534', marginTop: '2px' }}>
+                        Interactive two-way chat window, Meta 24-hour customer care session window tracking, canned replies, and simulated inbound testing.
+                      </div>
                     </div>
-                    <span className="badge" style={{ background: '#0284C7', color: '#FFFFFF' }}>Target: v2.1.0</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px 14px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px' }}>
+                    <span className="badge" style={{ background: '#16A34A', color: '#FFFFFF', marginTop: '2px' }}>v2.2.0</span>
                     <div>
-                      <strong style={{ fontSize: '12.5px', color: '#334155' }}>2. Bulk Campaign Broadcasts & Queue Pacing</strong>
-                      <div style={{ fontSize: '11.5px', color: '#64748B' }}>CSV contact list upload, dynamic variable mapping, and queue pacing (50 msgs/min).</div>
+                      <strong style={{ fontSize: '12.5px', color: '#15803D' }}>2. Bulk Campaign Broadcasts & Queue Pacing (Completed & Released ✅)</strong>
+                      <div style={{ fontSize: '11.5px', color: '#166534', marginTop: '2px' }}>
+                        CSV contact upload with dynamic variable mapping, anti-spam dispatch queue pacing (50 msgs/min), and live animated monitor.
+                      </div>
                     </div>
-                    <span className="badge" style={{ background: '#64748B', color: '#FFFFFF' }}>Target: v2.2.0</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px 14px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px' }}>
+                    <span className="badge" style={{ background: '#16A34A', color: '#FFFFFF', marginTop: '2px' }}>v2.3.0</span>
                     <div>
-                      <strong style={{ fontSize: '12.5px', color: '#334155' }}>3. Inbound Live Chat & Two-Way Agent Inbox</strong>
-                      <div style={{ fontSize: '11.5px', color: '#64748B' }}>Interactive two-way chat window allowing agents to reply inside the 24-hour Meta session window.</div>
+                      <strong style={{ fontSize: '12.5px', color: '#15803D' }}>3. Odoo ERP Automated Action Webhook & Model Sync (Completed & Released ✅)</strong>
+                      <div style={{ fontSize: '11.5px', color: '#166534', marginTop: '2px' }}>
+                        Inbound webhook triggers for automated invoice generation (account.move), sales order confirmations, dynamic PDF attachment streaming, and bi-directional chatter delivery callbacks.
+                      </div>
                     </div>
-                    <span className="badge" style={{ background: '#64748B', color: '#FFFFFF' }}>Target: v2.3.0</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px 14px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px' }}>
+                    <span className="badge" style={{ background: '#16A34A', color: '#FFFFFF', marginTop: '2px' }}>v2.4.0</span>
+                    <div>
+                      <strong style={{ fontSize: '12.5px', color: '#15803D' }}>4. WhatsApp Template Studio & Meta Graph API Live Approval (Completed & Released ✅)</strong>
+                      <div style={{ fontSize: '11.5px', color: '#166534', marginTop: '2px' }}>
+                        Direct Meta Graph API submission for message templates, curated library of pre-built Meta presets, live handset mockup phone preview, and active/inactive template filtering.
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px 14px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px' }}>
+                    <span className="badge" style={{ background: '#16A34A', color: '#FFFFFF', marginTop: '2px' }}>v2.5.0</span>
+                    <div>
+                      <strong style={{ fontSize: '12.5px', color: '#15803D' }}>5. Enterprise User Security & SaNDS Lab Application Key Licensing (Active & Released ✅)</strong>
+                      <div style={{ fontSize: '11.5px', color: '#166534', marginTop: '2px' }}>
+                        Admin user edit & suspension controls, self and admin password reset flows, SaNDS Lab Application Key licensing engine with offline asymmetric RSA-SHA256 verification, top header expiry duration pill, and strict lock security protection.
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -61,9 +61,29 @@ sendJsonResponse([
                 'title'          => 'WhatsApp Template Creation Studio & Meta Graph API Live Approval',
                 'status'         => 'Completed & Production Active (v2.4.0 Released)',
                 'scope'          => 'Direct Meta Graph API submission for message templates, curated library of pre-built standard Meta presets, live handset mockup preview, Meta approval status synchronization, and active/inactive template lifecycle toggling.'
+            ],
+            [
+                'target_version' => '2.5.0',
+                'title'          => 'Enterprise User Security & SaNDS Lab Application Key Licensing Engine',
+                'status'         => 'Completed & Production Active (v2.5.0 Released)',
+                'scope'          => 'User management (Admin edit, suspend/reactivate, password reset, self password change), and SaNDS Lab Application Key Licensing Engine with offline asymmetric RSA-SHA256 verification, top header expiry countdown, and strict security lock protection.'
             ]
         ],
         'changelog' => [
+            [
+                'version' => '2.5.0',
+                'type'    => 'minor',
+                'date'    => '2026-10-13',
+                'status'  => 'Production Released',
+                'highlights' => [
+                    'Built Enterprise RBAC User Management: User Edit, Suspend/Reactivate toggle, and Administrator Password Reset',
+                    'Added User Self-Service Password Change modal with old-password verification and session security',
+                    'Engineered SaNDS Lab Application Key Licensing Engine integrated with key.sandslab.com',
+                    'Offline asymmetric RSA-SHA256 cryptographic signature verification with domain-binding and expiry countdown',
+                    'Added live License Expiry Duration Pill in the application header bar with color-coded warning states',
+                    'Implemented strict security lock: application blocks dashboard and APIs if unlicensed/expired, redirecting to login on exit'
+                ]
+            ],
             [
                 'version' => '2.4.0',
                 'type'    => 'minor',

@@ -29,11 +29,11 @@ if (!function_exists('str_ends_with')) {
 }
 
 // Application Version & Milestone Constants (SemVer 2.0.0)
-define('APP_VERSION', '2.4.0');
+define('APP_VERSION', '2.5.0');
 define('APP_VERSION_MAJOR', 2);
-define('APP_VERSION_MINOR', 4);
+define('APP_VERSION_MINOR', 5);
 define('APP_VERSION_PATCH', 0);
-define('APP_VERSION_STAGE', 'v2.4.0 WhatsApp Template Studio & Meta Graph API Live Approval');
+define('APP_VERSION_STAGE', 'v2.5.0 Enterprise User Security & SaNDS Lab Application Key Licensing');
 define('APP_BASELINE_VERSION', '1.0.0');
 define('APP_LOCKED_V1_TAG', 'v1.0.0');
 
