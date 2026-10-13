@@ -3634,18 +3634,22 @@ function ApiKeysView({ showToast }) {
   ));
 }
 function UsersView({ currentUser, showToast }) {
+  const isSuperadmin = currentUser?.role === "superadmin";
   const [users, setUsers] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "Password@123", role: "user", status: "active" });
   const [confirmDialog, setConfirmDialog] = useState(null);
   const loadUsers = () => {
     fetch("./api/users.php").then((res) => res.json()).then((res) => {
-      if (res.success) setUsers(res.data);
+      if (res.success) {
+        const list = isSuperadmin ? res.data : res.data.filter((u) => u.role !== "superadmin");
+        setUsers(list);
+      }
     });
   };
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [currentUser]);
   const handleSave = async (e) => {
     e.preventDefault();
     try {
@@ -3727,11 +3731,12 @@ function UsersView({ currentUser, showToast }) {
       render: (u) => /* @__PURE__ */ React.createElement(React.Fragment, null, currentUser.id !== u.id && /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => handleDelete(u.id) }, "Delete"))
     }
   ];
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " User Accounts & Role Permissions"), /* @__PURE__ */ React.createElement("p", null, "Manage Superadmin, Admin, and Operations User accounts for platform access.")), /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary", onClick: () => setShowAddModal(true) }, /* @__PURE__ */ React.createElement("span", null, "\u2795"), " Add New User")), /* @__PURE__ */ React.createElement(
+  const displayedUsers = isSuperadmin ? users : users.filter((u) => u.role !== "superadmin");
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " User Accounts & Role Permissions"), /* @__PURE__ */ React.createElement("p", null, isSuperadmin ? "Manage Superadmin, Admin, and Operations User accounts for platform access." : "Manage Admin and Operations User accounts for platform access.")), /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary", onClick: () => setShowAddModal(true) }, /* @__PURE__ */ React.createElement("span", null, "\u2795"), " Add New User")), /* @__PURE__ */ React.createElement(
     DataTable,
     {
       columns: userColumns,
-      data: users,
+      data: displayedUsers,
       title: "platform_users",
       searchPlaceholder: "Search users by name, email, role...",
       defaultPageSize: 10,
@@ -3750,7 +3755,7 @@ function UsersView({ currentUser, showToast }) {
     alignItems: "center",
     justifyContent: "center",
     zIndex: 1e4
-  } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { width: "480px" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "Create New User"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setShowAddModal(false) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Full Name"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: form.name, onChange: (e) => setForm({ ...form, name: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Email Address"), /* @__PURE__ */ React.createElement("input", { type: "email", className: "form-input", value: form.email, onChange: (e) => setForm({ ...form, email: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Password"), /* @__PURE__ */ React.createElement("input", { type: "password", className: "form-input", value: form.password, onChange: (e) => setForm({ ...form, password: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Role"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: form.role, onChange: (e) => setForm({ ...form, role: e.target.value }) }, /* @__PURE__ */ React.createElement("option", { value: "user" }, "User (Standard Access)"), /* @__PURE__ */ React.createElement("option", { value: "admin" }, "Admin (Full Client Access)"), /* @__PURE__ */ React.createElement("option", { value: "superadmin" }, "Superadmin (SaNDS Lab Platform)"))), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { width: "100%", marginTop: "10px" } }, "Save User")))), confirmDialog && /* @__PURE__ */ React.createElement(
+  } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { width: "480px" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "Create New User"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setShowAddModal(false) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Full Name"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: form.name, onChange: (e) => setForm({ ...form, name: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Email Address"), /* @__PURE__ */ React.createElement("input", { type: "email", className: "form-input", value: form.email, onChange: (e) => setForm({ ...form, email: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Password"), /* @__PURE__ */ React.createElement("input", { type: "password", className: "form-input", value: form.password, onChange: (e) => setForm({ ...form, password: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Role"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: form.role, onChange: (e) => setForm({ ...form, role: e.target.value }) }, /* @__PURE__ */ React.createElement("option", { value: "admin" }, "Admin (Full Client Access)"), /* @__PURE__ */ React.createElement("option", { value: "user" }, "User (Standard Access)"))), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { width: "100%", marginTop: "10px" } }, "Save User")))), confirmDialog && /* @__PURE__ */ React.createElement(
     ConfirmDialog,
     {
       isOpen: !!confirmDialog,

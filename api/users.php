@@ -11,12 +11,19 @@ require_once __DIR__ . '/../config/db.php';
 
 $auth = authenticateRequest(['superadmin', 'admin']);
 $db   = Database::getConnection();
+$currentUserRole = $auth['user']['role'] ?? '';
 
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        $stmt = $db->query("SELECT id, name, email, role, status, avatar_color, last_login, created_at FROM users ORDER BY id DESC");
+        // Superadmin user record is only visible when authenticated as Superadmin.
+        // For Admin and other logins, only Admin and Users are visible.
+        if ($currentUserRole === 'superadmin') {
+            $stmt = $db->query("SELECT id, name, email, role, status, avatar_color, last_login, created_at FROM users ORDER BY id DESC");
+        } else {
+            $stmt = $db->query("SELECT id, name, email, role, status, avatar_color, last_login, created_at FROM users WHERE role != 'superadmin' ORDER BY id DESC");
+        }
         sendJsonResponse(['success' => true, 'data' => $stmt->fetchAll()]);
         break;
 
@@ -36,6 +43,10 @@ switch ($method) {
 
         if (!in_array($role, ['superadmin', 'admin', 'user'], true)) {
             sendJsonResponse(['success' => false, 'error' => 'Invalid role specified'], 400);
+        }
+
+        if ($role === 'superadmin' && $currentUserRole !== 'superadmin') {
+            sendJsonResponse(['success' => false, 'error' => 'Only Superadmin can create or assign the Superadmin role'], 403);
         }
 
         $colors = ['#075E54', '#128C7E', '#25D366', '#2563EB', '#7C3AED', '#D97706'];
@@ -89,6 +100,14 @@ switch ($method) {
         // Prevent self-deletion
         if (isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] === $id) {
             sendJsonResponse(['success' => false, 'error' => 'Cannot delete currently logged in user'], 400);
+        }
+
+        // Prevent non-superadmin from deleting superadmin
+        $stmtTarget = $db->prepare("SELECT role FROM users WHERE id = ?");
+        $stmtTarget->execute([$id]);
+        $targetUser = $stmtTarget->fetch();
+        if ($targetUser && $targetUser['role'] === 'superadmin' && $currentUserRole !== 'superadmin') {
+            sendJsonResponse(['success' => false, 'error' => 'Cannot delete Superadmin account'], 403);
         }
 
         $stmt = $db->prepare("DELETE FROM users WHERE id = ?");

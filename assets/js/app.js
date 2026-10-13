@@ -6108,6 +6108,7 @@ function ApiKeysView({ showToast }) {
 // 8. USER MANAGEMENT VIEW (WITH DATATABLE)
 // -----------------------------------------------------------------------------
 function UsersView({ currentUser, showToast }) {
+  const isSuperadmin = currentUser?.role === 'superadmin';
   const [users, setUsers] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', password: 'Password@123', role: 'user', status: 'active' });
@@ -6116,10 +6117,15 @@ function UsersView({ currentUser, showToast }) {
   const loadUsers = () => {
     fetch('./api/users.php')
       .then(res => res.json())
-      .then(res => { if (res.success) setUsers(res.data); });
+      .then(res => {
+        if (res.success) {
+          const list = isSuperadmin ? res.data : res.data.filter(u => u.role !== 'superadmin');
+          setUsers(list);
+        }
+      });
   };
 
-  useEffect(() => { loadUsers(); }, []);
+  useEffect(() => { loadUsers(); }, [currentUser]);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -6229,12 +6235,14 @@ function UsersView({ currentUser, showToast }) {
     }
   ];
 
+  const displayedUsers = isSuperadmin ? users : users.filter(u => u.role !== 'superadmin');
+
   return (
     <div>
       <div className="page-header-row">
         <div className="page-title-group">
           <h1><span>👥</span> User Accounts & Role Permissions</h1>
-          <p>Manage Superadmin, Admin, and Operations User accounts for platform access.</p>
+          <p>{isSuperadmin ? 'Manage Superadmin, Admin, and Operations User accounts for platform access.' : 'Manage Admin and Operations User accounts for platform access.'}</p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
           <span>➕</span> Add New User
@@ -6243,7 +6251,7 @@ function UsersView({ currentUser, showToast }) {
 
       <DataTable
         columns={userColumns}
-        data={users}
+        data={displayedUsers}
         title="platform_users"
         searchPlaceholder="Search users by name, email, role..."
         defaultPageSize={10}
@@ -6278,9 +6286,8 @@ function UsersView({ currentUser, showToast }) {
               <div className="form-group">
                 <label className="form-label">Role</label>
                 <select className="form-select" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
-                  <option value="user">User (Standard Access)</option>
                   <option value="admin">Admin (Full Client Access)</option>
-                  <option value="superadmin">Superadmin (SaNDS Lab Platform)</option>
+                  <option value="user">User (Standard Access)</option>
                 </select>
               </div>
               <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '10px' }}>Save User</button>
