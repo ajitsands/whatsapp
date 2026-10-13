@@ -4060,9 +4060,9 @@ function OdooGuideModal({ onClose, showToast, apiKey }) {
   const [guideTab, setGuideTab] = useState('overview'); // 'overview', 'invoice', 'orders', 'webhooks'
 
   return (
-    <div className="modal-backdrop" onClick={onClose} style={{ zIndex: 1100 }}>
+    <div className="modal-overlay" onClick={onClose}>
       <div
-        className="modal-container"
+        className="modal-content"
         style={{ maxWidth: '960px', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
         onClick={(e) => e.stopPropagation()}
       >

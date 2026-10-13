@@ -2306,10 +2306,10 @@ function TemplatesView({ showToast }) {
 }
 function OdooGuideModal({ onClose, showToast, apiKey }) {
   const [guideTab, setGuideTab] = useState("overview");
-  return /* @__PURE__ */ React.createElement("div", { className: "modal-backdrop", onClick: onClose, style: { zIndex: 1100 } }, /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement(
     "div",
     {
-      className: "modal-container",
+      className: "modal-content",
       style: { maxWidth: "960px", maxHeight: "90vh", display: "flex", flexDirection: "column" },
       onClick: (e) => e.stopPropagation()
     },
