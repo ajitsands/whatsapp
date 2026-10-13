@@ -483,7 +483,7 @@ function App() {
   const [activeTab, setActiveTab] = useState(() => {
     const hash = window.location.hash.replace('#', '').trim();
     const saved = localStorage.getItem('wa_tab');
-    const validTabs = ['dashboard', 'inbox', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'wallet', 'settings'];
+    const validTabs = ['dashboard', 'inbox', 'campaigns', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'wallet', 'settings'];
     if (hash && validTabs.includes(hash)) return hash;
     if (saved && validTabs.includes(saved)) return saved;
     return 'dashboard';
@@ -491,6 +491,19 @@ function App() {
 
   const [toast, setToast] = useState(null);
   const [inboxUnreadTotal, setInboxUnreadTotal] = useState(0);
+  const [messagesDropdownOpen, setMessagesDropdownOpen] = useState(false);
+  const messagesDropdownRef = useRef(null);
+
+  // Close Messages Dropdown on click outside
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (messagesDropdownRef.current && !messagesDropdownRef.current.contains(e.target)) {
+        setMessagesDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   const navigateToTab = (tab) => {
     setActiveTab(tab);
@@ -503,7 +516,7 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '').trim();
-      const validTabs = ['dashboard', 'inbox', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'wallet', 'settings'];
+      const validTabs = ['dashboard', 'inbox', 'campaigns', 'composer', 'logs', 'templates', 'api_hub', 'api_keys', 'users', 'wallet', 'settings'];
       if (hash && validTabs.includes(hash)) {
         setActiveTab(hash);
         localStorage.setItem('wa_tab', hash);
@@ -666,7 +679,7 @@ function App() {
                 title="Click to view Version Architecture, Git Tags & Future Roadmap"
               >
                 <span className="version-pill-dot"></span>
-                <span>v2.1.0</span>
+                <span>v2.3.0</span>
               </button>
             </div>
 
@@ -706,31 +719,118 @@ function App() {
               <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => navigateToTab('dashboard')}>
                 <span>📊</span> Dashboard
               </button>
-              <button className={`nav-item ${activeTab === 'inbox' ? 'active' : ''}`} onClick={() => navigateToTab('inbox')}>
-                <span>💬</span> Live Agent Inbox
-                {inboxUnreadTotal > 0 && (
-                  <span style={{
-                    background: '#25D366',
-                    color: '#FFFFFF',
-                    fontSize: '10px',
-                    fontWeight: '800',
-                    padding: '1px 6px',
-                    borderRadius: '10px',
-                    marginLeft: '6px'
-                  }}>
-                    {inboxUnreadTotal}
-                  </span>
+              {/* Messages Group Dropdown (Inbox, Campaigns, Send Message, Message Logs) */}
+              <div className="nav-dropdown-wrap" ref={messagesDropdownRef}>
+                <button
+                  type="button"
+                  className={`nav-dropdown-btn ${['inbox', 'campaigns', 'composer', 'logs'].includes(activeTab) ? 'active' : ''}`}
+                  onClick={() => setMessagesDropdownOpen(prev => !prev)}
+                  title="Messages Menu (Inbox, Campaigns, Send Message, Logs)"
+                >
+                  <span>💬</span>
+                  <span>Messages</span>
+                  {inboxUnreadTotal > 0 && (
+                    <span style={{
+                      background: ['inbox', 'campaigns', 'composer', 'logs'].includes(activeTab) ? '#FFFFFF' : '#25D366',
+                      color: ['inbox', 'campaigns', 'composer', 'logs'].includes(activeTab) ? '#075E54' : '#FFFFFF',
+                      fontSize: '10px',
+                      fontWeight: '800',
+                      padding: '1px 6px',
+                      borderRadius: '10px',
+                      marginLeft: '2px'
+                    }}>
+                      {inboxUnreadTotal}
+                    </span>
+                  )}
+                  <span className={`nav-chevron ${messagesDropdownOpen ? 'open' : ''}`}>▼</span>
+                </button>
+
+                {messagesDropdownOpen && (
+                  <div className="nav-dropdown-menu">
+                    <button
+                      type="button"
+                      className={`nav-dropdown-item ${activeTab === 'inbox' ? 'active' : ''}`}
+                      onClick={() => { navigateToTab('inbox'); setMessagesDropdownOpen(false); }}
+                    >
+                      <div className="nav-dropdown-item-left">
+                        <span style={{ fontSize: '15px' }}>💬</span>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span>Live Agent Inbox</span>
+                            {inboxUnreadTotal > 0 && (
+                              <span style={{
+                                background: '#25D366',
+                                color: '#FFFFFF',
+                                fontSize: '10px',
+                                fontWeight: '800',
+                                padding: '1px 6px',
+                                borderRadius: '10px'
+                              }}>
+                                {inboxUnreadTotal}
+                              </span>
+                            )}
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '400', marginTop: '1px' }}>
+                            2-Way Live Chat & Care Session
+                          </div>
+                        </div>
+                      </div>
+                      {activeTab === 'inbox' && <span className="nav-item-indicator"></span>}
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`nav-dropdown-item ${activeTab === 'campaigns' ? 'active' : ''}`}
+                      onClick={() => { navigateToTab('campaigns'); setMessagesDropdownOpen(false); }}
+                    >
+                      <div className="nav-dropdown-item-left">
+                        <span style={{ fontSize: '15px' }}>📢</span>
+                        <div>
+                          <div>Bulk Broadcasts</div>
+                          <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '400', marginTop: '1px' }}>
+                            Paced Queue & CSV Campaigns
+                          </div>
+                        </div>
+                      </div>
+                      {activeTab === 'campaigns' && <span className="nav-item-indicator"></span>}
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`nav-dropdown-item ${activeTab === 'composer' ? 'active' : ''}`}
+                      onClick={() => { navigateToTab('composer'); setMessagesDropdownOpen(false); }}
+                    >
+                      <div className="nav-dropdown-item-left">
+                        <span style={{ fontSize: '15px' }}>📤</span>
+                        <div>
+                          <div>Send Message</div>
+                          <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '400', marginTop: '1px' }}>
+                            Direct Template Composer
+                          </div>
+                        </div>
+                      </div>
+                      {activeTab === 'composer' && <span className="nav-item-indicator"></span>}
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`nav-dropdown-item ${activeTab === 'logs' ? 'active' : ''}`}
+                      onClick={() => { navigateToTab('logs'); setMessagesDropdownOpen(false); }}
+                    >
+                      <div className="nav-dropdown-item-left">
+                        <span style={{ fontSize: '15px' }}>📜</span>
+                        <div>
+                          <div>Message Logs</div>
+                          <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '400', marginTop: '1px' }}>
+                            Delivery & Status Telemetry
+                          </div>
+                        </div>
+                      </div>
+                      {activeTab === 'logs' && <span className="nav-item-indicator"></span>}
+                    </button>
+                  </div>
                 )}
-              </button>
-              <button className={`nav-item ${activeTab === 'campaigns' ? 'active' : ''}`} onClick={() => navigateToTab('campaigns')}>
-                <span>📢</span> Bulk Broadcasts
-              </button>
-              <button className={`nav-item ${activeTab === 'composer' ? 'active' : ''}`} onClick={() => navigateToTab('composer')}>
-                <span>📤</span> Send Message
-              </button>
-              <button className={`nav-item ${activeTab === 'logs' ? 'active' : ''}`} onClick={() => navigateToTab('logs')}>
-                <span>📜</span> Message Logs
-              </button>
+              </div>
               <button className={`nav-item ${activeTab === 'templates' ? 'active' : ''}`} onClick={() => navigateToTab('templates')}>
                 <span>📋</span> Templates & Tariffs
               </button>

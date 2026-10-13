@@ -138,6 +138,8 @@ body {
 /* Sub-Header Horizontal Navigation Bar (Fixed bottom of header) */
 .header-nav-bar {
   background: #FFFFFF;
+  position: relative;
+  z-index: 50;
 }
 
 .header-nav-inner {
@@ -146,12 +148,7 @@ body {
   padding: 0 24px;
   display: flex;
   align-items: center;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.header-nav-inner::-webkit-scrollbar {
-  display: none;
+  overflow: visible;
 }
 
 .horizontal-nav {
@@ -191,6 +188,126 @@ body {
 
 .nav-item svg {
   flex-shrink: 0;
+}
+
+/* Navigation Dropdown Menu (.nav-dropdown-wrap, .nav-dropdown-btn, .nav-dropdown-menu, .nav-dropdown-item) */
+.nav-dropdown-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.nav-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  white-space: nowrap;
+}
+
+.nav-dropdown-btn:hover {
+  background: var(--wa-soft-green);
+  color: var(--wa-dark-teal);
+}
+
+.nav-dropdown-btn.active {
+  background: var(--wa-teal);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(18, 140, 126, 0.25);
+}
+
+.nav-dropdown-btn.active .nav-chevron {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.nav-chevron {
+  font-size: 9px;
+  margin-left: 2px;
+  transition: transform 0.2s ease;
+  display: inline-block;
+  color: #94A3B8;
+}
+
+.nav-chevron.open {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 250px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 16px 32px -4px rgba(15, 23, 42, 0.16), 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  padding: 6px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  animation: dropdownSlideIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: all 0.15s ease;
+}
+
+.nav-dropdown-item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-dropdown-item:hover {
+  background: #F0FDF4;
+  color: #075E54;
+}
+
+.nav-dropdown-item.active {
+  background: #E8F8F5;
+  color: #075E54;
+  font-weight: 700;
+}
+
+.nav-item-indicator {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #128C7E;
+  box-shadow: 0 0 6px rgba(18, 140, 126, 0.6);
 }
 
 /* User Profile & Role Info in Header */

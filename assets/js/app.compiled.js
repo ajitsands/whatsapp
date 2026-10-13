@@ -223,13 +223,24 @@ function App() {
   const [activeTab, setActiveTab] = useState(() => {
     const hash = window.location.hash.replace("#", "").trim();
     const saved = localStorage.getItem("wa_tab");
-    const validTabs = ["dashboard", "inbox", "composer", "logs", "templates", "api_hub", "api_keys", "users", "wallet", "settings"];
+    const validTabs = ["dashboard", "inbox", "campaigns", "composer", "logs", "templates", "api_hub", "api_keys", "users", "wallet", "settings"];
     if (hash && validTabs.includes(hash)) return hash;
     if (saved && validTabs.includes(saved)) return saved;
     return "dashboard";
   });
   const [toast, setToast] = useState(null);
   const [inboxUnreadTotal, setInboxUnreadTotal] = useState(0);
+  const [messagesDropdownOpen, setMessagesDropdownOpen] = useState(false);
+  const messagesDropdownRef = useRef(null);
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (messagesDropdownRef.current && !messagesDropdownRef.current.contains(e.target)) {
+        setMessagesDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
   const navigateToTab = (tab) => {
     setActiveTab(tab);
     try {
@@ -241,7 +252,7 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace("#", "").trim();
-      const validTabs = ["dashboard", "inbox", "composer", "logs", "templates", "api_hub", "api_keys", "users", "wallet", "settings"];
+      const validTabs = ["dashboard", "inbox", "campaigns", "composer", "logs", "templates", "api_hub", "api_keys", "users", "wallet", "settings"];
       if (hash && validTabs.includes(hash)) {
         setActiveTab(hash);
         localStorage.setItem("wa_tab", hash);
@@ -374,7 +385,7 @@ function App() {
       title: "Click to view Version Architecture, Git Tags & Future Roadmap"
     },
     /* @__PURE__ */ React.createElement("span", { className: "version-pill-dot" }),
-    /* @__PURE__ */ React.createElement("span", null, "v2.1.0")
+    /* @__PURE__ */ React.createElement("span", null, "v2.3.0")
   )), /* @__PURE__ */ React.createElement("div", { className: "header-actions" }, /* @__PURE__ */ React.createElement(
     "div",
     {
@@ -384,15 +395,82 @@ function App() {
     },
     /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"),
     /* @__PURE__ */ React.createElement("span", null, "Wallet: ", /* @__PURE__ */ React.createElement("strong", null, formatCurrency(walletBalance, curr, dec)))
-  ), /* @__PURE__ */ React.createElement("div", { className: "user-profile-pill", title: `Logged in as ${currentUser.email}` }, /* @__PURE__ */ React.createElement("div", { className: "avatar", style: { background: currentUser.avatar_color || "#128C7E" } }, currentUser.name.charAt(0)), /* @__PURE__ */ React.createElement("div", { className: "user-details" }, /* @__PURE__ */ React.createElement("span", { className: "user-name" }, currentUser.name), /* @__PURE__ */ React.createElement("span", { className: "user-role-badge" }, currentUser.role))), /* @__PURE__ */ React.createElement("button", { className: "btn-logout", onClick: handleLogout, title: "Sign Out" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6AA}"), " Logout")))), /* @__PURE__ */ React.createElement("div", { className: "header-nav-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-nav-inner" }, /* @__PURE__ */ React.createElement("nav", { className: "horizontal-nav" }, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "dashboard" ? "active" : ""}`, onClick: () => navigateToTab("dashboard") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CA}"), " Dashboard"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "inbox" ? "active" : ""}`, onClick: () => navigateToTab("inbox") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"), " Live Agent Inbox", inboxUnreadTotal > 0 && /* @__PURE__ */ React.createElement("span", { style: {
-    background: "#25D366",
-    color: "#FFFFFF",
-    fontSize: "10px",
-    fontWeight: "800",
-    padding: "1px 6px",
-    borderRadius: "10px",
-    marginLeft: "6px"
-  } }, inboxUnreadTotal)), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "campaigns" ? "active" : ""}`, onClick: () => navigateToTab("campaigns") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4E2}"), " Bulk Broadcasts"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "composer" ? "active" : ""}`, onClick: () => navigateToTab("composer") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4E4}"), " Send Message"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "logs" ? "active" : ""}`, onClick: () => navigateToTab("logs") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Message Logs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "templates" ? "active" : ""}`, onClick: () => navigateToTab("templates") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Templates & Tariffs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "wallet" ? "active" : ""}`, onClick: () => navigateToTab("wallet") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Wallet & Billing"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_hub" ? "active" : ""}`, onClick: () => navigateToTab("api_hub") }, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo API Hub"), ["superadmin", "admin"].includes(currentUser.role) && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_keys" ? "active" : ""}`, onClick: () => navigateToTab("api_keys") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"), " API Keys"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "users" ? "active" : ""}`, onClick: () => navigateToTab("users") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " Users"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "settings" ? "active" : ""}`, onClick: () => navigateToTab("settings") }, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Engine Settings")))))), /* @__PURE__ */ React.createElement("main", { className: "app-body" }, activeTab === "dashboard" && /* @__PURE__ */ React.createElement(DashboardView, { onNavigate: navigateToTab, globalSettings }), activeTab === "inbox" && /* @__PURE__ */ React.createElement(LiveAgentInboxView, { currentUser, showToast, globalSettings, onUnreadCountChange: setInboxUnreadTotal, onNavigate: navigateToTab }), activeTab === "campaigns" && /* @__PURE__ */ React.createElement(CampaignsView, { currentUser, showToast, globalSettings, onNavigate: navigateToTab, loadWalletBalance }), activeTab === "composer" && /* @__PURE__ */ React.createElement(ComposerView, { showToast, onSent: () => {
+  ), /* @__PURE__ */ React.createElement("div", { className: "user-profile-pill", title: `Logged in as ${currentUser.email}` }, /* @__PURE__ */ React.createElement("div", { className: "avatar", style: { background: currentUser.avatar_color || "#128C7E" } }, currentUser.name.charAt(0)), /* @__PURE__ */ React.createElement("div", { className: "user-details" }, /* @__PURE__ */ React.createElement("span", { className: "user-name" }, currentUser.name), /* @__PURE__ */ React.createElement("span", { className: "user-role-badge" }, currentUser.role))), /* @__PURE__ */ React.createElement("button", { className: "btn-logout", onClick: handleLogout, title: "Sign Out" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6AA}"), " Logout")))), /* @__PURE__ */ React.createElement("div", { className: "header-nav-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-nav-inner" }, /* @__PURE__ */ React.createElement("nav", { className: "horizontal-nav" }, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "dashboard" ? "active" : ""}`, onClick: () => navigateToTab("dashboard") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CA}"), " Dashboard"), /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-wrap", ref: messagesDropdownRef }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `nav-dropdown-btn ${["inbox", "campaigns", "composer", "logs"].includes(activeTab) ? "active" : ""}`,
+      onClick: () => setMessagesDropdownOpen((prev) => !prev),
+      title: "Messages Menu (Inbox, Campaigns, Send Message, Logs)"
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"),
+    /* @__PURE__ */ React.createElement("span", null, "Messages"),
+    inboxUnreadTotal > 0 && /* @__PURE__ */ React.createElement("span", { style: {
+      background: ["inbox", "campaigns", "composer", "logs"].includes(activeTab) ? "#FFFFFF" : "#25D366",
+      color: ["inbox", "campaigns", "composer", "logs"].includes(activeTab) ? "#075E54" : "#FFFFFF",
+      fontSize: "10px",
+      fontWeight: "800",
+      padding: "1px 6px",
+      borderRadius: "10px",
+      marginLeft: "2px"
+    } }, inboxUnreadTotal),
+    /* @__PURE__ */ React.createElement("span", { className: `nav-chevron ${messagesDropdownOpen ? "open" : ""}` }, "\u25BC")
+  ), messagesDropdownOpen && /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-menu" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `nav-dropdown-item ${activeTab === "inbox" ? "active" : ""}`,
+      onClick: () => {
+        navigateToTab("inbox");
+        setMessagesDropdownOpen(false);
+      }
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-item-left" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "15px" } }, "\u{1F4AC}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "Live Agent Inbox"), inboxUnreadTotal > 0 && /* @__PURE__ */ React.createElement("span", { style: {
+      background: "#25D366",
+      color: "#FFFFFF",
+      fontSize: "10px",
+      fontWeight: "800",
+      padding: "1px 6px",
+      borderRadius: "10px"
+    } }, inboxUnreadTotal)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", fontWeight: "400", marginTop: "1px" } }, "2-Way Live Chat & Care Session"))),
+    activeTab === "inbox" && /* @__PURE__ */ React.createElement("span", { className: "nav-item-indicator" })
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `nav-dropdown-item ${activeTab === "campaigns" ? "active" : ""}`,
+      onClick: () => {
+        navigateToTab("campaigns");
+        setMessagesDropdownOpen(false);
+      }
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-item-left" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "15px" } }, "\u{1F4E2}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, "Bulk Broadcasts"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", fontWeight: "400", marginTop: "1px" } }, "Paced Queue & CSV Campaigns"))),
+    activeTab === "campaigns" && /* @__PURE__ */ React.createElement("span", { className: "nav-item-indicator" })
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `nav-dropdown-item ${activeTab === "composer" ? "active" : ""}`,
+      onClick: () => {
+        navigateToTab("composer");
+        setMessagesDropdownOpen(false);
+      }
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-item-left" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "15px" } }, "\u{1F4E4}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, "Send Message"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", fontWeight: "400", marginTop: "1px" } }, "Direct Template Composer"))),
+    activeTab === "composer" && /* @__PURE__ */ React.createElement("span", { className: "nav-item-indicator" })
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `nav-dropdown-item ${activeTab === "logs" ? "active" : ""}`,
+      onClick: () => {
+        navigateToTab("logs");
+        setMessagesDropdownOpen(false);
+      }
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-item-left" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "15px" } }, "\u{1F4DC}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, "Message Logs"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", fontWeight: "400", marginTop: "1px" } }, "Delivery & Status Telemetry"))),
+    activeTab === "logs" && /* @__PURE__ */ React.createElement("span", { className: "nav-item-indicator" })
+  ))), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "templates" ? "active" : ""}`, onClick: () => navigateToTab("templates") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Templates & Tariffs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "wallet" ? "active" : ""}`, onClick: () => navigateToTab("wallet") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Wallet & Billing"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_hub" ? "active" : ""}`, onClick: () => navigateToTab("api_hub") }, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo API Hub"), ["superadmin", "admin"].includes(currentUser.role) && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_keys" ? "active" : ""}`, onClick: () => navigateToTab("api_keys") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"), " API Keys"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "users" ? "active" : ""}`, onClick: () => navigateToTab("users") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " Users"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "settings" ? "active" : ""}`, onClick: () => navigateToTab("settings") }, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Engine Settings")))))), /* @__PURE__ */ React.createElement("main", { className: "app-body" }, activeTab === "dashboard" && /* @__PURE__ */ React.createElement(DashboardView, { onNavigate: navigateToTab, globalSettings }), activeTab === "inbox" && /* @__PURE__ */ React.createElement(LiveAgentInboxView, { currentUser, showToast, globalSettings, onUnreadCountChange: setInboxUnreadTotal, onNavigate: navigateToTab }), activeTab === "campaigns" && /* @__PURE__ */ React.createElement(CampaignsView, { currentUser, showToast, globalSettings, onNavigate: navigateToTab, loadWalletBalance }), activeTab === "composer" && /* @__PURE__ */ React.createElement(ComposerView, { showToast, onSent: () => {
     navigateToTab("inbox");
     loadWalletBalance();
   }, globalSettings }), activeTab === "logs" && /* @__PURE__ */ React.createElement(MessageLogsView, { showToast, globalSettings, onOpenInbox: (phone) => {
