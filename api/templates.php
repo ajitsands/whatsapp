@@ -151,7 +151,7 @@ switch ($method) {
         $activeOnly = !empty($_GET['active_only']);
         $sql = "SELECT * FROM whatsapp_templates";
         if ($activeOnly) {
-            $sql .= " WHERE is_active = 1";
+            $sql .= " WHERE is_active = 1 AND meta_status IN ('APPROVED', 'ACTIVE')";
         }
         $sql .= " ORDER BY id DESC";
 

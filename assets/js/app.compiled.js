@@ -602,9 +602,9 @@ function ComposerView({ showToast, onSent }) {
   const [customText, setCustomText] = useState("");
   const [sending, setSending] = useState(false);
   useEffect(() => {
-    fetch("./api/templates.php").then((res) => res.json()).then((res) => {
+    fetch("./api/templates.php?active_only=1").then((res) => res.json()).then((res) => {
       if (res.success) {
-        const activeOnly = res.data.filter((t) => t.is_active !== 0);
+        const activeOnly = res.data.filter((t) => (t.is_active === 1 || t.is_active === true || t.is_active === "1") && ["APPROVED", "ACTIVE"].includes((t.meta_status || "").toUpperCase()));
         setTemplates(activeOnly);
         if (activeOnly.length > 0) {
           pickTemplate(activeOnly[0]);
@@ -734,7 +734,7 @@ function ComposerView({ showToast, onSent }) {
         else setSelectedTemplate("");
       }
     },
-    templates.map((t) => /* @__PURE__ */ React.createElement("option", { key: t.id, value: t.template_name }, t.display_title, " [", t.category, "]")),
+    templates.filter((t) => (t.is_active === 1 || t.is_active === true || t.is_active === "1") && ["APPROVED", "ACTIVE"].includes((t.meta_status || "").toUpperCase())).map((t) => /* @__PURE__ */ React.createElement("option", { key: t.id, value: t.template_name }, t.display_title, " [", t.category, "]")),
     /* @__PURE__ */ React.createElement("option", { value: "" }, "-- Custom Direct Text Message --")
   )), selectedTemplate && currentTemplateObj && /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Template Dynamic Parameters (", params.length, " Variables)"), /* @__PURE__ */ React.createElement("div", { className: "param-grid" }, params.map((val, idx) => {
     const varMatches = (currentTemplateObj.body_text || "").match(/\{\{([a-zA-Z0-9_]+)\}\}/g);
@@ -961,8 +961,11 @@ function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCo
     fetch("./api/inbox.php?action=canned_replies").then((res) => res.json()).then((data) => {
       if (data.success && data.canned_replies) setCannedReplies(data.canned_replies);
     });
-    fetch("./api/templates.php").then((res) => res.json()).then((data) => {
-      if (data.success && data.data) setTemplates(data.data);
+    fetch("./api/templates.php?active_only=1").then((res) => res.json()).then((data) => {
+      if (data.success && data.data) {
+        const activeApproved = data.data.filter((t) => (t.is_active === 1 || t.is_active === true || t.is_active === "1") && ["APPROVED", "ACTIVE"].includes((t.meta_status || "").toUpperCase()));
+        setTemplates(activeApproved);
+      }
     });
   }, []);
   useEffect(() => {
@@ -1130,7 +1133,7 @@ function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCo
       onChange: (e) => setSelectedTemplateName(e.target.value)
     },
     /* @__PURE__ */ React.createElement("option", { value: "" }, "-- Choose Template --"),
-    templates.map((t) => /* @__PURE__ */ React.createElement("option", { key: t.template_name, value: t.template_name }, t.display_title || t.template_name, " (", t.category, ")"))
+    templates.filter((t) => (t.is_active === 1 || t.is_active === true || t.is_active === "1") && ["APPROVED", "ACTIVE"].includes((t.meta_status || "").toUpperCase())).map((t) => /* @__PURE__ */ React.createElement("option", { key: t.template_name, value: t.template_name }, t.display_title || t.template_name, " (", t.category, ")"))
   ), /* @__PURE__ */ React.createElement(
     "button",
     {
@@ -1201,10 +1204,10 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
   };
   const fetchTemplates = async () => {
     try {
-      const res = await fetch("./api/templates.php");
+      const res = await fetch("./api/templates.php?active_only=1");
       const data = await res.json();
       if (data.success && data.data) {
-        setTemplates(data.data.filter((t) => t.is_active !== 0));
+        setTemplates(data.data.filter((t) => (t.is_active === 1 || t.is_active === true || t.is_active === "1") && ["APPROVED", "ACTIVE"].includes((t.meta_status || "").toUpperCase())));
       }
     } catch (e) {
     }
@@ -1659,7 +1662,7 @@ function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, cu
       value: selectedTemplateName,
       onChange: (e) => setSelectedTemplateName(e.target.value)
     },
-    templates.map((t) => /* @__PURE__ */ React.createElement("option", { key: t.template_name, value: t.template_name }, t.display_title || t.template_name, " [", t.category, "] \u2022 Rate: ", t.client_rate_bhd, " BHD (", t.variable_count, " variables)"))
+    templates.filter((t) => (t.is_active === 1 || t.is_active === true || t.is_active === "1") && ["APPROVED", "ACTIVE"].includes((t.meta_status || "").toUpperCase())).map((t) => /* @__PURE__ */ React.createElement("option", { key: t.template_name, value: t.template_name }, t.display_title || t.template_name, " [", t.category, "] \u2022 Rate: ", t.client_rate_bhd, " BHD (", t.variable_count, " variables)"))
   )), selectedTemplate && /* @__PURE__ */ React.createElement("div", { style: {
     background: "#F8FAFC",
     border: "1px solid #E2E8F0",

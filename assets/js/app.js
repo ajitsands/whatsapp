@@ -1165,11 +1165,11 @@ function ComposerView({ showToast, onSent }) {
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    fetch('./api/templates.php')
+    fetch('./api/templates.php?active_only=1')
       .then(res => res.json())
       .then(res => {
         if (res.success) {
-          const activeOnly = res.data.filter(t => t.is_active !== 0);
+          const activeOnly = res.data.filter(t => (t.is_active === 1 || t.is_active === true || t.is_active === '1') && ['APPROVED', 'ACTIVE'].includes((t.meta_status || '').toUpperCase()));
           setTemplates(activeOnly);
           if (activeOnly.length > 0) {
             pickTemplate(activeOnly[0]);
@@ -1331,11 +1331,13 @@ function ComposerView({ showToast, onSent }) {
                   else setSelectedTemplate('');
                 }}
               >
-                {templates.map(t => (
-                  <option key={t.id} value={t.template_name}>
-                    {t.display_title} [{t.category}]
-                  </option>
-                ))}
+                {templates
+                  .filter(t => (t.is_active === 1 || t.is_active === true || t.is_active === '1') && ['APPROVED', 'ACTIVE'].includes((t.meta_status || '').toUpperCase()))
+                  .map(t => (
+                    <option key={t.id} value={t.template_name}>
+                      {t.display_title} [{t.category}]
+                    </option>
+                  ))}
                 <option value="">-- Custom Direct Text Message --</option>
               </select>
             </div>
@@ -1816,9 +1818,14 @@ function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCo
     fetch('./api/inbox.php?action=canned_replies')
       .then(res => res.json())
       .then(data => { if (data.success && data.canned_replies) setCannedReplies(data.canned_replies); });
-    fetch('./api/templates.php')
+    fetch('./api/templates.php?active_only=1')
       .then(res => res.json())
-      .then(data => { if (data.success && data.data) setTemplates(data.data); });
+      .then(data => {
+        if (data.success && data.data) {
+          const activeApproved = data.data.filter(t => (t.is_active === 1 || t.is_active === true || t.is_active === '1') && ['APPROVED', 'ACTIVE'].includes((t.meta_status || '').toUpperCase()));
+          setTemplates(activeApproved);
+        }
+      });
   }, []);
 
   // When search or filter changes
@@ -2193,11 +2200,13 @@ function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCo
                         onChange={e => setSelectedTemplateName(e.target.value)}
                       >
                         <option value="">-- Choose Template --</option>
-                        {templates.map(t => (
-                          <option key={t.template_name} value={t.template_name}>
-                            {t.display_title || t.template_name} ({t.category})
-                          </option>
-                        ))}
+                        {templates
+                          .filter(t => (t.is_active === 1 || t.is_active === true || t.is_active === '1') && ['APPROVED', 'ACTIVE'].includes((t.meta_status || '').toUpperCase()))
+                          .map(t => (
+                            <option key={t.template_name} value={t.template_name}>
+                              {t.display_title || t.template_name} ({t.category})
+                            </option>
+                          ))}
                       </select>
                       <button
                         type="button"
@@ -2283,10 +2292,10 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
 
   const fetchTemplates = async () => {
     try {
-      const res = await fetch('./api/templates.php');
+      const res = await fetch('./api/templates.php?active_only=1');
       const data = await res.json();
       if (data.success && data.data) {
-        setTemplates(data.data.filter(t => t.is_active !== 0));
+        setTemplates(data.data.filter(t => (t.is_active === 1 || t.is_active === true || t.is_active === '1') && ['APPROVED', 'ACTIVE'].includes((t.meta_status || '').toUpperCase())));
       }
     } catch (e) {}
   };
@@ -2930,11 +2939,13 @@ function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, cu
                   value={selectedTemplateName}
                   onChange={e => setSelectedTemplateName(e.target.value)}
                 >
-                  {templates.map(t => (
-                    <option key={t.template_name} value={t.template_name}>
-                      {t.display_title || t.template_name} [{t.category}] • Rate: {t.client_rate_bhd} BHD ({t.variable_count} variables)
-                    </option>
-                  ))}
+                  {templates
+                    .filter(t => (t.is_active === 1 || t.is_active === true || t.is_active === '1') && ['APPROVED', 'ACTIVE'].includes((t.meta_status || '').toUpperCase()))
+                    .map(t => (
+                      <option key={t.template_name} value={t.template_name}>
+                        {t.display_title || t.template_name} [{t.category}] • Rate: {t.client_rate_bhd} BHD ({t.variable_count} variables)
+                      </option>
+                    ))}
                 </select>
               </div>
 
