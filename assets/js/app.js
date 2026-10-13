@@ -495,6 +495,29 @@ function App() {
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const messagesDropdownRef = useRef(null);
 
+  // SaNDS Lab Licensing & Expiry Management
+  const [licenseInfo, setLicenseInfo] = useState(null);
+  const [checkingLicense, setCheckingLicense] = useState(true);
+  const [showLicenseActivationModal, setShowLicenseActivationModal] = useState(false);
+  const [showLicenseDetailsModal, setShowLicenseDetailsModal] = useState(false);
+
+  const loadLicenseStatus = async (autoShowModalIfInvalid = true) => {
+    try {
+      const res = await fetch('./api/license.php?action=status');
+      const data = await res.json();
+      if (data.success && data.data) {
+        setLicenseInfo(data.data);
+        if (!data.data.valid && autoShowModalIfInvalid) {
+          setShowLicenseActivationModal(true);
+        }
+      }
+    } catch (err) {
+      console.error('License check error:', err);
+    } finally {
+      setCheckingLicense(false);
+    }
+  };
+
   // Close Messages Dropdown on click outside
   useEffect(() => {
     const handleOutsideClick = (e) => {
@@ -551,6 +574,7 @@ function App() {
     checkAuth();
     loadGlobalSettings();
     loadWalletBalance();
+    loadLicenseStatus(true);
   }, []);
 
   const showToast = (message, type = 'success') => {
@@ -632,7 +656,28 @@ function App() {
   }
 
   if (!currentUser) {
-    return <LoginView onLogin={handleLogin} onSwitchDemo={switchDemoRole} />;
+    return (
+      <>
+        <LoginView
+          onLogin={handleLogin}
+          onSwitchDemo={switchDemoRole}
+          licenseInfo={licenseInfo}
+          onOpenLicenseActivation={() => setShowLicenseActivationModal(true)}
+        />
+        {showLicenseActivationModal && (
+          <LicenseActivationModal
+            licenseInfo={licenseInfo}
+            onSuccess={(newInfo) => {
+              setLicenseInfo(newInfo);
+              setShowLicenseActivationModal(false);
+              showToast('✓ Application Key activated successfully!');
+            }}
+            onClose={() => setShowLicenseActivationModal(false)}
+            showToast={showToast}
+          />
+        )}
+      </>
+    );
   }
 
   const curr = globalSettings?.system_currency || 'BHD';
@@ -686,6 +731,26 @@ function App() {
 
             {/* Header Right Actions: Live Wallet Balance Pill & User Profile */}
             <div className="header-actions">
+              {/* SaNDS Lab License Expiry Duration Pill */}
+              <div
+                className={`license-header-pill ${
+                  !licenseInfo || !licenseInfo.valid
+                    ? 'status-unlicensed'
+                    : licenseInfo.days_left <= 7
+                    ? 'status-expiring-soon'
+                    : licenseInfo.days_left <= 30
+                    ? 'status-expiring-month'
+                    : 'status-active'
+                }`}
+                onClick={() => setShowLicenseDetailsModal(true)}
+                title="Click to view SaNDS Lab Application Key & Expiry details"
+              >
+                <span>{!licenseInfo || !licenseInfo.valid ? '⚠️' : licenseInfo.days_left <= 7 ? '⏳' : '🛡️'}</span>
+                <span>
+                  License: <strong>{licenseInfo?.duration_text || (checkingLicense ? 'Checking...' : 'Unlicensed')}</strong>
+                </span>
+              </div>
+
               {/* Clickable Wallet Balance Pill */}
               <div
                 className="wallet-header-pill"
@@ -918,6 +983,374 @@ function App() {
           showToast={showToast}
         />
       )}
+
+      {/* SaNDS Lab License Activation Modal */}
+      {showLicenseActivationModal && (
+        <LicenseActivationModal
+          licenseInfo={licenseInfo}
+          onSuccess={(newInfo) => {
+            setLicenseInfo(newInfo);
+            setShowLicenseActivationModal(false);
+            showToast('✓ Application Key activated successfully!');
+          }}
+          onClose={() => setShowLicenseActivationModal(false)}
+          showToast={showToast}
+        />
+      )}
+
+      {/* SaNDS Lab License Details & Expiry Modal */}
+      {showLicenseDetailsModal && (
+        <LicenseDetailsModal
+          licenseInfo={licenseInfo}
+          onClose={() => setShowLicenseDetailsModal(false)}
+          onChangeKey={() => {
+            setShowLicenseDetailsModal(false);
+            setShowLicenseActivationModal(true);
+          }}
+          onRefresh={() => loadLicenseStatus(false)}
+          showToast={showToast}
+        />
+      )}
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// SANDS LAB APPLICATION KEY ACTIVATION MODAL
+// -----------------------------------------------------------------------------
+function LicenseActivationModal({ licenseInfo, onSuccess, onClose, showToast }) {
+  const [key, setKey] = useState('');
+  const [domain, setDomain] = useState(licenseInfo?.detected_domain || 'localhost');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleActivate = async (e) => {
+    e.preventDefault();
+    if (!key.trim()) {
+      setError('Please enter a license key');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('./api/license.php?action=activate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ license_key: key.trim(), domain_name: domain.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        onSuccess(data.data);
+      } else {
+        setError(data.error || 'Activation failed');
+      }
+    } catch (err) {
+      setError('Network error connecting to activation service');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStartTrial = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('./api/license.php?action=activate_eval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain_name: domain.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        onSuccess(data.data);
+      } else {
+        setError(data.error || 'Failed to start evaluation');
+      }
+    } catch (err) {
+      setError('Network error starting evaluation');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ maxWidth: '520px' }} onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '24px' }}>🛡️</span>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '16px' }}>Application Key Activation</h3>
+              <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.85)' }}>
+                SaNDS Lab Licensing Server (key.sandslab.com)
+              </p>
+            </div>
+          </div>
+          <button type="button" className="close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        <form onSubmit={handleActivate}>
+          <div className="modal-body" style={{ padding: '22px' }}>
+            <div style={{
+              background: '#F0FDF4',
+              border: '1px solid #BBF7D0',
+              color: '#166534',
+              padding: '12px 14px',
+              borderRadius: '8px',
+              fontSize: '12.5px',
+              marginBottom: '18px',
+              lineHeight: '1.5'
+            }}>
+              💡 <strong>License Required:</strong> This application authenticates via an asymmetric offline RSA verification model. Please enter your SaNDS Lab License Key.
+            </div>
+
+            {error && (
+              <div style={{
+                background: '#FEE2E2',
+                border: '1px solid #FCA5A5',
+                color: '#B91C1C',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                fontSize: '12.5px',
+                marginBottom: '16px',
+                fontWeight: '600'
+              }}>
+                ⚠️ {error}
+              </div>
+            )}
+
+            <div className="form-group">
+              <label className="form-label">Application License Key <span style={{ color: '#EF4444' }}>*</span></label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="INV-XXXXXX-XXXXXX-XXXXXX-XXXXXX"
+                value={key}
+                onChange={e => setKey(e.target.value)}
+                required
+                style={{
+                  fontFamily: 'monospace',
+                  letterSpacing: '1px',
+                  fontWeight: '700',
+                  textTransform: 'uppercase'
+                }}
+              />
+              <span className="form-hint">Obtain your key from <a href="https://key.sandslab.com/public/docs" target="_blank" rel="noreferrer" style={{ color: 'var(--wa-teal)', textDecoration: 'underline' }}>key.sandslab.com/public/docs</a></span>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Licensed Domain Name</label>
+              <input
+                type="text"
+                className="form-input"
+                value={domain}
+                onChange={e => setDomain(e.target.value)}
+                required
+                style={{ fontFamily: 'monospace' }}
+              />
+              <span className="form-hint">Automatically detected server host domain.</span>
+            </div>
+
+            <div style={{
+              marginTop: '16px',
+              padding: '12px 14px',
+              background: '#F8FAFC',
+              border: '1px solid #E2E8F0',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '12px'
+            }}>
+              <div>
+                <strong style={{ fontSize: '12.5px', display: 'block', color: 'var(--text-primary)' }}>Need a Quick Test Key?</strong>
+                <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>Activate a 30-day developer trial key for localhost.</span>
+              </div>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={handleStartTrial}
+                disabled={loading}
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                ⚡ 30-Day Trial
+              </button>
+            </div>
+          </div>
+
+          <div className="modal-footer" style={{ padding: '14px 22px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={loading}>
+              Close
+            </button>
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? 'Activating...' : '🚀 Activate Application'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// SANDS LAB LICENSE DETAILS & EXPIRY MODAL
+// -----------------------------------------------------------------------------
+function LicenseDetailsModal({ licenseInfo, onClose, onChangeKey, onRefresh, showToast }) {
+  const [refreshing, setRefreshing] = useState(false);
+  const [showFullKey, setShowFullKey] = useState(false);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const res = await fetch('./api/license.php?action=refresh', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        showToast('✓ License status re-verified successfully!');
+        if (onRefresh) onRefresh();
+      } else {
+        showToast(data.error || 'Refresh failed', 'error');
+      }
+    } catch (e) {
+      showToast('Network error while refreshing license', 'error');
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const copyKey = () => {
+    const k = licenseInfo?.full_license_key || licenseInfo?.license_key;
+    if (k && navigator.clipboard) {
+      navigator.clipboard.writeText(k);
+      showToast('📋 License Key copied to clipboard');
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ maxWidth: '520px' }} onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '24px' }}>🛡️</span>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '16px' }}>SaNDS Lab License & Expiry Status</h3>
+              <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.85)' }}>
+                Asymmetric Offline Verification (key.sandslab.com)
+              </p>
+            </div>
+          </div>
+          <button type="button" className="close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="modal-body" style={{ padding: '22px' }}>
+          {/* Status Badge Banner */}
+          <div style={{
+            background: licenseInfo?.valid ? '#DCFCE7' : '#FEE2E2',
+            border: `1px solid ${licenseInfo?.valid ? '#86EFAC' : '#FCA5A5'}`,
+            color: licenseInfo?.valid ? '#15803D' : '#B91C1C',
+            padding: '14px',
+            borderRadius: '10px',
+            marginBottom: '18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '22px' }}>{licenseInfo?.valid ? '✓' : '⚠️'}</span>
+              <div>
+                <strong style={{ fontSize: '14px', display: 'block' }}>
+                  {licenseInfo?.valid ? 'License Active & Valid' : 'License Inactive or Expired'}
+                </strong>
+                <span style={{ fontSize: '12px' }}>
+                  {licenseInfo?.message || (licenseInfo?.valid ? 'Cryptographically Verified (RSA SHA-256)' : 'Activation required')}
+                </span>
+              </div>
+            </div>
+            <span style={{
+              background: licenseInfo?.valid ? '#15803D' : '#B91C1C',
+              color: '#FFF',
+              padding: '4px 10px',
+              borderRadius: '20px',
+              fontSize: '11.5px',
+              fontWeight: '700'
+            }}>
+              {licenseInfo?.duration_text || 'Unlicensed'}
+            </span>
+          </div>
+
+          {/* Details Table */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#F8FAFC', borderRadius: '8px' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '12.5px' }}>Expiry Duration Left:</span>
+              <strong style={{ color: licenseInfo?.days_left <= 7 ? '#DC2626' : 'var(--wa-dark-teal)', fontSize: '13px' }}>
+                ⏳ {licenseInfo?.duration_text || 'N/A'}
+              </strong>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#F8FAFC', borderRadius: '8px' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '12.5px' }}>Expiration Date:</span>
+              <strong style={{ fontSize: '13px' }}>{licenseInfo?.expires_at || 'Lifetime'}</strong>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#F8FAFC', borderRadius: '8px' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '12.5px' }}>Licensed Domain:</span>
+              <strong style={{ fontFamily: 'monospace', fontSize: '13px' }}>{licenseInfo?.domain || 'localhost'}</strong>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#F8FAFC', borderRadius: '8px' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '12.5px' }}>Product Plan / Tier:</span>
+              <strong style={{ fontSize: '13px' }}>{licenseInfo?.plan || 'Enterprise License'}</strong>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: '#F8FAFC', borderRadius: '8px' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '12.5px' }}>License Key:</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontFamily: 'monospace', fontSize: '12px', fontWeight: '700' }}>
+                  {showFullKey ? (licenseInfo?.full_license_key || licenseInfo?.license_key) : (licenseInfo?.stored_license_key || '••••••••••••')}
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => setShowFullKey(prev => !prev)}
+                  title="Toggle show/hide"
+                >
+                  {showFullKey ? '🙈' : '👁️'}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={copyKey}
+                  title="Copy key"
+                >
+                  📋
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="modal-footer" style={{ padding: '14px 22px', display: 'flex', gap: '10px', justifyContent: 'space-between' }}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={onChangeKey}
+          >
+            🔑 Change / Renew Key
+          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={handleRefresh}
+              disabled={refreshing}
+            >
+              {refreshing ? 'Refreshing...' : '🔄 Refresh Status'}
+            </button>
+            <button type="button" className="btn btn-primary" onClick={onClose}>
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1044,7 +1477,7 @@ function ChangePasswordModal({ currentUser, onClose, showToast }) {
 // -----------------------------------------------------------------------------
 // 1. LOGIN VIEW
 // -----------------------------------------------------------------------------
-function LoginView({ onLogin, onSwitchDemo }) {
+function LoginView({ onLogin, onSwitchDemo, licenseInfo, onOpenLicenseActivation }) {
   const [email, setEmail] = useState('admin@uniglobal.bh');
   const [password, setPassword] = useState('Password@123');
   const [loading, setLoading] = useState(false);
@@ -1087,6 +1520,62 @@ function LoginView({ onLogin, onSwitchDemo }) {
           <h2>WhatsApp Integration Platform</h2>
           <p>Sign in to manage messaging, templates, and Odoo ERP webhooks</p>
         </div>
+
+        {/* SaNDS Lab Application Key / License Status Banner */}
+        {licenseInfo && !licenseInfo.valid && (
+          <div style={{
+            background: '#FEF2F2',
+            border: '1px solid #FCA5A5',
+            color: '#991B1B',
+            padding: '12px 14px',
+            borderRadius: '10px',
+            fontSize: '12.5px',
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '10px'
+          }}>
+            <div>
+              <strong style={{ display: 'block', fontSize: '13px' }}>⚠️ Application Key Required</strong>
+              <span style={{ fontSize: '11.5px', color: '#B91C1C' }}>{licenseInfo.message || 'Please activate your SaNDS Lab License.'}</span>
+            </div>
+            <button
+              type="button"
+              className="btn btn-sm"
+              style={{ background: '#DC2626', color: '#FFF', whiteSpace: 'nowrap', border: 'none', fontWeight: 'bold' }}
+              onClick={onOpenLicenseActivation}
+            >
+              🔑 Enter Key
+            </button>
+          </div>
+        )}
+
+        {licenseInfo && licenseInfo.valid && (
+          <div style={{
+            background: '#F0FDF4',
+            border: '1px solid #BBF7D0',
+            color: '#15803D',
+            padding: '8px 12px',
+            borderRadius: '8px',
+            fontSize: '12px',
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            fontWeight: '600'
+          }}>
+            <span>🛡️ License: <strong>{licenseInfo.duration_text}</strong> ({licenseInfo.expires_at})</span>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              style={{ fontSize: '11px', padding: '2px 8px' }}
+              onClick={onOpenLicenseActivation}
+            >
+              Details
+            </button>
+          </div>
+        )}
 
         {/* 1-Click Role Presets */}
         <div className="preset-roles-box">

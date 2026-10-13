@@ -233,6 +233,26 @@ function App() {
   const [messagesDropdownOpen, setMessagesDropdownOpen] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const messagesDropdownRef = useRef(null);
+  const [licenseInfo, setLicenseInfo] = useState(null);
+  const [checkingLicense, setCheckingLicense] = useState(true);
+  const [showLicenseActivationModal, setShowLicenseActivationModal] = useState(false);
+  const [showLicenseDetailsModal, setShowLicenseDetailsModal] = useState(false);
+  const loadLicenseStatus = async (autoShowModalIfInvalid = true) => {
+    try {
+      const res = await fetch("./api/license.php?action=status");
+      const data = await res.json();
+      if (data.success && data.data) {
+        setLicenseInfo(data.data);
+        if (!data.data.valid && autoShowModalIfInvalid) {
+          setShowLicenseActivationModal(true);
+        }
+      }
+    } catch (err) {
+      console.error("License check error:", err);
+    } finally {
+      setCheckingLicense(false);
+    }
+  };
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (messagesDropdownRef.current && !messagesDropdownRef.current.contains(e.target)) {
@@ -286,6 +306,7 @@ function App() {
     checkAuth();
     loadGlobalSettings();
     loadWalletBalance();
+    loadLicenseStatus(true);
   }, []);
   const showToast = (message, type = "success") => {
     setToast({ message, type });
@@ -358,7 +379,27 @@ function App() {
     return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", gap: "12px" } }, /* @__PURE__ */ React.createElement("div", { className: "brand-badge" }, /* @__PURE__ */ React.createElement("span", { className: "dot" }), " Loading SaNDS Platform..."));
   }
   if (!currentUser) {
-    return /* @__PURE__ */ React.createElement(LoginView, { onLogin: handleLogin, onSwitchDemo: switchDemoRole });
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(
+      LoginView,
+      {
+        onLogin: handleLogin,
+        onSwitchDemo: switchDemoRole,
+        licenseInfo,
+        onOpenLicenseActivation: () => setShowLicenseActivationModal(true)
+      }
+    ), showLicenseActivationModal && /* @__PURE__ */ React.createElement(
+      LicenseActivationModal,
+      {
+        licenseInfo,
+        onSuccess: (newInfo) => {
+          setLicenseInfo(newInfo);
+          setShowLicenseActivationModal(false);
+          showToast("\u2713 Application Key activated successfully!");
+        },
+        onClose: () => setShowLicenseActivationModal(false),
+        showToast
+      }
+    ));
   }
   const curr = globalSettings?.system_currency || "BHD";
   const dec = parseInt(globalSettings?.currency_decimals || "3", 10);
@@ -388,6 +429,15 @@ function App() {
     /* @__PURE__ */ React.createElement("span", { className: "version-pill-dot" }),
     /* @__PURE__ */ React.createElement("span", null, "v2.4.0")
   )), /* @__PURE__ */ React.createElement("div", { className: "header-actions" }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `license-header-pill ${!licenseInfo || !licenseInfo.valid ? "status-unlicensed" : licenseInfo.days_left <= 7 ? "status-expiring-soon" : licenseInfo.days_left <= 30 ? "status-expiring-month" : "status-active"}`,
+      onClick: () => setShowLicenseDetailsModal(true),
+      title: "Click to view SaNDS Lab Application Key & Expiry details"
+    },
+    /* @__PURE__ */ React.createElement("span", null, !licenseInfo || !licenseInfo.valid ? "\u26A0\uFE0F" : licenseInfo.days_left <= 7 ? "\u23F3" : "\u{1F6E1}\uFE0F"),
+    /* @__PURE__ */ React.createElement("span", null, "License: ", /* @__PURE__ */ React.createElement("strong", null, licenseInfo?.duration_text || (checkingLicense ? "Checking..." : "Unlicensed")))
+  ), /* @__PURE__ */ React.createElement(
     "div",
     {
       className: "wallet-header-pill",
@@ -504,7 +554,230 @@ function App() {
       onClose: () => setShowChangePasswordModal(false),
       showToast
     }
+  ), showLicenseActivationModal && /* @__PURE__ */ React.createElement(
+    LicenseActivationModal,
+    {
+      licenseInfo,
+      onSuccess: (newInfo) => {
+        setLicenseInfo(newInfo);
+        setShowLicenseActivationModal(false);
+        showToast("\u2713 Application Key activated successfully!");
+      },
+      onClose: () => setShowLicenseActivationModal(false),
+      showToast
+    }
+  ), showLicenseDetailsModal && /* @__PURE__ */ React.createElement(
+    LicenseDetailsModal,
+    {
+      licenseInfo,
+      onClose: () => setShowLicenseDetailsModal(false),
+      onChangeKey: () => {
+        setShowLicenseDetailsModal(false);
+        setShowLicenseActivationModal(true);
+      },
+      onRefresh: () => loadLicenseStatus(false),
+      showToast
+    }
   ));
+}
+function LicenseActivationModal({ licenseInfo, onSuccess, onClose, showToast }) {
+  const [key, setKey] = useState("");
+  const [domain, setDomain] = useState(licenseInfo?.detected_domain || "localhost");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const handleActivate = async (e) => {
+    e.preventDefault();
+    if (!key.trim()) {
+      setError("Please enter a license key");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("./api/license.php?action=activate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ license_key: key.trim(), domain_name: domain.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        onSuccess(data.data);
+      } else {
+        setError(data.error || "Activation failed");
+      }
+    } catch (err) {
+      setError("Network error connecting to activation service");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleStartTrial = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("./api/license.php?action=activate_eval", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain_name: domain.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        onSuccess(data.data);
+      } else {
+        setError(data.error || "Failed to start evaluation");
+      }
+    } catch (err) {
+      setError("Network error starting evaluation");
+    } finally {
+      setLoading(false);
+    }
+  };
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "520px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F6E1}\uFE0F"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, fontSize: "16px" } }, "Application Key Activation"), /* @__PURE__ */ React.createElement("p", { style: { margin: "2px 0 0 0", fontSize: "12px", color: "rgba(255,255,255,0.85)" } }, "SaNDS Lab Licensing Server (key.sandslab.com)"))), /* @__PURE__ */ React.createElement("button", { type: "button", className: "close-btn", onClick: onClose }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleActivate }, /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "22px" } }, /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#F0FDF4",
+    border: "1px solid #BBF7D0",
+    color: "#166534",
+    padding: "12px 14px",
+    borderRadius: "8px",
+    fontSize: "12.5px",
+    marginBottom: "18px",
+    lineHeight: "1.5"
+  } }, "\u{1F4A1} ", /* @__PURE__ */ React.createElement("strong", null, "License Required:"), " This application authenticates via an asymmetric offline RSA verification model. Please enter your SaNDS Lab License Key."), error && /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#FEE2E2",
+    border: "1px solid #FCA5A5",
+    color: "#B91C1C",
+    padding: "10px 14px",
+    borderRadius: "8px",
+    fontSize: "12.5px",
+    marginBottom: "16px",
+    fontWeight: "600"
+  } }, "\u26A0\uFE0F ", error), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Application License Key ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      placeholder: "INV-XXXXXX-XXXXXX-XXXXXX-XXXXXX",
+      value: key,
+      onChange: (e) => setKey(e.target.value),
+      required: true,
+      style: {
+        fontFamily: "monospace",
+        letterSpacing: "1px",
+        fontWeight: "700",
+        textTransform: "uppercase"
+      }
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Obtain your key from ", /* @__PURE__ */ React.createElement("a", { href: "https://key.sandslab.com/public/docs", target: "_blank", rel: "noreferrer", style: { color: "var(--wa-teal)", textDecoration: "underline" } }, "key.sandslab.com/public/docs"))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Licensed Domain Name"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: domain,
+      onChange: (e) => setDomain(e.target.value),
+      required: true,
+      style: { fontFamily: "monospace" }
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Automatically detected server host domain.")), /* @__PURE__ */ React.createElement("div", { style: {
+    marginTop: "16px",
+    padding: "12px 14px",
+    background: "#F8FAFC",
+    border: "1px solid #E2E8F0",
+    borderRadius: "8px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "12px"
+  } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", display: "block", color: "var(--text-primary)" } }, "Need a Quick Test Key?"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-muted)" } }, "Activate a 30-day developer trial key for localhost.")), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      onClick: handleStartTrial,
+      disabled: loading,
+      style: { whiteSpace: "nowrap" }
+    },
+    "\u26A1 30-Day Trial"
+  ))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "14px 22px", display: "flex", gap: "10px", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose, disabled: loading }, "Close"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: loading }, loading ? "Activating..." : "\u{1F680} Activate Application")))));
+}
+function LicenseDetailsModal({ licenseInfo, onClose, onChangeKey, onRefresh, showToast }) {
+  const [refreshing, setRefreshing] = useState(false);
+  const [showFullKey, setShowFullKey] = useState(false);
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const res = await fetch("./api/license.php?action=refresh", { method: "POST" });
+      const data = await res.json();
+      if (data.success) {
+        showToast("\u2713 License status re-verified successfully!");
+        if (onRefresh) onRefresh();
+      } else {
+        showToast(data.error || "Refresh failed", "error");
+      }
+    } catch (e) {
+      showToast("Network error while refreshing license", "error");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+  const copyKey = () => {
+    const k = licenseInfo?.full_license_key || licenseInfo?.license_key;
+    if (k && navigator.clipboard) {
+      navigator.clipboard.writeText(k);
+      showToast("\u{1F4CB} License Key copied to clipboard");
+    }
+  };
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "520px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F6E1}\uFE0F"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, fontSize: "16px" } }, "SaNDS Lab License & Expiry Status"), /* @__PURE__ */ React.createElement("p", { style: { margin: "2px 0 0 0", fontSize: "12px", color: "rgba(255,255,255,0.85)" } }, "Asymmetric Offline Verification (key.sandslab.com)"))), /* @__PURE__ */ React.createElement("button", { type: "button", className: "close-btn", onClick: onClose }, "\u2715")), /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "22px" } }, /* @__PURE__ */ React.createElement("div", { style: {
+    background: licenseInfo?.valid ? "#DCFCE7" : "#FEE2E2",
+    border: `1px solid ${licenseInfo?.valid ? "#86EFAC" : "#FCA5A5"}`,
+    color: licenseInfo?.valid ? "#15803D" : "#B91C1C",
+    padding: "14px",
+    borderRadius: "10px",
+    marginBottom: "18px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between"
+  } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "22px" } }, licenseInfo?.valid ? "\u2713" : "\u26A0\uFE0F"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", display: "block" } }, licenseInfo?.valid ? "License Active & Valid" : "License Inactive or Expired"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px" } }, licenseInfo?.message || (licenseInfo?.valid ? "Cryptographically Verified (RSA SHA-256)" : "Activation required")))), /* @__PURE__ */ React.createElement("span", { style: {
+    background: licenseInfo?.valid ? "#15803D" : "#B91C1C",
+    color: "#FFF",
+    padding: "4px 10px",
+    borderRadius: "20px",
+    fontSize: "11.5px",
+    fontWeight: "700"
+  } }, licenseInfo?.duration_text || "Unlicensed")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "12px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Expiry Duration Left:"), /* @__PURE__ */ React.createElement("strong", { style: { color: licenseInfo?.days_left <= 7 ? "#DC2626" : "var(--wa-dark-teal)", fontSize: "13px" } }, "\u23F3 ", licenseInfo?.duration_text || "N/A")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Expiration Date:"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, licenseInfo?.expires_at || "Lifetime")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Licensed Domain:"), /* @__PURE__ */ React.createElement("strong", { style: { fontFamily: "monospace", fontSize: "13px" } }, licenseInfo?.domain || "localhost")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Product Plan / Tier:"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, licenseInfo?.plan || "Enterprise License")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "License Key:"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontFamily: "monospace", fontSize: "12px", fontWeight: "700" } }, showFullKey ? licenseInfo?.full_license_key || licenseInfo?.license_key : licenseInfo?.stored_license_key || "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      onClick: () => setShowFullKey((prev) => !prev),
+      title: "Toggle show/hide"
+    },
+    showFullKey ? "\u{1F648}" : "\u{1F441}\uFE0F"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      onClick: copyKey,
+      title: "Copy key"
+    },
+    "\u{1F4CB}"
+  ))))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "14px 22px", display: "flex", gap: "10px", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary",
+      onClick: onChangeKey
+    },
+    "\u{1F511} Change / Renew Key"
+  ), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary",
+      onClick: handleRefresh,
+      disabled: refreshing
+    },
+    refreshing ? "Refreshing..." : "\u{1F504} Refresh Status"
+  ), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-primary", onClick: onClose }, "Close")))));
 }
 function ChangePasswordModal({ currentUser, onClose, showToast }) {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -576,7 +849,7 @@ function ChangePasswordModal({ currentUser, onClose, showToast }) {
     }
   ))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "12px 20px", display: "flex", gap: "8px", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose, disabled: loading }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: loading }, loading ? "Updating..." : "\u{1F4BE} Update Password")))));
 }
-function LoginView({ onLogin, onSwitchDemo }) {
+function LoginView({ onLogin, onSwitchDemo, licenseInfo, onOpenLicenseActivation }) {
   const [email, setEmail] = useState("admin@uniglobal.bh");
   const [password, setPassword] = useState("Password@123");
   const [loading, setLoading] = useState(false);
@@ -608,7 +881,49 @@ function LoginView({ onLogin, onSwitchDemo }) {
     setPassword("Password@123");
     onSwitchDemo(role);
   };
-  return /* @__PURE__ */ React.createElement("div", { className: "login-container" }, /* @__PURE__ */ React.createElement("div", { className: "login-card" }, /* @__PURE__ */ React.createElement("div", { className: "login-header" }, /* @__PURE__ */ React.createElement("img", { src: "./assets/logos/SaNDSLab-LogoNewUpdated.png", alt: "SaNDS Lab", className: "login-logo" }), /* @__PURE__ */ React.createElement("h2", null, "WhatsApp Integration Platform"), /* @__PURE__ */ React.createElement("p", null, "Sign in to manage messaging, templates, and Odoo ERP webhooks")), /* @__PURE__ */ React.createElement("div", { className: "preset-roles-box" }, /* @__PURE__ */ React.createElement("div", { className: "preset-roles-title" }, "\u26A1 Quick Sign-In by Role:"), /* @__PURE__ */ React.createElement("div", { className: "preset-buttons-row" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn-preset", onClick: () => pickPreset("admin@uniglobal.bh", "admin") }, "\u{1F6E1}\uFE0F Admin"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn-preset", onClick: () => pickPreset("user@uniglobal.bh", "user") }, "\u{1F464} User"))), error && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEE2E2", color: "#B91C1C", padding: "10px 14px", borderRadius: "8px", fontSize: "12.5px", marginBottom: "16px", fontWeight: "600" } }, "\u26A0\uFE0F ", error), /* @__PURE__ */ React.createElement("form", { onSubmit: submitLogin }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Email Address"), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { className: "login-container" }, /* @__PURE__ */ React.createElement("div", { className: "login-card" }, /* @__PURE__ */ React.createElement("div", { className: "login-header" }, /* @__PURE__ */ React.createElement("img", { src: "./assets/logos/SaNDSLab-LogoNewUpdated.png", alt: "SaNDS Lab", className: "login-logo" }), /* @__PURE__ */ React.createElement("h2", null, "WhatsApp Integration Platform"), /* @__PURE__ */ React.createElement("p", null, "Sign in to manage messaging, templates, and Odoo ERP webhooks")), licenseInfo && !licenseInfo.valid && /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#FEF2F2",
+    border: "1px solid #FCA5A5",
+    color: "#991B1B",
+    padding: "12px 14px",
+    borderRadius: "10px",
+    fontSize: "12.5px",
+    marginBottom: "16px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "10px"
+  } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { display: "block", fontSize: "13px" } }, "\u26A0\uFE0F Application Key Required"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "#B91C1C" } }, licenseInfo.message || "Please activate your SaNDS Lab License.")), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-sm",
+      style: { background: "#DC2626", color: "#FFF", whiteSpace: "nowrap", border: "none", fontWeight: "bold" },
+      onClick: onOpenLicenseActivation
+    },
+    "\u{1F511} Enter Key"
+  )), licenseInfo && licenseInfo.valid && /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#F0FDF4",
+    border: "1px solid #BBF7D0",
+    color: "#15803D",
+    padding: "8px 12px",
+    borderRadius: "8px",
+    fontSize: "12px",
+    marginBottom: "16px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    fontWeight: "600"
+  } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6E1}\uFE0F License: ", /* @__PURE__ */ React.createElement("strong", null, licenseInfo.duration_text), " (", licenseInfo.expires_at, ")"), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      style: { fontSize: "11px", padding: "2px 8px" },
+      onClick: onOpenLicenseActivation
+    },
+    "Details"
+  )), /* @__PURE__ */ React.createElement("div", { className: "preset-roles-box" }, /* @__PURE__ */ React.createElement("div", { className: "preset-roles-title" }, "\u26A1 Quick Sign-In by Role:"), /* @__PURE__ */ React.createElement("div", { className: "preset-buttons-row" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn-preset", onClick: () => pickPreset("admin@uniglobal.bh", "admin") }, "\u{1F6E1}\uFE0F Admin"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn-preset", onClick: () => pickPreset("user@uniglobal.bh", "user") }, "\u{1F464} User"))), error && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEE2E2", color: "#B91C1C", padding: "10px 14px", borderRadius: "8px", fontSize: "12.5px", marginBottom: "16px", fontWeight: "600" } }, "\u26A0\uFE0F ", error), /* @__PURE__ */ React.createElement("form", { onSubmit: submitLogin }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Email Address"), /* @__PURE__ */ React.createElement(
     "input",
     {
       type: "email",

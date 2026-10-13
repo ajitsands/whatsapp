@@ -402,6 +402,59 @@ body {
   color: var(--wa-dark-teal);
 }
 
+/* -------------------------------------------------------------------------
+   LICENSE HEADER PILL & BADGES
+   ------------------------------------------------------------------------- */
+.license-header-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 13px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.license-header-pill.status-active {
+  background: #DCFCE7;
+  border: 1px solid #86EFAC;
+  color: #15803D;
+}
+
+.license-header-pill.status-active:hover {
+  background: #BBF7D0;
+  border-color: #22C55E;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.2);
+}
+
+.license-header-pill.status-expiring-month {
+  background: #FEF3C7;
+  border: 1px solid #FDE68A;
+  color: #B45309;
+}
+
+.license-header-pill.status-expiring-month:hover {
+  background: #FDE68A;
+  transform: translateY(-1px);
+}
+
+.license-header-pill.status-expiring-soon,
+.license-header-pill.status-unlicensed {
+  background: #FEE2E2;
+  border: 1px solid #FCA5A5;
+  color: #B91C1C;
+}
+
+.license-header-pill.status-expiring-soon:hover,
+.license-header-pill.status-unlicensed:hover {
+  background: #FECACA;
+  transform: translateY(-1px);
+}
+
 /* =========================================================================
    MAIN APP CONTAINER
    ========================================================================= */
