@@ -15,6 +15,17 @@ $db = Database::getConnection();
 
 switch ($action) {
     case 'login':
+        require_once __DIR__ . '/../config/license.php';
+        $licenseCheck = LicenseManager::checkLicenseLocally();
+        if (!$licenseCheck['valid']) {
+            sendJsonResponse([
+                'success'        => false,
+                'error'          => 'Application access is locked: Valid SaNDS Lab License Key is required before logging in (' . $licenseCheck['duration_text'] . ').',
+                'license_locked' => true,
+                'license_status' => $licenseCheck['status']
+            ], 403);
+        }
+
         $email    = trim($input['email'] ?? '');
         $password = trim($input['password'] ?? '');
 

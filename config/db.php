@@ -297,6 +297,18 @@ function getJsonInput(): array {
 function authenticateRequest(array $allowedRoles = []): array {
     $db = Database::getConnection();
 
+    // 0. Enforce SaNDS Lab License Validity (Strict Enforcement)
+    require_once __DIR__ . '/license.php';
+    $licenseCheck = LicenseManager::checkLicenseLocally();
+    if (!$licenseCheck['valid']) {
+        sendJsonResponse([
+            'success'        => false,
+            'error'          => 'Application access is locked: Valid SaNDS Lab License Key is required (' . $licenseCheck['duration_text'] . ').',
+            'license_status' => $licenseCheck['status'],
+            'license_locked' => true
+        ], 403);
+    }
+
     // 1. Check Session Auth (React Dashboard user)
     $userId = $_SESSION['user_id'] ?? $_SERVER['HTTP_X_USER_ID'] ?? null;
     $userEmail = $_SERVER['HTTP_X_USER_EMAIL'] ?? null;

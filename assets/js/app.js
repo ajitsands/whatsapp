@@ -647,10 +647,42 @@ function App() {
     }
   };
 
-  if (loading && !currentUser) {
+  if (checkingLicense || (loading && !currentUser)) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: '12px' }}>
         <div className="brand-badge"><span className="dot"></span> Loading SaNDS Platform...</div>
+      </div>
+    );
+  }
+
+  const isLicenseLocked = !!(licenseInfo && !licenseInfo.valid);
+
+  // STRICT ENFORCEMENT: If logged in but license is expired or unlicensed, block dashboard completely
+  if (currentUser && isLicenseLocked) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'radial-gradient(circle at 50% 50%, #152033 0%, #0A0E17 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px'
+      }}>
+        <LicenseActivationModal
+          licenseInfo={licenseInfo}
+          isLockedScreen={true}
+          currentUser={currentUser}
+          onSuccess={(newInfo) => {
+            setLicenseInfo(newInfo);
+            setShowLicenseActivationModal(false);
+            showToast('✓ Application Key activated successfully! Access granted.');
+          }}
+          onClose={() => {
+            // "If He close The The Key Window it has to Close and go Back to Login"
+            handleLogout();
+          }}
+          showToast={showToast}
+        />
       </div>
     );
   }
@@ -664,9 +696,10 @@ function App() {
           licenseInfo={licenseInfo}
           onOpenLicenseActivation={() => setShowLicenseActivationModal(true)}
         />
-        {showLicenseActivationModal && (
+        {(showLicenseActivationModal || isLicenseLocked) && (
           <LicenseActivationModal
             licenseInfo={licenseInfo}
+            isLockedScreen={isLicenseLocked}
             onSuccess={(newInfo) => {
               setLicenseInfo(newInfo);
               setShowLicenseActivationModal(false);
@@ -1018,7 +1051,7 @@ function App() {
 // -----------------------------------------------------------------------------
 // SANDS LAB APPLICATION KEY ACTIVATION MODAL
 // -----------------------------------------------------------------------------
-function LicenseActivationModal({ licenseInfo, onSuccess, onClose, showToast }) {
+function LicenseActivationModal({ licenseInfo, isLockedScreen, currentUser, onSuccess, onClose, showToast }) {
   const [key, setKey] = useState('');
   const [domain, setDomain] = useState(licenseInfo?.detected_domain || 'localhost');
   const [loading, setLoading] = useState(false);
@@ -1074,35 +1107,62 @@ function LicenseActivationModal({ licenseInfo, onSuccess, onClose, showToast }) 
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" style={{ maxWidth: '520px' }} onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
+    <div className="modal-overlay" onClick={isLockedScreen ? undefined : onClose}>
+      <div className="modal-content" style={{ maxWidth: '520px', border: isLockedScreen ? '2px solid #EF4444' : undefined }} onClick={e => e.stopPropagation()}>
+        <div className="modal-header" style={{ background: isLockedScreen ? 'linear-gradient(135deg, #7F1D1D 0%, #991B1B 100%)' : undefined }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '24px' }}>🛡️</span>
+            <span style={{ fontSize: '24px' }}>{isLockedScreen ? '🔒' : '🛡️'}</span>
             <div>
-              <h3 style={{ margin: 0, fontSize: '16px' }}>Application Key Activation</h3>
+              <h3 style={{ margin: 0, fontSize: '16px' }}>
+                {isLockedScreen ? 'Application Key Required (Locked)' : 'Application Key Activation'}
+              </h3>
               <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.85)' }}>
                 SaNDS Lab Licensing Server (key.sandslab.com)
               </p>
             </div>
           </div>
-          <button type="button" className="close-btn" onClick={onClose}>✕</button>
+          <button
+            type="button"
+            className="close-btn"
+            onClick={onClose}
+            title={isLockedScreen ? "Close and Return to Login" : "Close"}
+          >
+            ✕
+          </button>
         </div>
 
         <form onSubmit={handleActivate}>
           <div className="modal-body" style={{ padding: '22px' }}>
-            <div style={{
-              background: '#F0FDF4',
-              border: '1px solid #BBF7D0',
-              color: '#166534',
-              padding: '12px 14px',
-              borderRadius: '8px',
-              fontSize: '12.5px',
-              marginBottom: '18px',
-              lineHeight: '1.5'
-            }}>
-              💡 <strong>License Required:</strong> This application authenticates via an asymmetric offline RSA verification model. Please enter your SaNDS Lab License Key.
-            </div>
+            {isLockedScreen ? (
+              <div style={{
+                background: '#FEF2F2',
+                border: '1px solid #FCA5A5',
+                color: '#991B1B',
+                padding: '12px 14px',
+                borderRadius: '8px',
+                fontSize: '12.5px',
+                marginBottom: '18px',
+                lineHeight: '1.5'
+              }}>
+                <strong style={{ display: 'block', fontSize: '13px', marginBottom: '2px' }}>
+                  ⛔ Platform Access Locked
+                </strong>
+                The application requires a valid, active License Key to be unlocked. Closing this window will return you to the login screen.
+              </div>
+            ) : (
+              <div style={{
+                background: '#F0FDF4',
+                border: '1px solid #BBF7D0',
+                color: '#166534',
+                padding: '12px 14px',
+                borderRadius: '8px',
+                fontSize: '12.5px',
+                marginBottom: '18px',
+                lineHeight: '1.5'
+              }}>
+                💡 <strong>License Required:</strong> This application authenticates via an asymmetric offline RSA verification model. Please enter your SaNDS Lab License Key.
+              </div>
+            )}
 
             {error && (
               <div style={{
@@ -1179,8 +1239,13 @@ function LicenseActivationModal({ licenseInfo, onSuccess, onClose, showToast }) 
           </div>
 
           <div className="modal-footer" style={{ padding: '14px 22px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={loading}>
-              Close
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={onClose}
+              disabled={loading}
+            >
+              {isLockedScreen ? '🚪 Exit to Login' : 'Close'}
             </button>
             <button type="submit" className="btn btn-primary" disabled={loading}>
               {loading ? 'Activating...' : '🚀 Activate Application'}
@@ -1485,6 +1550,11 @@ function LoginView({ onLogin, onSwitchDemo, licenseInfo, onOpenLicenseActivation
 
   const submitLogin = async (e) => {
     e.preventDefault();
+    if (licenseInfo && !licenseInfo.valid) {
+      setError('Application is locked: You must enter and activate a valid SaNDS Lab License Key before using the application.');
+      if (onOpenLicenseActivation) onOpenLicenseActivation();
+      return;
+    }
     setLoading(true);
     setError('');
     try {
@@ -1507,6 +1577,11 @@ function LoginView({ onLogin, onSwitchDemo, licenseInfo, onOpenLicenseActivation
   };
 
   const pickPreset = (presetEmail, role) => {
+    if (licenseInfo && !licenseInfo.valid) {
+      setError('Application is locked: You must enter and activate a valid SaNDS Lab License Key before using the application.');
+      if (onOpenLicenseActivation) onOpenLicenseActivation();
+      return;
+    }
     setEmail(presetEmail);
     setPassword('Password@123');
     onSwitchDemo(role);
