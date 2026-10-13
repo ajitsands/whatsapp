@@ -492,6 +492,7 @@ function App() {
   const [toast, setToast] = useState(null);
   const [inboxUnreadTotal, setInboxUnreadTotal] = useState(0);
   const [messagesDropdownOpen, setMessagesDropdownOpen] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const messagesDropdownRef = useRef(null);
 
   // Close Messages Dropdown on click outside
@@ -705,6 +706,16 @@ function App() {
                 </div>
               </div>
 
+              <button
+                type="button"
+                className="btn-header-action"
+                onClick={() => setShowChangePasswordModal(true)}
+                title="Change Your Account Password"
+              >
+                <span>🔑</span>
+                <span>Change Password</span>
+              </button>
+
               <button className="btn-logout" onClick={handleLogout} title="Sign Out">
                 <span>🚪</span> Logout
               </button>
@@ -898,6 +909,134 @@ function App() {
 
       {/* Interactive Version Architecture & Roadmap Modal */}
       <VersionArchitectureModal isOpen={showVersionModal} onClose={() => setShowVersionModal(false)} />
+
+      {/* Change Password Modal for Current Logged-In User */}
+      {showChangePasswordModal && (
+        <ChangePasswordModal
+          currentUser={currentUser}
+          onClose={() => setShowChangePasswordModal(false)}
+          showToast={showToast}
+        />
+      )}
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// CHANGE PASSWORD MODAL (FOR EACH LOGGED-IN USER)
+// -----------------------------------------------------------------------------
+function ChangePasswordModal({ currentUser, onClose, showToast }) {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      setError('New password must be at least 6 characters long');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError('New password and confirm password do not match');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('./api/auth.php?action=change_password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('✓ Password updated successfully!');
+        onClose();
+      } else {
+        setError(data.error || 'Failed to update password');
+      }
+    } catch (err) {
+      setError('Network error while updating password');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ maxWidth: '440px' }} onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '20px' }}>🔑</span>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '15px' }}>Change Account Password</h3>
+              <p style={{ margin: '2px 0 0 0', fontSize: '11.5px', color: 'rgba(255,255,255,0.85)' }}>
+                {currentUser?.name} ({currentUser?.email})
+              </p>
+            </div>
+          </div>
+          <button className="close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="modal-body" style={{ padding: '20px' }}>
+            {error && (
+              <div style={{ background: '#FEE2E2', border: '1px solid #FCA5A5', color: '#B91C1C', padding: '10px 14px', borderRadius: '8px', fontSize: '12px', marginBottom: '14px', fontWeight: '600' }}>
+                ⚠️ {error}
+              </div>
+            )}
+
+            <div className="form-group">
+              <label className="form-label">Current Password</label>
+              <input
+                type="password"
+                className="form-input"
+                placeholder="Enter current password"
+                value={currentPassword}
+                onChange={e => setCurrentPassword(e.target.value)}
+              />
+              <span className="form-hint">Leave blank if this is a newly assigned account password.</span>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">New Password <span style={{ color: '#EF4444' }}>*</span></label>
+              <input
+                type="password"
+                className="form-input"
+                placeholder="At least 6 characters"
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+                required
+                minLength={6}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Confirm New Password <span style={{ color: '#EF4444' }}>*</span></label>
+              <input
+                type="password"
+                className="form-input"
+                placeholder="Re-type new password"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                required
+                minLength={6}
+              />
+            </div>
+          </div>
+
+          <div className="modal-footer" style={{ padding: '12px 20px', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={loading}>
+              Cancel
+            </button>
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? 'Updating...' : '💾 Update Password'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
@@ -6114,6 +6253,15 @@ function UsersView({ currentUser, showToast }) {
   const [form, setForm] = useState({ name: '', email: '', password: 'Password@123', role: 'user', status: 'active' });
   const [confirmDialog, setConfirmDialog] = useState(null);
 
+  // Edit User State
+  const [editingUser, setEditingUser] = useState(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  // Admin Reset Password State
+  const [resetPasswordUser, setResetPasswordUser] = useState(null);
+  const [adminNewPassword, setAdminNewPassword] = useState('Password@123');
+  const [savingReset, setSavingReset] = useState(false);
+
   const loadUsers = () => {
     fetch('./api/users.php')
       .then(res => res.json())
@@ -6137,7 +6285,7 @@ function UsersView({ currentUser, showToast }) {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('User created successfully');
+        showToast('✓ User created successfully');
         setShowAddModal(false);
         setForm({ name: '', email: '', password: 'Password@123', role: 'user', status: 'active' });
         loadUsers();
@@ -6146,6 +6294,144 @@ function UsersView({ currentUser, showToast }) {
       }
     } catch (err) {
       showToast('Error creating user', 'error');
+    }
+  };
+
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    setSavingEdit(true);
+    try {
+      const payload = {
+        id: editingUser.id,
+        name: editingUser.name,
+        email: editingUser.email,
+        role: editingUser.role,
+        status: editingUser.status
+      };
+      if (editingUser.password && editingUser.password.trim() !== '') {
+        payload.password = editingUser.password.trim();
+      }
+      const res = await fetch('./api/users.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('✓ User account updated successfully!');
+        setEditingUser(null);
+        loadUsers();
+      } else {
+        showToast(data.error || 'Failed to update user', 'error');
+      }
+    } catch (err) {
+      showToast('Error updating user account', 'error');
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  const handleToggleStatus = (u, targetStatus) => {
+    if (currentUser?.id === u.id) {
+      showToast('You cannot suspend your own logged-in account', 'error');
+      return;
+    }
+    if (targetStatus === 'suspended') {
+      setConfirmDialog({
+        title: 'Suspend User Account?',
+        subtitle: `Are you sure you want to suspend account "${u.name}" (${u.email})? They will immediately be prevented from logging into the platform.`,
+        icon: '⏸️',
+        badgeClass: 'warning',
+        confirmText: 'Yes, Suspend Account',
+        cancelText: 'Cancel',
+        onConfirm: async () => {
+          try {
+            const res = await fetch('./api/users.php?action=toggle_status', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: u.id, status: 'suspended' })
+            });
+            const data = await res.json();
+            if (data.success) {
+              showToast(`⏸️ User "${u.name}" has been suspended`);
+              loadUsers();
+            } else {
+              showToast(data.error || 'Failed to suspend user', 'error');
+            }
+          } catch (e) {
+            showToast('Error suspending user', 'error');
+          } finally {
+            setConfirmDialog(null);
+          }
+        }
+      });
+    } else {
+      // Direct activate
+      (async () => {
+        try {
+          const res = await fetch('./api/users.php?action=toggle_status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: u.id, status: 'active' })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast(`✓ User "${u.name}" has been activated`);
+            loadUsers();
+          } else {
+            showToast(data.error || 'Failed to activate user', 'error');
+          }
+        } catch (e) {
+          showToast('Error activating user', 'error');
+        }
+      })();
+    }
+  };
+
+  const handleAdminResetPassword = async (e) => {
+    e.preventDefault();
+    if (!resetPasswordUser) return;
+    if (!adminNewPassword || adminNewPassword.trim().length < 6) {
+      showToast('Password must be at least 6 characters', 'error');
+      return;
+    }
+    setSavingReset(true);
+    try {
+      const res = await fetch('./api/users.php?action=reset_password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: resetPasswordUser.id, new_password: adminNewPassword.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`✓ Password reset for "${resetPasswordUser.name}" successfully!`);
+        setResetPasswordUser(null);
+      } else {
+        showToast(data.error || 'Failed to reset password', 'error');
+      }
+    } catch (err) {
+      showToast('Error resetting password', 'error');
+    } finally {
+      setSavingReset(false);
+    }
+  };
+
+  const generateRandomPassword = () => {
+    const pwd = 'Pass@' + Math.floor(1000 + Math.random() * 9000) + '!';
+    setAdminNewPassword(pwd);
+  };
+
+  const copyPassword = (pwd) => {
+    if (!pwd) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(pwd).then(() => {
+        showToast('📋 Password copied to clipboard');
+      }).catch(() => {
+        showToast(`Password: ${pwd}`);
+      });
+    } else {
+      showToast(`Password: ${pwd}`);
     }
   };
 
@@ -6188,7 +6474,12 @@ function UsersView({ currentUser, showToast }) {
           <div className="avatar" style={{ background: u.avatar_color || '#128C7E' }}>
             {u.name.charAt(0)}
           </div>
-          <strong>{u.name}</strong>
+          <div>
+            <strong style={{ display: 'block', fontSize: '13px' }}>{u.name}</strong>
+            {currentUser?.id === u.id && (
+              <span style={{ fontSize: '10.5px', color: 'var(--wa-teal)', fontWeight: '700' }}>(Current Session)</span>
+            )}
+          </div>
         </div>
       )
     },
@@ -6210,7 +6501,7 @@ function UsersView({ currentUser, showToast }) {
       label: 'Account Status',
       render: (u) => (
         <span className={`badge ${u.status === 'active' ? 'status-read' : 'status-failed'}`}>
-          {u.status.toUpperCase()}
+          {u.status === 'active' ? '✓ ACTIVE' : '⏸️ SUSPENDED'}
         </span>
       )
     },
@@ -6224,13 +6515,53 @@ function UsersView({ currentUser, showToast }) {
       label: 'Actions',
       sortable: false,
       render: (u) => (
-        <>
-          {currentUser.id !== u.id && (
-            <button className="btn btn-secondary btn-sm" onClick={() => handleDelete(u.id)}>
-              Delete
+        <div style={{ display: 'flex', gap: '5px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <button
+            className="btn btn-secondary btn-sm"
+            title="Edit user details"
+            onClick={() => setEditingUser({ ...u, password: '' })}
+          >
+            ✏️ Edit
+          </button>
+          <button
+            className="btn btn-secondary btn-sm"
+            title="Admin Reset Password"
+            onClick={() => {
+              setResetPasswordUser(u);
+              setAdminNewPassword('Password@123');
+            }}
+          >
+            🔑 Reset PW
+          </button>
+          {currentUser?.id !== u.id && (
+            u.status === 'active' ? (
+              <button
+                className="btn btn-warning btn-sm"
+                title="Suspend user account"
+                onClick={() => handleToggleStatus(u, 'suspended')}
+              >
+                ⏸️ Suspend
+              </button>
+            ) : (
+              <button
+                className="btn btn-success btn-sm"
+                title="Activate user account"
+                onClick={() => handleToggleStatus(u, 'active')}
+              >
+                ▶️ Activate
+              </button>
+            )
+          )}
+          {currentUser?.id !== u.id && (
+            <button
+              className="btn btn-danger-outline btn-sm"
+              title="Delete user"
+              onClick={() => handleDelete(u.id)}
+            >
+              🗑️
             </button>
           )}
-        </>
+        </div>
       )
     }
   ];
@@ -6260,37 +6591,193 @@ function UsersView({ currentUser, showToast }) {
         defaultSortDir="desc"
       />
 
+      {/* CREATE NEW USER MODAL */}
       {showAddModal && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
-        }}>
-          <div className="card" style={{ width: '480px' }}>
-            <div className="card-header">
+        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
+          <div className="modal-content" style={{ maxWidth: '480px' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
               <span className="card-title">Create New User</span>
-              <button className="btn btn-secondary btn-sm" onClick={() => setShowAddModal(false)}>✕</button>
+              <button className="close-btn" onClick={() => setShowAddModal(false)}>✕</button>
             </div>
             <form onSubmit={handleSave}>
-              <div className="form-group">
-                <label className="form-label">Full Name</label>
-                <input type="text" className="form-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+              <div className="modal-body" style={{ padding: '20px' }}>
+                <div className="form-group">
+                  <label className="form-label">Full Name <span style={{ color: '#EF4444' }}>*</span></label>
+                  <input type="text" className="form-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Email Address <span style={{ color: '#EF4444' }}>*</span></label>
+                  <input type="email" className="form-input" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Password <span style={{ color: '#EF4444' }}>*</span></label>
+                  <input type="password" className="form-input" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} />
+                  <span className="form-hint">Default password is Password@123 (min 6 characters)</span>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Role</label>
+                  <select className="form-select" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
+                    {isSuperadmin && <option value="superadmin">Superadmin (Global Platform Owner)</option>}
+                    <option value="admin">Admin (Full Client Access)</option>
+                    <option value="user">User (Standard Access)</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Account Status</label>
+                  <select className="form-select" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
+                    <option value="active">Active (Access Allowed)</option>
+                    <option value="suspended">Suspended (Access Blocked)</option>
+                  </select>
+                </div>
               </div>
-              <div className="form-group">
-                <label className="form-label">Email Address</label>
-                <input type="email" className="form-input" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+              <div className="modal-footer" style={{ padding: '12px 20px', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowAddModal(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary">➕ Create User</button>
               </div>
-              <div className="form-group">
-                <label className="form-label">Password</label>
-                <input type="password" className="form-input" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT USER MODAL */}
+      {editingUser && (
+        <div className="modal-overlay" onClick={() => setEditingUser(null)}>
+          <div className="modal-content" style={{ maxWidth: '480px' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <span className="card-title">✏️ Edit User: {editingUser.name}</span>
+              <button className="close-btn" onClick={() => setEditingUser(null)}>✕</button>
+            </div>
+            <form onSubmit={handleUpdateUser}>
+              <div className="modal-body" style={{ padding: '20px' }}>
+                <div className="form-group">
+                  <label className="form-label">Full Name <span style={{ color: '#EF4444' }}>*</span></label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={editingUser.name}
+                    onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Email Address <span style={{ color: '#EF4444' }}>*</span></label>
+                  <input
+                    type="email"
+                    className="form-input"
+                    value={editingUser.email}
+                    onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Assigned Role</label>
+                  <select
+                    className="form-select"
+                    value={editingUser.role}
+                    onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
+                  >
+                    {isSuperadmin && <option value="superadmin">Superadmin (Global Platform Owner)</option>}
+                    <option value="admin">Admin (Full Client Access)</option>
+                    <option value="user">User (Standard Access)</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Account Status</label>
+                  <select
+                    className="form-select"
+                    value={editingUser.status}
+                    onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value })}
+                  >
+                    <option value="active">Active (Access Allowed)</option>
+                    <option value="suspended">Suspended (Access Blocked)</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Set New Password (Optional)</label>
+                  <input
+                    type="password"
+                    className="form-input"
+                    placeholder="Leave blank to keep unchanged"
+                    value={editingUser.password || ''}
+                    onChange={(e) => setEditingUser({ ...editingUser, password: e.target.value })}
+                    minLength={6}
+                  />
+                  <span className="form-hint">Enter at least 6 characters only if you want to overwrite password.</span>
+                </div>
               </div>
-              <div className="form-group">
-                <label className="form-label">Role</label>
-                <select className="form-select" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
-                  <option value="admin">Admin (Full Client Access)</option>
-                  <option value="user">User (Standard Access)</option>
-                </select>
+              <div className="modal-footer" style={{ padding: '12px 20px', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                <button type="button" className="btn btn-secondary" onClick={() => setEditingUser(null)} disabled={savingEdit}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary" disabled={savingEdit}>
+                  {savingEdit ? 'Saving...' : '💾 Save Changes'}
+                </button>
               </div>
-              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '10px' }}>Save User</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN RESET PASSWORD MODAL */}
+      {resetPasswordUser && (
+        <div className="modal-overlay" onClick={() => setResetPasswordUser(null)}>
+          <div className="modal-content" style={{ maxWidth: '460px' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <span className="card-title">🔑 Reset Password for {resetPasswordUser.name}</span>
+              <button className="close-btn" onClick={() => setResetPasswordUser(null)}>✕</button>
+            </div>
+            <form onSubmit={handleAdminResetPassword}>
+              <div className="modal-body" style={{ padding: '20px' }}>
+                <div style={{ marginBottom: '14px', fontSize: '12.5px', color: 'var(--text-secondary)' }}>
+                  User Account: <strong>{resetPasswordUser.email}</strong> • Role: <strong style={{ textTransform: 'uppercase' }}>{resetPasswordUser.role}</strong>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">New Password <span style={{ color: '#EF4444' }}>*</span></label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={adminNewPassword}
+                      onChange={(e) => setAdminNewPassword(e.target.value)}
+                      placeholder="Enter new password (min 6 chars)"
+                      required
+                      minLength={6}
+                      style={{ fontFamily: 'monospace', fontWeight: 'bold' }}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={generateRandomPassword}
+                      title="Generate random password"
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      🎲 Random
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => copyPassword(adminNewPassword)}
+                      title="Copy to clipboard"
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      📋 Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', color: '#1E40AF', padding: '10px 14px', borderRadius: '8px', fontSize: '12px', marginTop: '14px', lineHeight: '1.5' }}>
+                  💡 <strong>Admin Notice:</strong> Once saved, the user must use this new password to sign in. Every user can also update their own password at any time via the <strong>Change Password</strong> button in the header.
+                </div>
+              </div>
+              <div className="modal-footer" style={{ padding: '12px 20px', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                <button type="button" className="btn btn-secondary" onClick={() => setResetPasswordUser(null)} disabled={savingReset}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary" disabled={savingReset}>
+                  {savingReset ? 'Resetting...' : '🔑 Reset Password'}
+                </button>
+              </div>
             </form>
           </div>
         </div>

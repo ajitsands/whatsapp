@@ -381,6 +381,27 @@ body {
   color: #DC2626;
 }
 
+.btn-header-action {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 7px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-header-action:hover {
+  background: #F0FDF4;
+  border-color: var(--wa-teal);
+  color: var(--wa-dark-teal);
+}
+
 /* =========================================================================
    MAIN APP CONTAINER
    ========================================================================= */
@@ -1128,6 +1149,28 @@ body {
   padding: 4px 10px;
   font-size: 11.5px;
   border-radius: var(--radius-sm);
+}
+
+.btn-warning {
+  background: #FEF3C7;
+  color: #B45309;
+  border-color: #FDE68A;
+}
+
+.btn-warning:hover {
+  background: #FDE68A;
+  color: #92400E;
+}
+
+.btn-danger-outline {
+  background: #FEF2F2;
+  color: #DC2626;
+  border-color: #FECACA;
+}
+
+.btn-danger-outline:hover {
+  background: #FEE2E2;
+  color: #B91C1C;
 }
 
 /* =========================================================================

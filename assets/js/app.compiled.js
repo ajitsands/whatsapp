@@ -231,6 +231,7 @@ function App() {
   const [toast, setToast] = useState(null);
   const [inboxUnreadTotal, setInboxUnreadTotal] = useState(0);
   const [messagesDropdownOpen, setMessagesDropdownOpen] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const messagesDropdownRef = useRef(null);
   useEffect(() => {
     const handleOutsideClick = (e) => {
@@ -395,7 +396,17 @@ function App() {
     },
     /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"),
     /* @__PURE__ */ React.createElement("span", null, "Wallet: ", /* @__PURE__ */ React.createElement("strong", null, formatCurrency(walletBalance, curr, dec)))
-  ), /* @__PURE__ */ React.createElement("div", { className: "user-profile-pill", title: `Logged in as ${currentUser.email}` }, /* @__PURE__ */ React.createElement("div", { className: "avatar", style: { background: currentUser.avatar_color || "#128C7E" } }, currentUser.name.charAt(0)), /* @__PURE__ */ React.createElement("div", { className: "user-details" }, /* @__PURE__ */ React.createElement("span", { className: "user-name" }, currentUser.name), /* @__PURE__ */ React.createElement("span", { className: "user-role-badge" }, currentUser.role))), /* @__PURE__ */ React.createElement("button", { className: "btn-logout", onClick: handleLogout, title: "Sign Out" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6AA}"), " Logout")))), /* @__PURE__ */ React.createElement("div", { className: "header-nav-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-nav-inner" }, /* @__PURE__ */ React.createElement("nav", { className: "horizontal-nav" }, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "dashboard" ? "active" : ""}`, onClick: () => navigateToTab("dashboard") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CA}"), " Dashboard"), /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-wrap", ref: messagesDropdownRef }, /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement("div", { className: "user-profile-pill", title: `Logged in as ${currentUser.email}` }, /* @__PURE__ */ React.createElement("div", { className: "avatar", style: { background: currentUser.avatar_color || "#128C7E" } }, currentUser.name.charAt(0)), /* @__PURE__ */ React.createElement("div", { className: "user-details" }, /* @__PURE__ */ React.createElement("span", { className: "user-name" }, currentUser.name), /* @__PURE__ */ React.createElement("span", { className: "user-role-badge" }, currentUser.role))), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn-header-action",
+      onClick: () => setShowChangePasswordModal(true),
+      title: "Change Your Account Password"
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"),
+    /* @__PURE__ */ React.createElement("span", null, "Change Password")
+  ), /* @__PURE__ */ React.createElement("button", { className: "btn-logout", onClick: handleLogout, title: "Sign Out" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6AA}"), " Logout")))), /* @__PURE__ */ React.createElement("div", { className: "header-nav-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-nav-inner" }, /* @__PURE__ */ React.createElement("nav", { className: "horizontal-nav" }, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "dashboard" ? "active" : ""}`, onClick: () => navigateToTab("dashboard") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CA}"), " Dashboard"), /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-wrap", ref: messagesDropdownRef }, /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "button",
@@ -486,7 +497,84 @@ function App() {
       title: "Click to inspect Version 2.1.0 Architecture & Locked v1.0.0 Baseline"
     },
     "Platform v2.1.0 (v1.0.0 Locked \u{1F512})"
-  ), /* @__PURE__ */ React.createElement("span", { className: "footer-badge" }, "WhatsApp Cloud API v19.0"), /* @__PURE__ */ React.createElement("span", { className: "footer-badge" }, "Odoo ERP Connector Active"), /* @__PURE__ */ React.createElement("span", null, "Bahrain (BHD) Tariff Active")))), /* @__PURE__ */ React.createElement(VersionArchitectureModal, { isOpen: showVersionModal, onClose: () => setShowVersionModal(false) }));
+  ), /* @__PURE__ */ React.createElement("span", { className: "footer-badge" }, "WhatsApp Cloud API v19.0"), /* @__PURE__ */ React.createElement("span", { className: "footer-badge" }, "Odoo ERP Connector Active"), /* @__PURE__ */ React.createElement("span", null, "Bahrain (BHD) Tariff Active")))), /* @__PURE__ */ React.createElement(VersionArchitectureModal, { isOpen: showVersionModal, onClose: () => setShowVersionModal(false) }), showChangePasswordModal && /* @__PURE__ */ React.createElement(
+    ChangePasswordModal,
+    {
+      currentUser,
+      onClose: () => setShowChangePasswordModal(false),
+      showToast
+    }
+  ));
+}
+function ChangePasswordModal({ currentUser, onClose, showToast }) {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      setError("New password must be at least 6 characters long");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError("New password and confirm password do not match");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("./api/auth.php?action=change_password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("\u2713 Password updated successfully!");
+        onClose();
+      } else {
+        setError(data.error || "Failed to update password");
+      }
+    } catch (err) {
+      setError("Network error while updating password");
+    } finally {
+      setLoading(false);
+    }
+  };
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "440px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F511}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, fontSize: "15px" } }, "Change Account Password"), /* @__PURE__ */ React.createElement("p", { style: { margin: "2px 0 0 0", fontSize: "11.5px", color: "rgba(255,255,255,0.85)" } }, currentUser?.name, " (", currentUser?.email, ")"))), /* @__PURE__ */ React.createElement("button", { className: "close-btn", onClick: onClose }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSubmit }, /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "20px" } }, error && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEE2E2", border: "1px solid #FCA5A5", color: "#B91C1C", padding: "10px 14px", borderRadius: "8px", fontSize: "12px", marginBottom: "14px", fontWeight: "600" } }, "\u26A0\uFE0F ", error), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Current Password"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "password",
+      className: "form-input",
+      placeholder: "Enter current password",
+      value: currentPassword,
+      onChange: (e) => setCurrentPassword(e.target.value)
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Leave blank if this is a newly assigned account password.")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "New Password ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "password",
+      className: "form-input",
+      placeholder: "At least 6 characters",
+      value: newPassword,
+      onChange: (e) => setNewPassword(e.target.value),
+      required: true,
+      minLength: 6
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Confirm New Password ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "password",
+      className: "form-input",
+      placeholder: "Re-type new password",
+      value: confirmPassword,
+      onChange: (e) => setConfirmPassword(e.target.value),
+      required: true,
+      minLength: 6
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "12px 20px", display: "flex", gap: "8px", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose, disabled: loading }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: loading }, loading ? "Updating..." : "\u{1F4BE} Update Password")))));
 }
 function LoginView({ onLogin, onSwitchDemo }) {
   const [email, setEmail] = useState("admin@uniglobal.bh");
@@ -3639,6 +3727,11 @@ function UsersView({ currentUser, showToast }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "Password@123", role: "user", status: "active" });
   const [confirmDialog, setConfirmDialog] = useState(null);
+  const [editingUser, setEditingUser] = useState(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [resetPasswordUser, setResetPasswordUser] = useState(null);
+  const [adminNewPassword, setAdminNewPassword] = useState("Password@123");
+  const [savingReset, setSavingReset] = useState(false);
   const loadUsers = () => {
     fetch("./api/users.php").then((res) => res.json()).then((res) => {
       if (res.success) {
@@ -3660,7 +3753,7 @@ function UsersView({ currentUser, showToast }) {
       });
       const data = await res.json();
       if (data.success) {
-        showToast("User created successfully");
+        showToast("\u2713 User created successfully");
         setShowAddModal(false);
         setForm({ name: "", email: "", password: "Password@123", role: "user", status: "active" });
         loadUsers();
@@ -3669,6 +3762,138 @@ function UsersView({ currentUser, showToast }) {
       }
     } catch (err) {
       showToast("Error creating user", "error");
+    }
+  };
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    setSavingEdit(true);
+    try {
+      const payload = {
+        id: editingUser.id,
+        name: editingUser.name,
+        email: editingUser.email,
+        role: editingUser.role,
+        status: editingUser.status
+      };
+      if (editingUser.password && editingUser.password.trim() !== "") {
+        payload.password = editingUser.password.trim();
+      }
+      const res = await fetch("./api/users.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("\u2713 User account updated successfully!");
+        setEditingUser(null);
+        loadUsers();
+      } else {
+        showToast(data.error || "Failed to update user", "error");
+      }
+    } catch (err) {
+      showToast("Error updating user account", "error");
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+  const handleToggleStatus = (u, targetStatus) => {
+    if (currentUser?.id === u.id) {
+      showToast("You cannot suspend your own logged-in account", "error");
+      return;
+    }
+    if (targetStatus === "suspended") {
+      setConfirmDialog({
+        title: "Suspend User Account?",
+        subtitle: `Are you sure you want to suspend account "${u.name}" (${u.email})? They will immediately be prevented from logging into the platform.`,
+        icon: "\u23F8\uFE0F",
+        badgeClass: "warning",
+        confirmText: "Yes, Suspend Account",
+        cancelText: "Cancel",
+        onConfirm: async () => {
+          try {
+            const res = await fetch("./api/users.php?action=toggle_status", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id: u.id, status: "suspended" })
+            });
+            const data = await res.json();
+            if (data.success) {
+              showToast(`\u23F8\uFE0F User "${u.name}" has been suspended`);
+              loadUsers();
+            } else {
+              showToast(data.error || "Failed to suspend user", "error");
+            }
+          } catch (e) {
+            showToast("Error suspending user", "error");
+          } finally {
+            setConfirmDialog(null);
+          }
+        }
+      });
+    } else {
+      (async () => {
+        try {
+          const res = await fetch("./api/users.php?action=toggle_status", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: u.id, status: "active" })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast(`\u2713 User "${u.name}" has been activated`);
+            loadUsers();
+          } else {
+            showToast(data.error || "Failed to activate user", "error");
+          }
+        } catch (e) {
+          showToast("Error activating user", "error");
+        }
+      })();
+    }
+  };
+  const handleAdminResetPassword = async (e) => {
+    e.preventDefault();
+    if (!resetPasswordUser) return;
+    if (!adminNewPassword || adminNewPassword.trim().length < 6) {
+      showToast("Password must be at least 6 characters", "error");
+      return;
+    }
+    setSavingReset(true);
+    try {
+      const res = await fetch("./api/users.php?action=reset_password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: resetPasswordUser.id, new_password: adminNewPassword.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`\u2713 Password reset for "${resetPasswordUser.name}" successfully!`);
+        setResetPasswordUser(null);
+      } else {
+        showToast(data.error || "Failed to reset password", "error");
+      }
+    } catch (err) {
+      showToast("Error resetting password", "error");
+    } finally {
+      setSavingReset(false);
+    }
+  };
+  const generateRandomPassword = () => {
+    const pwd = "Pass@" + Math.floor(1e3 + Math.random() * 9e3) + "!";
+    setAdminNewPassword(pwd);
+  };
+  const copyPassword = (pwd) => {
+    if (!pwd) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(pwd).then(() => {
+        showToast("\u{1F4CB} Password copied to clipboard");
+      }).catch(() => {
+        showToast(`Password: ${pwd}`);
+      });
+    } else {
+      showToast(`Password: ${pwd}`);
     }
   };
   const handleDelete = (id) => {
@@ -3703,7 +3928,7 @@ function UsersView({ currentUser, showToast }) {
     {
       key: "name",
       label: "User Name",
-      render: (u) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("div", { className: "avatar", style: { background: u.avatar_color || "#128C7E" } }, u.name.charAt(0)), /* @__PURE__ */ React.createElement("strong", null, u.name))
+      render: (u) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("div", { className: "avatar", style: { background: u.avatar_color || "#128C7E" } }, u.name.charAt(0)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { display: "block", fontSize: "13px" } }, u.name), currentUser?.id === u.id && /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "var(--wa-teal)", fontWeight: "700" } }, "(Current Session)")))
     },
     {
       key: "email",
@@ -3717,7 +3942,7 @@ function UsersView({ currentUser, showToast }) {
     {
       key: "status",
       label: "Account Status",
-      render: (u) => /* @__PURE__ */ React.createElement("span", { className: `badge ${u.status === "active" ? "status-read" : "status-failed"}` }, u.status.toUpperCase())
+      render: (u) => /* @__PURE__ */ React.createElement("span", { className: `badge ${u.status === "active" ? "status-read" : "status-failed"}` }, u.status === "active" ? "\u2713 ACTIVE" : "\u23F8\uFE0F SUSPENDED")
     },
     {
       key: "last_login",
@@ -3728,7 +3953,50 @@ function UsersView({ currentUser, showToast }) {
       key: "actions",
       label: "Actions",
       sortable: false,
-      render: (u) => /* @__PURE__ */ React.createElement(React.Fragment, null, currentUser.id !== u.id && /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => handleDelete(u.id) }, "Delete"))
+      render: (u) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "5px", alignItems: "center", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-secondary btn-sm",
+          title: "Edit user details",
+          onClick: () => setEditingUser({ ...u, password: "" })
+        },
+        "\u270F\uFE0F Edit"
+      ), /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-secondary btn-sm",
+          title: "Admin Reset Password",
+          onClick: () => {
+            setResetPasswordUser(u);
+            setAdminNewPassword("Password@123");
+          }
+        },
+        "\u{1F511} Reset PW"
+      ), currentUser?.id !== u.id && (u.status === "active" ? /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-warning btn-sm",
+          title: "Suspend user account",
+          onClick: () => handleToggleStatus(u, "suspended")
+        },
+        "\u23F8\uFE0F Suspend"
+      ) : /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-success btn-sm",
+          title: "Activate user account",
+          onClick: () => handleToggleStatus(u, "active")
+        },
+        "\u25B6\uFE0F Activate"
+      )), currentUser?.id !== u.id && /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-danger-outline btn-sm",
+          title: "Delete user",
+          onClick: () => handleDelete(u.id)
+        },
+        "\u{1F5D1}\uFE0F"
+      ))
     }
   ];
   const displayedUsers = isSuperadmin ? users : users.filter((u) => u.role !== "superadmin");
@@ -3744,18 +4012,86 @@ function UsersView({ currentUser, showToast }) {
       defaultSortKey: "id",
       defaultSortDir: "desc"
     }
-  ), showAddModal && /* @__PURE__ */ React.createElement("div", { style: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: "rgba(0,0,0,0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1e4
-  } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { width: "480px" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "Create New User"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setShowAddModal(false) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Full Name"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: form.name, onChange: (e) => setForm({ ...form, name: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Email Address"), /* @__PURE__ */ React.createElement("input", { type: "email", className: "form-input", value: form.email, onChange: (e) => setForm({ ...form, email: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Password"), /* @__PURE__ */ React.createElement("input", { type: "password", className: "form-input", value: form.password, onChange: (e) => setForm({ ...form, password: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Role"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: form.role, onChange: (e) => setForm({ ...form, role: e.target.value }) }, /* @__PURE__ */ React.createElement("option", { value: "admin" }, "Admin (Full Client Access)"), /* @__PURE__ */ React.createElement("option", { value: "user" }, "User (Standard Access)"))), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { width: "100%", marginTop: "10px" } }, "Save User")))), confirmDialog && /* @__PURE__ */ React.createElement(
+  ), showAddModal && /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: () => setShowAddModal(false) }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "480px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "Create New User"), /* @__PURE__ */ React.createElement("button", { className: "close-btn", onClick: () => setShowAddModal(false) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "20px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Full Name ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: form.name, onChange: (e) => setForm({ ...form, name: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Email Address ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement("input", { type: "email", className: "form-input", value: form.email, onChange: (e) => setForm({ ...form, email: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Password ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement("input", { type: "password", className: "form-input", value: form.password, onChange: (e) => setForm({ ...form, password: e.target.value }), required: true, minLength: 6 }), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Default password is Password@123 (min 6 characters)")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Role"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: form.role, onChange: (e) => setForm({ ...form, role: e.target.value }) }, isSuperadmin && /* @__PURE__ */ React.createElement("option", { value: "superadmin" }, "Superadmin (Global Platform Owner)"), /* @__PURE__ */ React.createElement("option", { value: "admin" }, "Admin (Full Client Access)"), /* @__PURE__ */ React.createElement("option", { value: "user" }, "User (Standard Access)"))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Account Status"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: form.status, onChange: (e) => setForm({ ...form, status: e.target.value }) }, /* @__PURE__ */ React.createElement("option", { value: "active" }, "Active (Access Allowed)"), /* @__PURE__ */ React.createElement("option", { value: "suspended" }, "Suspended (Access Blocked)")))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "12px 20px", display: "flex", gap: "8px", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: () => setShowAddModal(false) }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary" }, "\u2795 Create User"))))), editingUser && /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: () => setEditingUser(null) }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "480px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "\u270F\uFE0F Edit User: ", editingUser.name), /* @__PURE__ */ React.createElement("button", { className: "close-btn", onClick: () => setEditingUser(null) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleUpdateUser }, /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "20px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Full Name ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: editingUser.name,
+      onChange: (e) => setEditingUser({ ...editingUser, name: e.target.value }),
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Email Address ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "email",
+      className: "form-input",
+      value: editingUser.email,
+      onChange: (e) => setEditingUser({ ...editingUser, email: e.target.value }),
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Assigned Role"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: editingUser.role,
+      onChange: (e) => setEditingUser({ ...editingUser, role: e.target.value })
+    },
+    isSuperadmin && /* @__PURE__ */ React.createElement("option", { value: "superadmin" }, "Superadmin (Global Platform Owner)"),
+    /* @__PURE__ */ React.createElement("option", { value: "admin" }, "Admin (Full Client Access)"),
+    /* @__PURE__ */ React.createElement("option", { value: "user" }, "User (Standard Access)")
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Account Status"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: editingUser.status,
+      onChange: (e) => setEditingUser({ ...editingUser, status: e.target.value })
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "active" }, "Active (Access Allowed)"),
+    /* @__PURE__ */ React.createElement("option", { value: "suspended" }, "Suspended (Access Blocked)")
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Set New Password (Optional)"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "password",
+      className: "form-input",
+      placeholder: "Leave blank to keep unchanged",
+      value: editingUser.password || "",
+      onChange: (e) => setEditingUser({ ...editingUser, password: e.target.value }),
+      minLength: 6
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Enter at least 6 characters only if you want to overwrite password."))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "12px 20px", display: "flex", gap: "8px", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: () => setEditingUser(null), disabled: savingEdit }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: savingEdit }, savingEdit ? "Saving..." : "\u{1F4BE} Save Changes"))))), resetPasswordUser && /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: () => setResetPasswordUser(null) }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "460px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "\u{1F511} Reset Password for ", resetPasswordUser.name), /* @__PURE__ */ React.createElement("button", { className: "close-btn", onClick: () => setResetPasswordUser(null) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleAdminResetPassword }, /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "20px" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: "14px", fontSize: "12.5px", color: "var(--text-secondary)" } }, "User Account: ", /* @__PURE__ */ React.createElement("strong", null, resetPasswordUser.email), " \u2022 Role: ", /* @__PURE__ */ React.createElement("strong", { style: { textTransform: "uppercase" } }, resetPasswordUser.role)), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "New Password ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px" } }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: adminNewPassword,
+      onChange: (e) => setAdminNewPassword(e.target.value),
+      placeholder: "Enter new password (min 6 chars)",
+      required: true,
+      minLength: 6,
+      style: { fontFamily: "monospace", fontWeight: "bold" }
+    }
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      onClick: generateRandomPassword,
+      title: "Generate random password",
+      style: { whiteSpace: "nowrap" }
+    },
+    "\u{1F3B2} Random"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      onClick: () => copyPassword(adminNewPassword),
+      title: "Copy to clipboard",
+      style: { whiteSpace: "nowrap" }
+    },
+    "\u{1F4CB} Copy"
+  ))), /* @__PURE__ */ React.createElement("div", { style: { background: "#EFF6FF", border: "1px solid #BFDBFE", color: "#1E40AF", padding: "10px 14px", borderRadius: "8px", fontSize: "12px", marginTop: "14px", lineHeight: "1.5" } }, "\u{1F4A1} ", /* @__PURE__ */ React.createElement("strong", null, "Admin Notice:"), " Once saved, the user must use this new password to sign in. Every user can also update their own password at any time via the ", /* @__PURE__ */ React.createElement("strong", null, "Change Password"), " button in the header.")), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "12px 20px", display: "flex", gap: "8px", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: () => setResetPasswordUser(null), disabled: savingReset }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: savingReset }, savingReset ? "Resetting..." : "\u{1F511} Reset Password"))))), confirmDialog && /* @__PURE__ */ React.createElement(
     ConfirmDialog,
     {
       isOpen: !!confirmDialog,
