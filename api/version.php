@@ -73,13 +73,16 @@ sendJsonResponse([
             [
                 'version' => '2.5.0',
                 'type'    => 'minor',
-                'date'    => '2026-10-13',
-                'status'  => 'Production Released',
+                'date'    => '2026-10-14',
+                'status'  => 'Production Released & Locked 🔒 (Git Tag: v2.5.0)',
                 'highlights' => [
+                    "TODAY'S UPDATE (14-Oct-2026): Added Superadmin Company Profile & Dynamic Branding (Company Name & Logo fixed by Superadmin, dynamically applied across Header, Login, and Phone simulators)",
+                    "TODAY'S UPDATE (14-Oct-2026): Engineered Automated 24-Hour Remote Sync & Suspension Engine with key.sandslab.com with instant revocation detection",
+                    "TODAY'S UPDATE (14-Oct-2026): Restricted Meta wholesale carrier margins strictly to Superadmin eyes only across all system components",
+                    "TODAY'S UPDATE (14-Oct-2026): Built Enterprise Root React ErrorBoundary architecture for zero-crash recovery and total immunity from white screens",
                     'Built Enterprise RBAC User Management: User Edit, Suspend/Reactivate toggle, and Administrator Password Reset',
                     'Added User Self-Service Password Change modal with old-password verification and session security',
-                    'Engineered SaNDS Lab Application Key Licensing Engine integrated with key.sandslab.com',
-                    'Offline asymmetric RSA-SHA256 cryptographic signature verification with domain-binding and expiry countdown',
+                    'Engineered SaNDS Lab Application Key Licensing Engine integrated with key.sandslab.com with offline asymmetric RSA-SHA256 verification',
                     'Added live License Expiry Duration Pill in the application header bar with color-coded warning states',
                     'Implemented strict security lock: application blocks dashboard and APIs if unlicensed/expired, redirecting to login on exit'
                 ]

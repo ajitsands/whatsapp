@@ -5,10 +5,9 @@
 ---
 
 ## 📌 Active Version Status
-- **Current Version:** `2.3.0`
-- **Development Stage:** `v2.3.0 Odoo ERP Automated Action Webhook & Model Sync (Active & Production Released)`
-- **Locked Baseline Version:** `1.0.0`
-- **Git Baseline Tags:** `v1.0.0` & `v1.0` (Locked on Commit `9dd6ebc`)
+- **Current Version:** `2.5.0`
+- **Development Stage:** `v2.5.0 Enterprise User Security, SaNDS Lab Licensing & Dynamic Branding (Locked Production Milestone)`
+- **Locked Milestone Tags:** `v2.5.0` (Production Milestone), `v1.0.0` & `v1.0` (Baseline Milestone)
 - **Live Production URL:** `https://whatsapp.sandslab.com`
 - **Repository:** `https://github.com/ajitsands/whatsapp.git` (`branch: main`)
 
@@ -65,12 +64,45 @@ v2 . [MINOR] . [PATCH]
 | **v2.2.1** | **Meta Cloud API Live Dispatch & Webhook Delivery Tracking** | ✅ **COMPLETED & LIVE** | True Meta Graph API cURL dispatch, prevention of premature delivery counting, real `wamid` tracking, and webhook-driven delivery updates. |
 | **v2.2.2** | **Enterprise UI Popups & Rich Confirmation Dialog System** | ✅ **COMPLETED & LIVE** | Replaced all native browser alert/confirm dialogues with modern frosted-glass modals with glowing status badges and responsive actions. |
 | **v2.3.0** | **Odoo ERP Automated Action Webhook & Model Sync** | ✅ **COMPLETED & LIVE** | Inbound webhook gateway (`api/odoo_webhook.php`), Automated Action Studio with zero-dependency Python code generator, dynamic PDF attachment streaming, and bi-directional chatter delivery callbacks. |
+| **v2.4.0** | **WhatsApp Template Studio & Meta Live Approval** | ✅ **COMPLETED & LIVE** | Direct Meta Graph API submission for templates, pre-built Meta preset library, live handset phone mockup preview, and active/inactive template toggles. |
+| **v2.5.0** | **Enterprise User Security, Licensing & Dynamic Branding** | 🔒 **LOCKED PRODUCTION** | Admin user edit/suspend controls, password resets, SaNDS Lab Application Key licensing engine with offline RSA-SHA256, 24h remote sync, dynamic company branding, and React ErrorBoundary. |
 
 ---
 
 ## 📜 Release Changelog History
 
-### [2.3.0] — 2026-10-13 (Odoo ERP Automated Action Webhook & Model Sync Released)
+### [2.5.0] — 2026-10-14 (Enterprise Security, SaNDS Lab Licensing & Dynamic Branding Locked 🔒)
+- ⭐ **TODAY'S UPDATE — Superadmin Company Profile & Dynamic Branding:**
+  - Dedicated "🏢 Company Profile & Branding" configuration sub-tab in Engine Settings.
+  - Restricted exclusively to Superadmin accounts (read-only for standard Admin/User).
+  - Integrated direct Logo Upload handler (`api/settings.php?action=upload_logo`) supporting PNG, SVG, JPG, WEBP (up to 5MB).
+  - Real-time triple live previews (Header Brand Bar, Login Card, and WhatsApp Handset Simulator).
+  - Dynamic platform-wide reflection: automatically replaces hardcoded "UniGlobal Consultancy" across the top header bar, login screen, composer handset mockup, template studio simulator, document titles, and receipts.
+- ⭐ **TODAY'S UPDATE — Automated 24-Hour Remote License Sync & Suspension Engine:**
+  - Background 24-hour verification schedule connecting with `https://key.sandslab.com`.
+  - Immediate local application locking if a license key is revoked or suspended on the server.
+  - Graceful fallback to local asymmetric RSA-SHA256 cryptographic verification if server is temporarily unreachable.
+- ⭐ **TODAY'S UPDATE — Wholesale Carrier Tariff Privacy:**
+  - Wholesale Meta delivery costs strictly restricted to Superadmin visibility across tariff calculators, message logs, and dashboard metrics.
+- ⭐ **TODAY'S UPDATE — Enterprise Root React ErrorBoundary & White Screen Immunity:**
+  - Added full React `ErrorBoundary` wrapping `<App />` root to prevent white screens on any runtime exception.
+  - Branded recovery UI with exact diagnostic reporting, 1-click view reloading, and session purging.
+  - Safeguarded `ComposerView` prop scope and user avatar/name renderers across all views.
+- **Enterprise RBAC User Security Management:**
+  - Built User Edit and Suspend/Reactivate toggle controls in Users view.
+  - Administrator 1-click Password Reset modal for managed users.
+  - Self-service User Change Password modal with session re-authentication.
+- **SaNDS Lab Asymmetric RSA-SHA256 Application Key Licensing:**
+  - Cryptographic RSA-SHA256 offline verification with domain binding and expiry countdown.
+  - Live header expiry duration pill with color-coded warning badges.
+  - Strict application locking screen protecting unactivated or expired installations.
+
+### [2.4.0] — 2026-10-13 (WhatsApp Template Creation Studio & Meta Graph API Live Approval)
+- **WhatsApp Template Creation Studio:** Direct Meta Graph API submission for message templates with category, language, and component configuration.
+- **Curated Library of Meta Presets:** 6 pre-built compliant industry templates (Invoices, Sales Orders, Receipts, Reminders, Offers, OTPs).
+- **Interactive Live Handset Mockup:** Real-time phone bubble preview with dynamic variable replacement.
+- **Live Meta Status Synchronization:** Background status checks refreshing approved, rejected, and pending states directly from Meta Cloud WABA.
+- **Active/Inactive Lifecycle Toggle:** 1-click toggling of templates with DB synchronization and Composer/Campaign filtering.
 - **Dedicated Odoo Inbound Controller (`api/odoo_webhook.php`):** Token-authenticated gateway parsing automated action payloads for `account.move`, `sale.order`, `account.payment`, `stock.picking`, and `res.partner`.
 - **Dynamic PDF Attachment Streaming:** Automatic decoding and caching of Odoo QWeb base64 binary reports into public document URLs, streaming seamlessly into Meta WhatsApp header document attachments.
 - **Visual Automated Action Studio:** Interactive code generator producing ready-to-paste Python 3 code for Odoo 14-18 `ir.actions.server` (zero third-party pip dependencies required; runs natively on Odoo.sh & SaaS) as well as Odoo 17/18 Webhook JSON rules.

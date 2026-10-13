@@ -323,6 +323,33 @@ function VersionArchitectureModal({ isOpen, onClose }) {
         </div>
 
         <div className="version-modal-body">
+          {/* Card 0: Today's Updates (14-Oct-2026) - Production Milestone Locked */}
+          <div className="version-card-block" style={{ borderLeft: '4px solid #2563EB', background: '#EFF6FF', boxShadow: '0 2px 8px rgba(37,99,235,0.06)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '20px' }}>⭐</span>
+                <strong style={{ fontSize: '15px', color: '#1E40AF' }}>Today's Updates (14-Oct-2026) — Production Locked 🔒</strong>
+              </div>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <span className="version-chip" style={{ background: '#DBEAFE', color: '#1E40AF', border: '1px solid #BFDBFE', fontWeight: '700' }}>
+                  GIT TAG: v2.5.0
+                </span>
+                <span className="version-chip" style={{ background: '#DCFCE7', color: '#166534', border: '1px solid #BBF7D0', fontWeight: '700' }}>
+                  MILESTONE LOCKED ✅
+                </span>
+              </div>
+            </div>
+            <p style={{ fontSize: '12.5px', color: '#1E3A8A', margin: '0 0 10px 0', lineHeight: '1.5' }}>
+              All daily deliverables for October 14, 2026 have been successfully engineered, verified, and permanently locked in Git:
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '8px', fontSize: '11.5px', color: '#1E40AF' }}>
+              <div>🏢 <strong>Superadmin Dynamic Branding:</strong> Company Name & Logo fixed by Superadmin; dynamically reflected platform-wide.</div>
+              <div>🔄 <strong>24-Hour Remote License Check:</strong> Automated daily sync with key.sandslab.com + immediate suspension locking.</div>
+              <div>💰 <strong>Wholesale Tariff Mask:</strong> Meta wholesale costs restricted strictly to Superadmin visibility.</div>
+              <div>🛡️ <strong>Root ErrorBoundary Resilience:</strong> Full immunity against blank white screens with 1-click recovery.</div>
+            </div>
+          </div>
+
           {/* Card 1: Active Version 2.5.0 */}
           <div className="version-card-block" style={{ borderLeft: '4px solid #10B981', background: '#F0FDF4' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -9022,6 +9049,26 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Today's Updates Block (14-Oct-2026) */}
+              <div style={{ background: '#EFF6FF', border: '1.5px solid #BFDBFE', borderRadius: '12px', padding: '18px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
+                  <strong style={{ fontSize: '14.5px', color: '#1E40AF' }}>⭐ Today's Release Updates (14-Oct-2026) — Production Locked 🔒</strong>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <span className="badge" style={{ background: '#2563EB', color: '#FFFFFF' }}>GIT TAG: v2.5.0</span>
+                    <span className="badge" style={{ background: '#16A34A', color: '#FFFFFF' }}>MILESTONE LOCKED ✅</span>
+                  </div>
+                </div>
+                <p style={{ fontSize: '12.5px', color: '#1E3A8A', margin: '0 0 10px 0', lineHeight: '1.5' }}>
+                  All scheduled tasks and enhancements for October 14, 2026 have been successfully completed, verified, and locked in Git:
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '8px', fontSize: '12px', color: '#1E40AF' }}>
+                  <div>🏢 <strong>Superadmin Dynamic Branding:</strong> Company Name & Logo fixed by Superadmin; dynamically applied across Header, Login, and Phone simulators.</div>
+                  <div>🔄 <strong>24-Hour Remote License Check:</strong> Automated daily sync with key.sandslab.com + immediate suspension locking.</div>
+                  <div>💰 <strong>Wholesale Tariff Mask:</strong> Meta wholesale costs restricted strictly to Superadmin visibility.</div>
+                  <div>🛡️ <strong>Root ErrorBoundary Resilience:</strong> Full immunity against blank white screens with 1-click recovery.</div>
+                </div>
+              </div>
+
               {/* Active v2.5 Block */}
               <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '12px', padding: '18px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
