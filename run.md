@@ -4,8 +4,8 @@
 ---
 
 ## 📌 Development Checkpoint & Milestone Snapshot (All Verified & Tested)
-- **Checkpoint Timestamp:** `2026-10-13 11:55:00 (Local Time)`
-- **Active Platform Generation:** `Version 2.3.0` (Odoo ERP Automated Action Webhook & Model Sync Released & Live)
+- **Checkpoint Timestamp:** `2026-10-13 13:50:00 (Local Time)`
+- **Active Platform Generation:** `Version 2.3.1` (Streamlined Navigation: Grouped "Messages" Dropdown Menu)
 - **Locked Baseline Milestone:** `Version 1.0.0` (Permanently locked in Git with tags `v1.0.0` & `v1.0` on commit `9dd6ebc`)
 - **Live Production URL:** `https://whatsapp.sandslab.com`
 - **GitHub Repository:** `https://github.com/ajitsands/whatsapp.git` (`branch: main`)
@@ -16,7 +16,12 @@
 
 ## 🏆 Summary of Platform Generation Releases
 
-### 1. Version 2.3.0 — Odoo ERP Automated Action Webhook & Model Sync (`#api_hub` & `api/odoo_webhook.php`)
+### 1. Version 2.3.1 — Streamlined Navigation & "Messages" Dropdown Menu
+- **Navigation Consolidation:** Grouped `inbox`, `campaigns`, `composer`, and `logs` into a single, clean **"💬 Messages ▼"** dropdown in the top navigation bar.
+- **Dynamic State & Badging:** The "Messages" parent button remains highlighted whenever any of the 4 sub-views is active, and automatically displays the live unread message count badge (`{inboxUnreadTotal}`).
+- **Sub-View Descriptions & Polish:** Rich dropdown cards featuring icons, titles, and concise feature descriptions with active item indicator dots and outside-click auto-close.
+
+### 2. Version 2.3.0 — Odoo ERP Automated Action Webhook & Model Sync (`#api_hub` & `api/odoo_webhook.php`)
 - **Dedicated Inbound Webhook Gateway (`api/odoo_webhook.php`):**
   - Token-authenticated endpoint (`X-API-Key`) receiving automated webhook dispatches from Odoo ERP.
   - Native support for standard Odoo business models:
