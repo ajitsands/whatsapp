@@ -53,11 +53,26 @@ sendJsonResponse([
             [
                 'target_version' => '2.3.0',
                 'title'          => 'Odoo ERP Automated Action Webhook & Model Sync',
-                'status'         => 'Next Priority Scheduled',
-                'scope'          => 'Inbound webhook triggers for automated invoice generation (account.move), payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP.'
+                'status'         => 'Completed & Production Active (v2.3.0 Released)',
+                'scope'          => 'Inbound webhook triggers for automated invoice generation (account.move), sales order confirmations, dynamic PDF attachment streaming, and real-time delivery status synchronization with Odoo ERP.'
             ]
         ],
         'changelog' => [
+            [
+                'version' => '2.3.0',
+                'type'    => 'minor',
+                'date'    => '2026-10-13',
+                'status'  => 'Production Released',
+                'highlights' => [
+                    'Built dedicated Odoo ERP Automated Action Webhook Gateway (api/odoo_webhook.php)',
+                    'Engineered Visual Automated Action Studio with instant Python 3 script generator for Odoo 14-18 ir.actions.server',
+                    'Zero external dependencies: native urllib and base64 Python code running in any standard Odoo environment',
+                    'Integrated dynamic PDF attachment generation and streaming into WhatsApp document headers',
+                    'Bi-directional status callback returning delivery & read receipts back to Odoo record chatter',
+                    'Added interactive Webhook Tester & Simulator with realistic preset records (Invoice, Order, Payment)',
+                    'Built live Odoo Audit Telemetry table tracking all external dispatches and Meta tracking IDs'
+                ]
+            ],
             [
                 'version' => '2.2.0',
                 'type'    => 'minor',

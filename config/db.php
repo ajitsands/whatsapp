@@ -29,11 +29,11 @@ if (!function_exists('str_ends_with')) {
 }
 
 // Application Version & Milestone Constants (SemVer 2.0.0)
-define('APP_VERSION', '2.2.0');
+define('APP_VERSION', '2.3.0');
 define('APP_VERSION_MAJOR', 2);
-define('APP_VERSION_MINOR', 2);
+define('APP_VERSION_MINOR', 3);
 define('APP_VERSION_PATCH', 0);
-define('APP_VERSION_STAGE', 'v2.2.0 Bulk Campaign Broadcasts & Queue Pacing Released');
+define('APP_VERSION_STAGE', 'v2.3.0 Odoo ERP Automated Action Webhook & Model Sync Released');
 define('APP_BASELINE_VERSION', '1.0.0');
 define('APP_LOCKED_V1_TAG', 'v1.0.0');
 

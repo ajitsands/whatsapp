@@ -1,0 +1,14 @@
+# Secure Document Storage for Odoo WhatsApp Attachments
+# Allow read access to document and image formats only
+<FilesMatch "\.(?i:pdf|jpg|jpeg|png|webp|gif|txt|csv)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Prevent script execution
+<FilesMatch "\.(?i:php|php3|php4|php5|phtml|pl|py|cgi|sh|bash)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+Options -Indexes -ExecCGI

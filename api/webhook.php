@@ -107,6 +107,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                         }
                     } catch (Throwable $ignoreCampSync) {}
+
+                    // Bi-Directional Status Callback to Odoo ERP
+                    try {
+                        $findMsg = $db->prepare("SELECT parameters_json FROM whatsapp_messages WHERE message_id = ? LIMIT 1");
+                        $findMsg->execute([$wamid]);
+                        $msgRow = $findMsg->fetch();
+                        if ($msgRow && !empty($msgRow['parameters_json'])) {
+                            $paramsData = json_decode((string)$msgRow['parameters_json'], true);
+                            if (is_array($paramsData) && !empty($paramsData['_odoo_callback_url'])) {
+                                $callbackUrl = $paramsData['_odoo_callback_url'];
+                                $callbackPayload = [
+                                    'event'          => 'whatsapp_status_update',
+                                    'message_id'     => $wamid,
+                                    'status'         => $status,
+                                    'odoo_model'     => $paramsData['_odoo_model'] ?? null,
+                                    'odoo_record_id' => $paramsData['_odoo_record_id'] ?? null,
+                                    'timestamp'      => date('Y-m-d H:i:s')
+                                ];
+                                $chCb = curl_init($callbackUrl);
+                                curl_setopt($chCb, CURLOPT_POST, 1);
+                                curl_setopt($chCb, CURLOPT_POSTFIELDS, json_encode($callbackPayload));
+                                curl_setopt($chCb, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                                curl_setopt($chCb, CURLOPT_TIMEOUT, 3);
+                                curl_setopt($chCb, CURLOPT_RETURNTRANSFER, true);
+                                curl_setopt($chCb, CURLOPT_SSL_VERIFYPEER, false);
+                                curl_exec($chCb);
+                                curl_close($chCb);
+                            }
+                        }
+                    } catch (Throwable $ignoreOdooCallback) {}
                 }
             }
         }

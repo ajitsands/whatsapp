@@ -5,8 +5,8 @@
 ---
 
 ## 📌 Active Version Status
-- **Current Version:** `2.2.2`
-- **Development Stage:** `v2.2.2 Modern Confirmation Dialog System (Active & Live on Server)`
+- **Current Version:** `2.3.0`
+- **Development Stage:** `v2.3.0 Odoo ERP Automated Action Webhook & Model Sync (Active & Production Released)`
 - **Locked Baseline Version:** `1.0.0`
 - **Git Baseline Tags:** `v1.0.0` & `v1.0` (Locked on Commit `9dd6ebc`)
 - **Live Production URL:** `https://whatsapp.sandslab.com`
@@ -64,11 +64,19 @@ v2 . [MINOR] . [PATCH]
 | **v2.2.0** | **Bulk Campaign Broadcasts & Queue Pacing** | ✅ **COMPLETED & LIVE** | CSV contact upload with dynamic variable mapping, anti-spam dispatch queue pacing (20/50/100 msgs/min), live animated monitor, and exportable recipient reports. |
 | **v2.2.1** | **Meta Cloud API Live Dispatch & Webhook Delivery Tracking** | ✅ **COMPLETED & LIVE** | True Meta Graph API cURL dispatch, prevention of premature delivery counting, real `wamid` tracking, and webhook-driven delivery updates. |
 | **v2.2.2** | **Enterprise UI Popups & Rich Confirmation Dialog System** | ✅ **COMPLETED & LIVE** | Replaced all native browser alert/confirm dialogues with modern frosted-glass modals with glowing status badges and responsive actions. |
-| **v2.3.0** | **Odoo ERP Automated Action Webhook & Model Sync** | 🔄 **Next Priority (Scheduled in 8 Hrs)** | Inbound triggers for automated invoice generation (`account.move`), payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP. |
+| **v2.3.0** | **Odoo ERP Automated Action Webhook & Model Sync** | ✅ **COMPLETED & LIVE** | Inbound webhook gateway (`api/odoo_webhook.php`), Automated Action Studio with zero-dependency Python code generator, dynamic PDF attachment streaming, and bi-directional chatter delivery callbacks. |
 
 ---
 
 ## 📜 Release Changelog History
+
+### [2.3.0] — 2026-10-13 (Odoo ERP Automated Action Webhook & Model Sync Released)
+- **Dedicated Odoo Inbound Controller (`api/odoo_webhook.php`):** Token-authenticated gateway parsing automated action payloads for `account.move`, `sale.order`, `account.payment`, `stock.picking`, and `res.partner`.
+- **Dynamic PDF Attachment Streaming:** Automatic decoding and caching of Odoo QWeb base64 binary reports into public document URLs, streaming seamlessly into Meta WhatsApp header document attachments.
+- **Visual Automated Action Studio:** Interactive code generator producing ready-to-paste Python 3 code for Odoo 14-18 `ir.actions.server` (zero third-party pip dependencies required; runs natively on Odoo.sh & SaaS) as well as Odoo 17/18 Webhook JSON rules.
+- **Bi-Directional Status Callbacks to Odoo:** Webhook engine (`api/webhook.php`) pushes asynchronous status updates (`delivered`, `read`) back to Odoo endpoints to update record chatter in real time.
+- **Interactive Webhook Simulator:** Built-in testing console with 1-click sample presets for Invoices, Sales Orders, and Payment receipts.
+- **Live Odoo Audit Telemetry:** Real-time log table tracking all external dispatches, Odoo model references, tariffs, and authentic Meta `wamid` tracking IDs.
 
 ### [2.2.2] — 2026-10-13 (Enterprise UI Popups & Rich Confirmation Dialog System)
 - **Modern Reusable `<ConfirmDialog>` Modal:** Eliminated jarring browser-native `window.confirm()` and `alert()` popups in favor of an enterprise dark-glass animated dialog.

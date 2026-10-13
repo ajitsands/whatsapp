@@ -1,0 +1,4 @@
+# Ignore generated PDF attachments
+*.pdf
+!.gitignore
+!.htaccess

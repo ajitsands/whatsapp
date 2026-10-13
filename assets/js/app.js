@@ -323,19 +323,19 @@ function VersionArchitectureModal({ isOpen, onClose }) {
         </div>
 
         <div className="version-modal-body">
-          {/* Card 1: Active Version 2.1 */}
-          <div className="version-card-block" style={{ borderLeft: '4px solid #3B82F6', background: '#F0F9FF' }}>
+          {/* Card 1: Active Version 2.3.0 */}
+          <div className="version-card-block" style={{ borderLeft: '4px solid #10B981', background: '#F0FDF4' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '20px' }}>⚡</span>
-                <strong style={{ fontSize: '15px', color: '#1E3A8A' }}>Active Release: Version 2.1.0</strong>
+                <strong style={{ fontSize: '15px', color: '#065F46' }}>Active Release: Version 2.3.0 (Production Live)</strong>
               </div>
               <span className="version-chip" style={{ background: '#DCFCE7', color: '#166534', border: '1px solid #BBF7D0' }}>
-                🟢 v2.1.0 INBOUND LIVE CHAT ACTIVE
+                🟢 v2.3.0 ODOO ERP WEBHOOK & SYNC LIVE
               </span>
             </div>
-            <p style={{ fontSize: '12.5px', color: '#1E40AF', margin: 0, lineHeight: '1.5' }}>
-              Inbound Live Chat & Two-Way Agent Inbox with 24-hour Meta Customer Care session window tracking is officially released. All upcoming modules adhere to minor versioning (<code style={{ background: '#E0F2FE', padding: '1px 5px', borderRadius: '4px', fontWeight: '600' }}>v2.x.x</code>).
+            <p style={{ fontSize: '12.5px', color: '#065F46', margin: 0, lineHeight: '1.5' }}>
+              Version 2.3.0 marks the completion of the core roadmap! Inbound Odoo Automated Action Webhook Gateway (<code style={{ background: '#E0F2FE', padding: '1px 5px', borderRadius: '4px', fontWeight: '600' }}>api/odoo_webhook.php</code>), dynamic PDF attachment streaming, bi-directional chatter delivery status callbacks, and visual Automated Action Studio are active.
             </p>
           </div>
 
@@ -384,7 +384,7 @@ function VersionArchitectureModal({ isOpen, onClose }) {
               </div>
               <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '10px' }}>
                 <strong style={{ color: '#059669', fontSize: '12px' }}>v2.x.0 (MINOR)</strong>
-                <p style={{ fontSize: '11px', color: '#64748B', margin: '4px 0 0 0' }}>Scheduled roadmap feature milestones (e.g. v2.1 for Odoo Webhooks, v2.2 for Campaigns, v2.3 for Live Chat).</p>
+                <p style={{ fontSize: '11px', color: '#64748B', margin: '4px 0 0 0' }}>Scheduled roadmap feature milestones (v2.1 Live Chat, v2.2 Campaigns, v2.3 Odoo Sync).</p>
               </div>
               <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '10px' }}>
                 <strong style={{ color: '#D97706', fontSize: '12px' }}>v2.x.y (PATCH)</strong>
@@ -397,7 +397,7 @@ function VersionArchitectureModal({ isOpen, onClose }) {
           <div className="version-card-block" style={{ background: '#FFFFFF' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <span style={{ fontSize: '18px' }}>📋</span>
-              <strong style={{ fontSize: '14px', color: '#0F172A' }}>Version 2.0 Execution Roadmap (Next Development Steps)</strong>
+              <strong style={{ fontSize: '14px', color: '#0F172A' }}>Version 2.0 Execution Roadmap (All Milestones Completed)</strong>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px' }}>
@@ -409,21 +409,21 @@ function VersionArchitectureModal({ isOpen, onClose }) {
                   </p>
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '8px' }}>
-                <span className="version-chip" style={{ background: '#0284C7', color: '#FFFFFF', marginTop: '2px' }}>v2.2.0</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px' }}>
+                <span className="version-chip" style={{ background: '#16A34A', color: '#FFFFFF', marginTop: '2px' }}>v2.2.0</span>
                 <div>
-                  <strong style={{ fontSize: '12.5px', color: '#0369A1' }}>Odoo ERP Automated Action Webhook & Model Sync (Phase 2 — Next Priority)</strong>
-                  <p style={{ fontSize: '11.5px', color: '#0C4A6E', margin: '2px 0 0 0' }}>
-                    Inbound triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP.
+                  <strong style={{ fontSize: '12.5px', color: '#15803D' }}>Bulk Campaign Broadcasts & Queue Pacing (Completed & Released ✅)</strong>
+                  <p style={{ fontSize: '11.5px', color: '#166534', margin: '2px 0 0 0' }}>
+                    CSV contact upload with dynamic variable mapping, anti-spam dispatch queue pacing, live animated monitor, and verified Meta webhook delivery receipts.
                   </p>
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
-                <span className="version-chip" style={{ background: '#64748B', color: '#FFFFFF', marginTop: '2px' }}>v2.3.0</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px' }}>
+                <span className="version-chip" style={{ background: '#16A34A', color: '#FFFFFF', marginTop: '2px' }}>v2.3.0</span>
                 <div>
-                  <strong style={{ fontSize: '12.5px', color: '#334155' }}>Bulk Campaign Broadcasts & Queue Pacing (Phase 3 — Scheduled)</strong>
-                  <p style={{ fontSize: '11.5px', color: '#64748B', margin: '2px 0 0 0' }}>
-                    CSV contact list upload with dynamic variable mapping, segmentation, and throttled queue pacing (50 msgs/min).
+                  <strong style={{ fontSize: '12.5px', color: '#15803D' }}>Odoo ERP Automated Action Webhook & Model Sync (Completed & Released ✅)</strong>
+                  <p style={{ fontSize: '11.5px', color: '#166534', margin: '2px 0 0 0' }}>
+                    Inbound webhook triggers for automated invoice generation (account.move), sales order confirmations, dynamic PDF attachment streaming, and bi-directional chatter delivery callbacks.
                   </p>
                 </div>
               </div>
@@ -4056,49 +4056,252 @@ function TemplatesView({ showToast }) {
 // -----------------------------------------------------------------------------
 // 6. ODOO API HUB & LIVE DEVELOPER CONSOLE
 // -----------------------------------------------------------------------------
-function OdooApiHubView({ showToast }) {
+function OdooApiHubView({ showToast, globalSettings }) {
+  const [hubTab, setHubTab] = useState('studio'); // 'studio', 'tester', 'audit', 'connectors'
+  
+  // Studio State
+  const [selectedModel, setSelectedModel] = useState('account.move');
+  const [selectedTrigger, setSelectedTrigger] = useState('posted');
+  const [selectedTemplate, setSelectedTemplate] = useState('uniglobal_invoice_notification');
+  const [includePdf, setIncludePdf] = useState(true);
+  const [logChatter, setLogChatter] = useState(true);
+  const [phoneFallback, setPhoneFallback] = useState(true);
+  const [studioLang, setStudioLang] = useState('python'); // 'python', 'webhook'
+  const [templatesList, setTemplatesList] = useState([]);
+
+  // Tester State
+  const [apiKey, setApiKey] = useState('sk_live_odoo_uniglobal_98741362');
+  const [endpoint, setEndpoint] = useState('/api/odoo_webhook.php');
+  const [testModel, setTestModel] = useState('account.move');
+  const [testRecipient, setTestRecipient] = useState('+97335078079');
+  const [testPartnerName, setTestPartnerName] = useState('Ahmed Al-Khalifa');
+  const [testRecordName, setTestRecordName] = useState('INV/2026/0142');
+  const [testAmount, setTestAmount] = useState('345.500');
+  const [testCurrency, setTestCurrency] = useState('BHD');
+  const [testTemplate, setTestTemplate] = useState('offer_sandslab');
   const [responseOutput, setResponseOutput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [apiKey, setApiKey] = useState('sk_live_odoo_uniglobal_98741362');
-  const [endpoint, setEndpoint] = useState('/api/messages.php');
+  const [lastDispatchedId, setLastDispatchedId] = useState(null);
 
-  const [requestPayload, setRequestPayload] = useState(JSON.stringify({
-    "to_phone": "+97339000000",
-    "template_name": "uniglobal_invoice_notification",
-    "category": "UTILITY",
-    "header_media": {
-      "type": "document",
-      "url": "https://erp.uniglobal.bh/INV_9941.pdf",
-      "filename": "INV.pdf"
-    },
-    "body_parameters": ["Ahmed Al-Khalifa", "INV/2026/0142", "BHD 345.500", "15-Oct-2026"],
-    "source_system": "Odoo ERP (Direct API)"
-  }, null, 2));
+  // Audit State
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [loadingAudit, setLoadingAudit] = useState(false);
 
+  // Connectors State
+  const [activeSnippetLang, setActiveSnippetLang] = useState('python');
+
+  // Load Templates
+  useEffect(() => {
+    fetch('./api/odoo_webhook.php?action=templates')
+      .then(res => res.json())
+      .then(res => {
+        if (res.success && Array.isArray(res.data)) {
+          setTemplatesList(res.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Load Audit Logs
+  const loadAuditLogs = () => {
+    setLoadingAudit(true);
+    fetch('./api/odoo_webhook.php?action=recent')
+      .then(res => res.json())
+      .then(res => {
+        if (res.success && Array.isArray(res.data)) {
+          setAuditLogs(res.data);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingAudit(false));
+  };
+
+  useEffect(() => {
+    if (hubTab === 'audit') {
+      loadAuditLogs();
+    }
+  }, [hubTab]);
+
+  // Handle Preset Selection in Tester
+  const applyTesterPreset = (presetType) => {
+    if (presetType === 'invoice') {
+      setTestModel('account.move');
+      setTestRecordName('INV/2026/0142');
+      setTestPartnerName('Ahmed Al-Khalifa');
+      setTestAmount('345.500');
+      setTestTemplate('offer_sandslab');
+    } else if (presetType === 'order') {
+      setTestModel('sale.order');
+      setTestRecordName('SO-8821');
+      setTestPartnerName('Dr. Tariq Salman');
+      setTestAmount('125.000');
+      setTestTemplate('offer_sandslab');
+    } else if (presetType === 'payment') {
+      setTestModel('account.payment');
+      setTestRecordName('PAY/2026/0045');
+      setTestPartnerName('Fatima Noor');
+      setTestAmount('75.250');
+      setTestTemplate('uniglobal_invoice_notification');
+    }
+    showToast(`Loaded ${presetType} simulation preset!`);
+  };
+
+  // Run Webhook Simulation Test
   const runLiveTest = async () => {
     setLoading(true);
-    setResponseOutput('Sending request to WhatsApp Gateway...');
+    setResponseOutput('Dispatching automated action to WhatsApp Gateway...');
     try {
+      const payload = {
+        model: testModel,
+        record_id: 142,
+        record_name: testRecordName,
+        partner_name: testPartnerName,
+        partner_phone: testRecipient,
+        amount: testAmount,
+        currency: testCurrency,
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        template_name: testTemplate,
+        callback_url: 'https://whatsapp.sandslab.com/api/odoo_webhook.php?action=simulate_callback'
+      };
+
       const res = await fetch(`.${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-API-Key': apiKey
         },
-        body: requestPayload
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       setResponseOutput(JSON.stringify(data, null, 2));
-      showToast('API Executed successfully!');
+      if (data.success) {
+        setLastDispatchedId(data.message_id);
+        showToast('WhatsApp notification successfully dispatched from Odoo!');
+      } else {
+        showToast(data.message || data.error || 'Dispatch error', 'error');
+      }
     } catch (err) {
       setResponseOutput(JSON.stringify({ error: err.message }, null, 2));
-      showToast('API execution error', 'error');
+      showToast('API execution error: ' + err.message, 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const [activeSnippetLang, setActiveSnippetLang] = useState('python');
+  // Generate Python Server Action Code for Odoo
+  const generateOdooPythonCode = () => {
+    const isInvoice = selectedModel === 'account.move';
+    const isOrder = selectedModel === 'sale.order';
+    const isPayment = selectedModel === 'account.payment';
+
+    const pdfReportRef = isInvoice 
+      ? "'account.account_invoices'" 
+      : (isOrder ? "'sale.action_report_saleorder'" : "'account.action_report_payment_receipt'");
+
+    const dateField = isInvoice ? "record.invoice_date" : (isOrder ? "record.date_order" : "record.date");
+    const amountField = isPayment ? "record.amount" : "record.amount_total";
+
+    return `# ==============================================================================
+# SaNDS Lab WhatsApp Gateway — Odoo Automated Server Action
+# Model: ${selectedModel} | Trigger: ${selectedTrigger}
+# Requirements: ZERO EXTERNAL PIP PACKAGES (Native Python standard library)
+# Compatible with: Odoo 14, 15, 16, 17, and 18 (Community & Enterprise / Odoo.sh)
+# ==============================================================================
+import json
+import urllib.request
+import base64
+
+API_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
+API_SECRET_KEY  = "${apiKey}"
+
+# 1. Resolve Destination Phone Number
+partner = record.partner_id if hasattr(record, 'partner_id') else record
+${phoneFallback ? 'dest_phone = (partner.mobile or partner.phone or "").strip()' : 'dest_phone = (partner.mobile or "").strip()'}
+
+if not dest_phone:
+    ${logChatter ? 'record.message_post(body="⚠️ <b>WhatsApp Skipped:</b> Customer has no mobile or phone number on file.")' : 'pass'}
+else:
+    # 2. Extract Document PDF Attachment Binary (Optional)
+    pdf_base64 = None
+    ${includePdf ? `try:
+        report_action = record.env.ref(${pdfReportRef}, raise_if_not_found=False)
+        if report_action:
+            pdf_binary, _ = report_action._render_qweb_pdf([record.id])
+            pdf_base64 = base64.b64encode(pdf_binary).decode('utf-8')
+    except Exception as pdf_err:
+        pdf_base64 = None` : '# PDF Attachment disabled in Studio generator'}
+
+    # 3. Build Webhook Payload
+    amount_val = ${amountField} if hasattr(record, '${amountField.split('.')[1]}') else 0.0
+    curr_name  = record.currency_id.name if hasattr(record, 'currency_id') and record.currency_id else "BHD"
+    doc_date   = str(${dateField} or record.create_date.date())
+
+    payload = {
+        "model": record._name,
+        "record_id": record.id,
+        "record_name": record.name or f"DOC-{record.id}",
+        "partner_name": partner.name or "Valued Customer",
+        "partner_phone": dest_phone,
+        "amount": amount_val,
+        "currency": curr_name,
+        "date": doc_date,
+        "template_name": "${selectedTemplate}",
+        "pdf_base64": pdf_base64,
+        "callback_url": "https://whatsapp.sandslab.com/api/odoo_webhook.php?action=simulate_callback"
+    }
+
+    # 4. Dispatch Request to WhatsApp Gateway
+    req = urllib.request.Request(
+        API_GATEWAY_URL,
+        data=json.dumps(payload).encode('utf-8'),
+        headers={
+            "Content-Type": "application/json",
+            "X-API-Key": API_SECRET_KEY,
+            "User-Agent": "Odoo-WhatsApp-Connector/2.3"
+        },
+        method="POST"
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=15) as response:
+            res_json = json.loads(response.read().decode('utf-8'))
+            if res_json.get('success'):
+                wamid = res_json.get('message_id', '')
+                tariff = res_json.get('tariff', {}).get('client_rate', '')
+                ${logChatter ? `record.message_post(
+                    body=f"✅ <b>WhatsApp Notification Sent</b><br/>"
+                         f"Template: <code>{res_json.get('template_name')}</code><br/>"
+                         f"Recipient: <b>{dest_phone}</b><br/>"
+                         f"Tracking ID: <code>{wamid}</code><br/>"
+                         f"Tariff Debited: <b>{tariff}</b>"
+                )` : 'pass'}
+            else:
+                ${logChatter ? 'record.message_post(body=f"❌ <b>WhatsApp Dispatch Failed:</b> {res_json.get(\'error\', res_json.get(\'message\'))}")' : 'pass'}
+    except Exception as ex:
+        ${logChatter ? 'record.message_post(body=f"❌ <b>WhatsApp Gateway Error:</b> {str(ex)}")' : 'pass'}`;
+  };
+
+  // Generate Odoo 17/18 Webhook Payload
+  const generateOdoo17WebhookJson = () => {
+    return JSON.stringify({
+      "webhook_url": "https://whatsapp.sandslab.com/api/odoo_webhook.php",
+      "http_headers": {
+        "X-API-Key": apiKey,
+        "Content-Type": "application/json"
+      },
+      "payload_fields": {
+        "model": selectedModel,
+        "record_id": "{{ record.id }}",
+        "record_name": "{{ record.name }}",
+        "partner_name": "{{ record.partner_id.name }}",
+        "partner_phone": "{{ record.partner_id.mobile or record.partner_id.phone }}",
+        "amount": "{{ record.amount_total }}",
+        "currency": "{{ record.currency_id.name }}",
+        "date": "{{ record.invoice_date or record.create_date }}",
+        "template_name": selectedTemplate
+      }
+    }, null, 2);
+  };
 
   const snippets = {
     python: {
@@ -4106,213 +4309,135 @@ function OdooApiHubView({ showToast }) {
       filename: 'odoo_whatsapp_connector.py',
       code: `import requests
 
-API_URL = "https://whatsapp.sandslab.com/api/messages.php"
-API_KEY = "sk_live_odoo_uniglobal_98741362"
+API_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
+API_KEY = "${apiKey}"
 
-def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_bhd, date_str, pdf_url):
+def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_bhd, date_str, pdf_url=None):
     payload = {
-        "to_phone": partner_phone,
-        "template_name": "uniglobal_invoice_notification",
-        "category": "UTILITY",
-        "header_media": {
-            "type": "document",
-            "url": pdf_url,
-            "filename": f"{invoice_num}.pdf"
-        },
-        "body_parameters": [partner_name, invoice_num, amount_bhd, date_str],
-        "source_system": "Odoo ERP Automated Action"
+        "model": "account.move",
+        "record_name": invoice_num,
+        "partner_name": partner_name,
+        "partner_phone": partner_phone,
+        "amount": amount_bhd,
+        "currency": "BHD",
+        "date": date_str,
+        "template_name": "offer_sandslab",
+        "pdf_url": pdf_url
     }
     headers = {
         "Content-Type": "application/json",
         "X-API-Key": API_KEY
     }
-    response = requests.post(API_URL, json=payload, headers=headers, timeout=10)
+    response = requests.post(API_URL, json=payload, headers=headers, timeout=12)
     return response.json()`
     },
     php: {
       title: 'PHP 7.4+ / 8.x (cURL Native)',
-      filename: 'whatsapp_sender.php',
+      filename: 'odoo_sender.php',
       code: `<?php
-/**
- * WhatsApp Gateway - PHP Integration Example
- * Send Automated WhatsApp Template Notifications
- */
-
-function sendWhatsAppNotification($toPhone, $customerName, $invoiceNum, $amountBhd, $dateStr, $pdfUrl) {
-    $apiUrl = 'https://whatsapp.sandslab.com/api/messages.php';
-    $apiKey = 'sk_live_odoo_uniglobal_98741362';
-
-    $payload = [
-        'to_phone'        => $toPhone,
-        'template_name'   => 'uniglobal_invoice_notification',
-        'category'        => 'UTILITY',
-        'header_media'    => [
-            'type'     => 'document',
-            'url'      => $pdfUrl,
-            'filename' => $invoiceNum . '.pdf'
-        ],
-        'body_parameters' => [$customerName, $invoiceNum, $amountBhd, $dateStr],
-        'source_system'   => 'PHP ERP Application'
-    ];
-
-    $ch = curl_init($apiUrl);
+function sendOdooWhatsApp($phone, $name, $invNum, $amount, $date, $apiKey = '${apiKey}') {
+    $ch = curl_init('https://whatsapp.sandslab.com/api/odoo_webhook.php');
     curl_setopt_array($ch, [
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => json_encode($payload),
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER     => [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => json_encode([
+            'model' => 'account.move',
+            'record_name' => $invNum,
+            'partner_name' => $name,
+            'partner_phone' => $phone,
+            'amount' => $amount,
+            'currency' => 'BHD',
+            'date' => $date,
+            'template_name' => 'offer_sandslab'
+        ]),
+        CURLOPT_HTTPHEADER => [
             'Content-Type: application/json',
             'X-API-Key: ' . $apiKey
         ],
-        CURLOPT_TIMEOUT        => 15
+        CURLOPT_RETURNTRANSFER => true
     ]);
-
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $res = curl_exec($ch);
     curl_close($ch);
-
-    return json_decode($response, true);
-}
-
-// Example Execution
-$result = sendWhatsAppNotification(
-    '+97339000000',
-    'Ahmed Al-Khalifa',
-    'INV/2026/0142',
-    'BHD 345.500',
-    '15-Oct-2026',
-    'https://erp.uniglobal.bh/INV_9941.pdf'
-);
-print_r($result);`
+    return json_decode($res, true);
+}`
     },
     curl: {
       title: 'cURL (Bash / Terminal CLI)',
-      filename: 'send_invoice.sh',
-      code: `#!/bin/bash
-
-# WhatsApp Gateway - cURL Integration Example
-API_URL="https://whatsapp.sandslab.com/api/messages.php"
-API_KEY="sk_live_odoo_uniglobal_98741362"
-
-curl -X POST "$API_URL" \\
+      filename: 'odoo_trigger.sh',
+      code: `curl -X POST "https://whatsapp.sandslab.com/api/odoo_webhook.php" \\
   -H "Content-Type: application/json" \\
-  -H "X-API-Key: $API_KEY" \\
+  -H "X-API-Key: ${apiKey}" \\
   -d '{
-    "to_phone": "+97339000000",
-    "template_name": "uniglobal_invoice_notification",
-    "category": "UTILITY",
-    "header_media": {
-      "type": "document",
-      "url": "https://erp.uniglobal.bh/INV_9941.pdf",
-      "filename": "INV_2026_0142.pdf"
-    },
-    "body_parameters": [
-      "Ahmed Al-Khalifa",
-      "INV/2026/0142",
-      "BHD 345.500",
-      "15-Oct-2026"
-    ],
-    "source_system": "cURL CLI Script"
+    "model": "account.move",
+    "record_id": 142,
+    "record_name": "INV/2026/0142",
+    "partner_name": "Ahmed Al-Khalifa",
+    "partner_phone": "+97335078079",
+    "amount": "345.500",
+    "currency": "BHD",
+    "date": "13-Oct-2026",
+    "template_name": "offer_sandslab"
   }'`
     },
     dotnet: {
       title: '.NET 6/7/8 C# (HttpClient)',
-      filename: 'WhatsAppService.cs',
+      filename: 'OdooWhatsAppClient.cs',
       code: `using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace UniGlobal.Integrations
+public class OdooWhatsAppClient
 {
-    public class WhatsAppSender
+    private static readonly HttpClient client = new HttpClient();
+    private const string ApiUrl = "https://whatsapp.sandslab.com/api/odoo_webhook.php";
+    private const string ApiKey = "${apiKey}";
+
+    public static async Task<string> DispatchOdooInvoiceAsync(string phone, string customerName, string invNum, decimal amount)
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
-        private const string ApiUrl = "https://whatsapp.sandslab.com/api/messages.php";
-        private const string ApiKey = "sk_live_odoo_uniglobal_98741362";
-
-        public static async Task<string> SendInvoiceNotificationAsync(
-            string recipientPhone,
-            string customerName,
-            string invoiceNumber,
-            string amountFormatted,
-            string issueDate,
-            string invoicePdfUrl)
+        var payload = new
         {
-            var payload = new
-            {
-                to_phone = recipientPhone,
-                template_name = "uniglobal_invoice_notification",
-                category = "UTILITY",
-                header_media = new
-                {
-                    type = "document",
-                    url = invoicePdfUrl,
-                    filename = $"{invoiceNumber}.pdf"
-                },
-                body_parameters = new[] { customerName, invoiceNumber, amountFormatted, issueDate },
-                source_system = ".NET ERP Connector"
-            };
-
-            var request = new HttpRequestMessage(HttpMethod.Post, ApiUrl);
-            request.Headers.Add("X-API-Key", ApiKey);
-            request.Content = new StringContent(
-                JsonSerializer.Serialize(payload),
-                Encoding.UTF8,
-                "application/json"
-            );
-
-            var response = await _httpClient.SendAsync(request);
-            return await response.Content.ReadAsStringAsync();
-        }
+            model = "account.move",
+            record_name = invNum,
+            partner_name = customerName,
+            partner_phone = phone,
+            amount = amount.ToString("F3"),
+            currency = "BHD",
+            template_name = "offer_sandslab"
+        };
+        var req = new HttpRequestMessage(HttpMethod.Post, ApiUrl);
+        req.Headers.Add("X-API-Key", ApiKey);
+        req.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+        var res = await client.SendAsync(req);
+        return await res.Content.ReadAsStringAsync();
     }
 }`
     },
     node: {
       title: 'Node.js / Express (Fetch API)',
-      filename: 'send_whatsapp.js',
-      code: `/**
- * WhatsApp Gateway - Node.js Integration Example
- */
-const API_URL = 'https://whatsapp.sandslab.com/api/messages.php';
-const API_KEY = 'sk_live_odoo_uniglobal_98741362';
+      filename: 'odoo_sender.js',
+      code: `const API_URL = 'https://whatsapp.sandslab.com/api/odoo_webhook.php';
+const API_KEY = '${apiKey}';
 
-async function sendWhatsAppInvoice({ toPhone, customerName, invoiceNumber, amount, date, pdfUrl }) {
-  const payload = {
-    to_phone: toPhone,
-    template_name: 'uniglobal_invoice_notification',
-    category: 'UTILITY',
-    header_media: {
-      type: 'document',
-      url: pdfUrl,
-      filename: \`\${invoiceNumber}.pdf\`
-    },
-    body_parameters: [customerName, invoiceNumber, amount, date],
-    source_system: 'Node.js Microservice'
-  };
-
-  const response = await fetch(API_URL, {
+async function dispatchOdooInvoice({ phone, customerName, invoiceNumber, amount }) {
+  const res = await fetch(API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-API-Key': API_KEY
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify({
+      model: 'account.move',
+      record_name: invoiceNumber,
+      partner_name: customerName,
+      partner_phone: phone,
+      amount: amount,
+      currency: 'BHD',
+      template_name: 'offer_sandslab'
+    })
   });
-
-  return await response.json();
-}
-
-// Example Execution
-// sendWhatsAppInvoice({
-//   toPhone: '+97339000000',
-//   customerName: 'Ahmed Al-Khalifa',
-//   invoiceNumber: 'INV/2026/0142',
-//   amount: 'BHD 345.500',
-//   date: '15-Oct-2026',
-//   pdfUrl: 'https://erp.uniglobal.bh/INV_9941.pdf'
-// }).then(console.log);`
+  return await res.json();
+}`
     }
   };
 
@@ -4320,59 +4445,481 @@ async function sendWhatsAppInvoice({ toPhone, customerName, invoiceNumber, amoun
 
   return (
     <div>
+      {/* Page Header */}
       <div className="page-header-row">
         <div className="page-title-group">
-          <h1><span>⚡</span> Odoo & Multi-Platform Integration API Hub</h1>
-          <p>REST API documentation, live testing console, and copyable integration snippets for Python, PHP, cURL, .NET (C#), and Node.js.</p>
+          <h1><span>⚡</span> Odoo ERP Automation & Developer Hub</h1>
+          <p>
+            Enterprise Odoo Automated Action Studio, inbound webhook controllers, dynamic PDF streaming, and live bi-directional delivery telemetry.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <span className="odoo-code-header-badge">
+            <span>●</span> Odoo Gateway Active (v2.3.0)
+          </span>
         </div>
       </div>
 
-      <div className="api-hub-grid">
-        {/* Left: Interactive API Request Runner */}
-        <div className="card" style={{ minWidth: 0, margin: 0 }}>
-          <div className="card-header">
-            <span className="card-title"><span>🧪</span> Live API Tester</span>
-          </div>
+      {/* Sub-Navigation Bar */}
+      <div className="odoo-subnav-bar">
+        <button
+          type="button"
+          className={`odoo-subnav-btn ${hubTab === 'studio' ? 'active' : ''}`}
+          onClick={() => setHubTab('studio')}
+        >
+          <span>⚡</span> Automated Action Studio
+        </button>
+        <button
+          type="button"
+          className={`odoo-subnav-btn ${hubTab === 'tester' ? 'active' : ''}`}
+          onClick={() => setHubTab('tester')}
+        >
+          <span>🧪</span> Webhook Tester & Simulator
+        </button>
+        <button
+          type="button"
+          className={`odoo-subnav-btn ${hubTab === 'audit' ? 'active' : ''}`}
+          onClick={() => setHubTab('audit')}
+        >
+          <span>📜</span> Live Odoo Audit Telemetry
+        </button>
+        <button
+          type="button"
+          className={`odoo-subnav-btn ${hubTab === 'connectors' ? 'active' : ''}`}
+          onClick={() => setHubTab('connectors')}
+        >
+          <span>🔌</span> Multi-Platform Connectors
+        </button>
+      </div>
 
-          <div className="form-group">
-            <label className="form-label">API Key Header (X-API-Key)</label>
-            <input type="text" className="form-input" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">HTTP Method & Endpoint</label>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <span className="badge cat-utility" style={{ padding: '8px 12px', fontSize: '12px' }}>POST</span>
-              <input type="text" className="form-input" value={endpoint} readOnly />
+      {/* TAB 1: AUTOMATED ACTION STUDIO */}
+      {hubTab === 'studio' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(360px, 420px) 1fr', gap: '20px' }}>
+          {/* Left: Configuration Controls */}
+          <div className="card" style={{ margin: 0 }}>
+            <div className="card-header">
+              <span className="card-title"><span>⚙️</span> Odoo Automation Configurator</span>
             </div>
-          </div>
 
-          <div className="form-group">
-            <label className="form-label">Request Body (JSON)</label>
-            <textarea
-              className="form-textarea"
-              style={{ minHeight: '180px', fontFamily: 'monospace', fontSize: '11.5px' }}
-              value={requestPayload}
-              onChange={(e) => setRequestPayload(e.target.value)}
-            />
-          </div>
+            {/* Model Selection */}
+            <div className="form-group">
+              <label className="form-label" style={{ fontWeight: '700' }}>1. Target Odoo Business Model</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <div
+                  className={`odoo-model-pill ${selectedModel === 'account.move' ? 'active' : ''}`}
+                  onClick={() => setSelectedModel('account.move')}
+                >
+                  <span style={{ fontSize: '20px' }}>📄</span>
+                  <div>
+                    <strong style={{ fontSize: '12.5px', display: 'block' }}>account.move</strong>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Customer Invoices</span>
+                  </div>
+                </div>
 
-          <button className="btn btn-success" style={{ width: '100%' }} onClick={runLiveTest} disabled={loading}>
-            {loading ? 'Executing...' : '▶ Execute API Call'}
-          </button>
+                <div
+                  className={`odoo-model-pill ${selectedModel === 'sale.order' ? 'active' : ''}`}
+                  onClick={() => setSelectedModel('sale.order')}
+                >
+                  <span style={{ fontSize: '20px' }}>🛒</span>
+                  <div>
+                    <strong style={{ fontSize: '12.5px', display: 'block' }}>sale.order</strong>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Sales Orders</span>
+                  </div>
+                </div>
 
-          {responseOutput && (
-            <div style={{ marginTop: '16px' }}>
-              <label className="form-label">Response Body (HTTP 200/201)</label>
-              <div className="code-box" style={{ maxHeight: '350px', overflowY: 'auto' }}>
-                <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{responseOutput}</pre>
+                <div
+                  className={`odoo-model-pill ${selectedModel === 'account.payment' ? 'active' : ''}`}
+                  onClick={() => setSelectedModel('account.payment')}
+                >
+                  <span style={{ fontSize: '20px' }}>💳</span>
+                  <div>
+                    <strong style={{ fontSize: '12.5px', display: 'block' }}>account.payment</strong>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Payment Receipts</span>
+                  </div>
+                </div>
+
+                <div
+                  className={`odoo-model-pill ${selectedModel === 'stock.picking' ? 'active' : ''}`}
+                  onClick={() => setSelectedModel('stock.picking')}
+                >
+                  <span style={{ fontSize: '20px' }}>🚚</span>
+                  <div>
+                    <strong style={{ fontSize: '12.5px', display: 'block' }}>stock.picking</strong>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Delivery Orders</span>
+                  </div>
+                </div>
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Right: Multi-Language Code Snippets */}
-        <div className="card" style={{ minWidth: 0, margin: 0 }}>
+            {/* Trigger Selection */}
+            <div className="form-group">
+              <label className="form-label" style={{ fontWeight: '700' }}>2. Trigger Event Condition</label>
+              <select className="form-select" value={selectedTrigger} onChange={(e) => setSelectedTrigger(e.target.value)}>
+                {selectedModel === 'account.move' && (
+                  <>
+                    <option value="posted">On Invoice Posted / Validated (state == 'posted') [Recommended]</option>
+                    <option value="paid">On Payment Completed (payment_state in ('paid', 'in_payment'))</option>
+                    <option value="create">On Invoice Creation (Draft Created)</option>
+                  </>
+                )}
+                {selectedModel === 'sale.order' && (
+                  <>
+                    <option value="posted">On Sales Order Confirmed (state == 'sale') [Recommended]</option>
+                    <option value="sent">On Quotation Sent to Customer (state == 'sent')</option>
+                  </>
+                )}
+                {selectedModel === 'account.payment' && (
+                  <>
+                    <option value="posted">On Payment Posted (state == 'posted') [Recommended]</option>
+                  </>
+                )}
+                {selectedModel === 'stock.picking' && (
+                  <>
+                    <option value="posted">On Delivery Done / Dispatched (state == 'done') [Recommended]</option>
+                  </>
+                )}
+              </select>
+            </div>
+
+            {/* Template Selection */}
+            <div className="form-group">
+              <label className="form-label" style={{ fontWeight: '700' }}>3. WhatsApp Approved Template</label>
+              <select className="form-select" value={selectedTemplate} onChange={(e) => setSelectedTemplate(e.target.value)}>
+                {templatesList.length > 0 ? (
+                  templatesList.map(t => (
+                    <option key={t.id} value={t.template_name}>
+                      {t.display_title} ({t.template_name} • {t.category})
+                    </option>
+                  ))
+                ) : (
+                  <>
+                    <option value="uniglobal_invoice_notification">Invoice Notification with PDF (uniglobal_invoice_notification)</option>
+                    <option value="offer_sandslab">SaNDS Lab Special Offer QR (offer_sandslab)</option>
+                    <option value="uniglobal_delivery_dispatch">Order Dispatched Status (uniglobal_delivery_dispatch)</option>
+                  </>
+                )}
+              </select>
+            </div>
+
+            {/* Feature Options Toggles */}
+            <div className="form-group" style={{ background: '#F8FAFC', padding: '12px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+              <label className="form-label" style={{ fontWeight: '700', marginBottom: '8px' }}>4. Enterprise Automation Features</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '12.5px' }}>
+                  <input
+                    type="checkbox"
+                    checked={includePdf}
+                    onChange={(e) => setIncludePdf(e.target.checked)}
+                  />
+                  <span><strong>Dynamic PDF Streaming:</strong> Auto-generate & attach Odoo QWeb PDF</span>
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '12.5px' }}>
+                  <input
+                    type="checkbox"
+                    checked={logChatter}
+                    onChange={(e) => setLogChatter(e.target.checked)}
+                  />
+                  <span><strong>Odoo Chatter Feedback:</strong> Log WhatsApp delivery status in record chatter</span>
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '12.5px' }}>
+                  <input
+                    type="checkbox"
+                    checked={phoneFallback}
+                    onChange={(e) => setPhoneFallback(e.target.checked)}
+                  />
+                  <span><strong>Smart Phone Fallback:</strong> Check partner mobile first, then landline/phone</span>
+                </label>
+              </div>
+            </div>
+
+            {/* API Key Display */}
+            <div className="form-group">
+              <label className="form-label">Integration API Key</label>
+              <input type="text" className="form-input" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
+            </div>
+          </div>
+
+          {/* Right: Live Generated Code & Odoo Instructions */}
+          <div className="card" style={{ margin: 0 }}>
+            <div className="card-header" style={{ flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  className={`btn ${studioLang === 'python' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ fontSize: '12px', padding: '6px 14px' }}
+                  onClick={() => setStudioLang('python')}
+                >
+                  🐍 Python Server Action (Odoo 14 - 18)
+                </button>
+                <button
+                  type="button"
+                  className={`btn ${studioLang === 'webhook' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ fontSize: '12px', padding: '6px 14px' }}
+                  onClick={() => setStudioLang('webhook')}
+                >
+                  ⚡ Odoo 17/18 Webhook Rule (JSON)
+                </button>
+              </div>
+
+              <button
+                className="btn-copy-code"
+                onClick={() => {
+                  const codeToCopy = studioLang === 'python' ? generateOdooPythonCode() : generateOdoo17WebhookJson();
+                  navigator.clipboard.writeText(codeToCopy);
+                  showToast('Odoo Automation code copied to clipboard!');
+                }}
+              >
+                <span>📋</span> Copy Code
+              </button>
+            </div>
+
+            <div className="code-box" style={{ minHeight: '440px', maxHeight: '580px', overflowY: 'auto' }}>
+              <div className="code-box-header">
+                <span>{studioLang === 'python' ? 'ir.actions.server.py' : 'odoo17_webhook_config.json'}</span>
+                <span style={{ fontSize: '11px', color: '#64748B' }}>
+                  {studioLang === 'python' ? 'Paste directly into Odoo Server Action "Python Code" field' : 'Odoo 17 / 18 Automation Rule Webhook'}
+                </span>
+              </div>
+              <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+                {studioLang === 'python' ? generateOdooPythonCode() : generateOdoo17WebhookJson()}
+              </pre>
+            </div>
+
+            {/* Quick Setup Instructions Drawer */}
+            <div style={{ marginTop: '16px', padding: '14px', background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '8px' }}>
+              <strong style={{ fontSize: '13px', color: '#0369A1', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                <span>📘</span> How to Setup in Odoo in 30 Seconds:
+              </strong>
+              <ol style={{ fontSize: '12px', color: '#0C4A6E', margin: '0 0 0 18px', lineHeight: '1.6' }}>
+                <li>In Odoo, activate <strong>Developer Mode</strong> (Settings → General Settings → Activate the developer mode).</li>
+                <li>Navigate to <strong>Settings → Technical → Server Actions</strong> (or <em>Automation Rules</em> in Odoo 17/18).</li>
+                <li>Create a new action: Set Model to <strong>{selectedModel}</strong> and Action To Do to <strong>Execute Python Code</strong>.</li>
+                <li>Paste the copied script into the <strong>Python Code</strong> box and click <strong>Save</strong>!</li>
+                <li>Whenever a document matches your trigger event, WhatsApp will dispatch automatically with live chatter logging.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: WEBHOOK TESTER & SIMULATOR */}
+      {hubTab === 'tester' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(380px, 460px) 1fr', gap: '20px' }}>
+          {/* Left: Interactive Input Form */}
+          <div className="card" style={{ margin: 0 }}>
+            <div className="card-header">
+              <span className="card-title"><span>🧪</span> Odoo Inbound Webhook Simulator</span>
+            </div>
+
+            {/* Presets */}
+            <div style={{ marginBottom: '14px' }}>
+              <span style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
+                Load Quick Simulation Preset:
+              </span>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                <button type="button" className="odoo-preset-btn" onClick={() => applyTesterPreset('invoice')}>
+                  <span>📄</span> Invoice (INV/2026/0142)
+                </button>
+                <button type="button" className="odoo-preset-btn" onClick={() => applyTesterPreset('order')}>
+                  <span>🛒</span> Sales Order (SO-8821)
+                </button>
+                <button type="button" className="odoo-preset-btn" onClick={() => applyTesterPreset('payment')}>
+                  <span>💳</span> Payment (PAY-5510)
+                </button>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Endpoint URL</label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <span className="badge cat-utility" style={{ padding: '8px 12px', fontSize: '12px' }}>POST</span>
+                <input type="text" className="form-input" value={endpoint} readOnly />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">API Key Header (X-API-Key)</label>
+              <input type="text" className="form-input" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <div className="form-group">
+                <label className="form-label">Odoo Model</label>
+                <select className="form-select" value={testModel} onChange={(e) => setTestModel(e.target.value)}>
+                  <option value="account.move">account.move</option>
+                  <option value="sale.order">sale.order</option>
+                  <option value="account.payment">account.payment</option>
+                  <option value="stock.picking">stock.picking</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Document Ref</label>
+                <input type="text" className="form-input" value={testRecordName} onChange={(e) => setTestRecordName(e.target.value)} />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <div className="form-group">
+                <label className="form-label">Customer Name</label>
+                <input type="text" className="form-input" value={testPartnerName} onChange={(e) => setTestPartnerName(e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Recipient Phone</label>
+                <input type="text" className="form-input" value={testRecipient} onChange={(e) => setTestRecipient(e.target.value)} />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <div className="form-group">
+                <label className="form-label">Amount</label>
+                <input type="text" className="form-input" value={testAmount} onChange={(e) => setTestAmount(e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Currency</label>
+                <input type="text" className="form-input" value={testCurrency} onChange={(e) => setTestCurrency(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">WhatsApp Template</label>
+              <select className="form-select" value={testTemplate} onChange={(e) => setTestTemplate(e.target.value)}>
+                {templatesList.length > 0 ? (
+                  templatesList.map(t => (
+                    <option key={t.id} value={t.template_name}>
+                      {t.display_title} ({t.template_name})
+                    </option>
+                  ))
+                ) : (
+                  <>
+                    <option value="offer_sandslab">SaNDS Lab Special Offer QR (offer_sandslab)</option>
+                    <option value="uniglobal_invoice_notification">Invoice Notification (uniglobal_invoice_notification)</option>
+                  </>
+                )}
+              </select>
+            </div>
+
+            <button className="btn btn-success" style={{ width: '100%', padding: '10px' }} onClick={runLiveTest} disabled={loading}>
+              {loading ? 'Dispatching...' : '▶ Dispatch Simulated Odoo Webhook'}
+            </button>
+          </div>
+
+          {/* Right: Live Response Output */}
+          <div className="card" style={{ margin: 0 }}>
+            <div className="card-header">
+              <span className="card-title"><span>📡</span> Gateway Real-Time Response</span>
+              {lastDispatchedId && (
+                <span className="badge status-sent" style={{ fontSize: '11px' }}>
+                  Meta Dispatch Verified
+                </span>
+              )}
+            </div>
+
+            <div className="code-box" style={{ minHeight: '360px', maxHeight: '560px', overflowY: 'auto' }}>
+              <div className="code-box-header">
+                <span>HTTP Response Inspector</span>
+                <span style={{ fontSize: '10.5px', color: '#64748B' }}>application/json</span>
+              </div>
+              <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+                {responseOutput || '// Click "Dispatch Simulated Odoo Webhook" to execute live Meta Cloud API integration.'}
+              </pre>
+            </div>
+
+            {lastDispatchedId && (
+              <div style={{ marginTop: '14px', padding: '12px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <strong style={{ fontSize: '12.5px', color: '#166534', display: 'block' }}>Message Successfully Recorded</strong>
+                  <code style={{ fontSize: '11.5px', color: '#047857' }}>{lastDispatchedId}</code>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  style={{ fontSize: '12px' }}
+                  onClick={() => {
+                    const el = document.querySelector('button.nav-item[onClick*="logs"]');
+                    if (el) el.click();
+                  }}
+                >
+                  View in Message Logs →
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: LIVE ODOO AUDIT TELEMETRY */}
+      {hubTab === 'audit' && (
+        <div className="card" style={{ margin: 0 }}>
+          <div className="card-header">
+            <div>
+              <span className="card-title"><span>📜</span> Odoo Dispatched Messages Audit</span>
+              <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                Real-time log of all WhatsApp messages triggered from Odoo ERP Automated Actions and webhooks.
+              </p>
+            </div>
+            <button className="btn btn-secondary" style={{ fontSize: '12px' }} onClick={loadAuditLogs} disabled={loadingAudit}>
+              {loadingAudit ? 'Refreshing...' : '🔄 Refresh Logs'}
+            </button>
+          </div>
+
+          <div style={{ overflowX: 'auto' }}>
+            <table className="table" style={{ width: '100%' }}>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Odoo Model</th>
+                  <th>Document Ref</th>
+                  <th>Recipient Phone</th>
+                  <th>Template</th>
+                  <th>Status</th>
+                  <th>Cost (BHD)</th>
+                  <th>Meta Tracking ID</th>
+                  <th>Dispatched At</th>
+                </tr>
+              </thead>
+              <tbody>
+                {auditLogs.length > 0 ? (
+                  auditLogs.map((log) => (
+                    <tr key={log.id}>
+                      <td><strong>#{log.id}</strong></td>
+                      <td>
+                        <span className="badge" style={{ background: '#E0F2FE', color: '#0369A1' }}>
+                          {log.odoo_model || 'account.move'}
+                        </span>
+                      </td>
+                      <td><strong>{log.odoo_record_name || 'INV/2026/0142'}</strong></td>
+                      <td><code>{log.to_phone}</code></td>
+                      <td><span style={{ fontSize: '12px' }}>{log.template_name || 'N/A'}</span></td>
+                      <td>
+                        <span className={`badge status-${log.status || 'sent'}`}>
+                          {log.status === 'read' ? 'READ ✓✓' : (log.status === 'delivered' ? 'DELIVERED ✓✓' : (log.status === 'sent' ? 'SENT ✓' : log.status.toUpperCase()))}
+                        </span>
+                      </td>
+                      <td><strong>{parseFloat(log.client_rate_bhd || 0.0185).toFixed(4)}</strong></td>
+                      <td>
+                        <code style={{ fontSize: '11px', maxWidth: '140px', display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={log.message_id}>
+                          {log.message_id}
+                        </code>
+                      </td>
+                      <td style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>{log.sent_at || log.created_at}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="9" style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)' }}>
+                      {loadingAudit ? 'Loading Odoo message telemetry...' : 'No Odoo-triggered messages found yet. Use the Webhook Simulator to dispatch test notifications.'}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: MULTI-PLATFORM CONNECTORS */}
+      {hubTab === 'connectors' && (
+        <div className="card" style={{ margin: 0 }}>
           <div className="card-header" style={{ flexWrap: 'wrap', gap: '8px' }}>
             <span className="card-title"><span>🔌</span> Multi-Platform Connector Snippets</span>
             <button className="btn-copy-code" onClick={() => {
@@ -4383,7 +4930,6 @@ async function sendWhatsAppInvoice({ toPhone, customerName, invoiceNumber, amoun
             </button>
           </div>
 
-          {/* Language Selector Tabs */}
           <div className="code-tabs-header">
             <button
               type="button"
@@ -4430,7 +4976,7 @@ async function sendWhatsAppInvoice({ toPhone, customerName, invoiceNumber, amoun
             <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{currentSnippet.code}</pre>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -182,7 +182,7 @@ function VersionArchitectureModal({ isOpen, onClose }) {
       title: "Close"
     },
     "\u2715"
-  )), /* @__PURE__ */ React.createElement("div", { className: "version-modal-body" }, /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { borderLeft: "4px solid #3B82F6", background: "#F0F9FF" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u26A1"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#1E3A8A" } }, "Active Release: Version 2.1.0")), /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "\u{1F7E2} v2.1.0 INBOUND LIVE CHAT ACTIVE")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "#1E40AF", margin: 0, lineHeight: "1.5" } }, "Inbound Live Chat & Two-Way Agent Inbox with 24-hour Meta Customer Care session window tracking is officially released. All upcoming modules adhere to minor versioning (", /* @__PURE__ */ React.createElement("code", { style: { background: "#E0F2FE", padding: "1px 5px", borderRadius: "4px", fontWeight: "600" } }, "v2.x.x"), ").")), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { borderLeft: "4px solid #10B981", background: "#F0FDF4" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F512}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#065F46" } }, "Baseline Milestone: Version 1.0.0 (LOCKED)")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "GIT TAG: v1.0.0"), /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "GIT TAG: v1.0"))), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "#047857", marginBottom: "10px", lineHeight: "1.4" } }, /* @__PURE__ */ React.createElement("strong", null, "Commit Hash:"), " ", /* @__PURE__ */ React.createElement("code", { style: { background: "#E2E8F0", padding: "1px 5px", borderRadius: "4px", color: "#0F172A" } }, "9dd6ebc"), " | Production verified & deployed on ", /* @__PURE__ */ React.createElement("code", { style: { background: "#E2E8F0", padding: "1px 5px", borderRadius: "4px", color: "#0F172A" } }, "https://whatsapp.sandslab.com"), "."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "8px", fontSize: "11.5px", color: "#065F46" } }, /* @__PURE__ */ React.createElement("div", null, "\u2713 Superadmin RBAC Security Restrictions"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Dual Charging Engine (Option A vs B)"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Meta WhatsApp Cloud API v19.0 Dispatch"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Multi-Language Odoo API Hub"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Prepaid Wallet & BHD 3-Dec Audit Ledger"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Enterprise DataTables (DESC Sort)"))), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { background: "#FFFFFF" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u{1F4D0}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "Minor Version Management Protocol (SemVer 2.0.0)")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "Starting from Version 2.0, all ongoing changes are version-controlled using structured semantic numbering:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#2563EB", fontSize: "12px" } }, "v2.0.0 (MAJOR)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Major generation architecture shift & foundational framework upgrades.")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#059669", fontSize: "12px" } }, "v2.x.0 (MINOR)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Scheduled roadmap feature milestones (e.g. v2.1 for Odoo Webhooks, v2.2 for Campaigns, v2.3 for Live Chat).")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#D97706", fontSize: "12px" } }, "v2.x.y (PATCH)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Targeted bug fixes, security patches, styling polish, and maintenance hotfixes.")))), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { background: "#FFFFFF" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u{1F4CB}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "Version 2.0 Execution Roadmap (Next Development Steps)")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.1.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "Inbound Live Chat & Two-Way Agent Inbox (Completed & Released \u2705)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#166534", margin: "2px 0 0 0" } }, "Two-way conversational workspace, Meta 24-hour customer care session window tracking, canned replies, free-text replies, and simulated inbound testing."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F0F9FF", border: "1px solid #BAE6FD", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#0284C7", color: "#FFFFFF", marginTop: "2px" } }, "v2.2.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#0369A1" } }, "Odoo ERP Automated Action Webhook & Model Sync (Phase 2 \u2014 Next Priority)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#0C4A6E", margin: "2px 0 0 0" } }, "Inbound triggers for automated invoice generation, payment receipt dispatch, and real-time delivery status synchronization with Odoo ERP."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#64748B", color: "#FFFFFF", marginTop: "2px" } }, "v2.3.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#334155" } }, "Bulk Campaign Broadcasts & Queue Pacing (Phase 3 \u2014 Scheduled)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#64748B", margin: "2px 0 0 0" } }, "CSV contact list upload with dynamic variable mapping, segmentation, and throttled queue pacing (50 msgs/min).")))))), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 24px", background: "#F8FAFC", borderTop: "1px solid #E2E8F0", display: "flex", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement(
+  )), /* @__PURE__ */ React.createElement("div", { className: "version-modal-body" }, /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { borderLeft: "4px solid #10B981", background: "#F0FDF4" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u26A1"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#065F46" } }, "Active Release: Version 2.3.0 (Production Live)")), /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "\u{1F7E2} v2.3.0 ODOO ERP WEBHOOK & SYNC LIVE")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "#065F46", margin: 0, lineHeight: "1.5" } }, "Version 2.3.0 marks the completion of the core roadmap! Inbound Odoo Automated Action Webhook Gateway (", /* @__PURE__ */ React.createElement("code", { style: { background: "#E0F2FE", padding: "1px 5px", borderRadius: "4px", fontWeight: "600" } }, "api/odoo_webhook.php"), "), dynamic PDF attachment streaming, bi-directional chatter delivery status callbacks, and visual Automated Action Studio are active.")), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { borderLeft: "4px solid #10B981", background: "#F0FDF4" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F512}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#065F46" } }, "Baseline Milestone: Version 1.0.0 (LOCKED)")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "GIT TAG: v1.0.0"), /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "GIT TAG: v1.0"))), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "#047857", marginBottom: "10px", lineHeight: "1.4" } }, /* @__PURE__ */ React.createElement("strong", null, "Commit Hash:"), " ", /* @__PURE__ */ React.createElement("code", { style: { background: "#E2E8F0", padding: "1px 5px", borderRadius: "4px", color: "#0F172A" } }, "9dd6ebc"), " | Production verified & deployed on ", /* @__PURE__ */ React.createElement("code", { style: { background: "#E2E8F0", padding: "1px 5px", borderRadius: "4px", color: "#0F172A" } }, "https://whatsapp.sandslab.com"), "."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "8px", fontSize: "11.5px", color: "#065F46" } }, /* @__PURE__ */ React.createElement("div", null, "\u2713 Superadmin RBAC Security Restrictions"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Dual Charging Engine (Option A vs B)"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Meta WhatsApp Cloud API v19.0 Dispatch"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Multi-Language Odoo API Hub"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Prepaid Wallet & BHD 3-Dec Audit Ledger"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Enterprise DataTables (DESC Sort)"))), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { background: "#FFFFFF" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u{1F4D0}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "Minor Version Management Protocol (SemVer 2.0.0)")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "Starting from Version 2.0, all ongoing changes are version-controlled using structured semantic numbering:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#2563EB", fontSize: "12px" } }, "v2.0.0 (MAJOR)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Major generation architecture shift & foundational framework upgrades.")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#059669", fontSize: "12px" } }, "v2.x.0 (MINOR)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Scheduled roadmap feature milestones (v2.1 Live Chat, v2.2 Campaigns, v2.3 Odoo Sync).")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#D97706", fontSize: "12px" } }, "v2.x.y (PATCH)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Targeted bug fixes, security patches, styling polish, and maintenance hotfixes.")))), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { background: "#FFFFFF" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u{1F4CB}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "Version 2.0 Execution Roadmap (All Milestones Completed)")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.1.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "Inbound Live Chat & Two-Way Agent Inbox (Completed & Released \u2705)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#166534", margin: "2px 0 0 0" } }, "Two-way conversational workspace, Meta 24-hour customer care session window tracking, canned replies, free-text replies, and simulated inbound testing."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.2.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "Bulk Campaign Broadcasts & Queue Pacing (Completed & Released \u2705)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#166534", margin: "2px 0 0 0" } }, "CSV contact upload with dynamic variable mapping, anti-spam dispatch queue pacing, live animated monitor, and verified Meta webhook delivery receipts."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.3.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "Odoo ERP Automated Action Webhook & Model Sync (Completed & Released \u2705)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#166534", margin: "2px 0 0 0" } }, "Inbound webhook triggers for automated invoice generation (account.move), sales order confirmations, dynamic PDF attachment streaming, and bi-directional chatter delivery callbacks.")))))), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 24px", background: "#F8FAFC", borderTop: "1px solid #E2E8F0", display: "flex", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "button",
@@ -2304,271 +2304,490 @@ function TemplatesView({ showToast }) {
     }
   ));
 }
-function OdooApiHubView({ showToast }) {
+function OdooApiHubView({ showToast, globalSettings }) {
+  const [hubTab, setHubTab] = useState("studio");
+  const [selectedModel, setSelectedModel] = useState("account.move");
+  const [selectedTrigger, setSelectedTrigger] = useState("posted");
+  const [selectedTemplate, setSelectedTemplate] = useState("uniglobal_invoice_notification");
+  const [includePdf, setIncludePdf] = useState(true);
+  const [logChatter, setLogChatter] = useState(true);
+  const [phoneFallback, setPhoneFallback] = useState(true);
+  const [studioLang, setStudioLang] = useState("python");
+  const [templatesList, setTemplatesList] = useState([]);
+  const [apiKey, setApiKey] = useState("sk_live_odoo_uniglobal_98741362");
+  const [endpoint, setEndpoint] = useState("/api/odoo_webhook.php");
+  const [testModel, setTestModel] = useState("account.move");
+  const [testRecipient, setTestRecipient] = useState("+97335078079");
+  const [testPartnerName, setTestPartnerName] = useState("Ahmed Al-Khalifa");
+  const [testRecordName, setTestRecordName] = useState("INV/2026/0142");
+  const [testAmount, setTestAmount] = useState("345.500");
+  const [testCurrency, setTestCurrency] = useState("BHD");
+  const [testTemplate, setTestTemplate] = useState("offer_sandslab");
   const [responseOutput, setResponseOutput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [apiKey, setApiKey] = useState("sk_live_odoo_uniglobal_98741362");
-  const [endpoint, setEndpoint] = useState("/api/messages.php");
-  const [requestPayload, setRequestPayload] = useState(JSON.stringify({
-    "to_phone": "+97339000000",
-    "template_name": "uniglobal_invoice_notification",
-    "category": "UTILITY",
-    "header_media": {
-      "type": "document",
-      "url": "https://erp.uniglobal.bh/INV_9941.pdf",
-      "filename": "INV.pdf"
-    },
-    "body_parameters": ["Ahmed Al-Khalifa", "INV/2026/0142", "BHD 345.500", "15-Oct-2026"],
-    "source_system": "Odoo ERP (Direct API)"
-  }, null, 2));
+  const [lastDispatchedId, setLastDispatchedId] = useState(null);
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [loadingAudit, setLoadingAudit] = useState(false);
+  const [activeSnippetLang, setActiveSnippetLang] = useState("python");
+  useEffect(() => {
+    fetch("./api/odoo_webhook.php?action=templates").then((res) => res.json()).then((res) => {
+      if (res.success && Array.isArray(res.data)) {
+        setTemplatesList(res.data);
+      }
+    }).catch(() => {
+    });
+  }, []);
+  const loadAuditLogs = () => {
+    setLoadingAudit(true);
+    fetch("./api/odoo_webhook.php?action=recent").then((res) => res.json()).then((res) => {
+      if (res.success && Array.isArray(res.data)) {
+        setAuditLogs(res.data);
+      }
+    }).catch(() => {
+    }).finally(() => setLoadingAudit(false));
+  };
+  useEffect(() => {
+    if (hubTab === "audit") {
+      loadAuditLogs();
+    }
+  }, [hubTab]);
+  const applyTesterPreset = (presetType) => {
+    if (presetType === "invoice") {
+      setTestModel("account.move");
+      setTestRecordName("INV/2026/0142");
+      setTestPartnerName("Ahmed Al-Khalifa");
+      setTestAmount("345.500");
+      setTestTemplate("offer_sandslab");
+    } else if (presetType === "order") {
+      setTestModel("sale.order");
+      setTestRecordName("SO-8821");
+      setTestPartnerName("Dr. Tariq Salman");
+      setTestAmount("125.000");
+      setTestTemplate("offer_sandslab");
+    } else if (presetType === "payment") {
+      setTestModel("account.payment");
+      setTestRecordName("PAY/2026/0045");
+      setTestPartnerName("Fatima Noor");
+      setTestAmount("75.250");
+      setTestTemplate("uniglobal_invoice_notification");
+    }
+    showToast(`Loaded ${presetType} simulation preset!`);
+  };
   const runLiveTest = async () => {
     setLoading(true);
-    setResponseOutput("Sending request to WhatsApp Gateway...");
+    setResponseOutput("Dispatching automated action to WhatsApp Gateway...");
     try {
+      const payload = {
+        model: testModel,
+        record_id: 142,
+        record_name: testRecordName,
+        partner_name: testPartnerName,
+        partner_phone: testRecipient,
+        amount: testAmount,
+        currency: testCurrency,
+        date: (/* @__PURE__ */ new Date()).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+        template_name: testTemplate,
+        callback_url: "https://whatsapp.sandslab.com/api/odoo_webhook.php?action=simulate_callback"
+      };
       const res = await fetch(`.${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-API-Key": apiKey
         },
-        body: requestPayload
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       setResponseOutput(JSON.stringify(data, null, 2));
-      showToast("API Executed successfully!");
+      if (data.success) {
+        setLastDispatchedId(data.message_id);
+        showToast("WhatsApp notification successfully dispatched from Odoo!");
+      } else {
+        showToast(data.message || data.error || "Dispatch error", "error");
+      }
     } catch (err) {
       setResponseOutput(JSON.stringify({ error: err.message }, null, 2));
-      showToast("API execution error", "error");
+      showToast("API execution error: " + err.message, "error");
     } finally {
       setLoading(false);
     }
   };
-  const [activeSnippetLang, setActiveSnippetLang] = useState("python");
+  const generateOdooPythonCode = () => {
+    const isInvoice = selectedModel === "account.move";
+    const isOrder = selectedModel === "sale.order";
+    const isPayment = selectedModel === "account.payment";
+    const pdfReportRef = isInvoice ? "'account.account_invoices'" : isOrder ? "'sale.action_report_saleorder'" : "'account.action_report_payment_receipt'";
+    const dateField = isInvoice ? "record.invoice_date" : isOrder ? "record.date_order" : "record.date";
+    const amountField = isPayment ? "record.amount" : "record.amount_total";
+    return `# ==============================================================================
+# SaNDS Lab WhatsApp Gateway \u2014 Odoo Automated Server Action
+# Model: ${selectedModel} | Trigger: ${selectedTrigger}
+# Requirements: ZERO EXTERNAL PIP PACKAGES (Native Python standard library)
+# Compatible with: Odoo 14, 15, 16, 17, and 18 (Community & Enterprise / Odoo.sh)
+# ==============================================================================
+import json
+import urllib.request
+import base64
+
+API_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
+API_SECRET_KEY  = "${apiKey}"
+
+# 1. Resolve Destination Phone Number
+partner = record.partner_id if hasattr(record, 'partner_id') else record
+${phoneFallback ? 'dest_phone = (partner.mobile or partner.phone or "").strip()' : 'dest_phone = (partner.mobile or "").strip()'}
+
+if not dest_phone:
+    ${logChatter ? 'record.message_post(body="\u26A0\uFE0F <b>WhatsApp Skipped:</b> Customer has no mobile or phone number on file.")' : "pass"}
+else:
+    # 2. Extract Document PDF Attachment Binary (Optional)
+    pdf_base64 = None
+    ${includePdf ? `try:
+        report_action = record.env.ref(${pdfReportRef}, raise_if_not_found=False)
+        if report_action:
+            pdf_binary, _ = report_action._render_qweb_pdf([record.id])
+            pdf_base64 = base64.b64encode(pdf_binary).decode('utf-8')
+    except Exception as pdf_err:
+        pdf_base64 = None` : "# PDF Attachment disabled in Studio generator"}
+
+    # 3. Build Webhook Payload
+    amount_val = ${amountField} if hasattr(record, '${amountField.split(".")[1]}') else 0.0
+    curr_name  = record.currency_id.name if hasattr(record, 'currency_id') and record.currency_id else "BHD"
+    doc_date   = str(${dateField} or record.create_date.date())
+
+    payload = {
+        "model": record._name,
+        "record_id": record.id,
+        "record_name": record.name or f"DOC-{record.id}",
+        "partner_name": partner.name or "Valued Customer",
+        "partner_phone": dest_phone,
+        "amount": amount_val,
+        "currency": curr_name,
+        "date": doc_date,
+        "template_name": "${selectedTemplate}",
+        "pdf_base64": pdf_base64,
+        "callback_url": "https://whatsapp.sandslab.com/api/odoo_webhook.php?action=simulate_callback"
+    }
+
+    # 4. Dispatch Request to WhatsApp Gateway
+    req = urllib.request.Request(
+        API_GATEWAY_URL,
+        data=json.dumps(payload).encode('utf-8'),
+        headers={
+            "Content-Type": "application/json",
+            "X-API-Key": API_SECRET_KEY,
+            "User-Agent": "Odoo-WhatsApp-Connector/2.3"
+        },
+        method="POST"
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=15) as response:
+            res_json = json.loads(response.read().decode('utf-8'))
+            if res_json.get('success'):
+                wamid = res_json.get('message_id', '')
+                tariff = res_json.get('tariff', {}).get('client_rate', '')
+                ${logChatter ? `record.message_post(
+                    body=f"\u2705 <b>WhatsApp Notification Sent</b><br/>"
+                         f"Template: <code>{res_json.get('template_name')}</code><br/>"
+                         f"Recipient: <b>{dest_phone}</b><br/>"
+                         f"Tracking ID: <code>{wamid}</code><br/>"
+                         f"Tariff Debited: <b>{tariff}</b>"
+                )` : "pass"}
+            else:
+                ${logChatter ? `record.message_post(body=f"\u274C <b>WhatsApp Dispatch Failed:</b> {res_json.get('error', res_json.get('message'))}")` : "pass"}
+    except Exception as ex:
+        ${logChatter ? 'record.message_post(body=f"\u274C <b>WhatsApp Gateway Error:</b> {str(ex)}")' : "pass"}`;
+  };
+  const generateOdoo17WebhookJson = () => {
+    return JSON.stringify({
+      "webhook_url": "https://whatsapp.sandslab.com/api/odoo_webhook.php",
+      "http_headers": {
+        "X-API-Key": apiKey,
+        "Content-Type": "application/json"
+      },
+      "payload_fields": {
+        "model": selectedModel,
+        "record_id": "{{ record.id }}",
+        "record_name": "{{ record.name }}",
+        "partner_name": "{{ record.partner_id.name }}",
+        "partner_phone": "{{ record.partner_id.mobile or record.partner_id.phone }}",
+        "amount": "{{ record.amount_total }}",
+        "currency": "{{ record.currency_id.name }}",
+        "date": "{{ record.invoice_date or record.create_date }}",
+        "template_name": selectedTemplate
+      }
+    }, null, 2);
+  };
   const snippets = {
     python: {
       title: "Python 3 (Odoo ERP Action / Requests)",
       filename: "odoo_whatsapp_connector.py",
       code: `import requests
 
-API_URL = "https://whatsapp.sandslab.com/api/messages.php"
-API_KEY = "sk_live_odoo_uniglobal_98741362"
+API_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
+API_KEY = "${apiKey}"
 
-def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_bhd, date_str, pdf_url):
+def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_bhd, date_str, pdf_url=None):
     payload = {
-        "to_phone": partner_phone,
-        "template_name": "uniglobal_invoice_notification",
-        "category": "UTILITY",
-        "header_media": {
-            "type": "document",
-            "url": pdf_url,
-            "filename": f"{invoice_num}.pdf"
-        },
-        "body_parameters": [partner_name, invoice_num, amount_bhd, date_str],
-        "source_system": "Odoo ERP Automated Action"
+        "model": "account.move",
+        "record_name": invoice_num,
+        "partner_name": partner_name,
+        "partner_phone": partner_phone,
+        "amount": amount_bhd,
+        "currency": "BHD",
+        "date": date_str,
+        "template_name": "offer_sandslab",
+        "pdf_url": pdf_url
     }
     headers = {
         "Content-Type": "application/json",
         "X-API-Key": API_KEY
     }
-    response = requests.post(API_URL, json=payload, headers=headers, timeout=10)
+    response = requests.post(API_URL, json=payload, headers=headers, timeout=12)
     return response.json()`
     },
     php: {
       title: "PHP 7.4+ / 8.x (cURL Native)",
-      filename: "whatsapp_sender.php",
+      filename: "odoo_sender.php",
       code: `<?php
-/**
- * WhatsApp Gateway - PHP Integration Example
- * Send Automated WhatsApp Template Notifications
- */
-
-function sendWhatsAppNotification($toPhone, $customerName, $invoiceNum, $amountBhd, $dateStr, $pdfUrl) {
-    $apiUrl = 'https://whatsapp.sandslab.com/api/messages.php';
-    $apiKey = 'sk_live_odoo_uniglobal_98741362';
-
-    $payload = [
-        'to_phone'        => $toPhone,
-        'template_name'   => 'uniglobal_invoice_notification',
-        'category'        => 'UTILITY',
-        'header_media'    => [
-            'type'     => 'document',
-            'url'      => $pdfUrl,
-            'filename' => $invoiceNum . '.pdf'
-        ],
-        'body_parameters' => [$customerName, $invoiceNum, $amountBhd, $dateStr],
-        'source_system'   => 'PHP ERP Application'
-    ];
-
-    $ch = curl_init($apiUrl);
+function sendOdooWhatsApp($phone, $name, $invNum, $amount, $date, $apiKey = '${apiKey}') {
+    $ch = curl_init('https://whatsapp.sandslab.com/api/odoo_webhook.php');
     curl_setopt_array($ch, [
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => json_encode($payload),
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER     => [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => json_encode([
+            'model' => 'account.move',
+            'record_name' => $invNum,
+            'partner_name' => $name,
+            'partner_phone' => $phone,
+            'amount' => $amount,
+            'currency' => 'BHD',
+            'date' => $date,
+            'template_name' => 'offer_sandslab'
+        ]),
+        CURLOPT_HTTPHEADER => [
             'Content-Type: application/json',
             'X-API-Key: ' . $apiKey
         ],
-        CURLOPT_TIMEOUT        => 15
+        CURLOPT_RETURNTRANSFER => true
     ]);
-
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $res = curl_exec($ch);
     curl_close($ch);
-
-    return json_decode($response, true);
-}
-
-// Example Execution
-$result = sendWhatsAppNotification(
-    '+97339000000',
-    'Ahmed Al-Khalifa',
-    'INV/2026/0142',
-    'BHD 345.500',
-    '15-Oct-2026',
-    'https://erp.uniglobal.bh/INV_9941.pdf'
-);
-print_r($result);`
+    return json_decode($res, true);
+}`
     },
     curl: {
       title: "cURL (Bash / Terminal CLI)",
-      filename: "send_invoice.sh",
-      code: `#!/bin/bash
-
-# WhatsApp Gateway - cURL Integration Example
-API_URL="https://whatsapp.sandslab.com/api/messages.php"
-API_KEY="sk_live_odoo_uniglobal_98741362"
-
-curl -X POST "$API_URL" \\
+      filename: "odoo_trigger.sh",
+      code: `curl -X POST "https://whatsapp.sandslab.com/api/odoo_webhook.php" \\
   -H "Content-Type: application/json" \\
-  -H "X-API-Key: $API_KEY" \\
+  -H "X-API-Key: ${apiKey}" \\
   -d '{
-    "to_phone": "+97339000000",
-    "template_name": "uniglobal_invoice_notification",
-    "category": "UTILITY",
-    "header_media": {
-      "type": "document",
-      "url": "https://erp.uniglobal.bh/INV_9941.pdf",
-      "filename": "INV_2026_0142.pdf"
-    },
-    "body_parameters": [
-      "Ahmed Al-Khalifa",
-      "INV/2026/0142",
-      "BHD 345.500",
-      "15-Oct-2026"
-    ],
-    "source_system": "cURL CLI Script"
+    "model": "account.move",
+    "record_id": 142,
+    "record_name": "INV/2026/0142",
+    "partner_name": "Ahmed Al-Khalifa",
+    "partner_phone": "+97335078079",
+    "amount": "345.500",
+    "currency": "BHD",
+    "date": "13-Oct-2026",
+    "template_name": "offer_sandslab"
   }'`
     },
     dotnet: {
       title: ".NET 6/7/8 C# (HttpClient)",
-      filename: "WhatsAppService.cs",
+      filename: "OdooWhatsAppClient.cs",
       code: `using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace UniGlobal.Integrations
+public class OdooWhatsAppClient
 {
-    public class WhatsAppSender
+    private static readonly HttpClient client = new HttpClient();
+    private const string ApiUrl = "https://whatsapp.sandslab.com/api/odoo_webhook.php";
+    private const string ApiKey = "${apiKey}";
+
+    public static async Task<string> DispatchOdooInvoiceAsync(string phone, string customerName, string invNum, decimal amount)
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
-        private const string ApiUrl = "https://whatsapp.sandslab.com/api/messages.php";
-        private const string ApiKey = "sk_live_odoo_uniglobal_98741362";
-
-        public static async Task<string> SendInvoiceNotificationAsync(
-            string recipientPhone,
-            string customerName,
-            string invoiceNumber,
-            string amountFormatted,
-            string issueDate,
-            string invoicePdfUrl)
+        var payload = new
         {
-            var payload = new
-            {
-                to_phone = recipientPhone,
-                template_name = "uniglobal_invoice_notification",
-                category = "UTILITY",
-                header_media = new
-                {
-                    type = "document",
-                    url = invoicePdfUrl,
-                    filename = $"{invoiceNumber}.pdf"
-                },
-                body_parameters = new[] { customerName, invoiceNumber, amountFormatted, issueDate },
-                source_system = ".NET ERP Connector"
-            };
-
-            var request = new HttpRequestMessage(HttpMethod.Post, ApiUrl);
-            request.Headers.Add("X-API-Key", ApiKey);
-            request.Content = new StringContent(
-                JsonSerializer.Serialize(payload),
-                Encoding.UTF8,
-                "application/json"
-            );
-
-            var response = await _httpClient.SendAsync(request);
-            return await response.Content.ReadAsStringAsync();
-        }
+            model = "account.move",
+            record_name = invNum,
+            partner_name = customerName,
+            partner_phone = phone,
+            amount = amount.ToString("F3"),
+            currency = "BHD",
+            template_name = "offer_sandslab"
+        };
+        var req = new HttpRequestMessage(HttpMethod.Post, ApiUrl);
+        req.Headers.Add("X-API-Key", ApiKey);
+        req.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+        var res = await client.SendAsync(req);
+        return await res.Content.ReadAsStringAsync();
     }
 }`
     },
     node: {
       title: "Node.js / Express (Fetch API)",
-      filename: "send_whatsapp.js",
-      code: `/**
- * WhatsApp Gateway - Node.js Integration Example
- */
-const API_URL = 'https://whatsapp.sandslab.com/api/messages.php';
-const API_KEY = 'sk_live_odoo_uniglobal_98741362';
+      filename: "odoo_sender.js",
+      code: `const API_URL = 'https://whatsapp.sandslab.com/api/odoo_webhook.php';
+const API_KEY = '${apiKey}';
 
-async function sendWhatsAppInvoice({ toPhone, customerName, invoiceNumber, amount, date, pdfUrl }) {
-  const payload = {
-    to_phone: toPhone,
-    template_name: 'uniglobal_invoice_notification',
-    category: 'UTILITY',
-    header_media: {
-      type: 'document',
-      url: pdfUrl,
-      filename: \`\${invoiceNumber}.pdf\`
-    },
-    body_parameters: [customerName, invoiceNumber, amount, date],
-    source_system: 'Node.js Microservice'
-  };
-
-  const response = await fetch(API_URL, {
+async function dispatchOdooInvoice({ phone, customerName, invoiceNumber, amount }) {
+  const res = await fetch(API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-API-Key': API_KEY
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify({
+      model: 'account.move',
+      record_name: invoiceNumber,
+      partner_name: customerName,
+      partner_phone: phone,
+      amount: amount,
+      currency: 'BHD',
+      template_name: 'offer_sandslab'
+    })
   });
-
-  return await response.json();
-}
-
-// Example Execution
-// sendWhatsAppInvoice({
-//   toPhone: '+97339000000',
-//   customerName: 'Ahmed Al-Khalifa',
-//   invoiceNumber: 'INV/2026/0142',
-//   amount: 'BHD 345.500',
-//   date: '15-Oct-2026',
-//   pdfUrl: 'https://erp.uniglobal.bh/INV_9941.pdf'
-// }).then(console.log);`
+  return await res.json();
+}`
     }
   };
   const currentSnippet = snippets[activeSnippetLang] || snippets.python;
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo & Multi-Platform Integration API Hub"), /* @__PURE__ */ React.createElement("p", null, "REST API documentation, live testing console, and copyable integration snippets for Python, PHP, cURL, .NET (C#), and Node.js."))), /* @__PURE__ */ React.createElement("div", { className: "api-hub-grid" }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { minWidth: 0, margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F9EA}"), " Live API Tester")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "API Key Header (X-API-Key)"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: apiKey, onChange: (e) => setApiKey(e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "HTTP Method & Endpoint"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge cat-utility", style: { padding: "8px 12px", fontSize: "12px" } }, "POST"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: endpoint, readOnly: true }))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Request Body (JSON)"), /* @__PURE__ */ React.createElement(
-    "textarea",
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo ERP Automation & Developer Hub"), /* @__PURE__ */ React.createElement("p", null, "Enterprise Odoo Automated Action Studio, inbound webhook controllers, dynamic PDF streaming, and live bi-directional delivery telemetry.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { className: "odoo-code-header-badge" }, /* @__PURE__ */ React.createElement("span", null, "\u25CF"), " Odoo Gateway Active (v2.3.0)"))), /* @__PURE__ */ React.createElement("div", { className: "odoo-subnav-bar" }, /* @__PURE__ */ React.createElement(
+    "button",
     {
-      className: "form-textarea",
-      style: { minHeight: "180px", fontFamily: "monospace", fontSize: "11.5px" },
-      value: requestPayload,
-      onChange: (e) => setRequestPayload(e.target.value)
+      type: "button",
+      className: `odoo-subnav-btn ${hubTab === "studio" ? "active" : ""}`,
+      onClick: () => setHubTab("studio")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u26A1"),
+    " Automated Action Studio"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `odoo-subnav-btn ${hubTab === "tester" ? "active" : ""}`,
+      onClick: () => setHubTab("tester")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F9EA}"),
+    " Webhook Tester & Simulator"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `odoo-subnav-btn ${hubTab === "audit" ? "active" : ""}`,
+      onClick: () => setHubTab("audit")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"),
+    " Live Odoo Audit Telemetry"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `odoo-subnav-btn ${hubTab === "connectors" ? "active" : ""}`,
+      onClick: () => setHubTab("connectors")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F50C}"),
+    " Multi-Platform Connectors"
+  )), hubTab === "studio" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "minmax(360px, 420px) 1fr", gap: "20px" } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Odoo Automation Configurator")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "1. Target Odoo Business Model"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" } }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `odoo-model-pill ${selectedModel === "account.move" ? "active" : ""}`,
+      onClick: () => setSelectedModel("account.move")
+    },
+    /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F4C4}"),
+    /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", display: "block" } }, "account.move"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Customer Invoices"))
+  ), /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `odoo-model-pill ${selectedModel === "sale.order" ? "active" : ""}`,
+      onClick: () => setSelectedModel("sale.order")
+    },
+    /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F6D2}"),
+    /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", display: "block" } }, "sale.order"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Sales Orders"))
+  ), /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `odoo-model-pill ${selectedModel === "account.payment" ? "active" : ""}`,
+      onClick: () => setSelectedModel("account.payment")
+    },
+    /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F4B3}"),
+    /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", display: "block" } }, "account.payment"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Payment Receipts"))
+  ), /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `odoo-model-pill ${selectedModel === "stock.picking" ? "active" : ""}`,
+      onClick: () => setSelectedModel("stock.picking")
+    },
+    /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F69A}"),
+    /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", display: "block" } }, "stock.picking"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Delivery Orders"))
+  ))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "2. Trigger Event Condition"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: selectedTrigger, onChange: (e) => setSelectedTrigger(e.target.value) }, selectedModel === "account.move" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("option", { value: "posted" }, "On Invoice Posted / Validated (state == 'posted') [Recommended]"), /* @__PURE__ */ React.createElement("option", { value: "paid" }, "On Payment Completed (payment_state in ('paid', 'in_payment'))"), /* @__PURE__ */ React.createElement("option", { value: "create" }, "On Invoice Creation (Draft Created)")), selectedModel === "sale.order" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("option", { value: "posted" }, "On Sales Order Confirmed (state == 'sale') [Recommended]"), /* @__PURE__ */ React.createElement("option", { value: "sent" }, "On Quotation Sent to Customer (state == 'sent')")), selectedModel === "account.payment" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("option", { value: "posted" }, "On Payment Posted (state == 'posted') [Recommended]")), selectedModel === "stock.picking" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("option", { value: "posted" }, "On Delivery Done / Dispatched (state == 'done') [Recommended]")))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "3. WhatsApp Approved Template"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: selectedTemplate, onChange: (e) => setSelectedTemplate(e.target.value) }, templatesList.length > 0 ? templatesList.map((t) => /* @__PURE__ */ React.createElement("option", { key: t.id, value: t.template_name }, t.display_title, " (", t.template_name, " \u2022 ", t.category, ")")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("option", { value: "uniglobal_invoice_notification" }, "Invoice Notification with PDF (uniglobal_invoice_notification)"), /* @__PURE__ */ React.createElement("option", { value: "offer_sandslab" }, "SaNDS Lab Special Offer QR (offer_sandslab)"), /* @__PURE__ */ React.createElement("option", { value: "uniglobal_delivery_dispatch" }, "Order Dispatched Status (uniglobal_delivery_dispatch)")))), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { background: "#F8FAFC", padding: "12px", borderRadius: "8px", border: "1px solid #E2E8F0" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700", marginBottom: "8px" } }, "4. Enterprise Automation Features"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "8px" } }, /* @__PURE__ */ React.createElement("label", { style: { display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "12.5px" } }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "checkbox",
+      checked: includePdf,
+      onChange: (e) => setIncludePdf(e.target.checked)
     }
-  )), /* @__PURE__ */ React.createElement("button", { className: "btn btn-success", style: { width: "100%" }, onClick: runLiveTest, disabled: loading }, loading ? "Executing..." : "\u25B6 Execute API Call"), responseOutput && /* @__PURE__ */ React.createElement("div", { style: { marginTop: "16px" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Response Body (HTTP 200/201)"), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { maxHeight: "350px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, responseOutput)))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { minWidth: 0, margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F50C}"), " Multi-Platform Connector Snippets"), /* @__PURE__ */ React.createElement("button", { className: "btn-copy-code", onClick: () => {
+  ), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("strong", null, "Dynamic PDF Streaming:"), " Auto-generate & attach Odoo QWeb PDF")), /* @__PURE__ */ React.createElement("label", { style: { display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "12.5px" } }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "checkbox",
+      checked: logChatter,
+      onChange: (e) => setLogChatter(e.target.checked)
+    }
+  ), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("strong", null, "Odoo Chatter Feedback:"), " Log WhatsApp delivery status in record chatter")), /* @__PURE__ */ React.createElement("label", { style: { display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "12.5px" } }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "checkbox",
+      checked: phoneFallback,
+      onChange: (e) => setPhoneFallback(e.target.checked)
+    }
+  ), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("strong", null, "Smart Phone Fallback:"), " Check partner mobile first, then landline/phone")))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Integration API Key"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: apiKey, onChange: (e) => setApiKey(e.target.value) }))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `btn ${studioLang === "python" ? "btn-primary" : "btn-secondary"}`,
+      style: { fontSize: "12px", padding: "6px 14px" },
+      onClick: () => setStudioLang("python")
+    },
+    "\u{1F40D} Python Server Action (Odoo 14 - 18)"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `btn ${studioLang === "webhook" ? "btn-primary" : "btn-secondary"}`,
+      style: { fontSize: "12px", padding: "6px 14px" },
+      onClick: () => setStudioLang("webhook")
+    },
+    "\u26A1 Odoo 17/18 Webhook Rule (JSON)"
+  )), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      className: "btn-copy-code",
+      onClick: () => {
+        const codeToCopy = studioLang === "python" ? generateOdooPythonCode() : generateOdoo17WebhookJson();
+        navigator.clipboard.writeText(codeToCopy);
+        showToast("Odoo Automation code copied to clipboard!");
+      }
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"),
+    " Copy Code"
+  )), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { minHeight: "440px", maxHeight: "580px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "code-box-header" }, /* @__PURE__ */ React.createElement("span", null, studioLang === "python" ? "ir.actions.server.py" : "odoo17_webhook_config.json"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", color: "#64748B" } }, studioLang === "python" ? 'Paste directly into Odoo Server Action "Python Code" field' : "Odoo 17 / 18 Automation Rule Webhook")), /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, studioLang === "python" ? generateOdooPythonCode() : generateOdoo17WebhookJson())), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "16px", padding: "14px", background: "#F0F9FF", border: "1px solid #BAE6FD", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px", color: "#0369A1", display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4D8}"), " How to Setup in Odoo in 30 Seconds:"), /* @__PURE__ */ React.createElement("ol", { style: { fontSize: "12px", color: "#0C4A6E", margin: "0 0 0 18px", lineHeight: "1.6" } }, /* @__PURE__ */ React.createElement("li", null, "In Odoo, activate ", /* @__PURE__ */ React.createElement("strong", null, "Developer Mode"), " (Settings \u2192 General Settings \u2192 Activate the developer mode)."), /* @__PURE__ */ React.createElement("li", null, "Navigate to ", /* @__PURE__ */ React.createElement("strong", null, "Settings \u2192 Technical \u2192 Server Actions"), " (or ", /* @__PURE__ */ React.createElement("em", null, "Automation Rules"), " in Odoo 17/18)."), /* @__PURE__ */ React.createElement("li", null, "Create a new action: Set Model to ", /* @__PURE__ */ React.createElement("strong", null, selectedModel), " and Action To Do to ", /* @__PURE__ */ React.createElement("strong", null, "Execute Python Code"), "."), /* @__PURE__ */ React.createElement("li", null, "Paste the copied script into the ", /* @__PURE__ */ React.createElement("strong", null, "Python Code"), " box and click ", /* @__PURE__ */ React.createElement("strong", null, "Save"), "!"), /* @__PURE__ */ React.createElement("li", null, "Whenever a document matches your trigger event, WhatsApp will dispatch automatically with live chatter logging."))))), hubTab === "tester" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "minmax(380px, 460px) 1fr", gap: "20px" } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F9EA}"), " Odoo Inbound Webhook Simulator")), /* @__PURE__ */ React.createElement("div", { style: { marginBottom: "14px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", fontWeight: "700", color: "var(--text-secondary)", display: "block", marginBottom: "6px" } }, "Load Quick Simulation Preset:"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "odoo-preset-btn", onClick: () => applyTesterPreset("invoice") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4C4}"), " Invoice (INV/2026/0142)"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "odoo-preset-btn", onClick: () => applyTesterPreset("order") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6D2}"), " Sales Order (SO-8821)"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "odoo-preset-btn", onClick: () => applyTesterPreset("payment") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Payment (PAY-5510)"))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Endpoint URL"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge cat-utility", style: { padding: "8px 12px", fontSize: "12px" } }, "POST"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: endpoint, readOnly: true }))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "API Key Header (X-API-Key)"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: apiKey, onChange: (e) => setApiKey(e.target.value) })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Odoo Model"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: testModel, onChange: (e) => setTestModel(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "account.move" }, "account.move"), /* @__PURE__ */ React.createElement("option", { value: "sale.order" }, "sale.order"), /* @__PURE__ */ React.createElement("option", { value: "account.payment" }, "account.payment"), /* @__PURE__ */ React.createElement("option", { value: "stock.picking" }, "stock.picking"))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Document Ref"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: testRecordName, onChange: (e) => setTestRecordName(e.target.value) }))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Customer Name"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: testPartnerName, onChange: (e) => setTestPartnerName(e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Recipient Phone"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: testRecipient, onChange: (e) => setTestRecipient(e.target.value) }))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Amount"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: testAmount, onChange: (e) => setTestAmount(e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Currency"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: testCurrency, onChange: (e) => setTestCurrency(e.target.value) }))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "WhatsApp Template"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: testTemplate, onChange: (e) => setTestTemplate(e.target.value) }, templatesList.length > 0 ? templatesList.map((t) => /* @__PURE__ */ React.createElement("option", { key: t.id, value: t.template_name }, t.display_title, " (", t.template_name, ")")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("option", { value: "offer_sandslab" }, "SaNDS Lab Special Offer QR (offer_sandslab)"), /* @__PURE__ */ React.createElement("option", { value: "uniglobal_invoice_notification" }, "Invoice Notification (uniglobal_invoice_notification)")))), /* @__PURE__ */ React.createElement("button", { className: "btn btn-success", style: { width: "100%", padding: "10px" }, onClick: runLiveTest, disabled: loading }, loading ? "Dispatching..." : "\u25B6 Dispatch Simulated Odoo Webhook")), /* @__PURE__ */ React.createElement("div", { className: "card", style: { margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4E1}"), " Gateway Real-Time Response"), lastDispatchedId && /* @__PURE__ */ React.createElement("span", { className: "badge status-sent", style: { fontSize: "11px" } }, "Meta Dispatch Verified")), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { minHeight: "360px", maxHeight: "560px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "code-box-header" }, /* @__PURE__ */ React.createElement("span", null, "HTTP Response Inspector"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "#64748B" } }, "application/json")), /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, responseOutput || '// Click "Dispatch Simulated Odoo Webhook" to execute live Meta Cloud API integration.')), lastDispatchedId && /* @__PURE__ */ React.createElement("div", { style: { marginTop: "14px", padding: "12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#166534", display: "block" } }, "Message Successfully Recorded"), /* @__PURE__ */ React.createElement("code", { style: { fontSize: "11.5px", color: "#047857" } }, lastDispatchedId)), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary",
+      style: { fontSize: "12px" },
+      onClick: () => {
+        const el = document.querySelector('button.nav-item[onClick*="logs"]');
+        if (el) el.click();
+      }
+    },
+    "View in Message Logs \u2192"
+  )))), hubTab === "audit" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Odoo Dispatched Messages Audit"), /* @__PURE__ */ React.createElement("p", { style: { margin: "4px 0 0 0", fontSize: "12px", color: "var(--text-secondary)" } }, "Real-time log of all WhatsApp messages triggered from Odoo ERP Automated Actions and webhooks.")), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary", style: { fontSize: "12px" }, onClick: loadAuditLogs, disabled: loadingAudit }, loadingAudit ? "Refreshing..." : "\u{1F504} Refresh Logs")), /* @__PURE__ */ React.createElement("div", { style: { overflowX: "auto" } }, /* @__PURE__ */ React.createElement("table", { className: "table", style: { width: "100%" } }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "ID"), /* @__PURE__ */ React.createElement("th", null, "Odoo Model"), /* @__PURE__ */ React.createElement("th", null, "Document Ref"), /* @__PURE__ */ React.createElement("th", null, "Recipient Phone"), /* @__PURE__ */ React.createElement("th", null, "Template"), /* @__PURE__ */ React.createElement("th", null, "Status"), /* @__PURE__ */ React.createElement("th", null, "Cost (BHD)"), /* @__PURE__ */ React.createElement("th", null, "Meta Tracking ID"), /* @__PURE__ */ React.createElement("th", null, "Dispatched At"))), /* @__PURE__ */ React.createElement("tbody", null, auditLogs.length > 0 ? auditLogs.map((log) => /* @__PURE__ */ React.createElement("tr", { key: log.id }, /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("strong", null, "#", log.id)), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#E0F2FE", color: "#0369A1" } }, log.odoo_model || "account.move")), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("strong", null, log.odoo_record_name || "INV/2026/0142")), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", null, log.to_phone)), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px" } }, log.template_name || "N/A")), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { className: `badge status-${log.status || "sent"}` }, log.status === "read" ? "READ \u2713\u2713" : log.status === "delivered" ? "DELIVERED \u2713\u2713" : log.status === "sent" ? "SENT \u2713" : log.status.toUpperCase())), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("strong", null, parseFloat(log.client_rate_bhd || 0.0185).toFixed(4))), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", { style: { fontSize: "11px", maxWidth: "140px", display: "inline-block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }, title: log.message_id }, log.message_id)), /* @__PURE__ */ React.createElement("td", { style: { fontSize: "11.5px", color: "var(--text-muted)" } }, log.sent_at || log.created_at))) : /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { colSpan: "9", style: { textAlign: "center", padding: "30px", color: "var(--text-muted)" } }, loadingAudit ? "Loading Odoo message telemetry..." : "No Odoo-triggered messages found yet. Use the Webhook Simulator to dispatch test notifications.")))))), hubTab === "connectors" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F50C}"), " Multi-Platform Connector Snippets"), /* @__PURE__ */ React.createElement("button", { className: "btn-copy-code", onClick: () => {
     navigator.clipboard.writeText(currentSnippet.code);
     showToast(`${currentSnippet.filename} copied to clipboard!`);
   } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Copy Code")), /* @__PURE__ */ React.createElement("div", { className: "code-tabs-header" }, /* @__PURE__ */ React.createElement(
@@ -2616,7 +2835,7 @@ async function sendWhatsAppInvoice({ toPhone, customerName, invoiceNumber, amoun
     },
     /* @__PURE__ */ React.createElement("span", null, "\u{1F7E8}"),
     " Node.js"
-  )), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { minHeight: "380px", maxHeight: "560px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "code-box-header" }, /* @__PURE__ */ React.createElement("span", null, currentSnippet.filename), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "#64748B" } }, currentSnippet.title)), /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, currentSnippet.code)))));
+  )), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { minHeight: "380px", maxHeight: "560px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "code-box-header" }, /* @__PURE__ */ React.createElement("span", null, currentSnippet.filename), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "#64748B" } }, currentSnippet.title)), /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, currentSnippet.code))));
 }
 function ApiKeysView({ showToast }) {
   const [keys, setKeys] = useState([]);
