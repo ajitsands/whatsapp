@@ -4054,10 +4054,315 @@ function TemplatesView({ showToast }) {
 }
 
 // -----------------------------------------------------------------------------
+// ODOO SETUP PROCEDURE MODAL COMPONENT (v2.3.0)
+// -----------------------------------------------------------------------------
+function OdooGuideModal({ onClose, showToast, apiKey }) {
+  const [guideTab, setGuideTab] = useState('overview'); // 'overview', 'invoice', 'orders', 'webhooks'
+
+  return (
+    <div className="modal-backdrop" onClick={onClose} style={{ zIndex: 1100 }}>
+      <div
+        className="modal-container"
+        style={{ maxWidth: '960px', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="modal-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '24px' }}>📖</span>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '16px' }}>Odoo ERP & WhatsApp Integration Setup Guide</h3>
+              <p style={{ margin: '2px 0 0 0', fontSize: '11.5px', color: 'rgba(255,255,255,0.85)' }}>
+                Step-by-step procedure for Odoo 14, 15, 16, 17 & 18 • Automated Actions & Webhooks
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <a
+              href="./ODOO_INTEGRATION_GUIDE.md"
+              download="ODOO_INTEGRATION_GUIDE.md"
+              className="btn btn-secondary"
+              style={{ fontSize: '11.5px', padding: '4px 10px', textDecoration: 'none', background: 'rgba(255,255,255,0.2)', color: '#FFFFFF', border: 'none' }}
+              title="Download Full Markdown Documentation"
+            >
+              <span>⬇️</span> Download .md
+            </a>
+            <button className="close-btn" onClick={onClose}>✕</button>
+          </div>
+        </div>
+
+        {/* Modal Subtabs */}
+        <div style={{ background: '#F8FAFC', padding: '10px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className={`btn ${guideTab === 'overview' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ fontSize: '11.5px', padding: '5px 12px' }}
+            onClick={() => setGuideTab('overview')}
+          >
+            1. Overview & Credentials
+          </button>
+          <button
+            type="button"
+            className={`btn ${guideTab === 'invoice' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ fontSize: '11.5px', padding: '5px 12px' }}
+            onClick={() => setGuideTab('invoice')}
+          >
+            2. Customer Invoices (account.move)
+          </button>
+          <button
+            type="button"
+            className={`btn ${guideTab === 'orders' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ fontSize: '11.5px', padding: '5px 12px' }}
+            onClick={() => setGuideTab('orders')}
+          >
+            3. Orders & Payments (sale.order)
+          </button>
+          <button
+            type="button"
+            className={`btn ${guideTab === 'webhooks' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ fontSize: '11.5px', padding: '5px 12px' }}
+            onClick={() => setGuideTab('webhooks')}
+          >
+            4. Webhooks & Chatter Callbacks
+          </button>
+        </div>
+
+        <div className="modal-body" style={{ padding: '24px', overflowY: 'auto' }}>
+          {guideTab === 'overview' && (
+            <div>
+              <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '14px', borderRadius: '8px', marginBottom: '16px' }}>
+                <strong style={{ color: '#166534', fontSize: '13px' }}>⚡ What this integration does automatically:</strong>
+                <p style={{ color: '#14532D', fontSize: '12px', margin: '4px 0 0 0', lineHeight: '1.5' }}>
+                  When an accountant validates an invoice or sales confirmation in Odoo, Odoo renders the official QWeb PDF in memory, sends it to the SaNDS Lab Gateway, and delivers it to the customer on WhatsApp with authentic delivery receipts posted back to Odoo Chatter.
+                </p>
+              </div>
+
+              <h4 style={{ fontSize: '13px', marginBottom: '10px' }}>🔑 Integration Credentials</h4>
+              <table className="table" style={{ width: '100%', marginBottom: '20px' }}>
+                <tbody>
+                  <tr>
+                    <td style={{ width: '220px', fontWeight: '700' }}>Platform Gateway URL</td>
+                    <td><code>https://whatsapp.sandslab.com</code></td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: '700' }}>Inbound Webhook Endpoint</td>
+                    <td><code>https://whatsapp.sandslab.com/api/odoo_webhook.php</code></td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: '700' }}>Authentication Header</td>
+                    <td><code>X-API-Key: {apiKey}</code></td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: '700' }}>Supported Odoo Versions</td>
+                    <td>Odoo 14, 15, 16, 17, 18 (Community, Enterprise, Odoo.sh, SaaS)</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h4 style={{ fontSize: '13px', marginBottom: '10px' }}>🛠️ Step 1: Activate Developer Mode in Odoo</h4>
+              <ol style={{ fontSize: '12.5px', lineHeight: '1.7', margin: '0 0 0 20px', color: 'var(--text-secondary)' }}>
+                <li>Log in to your Odoo ERP instance as an Administrator.</li>
+                <li>Go to <strong>Settings</strong> application.</li>
+                <li>Scroll to the bottom of the General Settings page.</li>
+                <li>Click <strong>Activate the developer mode</strong> (a bug icon 🪲 will appear in the top header).</li>
+              </ol>
+            </div>
+          )}
+
+          {guideTab === 'invoice' && (
+            <div>
+              <h4 style={{ fontSize: '13px', marginBottom: '6px' }}>Step 2: Customer Invoices Automated Action (account.move)</h4>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                Navigate to <strong>Settings → Technical → Server Actions</strong> → click <strong>New</strong>:
+              </p>
+              <ul style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '0 0 14px 20px', lineHeight: '1.6' }}>
+                <li><strong>Action Name:</strong> <code>Send WhatsApp Tax Invoice with PDF</code></li>
+                <li><strong>Model:</strong> <code>Journal Entry</code> (<code>account.move</code>)</li>
+                <li><strong>Action To Do:</strong> <code>Execute Python Code</code></li>
+              </ul>
+
+              <div className="card-header" style={{ padding: '8px 12px', background: '#0F172A', color: '#FFFFFF', borderRadius: '8px 8px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '11.5px', color: '#94A3B8' }}>ir.actions.server.py (Zero Dependencies)</span>
+                <button
+                  type="button"
+                  className="btn-copy-code"
+                  onClick={() => {
+                    const code = `import json\nimport urllib.request\nimport base64\n\nAPI_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"\nAPI_SECRET_KEY  = "${apiKey}"\n\nif record.move_type in ('out_invoice', 'out_refund'):\n    partner = record.partner_id\n    dest_phone = (partner.mobile or partner.phone or "").strip()\n    if dest_phone:\n        pdf_base64 = None\n        try:\n            report_ref = record.env.ref('account.account_invoices', raise_if_not_found=False)\n            if report_ref:\n                pdf_binary, _ = report_ref._render_qweb_pdf([record.id])\n                pdf_base64 = base64.b64encode(pdf_binary).decode('utf-8')\n        except Exception:\n            pdf_base64 = None\n\n        payload = {\n            "model": "account.move",\n            "record_id": record.id,\n            "record_name": record.name,\n            "partner_name": partner.name,\n            "partner_phone": dest_phone,\n            "amount": record.amount_total,\n            "currency": record.currency_id.name if record.currency_id else "BHD",\n            "date": str(record.invoice_date or record.create_date.date()),\n            "template_name": "offer_sandslab",\n            "pdf_base64": pdf_base64,\n            "callback_url": "https://whatsapp.sandslab.com/api/odoo_webhook.php?action=simulate_callback"\n        }\n\n        req = urllib.request.Request(API_GATEWAY_URL, data=json.dumps(payload).encode('utf-8'), headers={"Content-Type": "application/json", "X-API-Key": API_SECRET_KEY}, method="POST")\n        try:\n            with urllib.request.urlopen(req, timeout=15) as resp:\n                res_json = json.loads(resp.read().decode('utf-8'))\n                if res_json.get('success'):\n                    record.message_post(body=f"✅ <b>WhatsApp Sent</b>: <code>{res_json.get('message_id')}</code>")\n        except Exception as ex:\n            record.message_post(body=f"❌ <b>WhatsApp Error</b>: {str(ex)}")`;
+                    navigator.clipboard.writeText(code);
+                    showToast('Invoice Python Server Action copied!');
+                  }}
+                >
+                  <span>📋</span> Copy Python Code
+                </button>
+              </div>
+              <div className="code-box" style={{ borderRadius: '0 0 8px 8px', maxHeight: '300px', overflowY: 'auto' }}>
+                <pre style={{ margin: 0, fontSize: '11px', whiteSpace: 'pre-wrap' }}>
+{`import json
+import urllib.request
+import base64
+
+API_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
+API_SECRET_KEY  = "${apiKey}"
+
+if record.move_type in ('out_invoice', 'out_refund'):
+    partner = record.partner_id
+    dest_phone = (partner.mobile or partner.phone or "").strip()
+    if dest_phone:
+        pdf_base64 = None
+        try:
+            report_ref = record.env.ref('account.account_invoices', raise_if_not_found=False)
+            if report_ref:
+                pdf_binary, _ = report_ref._render_qweb_pdf([record.id])
+                pdf_base64 = base64.b64encode(pdf_binary).decode('utf-8')
+        except Exception:
+            pdf_base64 = None
+
+        payload = {
+            "model": "account.move",
+            "record_id": record.id,
+            "record_name": record.name,
+            "partner_name": partner.name,
+            "partner_phone": dest_phone,
+            "amount": record.amount_total,
+            "currency": record.currency_id.name if record.currency_id else "BHD",
+            "date": str(record.invoice_date or record.create_date.date()),
+            "template_name": "offer_sandslab",
+            "pdf_base64": pdf_base64,
+            "callback_url": "https://whatsapp.sandslab.com/api/odoo_webhook.php?action=simulate_callback"
+        }
+
+        req = urllib.request.Request(API_GATEWAY_URL, data=json.dumps(payload).encode('utf-8'), headers={"Content-Type": "application/json", "X-API-Key": API_SECRET_KEY}, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                res_json = json.loads(resp.read().decode('utf-8'))
+                if res_json.get('success'):
+                    record.message_post(body=f"✅ <b>WhatsApp Sent</b>: <code>{res_json.get('message_id')}</code>")
+        except Exception as ex:
+            record.message_post(body=f"❌ <b>WhatsApp Error</b>: {str(ex)}")`}
+                </pre>
+              </div>
+
+              <div style={{ marginTop: '14px', padding: '10px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '6px' }}>
+                <strong style={{ fontSize: '12px' }}>🔗 Step 3: Trigger Automation Rule</strong>
+                <p style={{ fontSize: '11.5px', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                  Go to <strong>Settings → Technical → Automation Rules</strong> → Create new rule on <code>Journal Entry</code> triggered <strong>On Save</strong> where <code>state = 'posted'</code> and link to this action!
+                </p>
+              </div>
+            </div>
+          )}
+
+          {guideTab === 'orders' && (
+            <div>
+              <h4 style={{ fontSize: '13px', marginBottom: '8px' }}>Sales Quotations & Order Confirmations (sale.order)</h4>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                Trigger on: <code>state == 'sale'</code> (Confirmed Order) or <code>state == 'sent'</code> (Quotation Sent).
+              </p>
+              <div className="card-header" style={{ padding: '8px 12px', background: '#0F172A', color: '#FFFFFF', borderRadius: '8px 8px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '11.5px', color: '#94A3B8' }}>sale_order_automation.py</span>
+                <button
+                  type="button"
+                  className="btn-copy-code"
+                  onClick={() => {
+                    const code = `import json\nimport urllib.request\nimport base64\n\nAPI_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"\nAPI_SECRET_KEY  = "${apiKey}"\n\npartner = record.partner_id\ndest_phone = (partner.mobile or partner.phone or "").strip()\n\nif dest_phone:\n    pdf_base64 = None\n    try:\n        report_ref = record.env.ref('sale.action_report_saleorder', raise_if_not_found=False)\n        if report_ref:\n            pdf_binary, _ = report_ref._render_qweb_pdf([record.id])\n            pdf_base64 = base64.b64encode(pdf_binary).decode('utf-8')\n    except Exception:\n        pdf_base64 = None\n\n    payload = {\n        "model": "sale.order",\n        "record_id": record.id,\n        "record_name": record.name,\n        "partner_name": partner.name,\n        "partner_phone": dest_phone,\n        "amount": record.amount_total,\n        "currency": record.currency_id.name if record.currency_id else "BHD",\n        "date": str(record.date_order.date()),\n        "template_name": "uniglobal_delivery_dispatch",\n        "pdf_base64": pdf_base64\n    }\n\n    req = urllib.request.Request(API_GATEWAY_URL, data=json.dumps(payload).encode('utf-8'), headers={"Content-Type": "application/json", "X-API-Key": API_SECRET_KEY}, method="POST")\n    try:\n        with urllib.request.urlopen(req, timeout=15) as resp:\n            res = json.loads(resp.read().decode('utf-8'))\n            if res.get('success'):\n                record.message_post(body=f"✅ WhatsApp Order Confirmation: {res.get('message_id')}")\n    except Exception as ex:\n        record.message_post(body=f"❌ WhatsApp Order Error: {str(ex)}")`;
+                    navigator.clipboard.writeText(code);
+                    showToast('Sales Order Python script copied!');
+                  }}
+                >
+                  <span>📋</span> Copy Order Script
+                </button>
+              </div>
+              <div className="code-box" style={{ borderRadius: '0 0 8px 8px', maxHeight: '280px', overflowY: 'auto' }}>
+                <pre style={{ margin: 0, fontSize: '11px', whiteSpace: 'pre-wrap' }}>
+{`import json
+import urllib.request
+import base64
+
+API_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
+API_SECRET_KEY  = "${apiKey}"
+
+partner = record.partner_id
+dest_phone = (partner.mobile or partner.phone or "").strip()
+
+if dest_phone:
+    pdf_base64 = None
+    try:
+        report_ref = record.env.ref('sale.action_report_saleorder', raise_if_not_found=False)
+        if report_ref:
+            pdf_binary, _ = report_ref._render_qweb_pdf([record.id])
+            pdf_base64 = base64.b64encode(pdf_binary).decode('utf-8')
+    except Exception:
+        pdf_base64 = None
+
+    payload = {
+        "model": "sale.order",
+        "record_id": record.id,
+        "record_name": record.name,
+        "partner_name": partner.name,
+        "partner_phone": dest_phone,
+        "amount": record.amount_total,
+        "currency": record.currency_id.name if record.currency_id else "BHD",
+        "date": str(record.date_order.date()),
+        "template_name": "uniglobal_delivery_dispatch",
+        "pdf_base64": pdf_base64
+    }
+
+    req = urllib.request.Request(API_GATEWAY_URL, data=json.dumps(payload).encode('utf-8'), headers={"Content-Type": "application/json", "X-API-Key": API_SECRET_KEY}, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            res = json.loads(resp.read().decode('utf-8'))
+            if res.get('success'):
+                record.message_post(body=f"✅ WhatsApp Order Confirmation: {res.get('message_id')}")
+    except Exception as ex:
+        record.message_post(body=f"❌ WhatsApp Order Error: {str(ex)}")`}
+                </pre>
+              </div>
+            </div>
+          )}
+
+          {guideTab === 'webhooks' && (
+            <div>
+              <h4 style={{ fontSize: '13px', marginBottom: '8px' }}>Odoo 17 & 18 Native Webhooks & Bi-Directional Chatter</h4>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                If using Odoo 17 or 18, you can configure no-code webhooks directly under <strong>Automation Rules → Send Webhook Notification</strong>:
+              </p>
+              <table className="table" style={{ width: '100%', marginBottom: '16px' }}>
+                <tbody>
+                  <tr>
+                    <td style={{ width: '180px', fontWeight: '700' }}>Target URL</td>
+                    <td><code>https://whatsapp.sandslab.com/api/odoo_webhook.php</code></td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: '700' }}>Headers</td>
+                    <td><code>X-API-Key: {apiKey}</code><br/><code>Content-Type: application/json</code></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div style={{ background: '#F0F9FF', border: '1px solid #BAE6FD', padding: '14px', borderRadius: '8px' }}>
+                <strong style={{ color: '#0369A1', fontSize: '13px' }}>💬 Bi-Directional Delivery Tracking in Odoo:</strong>
+                <p style={{ color: '#0C4A6E', fontSize: '12px', margin: '4px 0 0 0', lineHeight: '1.5' }}>
+                  When the customer receives or opens the WhatsApp message on their handset, Meta webhooks callback to our platform, which in turn calls your Odoo instance, updating the document chatter with timestamps (e.g. <code>✓✓ WhatsApp Read by Customer</code>).
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="modal-footer" style={{ padding: '12px 24px' }}>
+          <button type="button" className="btn btn-secondary" onClick={onClose} style={{ fontSize: '12.5px' }}>
+            Close Guide
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
 // 6. ODOO API HUB & LIVE DEVELOPER CONSOLE
 // -----------------------------------------------------------------------------
 function OdooApiHubView({ showToast, globalSettings }) {
   const [hubTab, setHubTab] = useState('studio'); // 'studio', 'tester', 'audit', 'connectors'
+  const [showGuideModal, setShowGuideModal] = useState(false);
   
   // Studio State
   const [selectedModel, setSelectedModel] = useState('account.move');
@@ -4454,6 +4759,14 @@ async function dispatchOdooInvoice({ phone, customerName, invoiceNumber, amount 
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
+            onClick={() => setShowGuideModal(true)}
+          >
+            <span>📖</span> Step-by-Step Setup Guide
+          </button>
           <span className="odoo-code-header-badge">
             <span>●</span> Odoo Gateway Active (v2.3.0)
           </span>
@@ -4976,6 +5289,14 @@ async function dispatchOdooInvoice({ phone, customerName, invoiceNumber, amount 
             <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{currentSnippet.code}</pre>
           </div>
         </div>
+      )}
+      {/* MODAL: STEP-BY-STEP ODOO SETUP GUIDE */}
+      {showGuideModal && (
+        <OdooGuideModal
+          onClose={() => setShowGuideModal(false)}
+          showToast={showToast}
+          apiKey={apiKey}
+        />
       )}
     </div>
   );

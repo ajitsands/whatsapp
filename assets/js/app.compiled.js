@@ -2304,8 +2304,259 @@ function TemplatesView({ showToast }) {
     }
   ));
 }
+function OdooGuideModal({ onClose, showToast, apiKey }) {
+  const [guideTab, setGuideTab] = useState("overview");
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-backdrop", onClick: onClose, style: { zIndex: 1100 } }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: "modal-container",
+      style: { maxWidth: "960px", maxHeight: "90vh", display: "flex", flexDirection: "column" },
+      onClick: (e) => e.stopPropagation()
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F4D6}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, fontSize: "16px" } }, "Odoo ERP & WhatsApp Integration Setup Guide"), /* @__PURE__ */ React.createElement("p", { style: { margin: "2px 0 0 0", fontSize: "11.5px", color: "rgba(255,255,255,0.85)" } }, "Step-by-step procedure for Odoo 14, 15, 16, 17 & 18 \u2022 Automated Actions & Webhooks"))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement(
+      "a",
+      {
+        href: "./ODOO_INTEGRATION_GUIDE.md",
+        download: "ODOO_INTEGRATION_GUIDE.md",
+        className: "btn btn-secondary",
+        style: { fontSize: "11.5px", padding: "4px 10px", textDecoration: "none", background: "rgba(255,255,255,0.2)", color: "#FFFFFF", border: "none" },
+        title: "Download Full Markdown Documentation"
+      },
+      /* @__PURE__ */ React.createElement("span", null, "\u2B07\uFE0F"),
+      " Download .md"
+    ), /* @__PURE__ */ React.createElement("button", { className: "close-btn", onClick: onClose }, "\u2715"))),
+    /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", padding: "10px 24px", borderBottom: "1px solid #E2E8F0", display: "flex", gap: "8px", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: `btn ${guideTab === "overview" ? "btn-primary" : "btn-secondary"}`,
+        style: { fontSize: "11.5px", padding: "5px 12px" },
+        onClick: () => setGuideTab("overview")
+      },
+      "1. Overview & Credentials"
+    ), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: `btn ${guideTab === "invoice" ? "btn-primary" : "btn-secondary"}`,
+        style: { fontSize: "11.5px", padding: "5px 12px" },
+        onClick: () => setGuideTab("invoice")
+      },
+      "2. Customer Invoices (account.move)"
+    ), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: `btn ${guideTab === "orders" ? "btn-primary" : "btn-secondary"}`,
+        style: { fontSize: "11.5px", padding: "5px 12px" },
+        onClick: () => setGuideTab("orders")
+      },
+      "3. Orders & Payments (sale.order)"
+    ), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: `btn ${guideTab === "webhooks" ? "btn-primary" : "btn-secondary"}`,
+        style: { fontSize: "11.5px", padding: "5px 12px" },
+        onClick: () => setGuideTab("webhooks")
+      },
+      "4. Webhooks & Chatter Callbacks"
+    )),
+    /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "24px", overflowY: "auto" } }, guideTab === "overview" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { background: "#F0FDF4", border: "1px solid #BBF7D0", padding: "14px", borderRadius: "8px", marginBottom: "16px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#166534", fontSize: "13px" } }, "\u26A1 What this integration does automatically:"), /* @__PURE__ */ React.createElement("p", { style: { color: "#14532D", fontSize: "12px", margin: "4px 0 0 0", lineHeight: "1.5" } }, "When an accountant validates an invoice or sales confirmation in Odoo, Odoo renders the official QWeb PDF in memory, sends it to the SaNDS Lab Gateway, and delivers it to the customer on WhatsApp with authentic delivery receipts posted back to Odoo Chatter.")), /* @__PURE__ */ React.createElement("h4", { style: { fontSize: "13px", marginBottom: "10px" } }, "\u{1F511} Integration Credentials"), /* @__PURE__ */ React.createElement("table", { className: "table", style: { width: "100%", marginBottom: "20px" } }, /* @__PURE__ */ React.createElement("tbody", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { style: { width: "220px", fontWeight: "700" } }, "Platform Gateway URL"), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", null, "https://whatsapp.sandslab.com"))), /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { style: { fontWeight: "700" } }, "Inbound Webhook Endpoint"), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", null, "https://whatsapp.sandslab.com/api/odoo_webhook.php"))), /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { style: { fontWeight: "700" } }, "Authentication Header"), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", null, "X-API-Key: ", apiKey))), /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { style: { fontWeight: "700" } }, "Supported Odoo Versions"), /* @__PURE__ */ React.createElement("td", null, "Odoo 14, 15, 16, 17, 18 (Community, Enterprise, Odoo.sh, SaaS)")))), /* @__PURE__ */ React.createElement("h4", { style: { fontSize: "13px", marginBottom: "10px" } }, "\u{1F6E0}\uFE0F Step 1: Activate Developer Mode in Odoo"), /* @__PURE__ */ React.createElement("ol", { style: { fontSize: "12.5px", lineHeight: "1.7", margin: "0 0 0 20px", color: "var(--text-secondary)" } }, /* @__PURE__ */ React.createElement("li", null, "Log in to your Odoo ERP instance as an Administrator."), /* @__PURE__ */ React.createElement("li", null, "Go to ", /* @__PURE__ */ React.createElement("strong", null, "Settings"), " application."), /* @__PURE__ */ React.createElement("li", null, "Scroll to the bottom of the General Settings page."), /* @__PURE__ */ React.createElement("li", null, "Click ", /* @__PURE__ */ React.createElement("strong", null, "Activate the developer mode"), " (a bug icon \u{1FAB2} will appear in the top header)."))), guideTab === "invoice" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: "13px", marginBottom: "6px" } }, "Step 2: Customer Invoices Automated Action (account.move)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "Navigate to ", /* @__PURE__ */ React.createElement("strong", null, "Settings \u2192 Technical \u2192 Server Actions"), " \u2192 click ", /* @__PURE__ */ React.createElement("strong", null, "New"), ":"), /* @__PURE__ */ React.createElement("ul", { style: { fontSize: "12px", color: "var(--text-secondary)", margin: "0 0 14px 20px", lineHeight: "1.6" } }, /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("strong", null, "Action Name:"), " ", /* @__PURE__ */ React.createElement("code", null, "Send WhatsApp Tax Invoice with PDF")), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("strong", null, "Model:"), " ", /* @__PURE__ */ React.createElement("code", null, "Journal Entry"), " (", /* @__PURE__ */ React.createElement("code", null, "account.move"), ")"), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("strong", null, "Action To Do:"), " ", /* @__PURE__ */ React.createElement("code", null, "Execute Python Code"))), /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { padding: "8px 12px", background: "#0F172A", color: "#FFFFFF", borderRadius: "8px 8px 0 0", display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "#94A3B8" } }, "ir.actions.server.py (Zero Dependencies)"), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: "btn-copy-code",
+        onClick: () => {
+          const code = `import json
+import urllib.request
+import base64
+
+API_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
+API_SECRET_KEY  = "${apiKey}"
+
+if record.move_type in ('out_invoice', 'out_refund'):
+    partner = record.partner_id
+    dest_phone = (partner.mobile or partner.phone or "").strip()
+    if dest_phone:
+        pdf_base64 = None
+        try:
+            report_ref = record.env.ref('account.account_invoices', raise_if_not_found=False)
+            if report_ref:
+                pdf_binary, _ = report_ref._render_qweb_pdf([record.id])
+                pdf_base64 = base64.b64encode(pdf_binary).decode('utf-8')
+        except Exception:
+            pdf_base64 = None
+
+        payload = {
+            "model": "account.move",
+            "record_id": record.id,
+            "record_name": record.name,
+            "partner_name": partner.name,
+            "partner_phone": dest_phone,
+            "amount": record.amount_total,
+            "currency": record.currency_id.name if record.currency_id else "BHD",
+            "date": str(record.invoice_date or record.create_date.date()),
+            "template_name": "offer_sandslab",
+            "pdf_base64": pdf_base64,
+            "callback_url": "https://whatsapp.sandslab.com/api/odoo_webhook.php?action=simulate_callback"
+        }
+
+        req = urllib.request.Request(API_GATEWAY_URL, data=json.dumps(payload).encode('utf-8'), headers={"Content-Type": "application/json", "X-API-Key": API_SECRET_KEY}, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                res_json = json.loads(resp.read().decode('utf-8'))
+                if res_json.get('success'):
+                    record.message_post(body=f"\u2705 <b>WhatsApp Sent</b>: <code>{res_json.get('message_id')}</code>")
+        except Exception as ex:
+            record.message_post(body=f"\u274C <b>WhatsApp Error</b>: {str(ex)}")`;
+          navigator.clipboard.writeText(code);
+          showToast("Invoice Python Server Action copied!");
+        }
+      },
+      /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"),
+      " Copy Python Code"
+    )), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { borderRadius: "0 0 8px 8px", maxHeight: "300px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, fontSize: "11px", whiteSpace: "pre-wrap" } }, `import json
+import urllib.request
+import base64
+
+API_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
+API_SECRET_KEY  = "${apiKey}"
+
+if record.move_type in ('out_invoice', 'out_refund'):
+    partner = record.partner_id
+    dest_phone = (partner.mobile or partner.phone or "").strip()
+    if dest_phone:
+        pdf_base64 = None
+        try:
+            report_ref = record.env.ref('account.account_invoices', raise_if_not_found=False)
+            if report_ref:
+                pdf_binary, _ = report_ref._render_qweb_pdf([record.id])
+                pdf_base64 = base64.b64encode(pdf_binary).decode('utf-8')
+        except Exception:
+            pdf_base64 = None
+
+        payload = {
+            "model": "account.move",
+            "record_id": record.id,
+            "record_name": record.name,
+            "partner_name": partner.name,
+            "partner_phone": dest_phone,
+            "amount": record.amount_total,
+            "currency": record.currency_id.name if record.currency_id else "BHD",
+            "date": str(record.invoice_date or record.create_date.date()),
+            "template_name": "offer_sandslab",
+            "pdf_base64": pdf_base64,
+            "callback_url": "https://whatsapp.sandslab.com/api/odoo_webhook.php?action=simulate_callback"
+        }
+
+        req = urllib.request.Request(API_GATEWAY_URL, data=json.dumps(payload).encode('utf-8'), headers={"Content-Type": "application/json", "X-API-Key": API_SECRET_KEY}, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                res_json = json.loads(resp.read().decode('utf-8'))
+                if res_json.get('success'):
+                    record.message_post(body=f"\u2705 <b>WhatsApp Sent</b>: <code>{res_json.get('message_id')}</code>")
+        except Exception as ex:
+            record.message_post(body=f"\u274C <b>WhatsApp Error</b>: {str(ex)}")`)), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "14px", padding: "10px", background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "6px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12px" } }, "\u{1F517} Step 3: Trigger Automation Rule"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "var(--text-secondary)", margin: "4px 0 0 0" } }, "Go to ", /* @__PURE__ */ React.createElement("strong", null, "Settings \u2192 Technical \u2192 Automation Rules"), " \u2192 Create new rule on ", /* @__PURE__ */ React.createElement("code", null, "Journal Entry"), " triggered ", /* @__PURE__ */ React.createElement("strong", null, "On Save"), " where ", /* @__PURE__ */ React.createElement("code", null, "state = 'posted'"), " and link to this action!"))), guideTab === "orders" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: "13px", marginBottom: "8px" } }, "Sales Quotations & Order Confirmations (sale.order)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "Trigger on: ", /* @__PURE__ */ React.createElement("code", null, "state == 'sale'"), " (Confirmed Order) or ", /* @__PURE__ */ React.createElement("code", null, "state == 'sent'"), " (Quotation Sent)."), /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { padding: "8px 12px", background: "#0F172A", color: "#FFFFFF", borderRadius: "8px 8px 0 0", display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "#94A3B8" } }, "sale_order_automation.py"), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: "btn-copy-code",
+        onClick: () => {
+          const code = `import json
+import urllib.request
+import base64
+
+API_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
+API_SECRET_KEY  = "${apiKey}"
+
+partner = record.partner_id
+dest_phone = (partner.mobile or partner.phone or "").strip()
+
+if dest_phone:
+    pdf_base64 = None
+    try:
+        report_ref = record.env.ref('sale.action_report_saleorder', raise_if_not_found=False)
+        if report_ref:
+            pdf_binary, _ = report_ref._render_qweb_pdf([record.id])
+            pdf_base64 = base64.b64encode(pdf_binary).decode('utf-8')
+    except Exception:
+        pdf_base64 = None
+
+    payload = {
+        "model": "sale.order",
+        "record_id": record.id,
+        "record_name": record.name,
+        "partner_name": partner.name,
+        "partner_phone": dest_phone,
+        "amount": record.amount_total,
+        "currency": record.currency_id.name if record.currency_id else "BHD",
+        "date": str(record.date_order.date()),
+        "template_name": "uniglobal_delivery_dispatch",
+        "pdf_base64": pdf_base64
+    }
+
+    req = urllib.request.Request(API_GATEWAY_URL, data=json.dumps(payload).encode('utf-8'), headers={"Content-Type": "application/json", "X-API-Key": API_SECRET_KEY}, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            res = json.loads(resp.read().decode('utf-8'))
+            if res.get('success'):
+                record.message_post(body=f"\u2705 WhatsApp Order Confirmation: {res.get('message_id')}")
+    except Exception as ex:
+        record.message_post(body=f"\u274C WhatsApp Order Error: {str(ex)}")`;
+          navigator.clipboard.writeText(code);
+          showToast("Sales Order Python script copied!");
+        }
+      },
+      /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"),
+      " Copy Order Script"
+    )), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { borderRadius: "0 0 8px 8px", maxHeight: "280px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, fontSize: "11px", whiteSpace: "pre-wrap" } }, `import json
+import urllib.request
+import base64
+
+API_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
+API_SECRET_KEY  = "${apiKey}"
+
+partner = record.partner_id
+dest_phone = (partner.mobile or partner.phone or "").strip()
+
+if dest_phone:
+    pdf_base64 = None
+    try:
+        report_ref = record.env.ref('sale.action_report_saleorder', raise_if_not_found=False)
+        if report_ref:
+            pdf_binary, _ = report_ref._render_qweb_pdf([record.id])
+            pdf_base64 = base64.b64encode(pdf_binary).decode('utf-8')
+    except Exception:
+        pdf_base64 = None
+
+    payload = {
+        "model": "sale.order",
+        "record_id": record.id,
+        "record_name": record.name,
+        "partner_name": partner.name,
+        "partner_phone": dest_phone,
+        "amount": record.amount_total,
+        "currency": record.currency_id.name if record.currency_id else "BHD",
+        "date": str(record.date_order.date()),
+        "template_name": "uniglobal_delivery_dispatch",
+        "pdf_base64": pdf_base64
+    }
+
+    req = urllib.request.Request(API_GATEWAY_URL, data=json.dumps(payload).encode('utf-8'), headers={"Content-Type": "application/json", "X-API-Key": API_SECRET_KEY}, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            res = json.loads(resp.read().decode('utf-8'))
+            if res.get('success'):
+                record.message_post(body=f"\u2705 WhatsApp Order Confirmation: {res.get('message_id')}")
+    except Exception as ex:
+        record.message_post(body=f"\u274C WhatsApp Order Error: {str(ex)}")`))), guideTab === "webhooks" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: "13px", marginBottom: "8px" } }, "Odoo 17 & 18 Native Webhooks & Bi-Directional Chatter"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "If using Odoo 17 or 18, you can configure no-code webhooks directly under ", /* @__PURE__ */ React.createElement("strong", null, "Automation Rules \u2192 Send Webhook Notification"), ":"), /* @__PURE__ */ React.createElement("table", { className: "table", style: { width: "100%", marginBottom: "16px" } }, /* @__PURE__ */ React.createElement("tbody", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { style: { width: "180px", fontWeight: "700" } }, "Target URL"), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", null, "https://whatsapp.sandslab.com/api/odoo_webhook.php"))), /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { style: { fontWeight: "700" } }, "Headers"), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", null, "X-API-Key: ", apiKey), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("code", null, "Content-Type: application/json"))))), /* @__PURE__ */ React.createElement("div", { style: { background: "#F0F9FF", border: "1px solid #BAE6FD", padding: "14px", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#0369A1", fontSize: "13px" } }, "\u{1F4AC} Bi-Directional Delivery Tracking in Odoo:"), /* @__PURE__ */ React.createElement("p", { style: { color: "#0C4A6E", fontSize: "12px", margin: "4px 0 0 0", lineHeight: "1.5" } }, "When the customer receives or opens the WhatsApp message on their handset, Meta webhooks callback to our platform, which in turn calls your Odoo instance, updating the document chatter with timestamps (e.g. ", /* @__PURE__ */ React.createElement("code", null, "\u2713\u2713 WhatsApp Read by Customer"), ").")))),
+    /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "12px 24px" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose, style: { fontSize: "12.5px" } }, "Close Guide"))
+  ));
+}
 function OdooApiHubView({ showToast, globalSettings }) {
   const [hubTab, setHubTab] = useState("studio");
+  const [showGuideModal, setShowGuideModal] = useState(false);
   const [selectedModel, setSelectedModel] = useState("account.move");
   const [selectedTrigger, setSelectedTrigger] = useState("posted");
   const [selectedTemplate, setSelectedTemplate] = useState("uniglobal_invoice_notification");
@@ -2656,7 +2907,17 @@ async function dispatchOdooInvoice({ phone, customerName, invoiceNumber, amount 
     }
   };
   const currentSnippet = snippets[activeSnippetLang] || snippets.python;
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo ERP Automation & Developer Hub"), /* @__PURE__ */ React.createElement("p", null, "Enterprise Odoo Automated Action Studio, inbound webhook controllers, dynamic PDF streaming, and live bi-directional delivery telemetry.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { className: "odoo-code-header-badge" }, /* @__PURE__ */ React.createElement("span", null, "\u25CF"), " Odoo Gateway Active (v2.3.0)"))), /* @__PURE__ */ React.createElement("div", { className: "odoo-subnav-bar" }, /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo ERP Automation & Developer Hub"), /* @__PURE__ */ React.createElement("p", null, "Enterprise Odoo Automated Action Studio, inbound webhook controllers, dynamic PDF streaming, and live bi-directional delivery telemetry.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary",
+      style: { display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 14px", fontSize: "13px", fontWeight: "600", cursor: "pointer" },
+      onClick: () => setShowGuideModal(true)
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4D6}"),
+    " Step-by-Step Setup Guide"
+  ), /* @__PURE__ */ React.createElement("span", { className: "odoo-code-header-badge" }, /* @__PURE__ */ React.createElement("span", null, "\u25CF"), " Odoo Gateway Active (v2.3.0)"))), /* @__PURE__ */ React.createElement("div", { className: "odoo-subnav-bar" }, /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "button",
@@ -2835,7 +3096,14 @@ async function dispatchOdooInvoice({ phone, customerName, invoiceNumber, amount 
     },
     /* @__PURE__ */ React.createElement("span", null, "\u{1F7E8}"),
     " Node.js"
-  )), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { minHeight: "380px", maxHeight: "560px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "code-box-header" }, /* @__PURE__ */ React.createElement("span", null, currentSnippet.filename), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "#64748B" } }, currentSnippet.title)), /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, currentSnippet.code))));
+  )), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { minHeight: "380px", maxHeight: "560px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "code-box-header" }, /* @__PURE__ */ React.createElement("span", null, currentSnippet.filename), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "#64748B" } }, currentSnippet.title)), /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, currentSnippet.code))), showGuideModal && /* @__PURE__ */ React.createElement(
+    OdooGuideModal,
+    {
+      onClose: () => setShowGuideModal(false),
+      showToast,
+      apiKey
+    }
+  ));
 }
 function ApiKeysView({ showToast }) {
   const [keys, setKeys] = useState([]);
