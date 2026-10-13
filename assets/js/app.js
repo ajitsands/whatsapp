@@ -619,9 +619,10 @@ function App() {
         setCurrentUser(data.user);
         localStorage.setItem('wa_user', JSON.stringify(data.user));
         loadWalletBalance();
-      } else if (!currentUser) {
+      } else {
+        // Session invalid or expired: clear stale local user to prevent crash
         setCurrentUser(null);
-        localStorage.removeItem('wa_user');
+        try { localStorage.removeItem('wa_user'); } catch (e) {}
       }
     } catch (e) {
       console.error('Auth check error', e);
@@ -828,13 +829,13 @@ function App() {
                 <span>Wallet: <strong>{formatCurrency(walletBalance, curr, dec)}</strong></span>
               </div>
 
-              <div className="user-profile-pill" title={`Logged in as ${currentUser.email}`}>
-                <div className="avatar" style={{ background: currentUser.avatar_color || '#128C7E' }}>
-                  {currentUser.name.charAt(0)}
+              <div className="user-profile-pill" title={`Logged in as ${currentUser?.email || 'User'}`}>
+                <div className="avatar" style={{ background: currentUser?.avatar_color || '#128C7E' }}>
+                  {(currentUser?.name || currentUser?.email || 'U').charAt(0).toUpperCase()}
                 </div>
                 <div className="user-details">
-                  <span className="user-name">{currentUser.name}</span>
-                  <span className="user-role-badge">{currentUser.role}</span>
+                  <span className="user-name">{currentUser?.name || currentUser?.email || 'User'}</span>
+                  <span className="user-role-badge">{(currentUser?.role || 'user').toUpperCase()}</span>
                 </div>
               </div>
 
@@ -1995,7 +1996,7 @@ function DashboardView({ onNavigate, globalSettings, currentUser }) {
 // -----------------------------------------------------------------------------
 // 3. COMPOSER VIEW WITH REALTIME WHATSAPP PHONE PREVIEW
 // -----------------------------------------------------------------------------
-function ComposerView({ showToast, onSent }) {
+function ComposerView({ showToast, onSent, globalSettings }) {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [toPhone, setToPhone] = useState('+97339000000');
@@ -7207,10 +7208,10 @@ function UsersView({ currentUser, showToast }) {
       render: (u) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div className="avatar" style={{ background: u.avatar_color || '#128C7E' }}>
-            {u.name.charAt(0)}
+            {(u?.name || u?.email || 'U').charAt(0).toUpperCase()}
           </div>
           <div>
-            <strong style={{ display: 'block', fontSize: '13px' }}>{u.name}</strong>
+            <strong style={{ display: 'block', fontSize: '13px' }}>{u?.name || u?.email || 'User'}</strong>
             {currentUser?.id === u.id && (
               <span style={{ fontSize: '10.5px', color: 'var(--wa-teal)', fontWeight: '700' }}>(Current Session)</span>
             )}
@@ -9163,10 +9164,163 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
   );
 }
 
-// Render React App into #root
+// -----------------------------------------------------------------------------
+// ROOT ENTERPRISE ERROR BOUNDARY
+// Prevents White Screens by containing runtime exceptions and showing recovery UI
+// -----------------------------------------------------------------------------
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Unhandled Application Exception caught by ErrorBoundary:', error, errorInfo);
+    this.setState({ error, errorInfo });
+  }
+
+  handleReload = () => {
+    try {
+      localStorage.removeItem('wa_tab');
+    } catch (e) {}
+    window.location.hash = '';
+    window.location.reload();
+  };
+
+  handleResetSession = () => {
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (e) {}
+    window.location.href = window.location.pathname;
+  };
+
+  render() {
+    if (this.state.hasError) {
+      const errMsg = this.state.error?.message || String(this.state.error || 'Unexpected rendering error');
+      return (
+        <div style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+          color: '#F8FAFC',
+          padding: '24px',
+          fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+        }}>
+          <div style={{
+            maxWidth: '560px',
+            width: '100%',
+            background: '#FFFFFF',
+            color: '#0F172A',
+            borderRadius: '16px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+            padding: '32px',
+            border: '1.5px solid #EF4444'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '12px',
+                background: '#FEE2E2',
+                color: '#DC2626',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '24px'
+              }}>
+                ⚠️
+              </div>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#991B1B' }}>
+                  Platform Recovery Interface
+                </h2>
+                <p style={{ margin: '2px 0 0 0', fontSize: '12.5px', color: '#64748B' }}>
+                  A runtime render error was contained to prevent application blackout.
+                </p>
+              </div>
+            </div>
+
+            <div style={{
+              background: '#FEF2F2',
+              border: '1px solid #FCA5A5',
+              borderRadius: '8px',
+              padding: '12px 14px',
+              marginBottom: '20px'
+            }}>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: '#991B1B', marginBottom: '4px' }}>
+                Error Diagnostics:
+              </div>
+              <code style={{
+                fontFamily: 'monospace',
+                fontSize: '12px',
+                color: '#B91C1C',
+                wordBreak: 'break-word',
+                display: 'block'
+              }}>
+                {errMsg}
+              </code>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={this.handleReload}
+                style={{
+                  flex: 1,
+                  background: '#075E54',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '12px 18px',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  cursor: 'pointer'
+                }}
+              >
+                🔄 Reload Current View
+              </button>
+              <button
+                type="button"
+                onClick={this.handleResetSession}
+                style={{
+                  flex: 1,
+                  background: '#F1F5F9',
+                  color: '#0F172A',
+                  border: '1px solid #CBD5E1',
+                  borderRadius: '8px',
+                  padding: '12px 18px',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  cursor: 'pointer'
+                }}
+              >
+                🧹 Reset Session & Sign In
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// Render React App into #root protected by ErrorBoundary
 const rootElement = document.getElementById('root');
 if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
-  root.render(<App />);
+  root.render(
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  );
 }
+
 
