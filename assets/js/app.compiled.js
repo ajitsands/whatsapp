@@ -385,7 +385,7 @@ function App() {
       title: "Click to view Version Architecture, Git Tags & Future Roadmap"
     },
     /* @__PURE__ */ React.createElement("span", { className: "version-pill-dot" }),
-    /* @__PURE__ */ React.createElement("span", null, "v2.3.0")
+    /* @__PURE__ */ React.createElement("span", null, "v2.4.0")
   )), /* @__PURE__ */ React.createElement("div", { className: "header-actions" }, /* @__PURE__ */ React.createElement(
     "div",
     {
@@ -604,9 +604,10 @@ function ComposerView({ showToast, onSent }) {
   useEffect(() => {
     fetch("./api/templates.php").then((res) => res.json()).then((res) => {
       if (res.success) {
-        setTemplates(res.data);
-        if (res.data.length > 0) {
-          pickTemplate(res.data[0]);
+        const activeOnly = res.data.filter((t) => t.is_active !== 0);
+        setTemplates(activeOnly);
+        if (activeOnly.length > 0) {
+          pickTemplate(activeOnly[0]);
         }
       }
     });
@@ -1203,7 +1204,7 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
       const res = await fetch("./api/templates.php");
       const data = await res.json();
       if (data.success && data.data) {
-        setTemplates(data.data);
+        setTemplates(data.data.filter((t) => t.is_active !== 0));
       }
     } catch (e) {
     }
@@ -2109,10 +2110,399 @@ function MessageLogsView({ showToast, globalSettings, onOpenInbox }) {
     zIndex: 1e4
   } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { width: "600px", maxHeight: "85vh", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { className: "card-title", style: { display: "flex", alignItems: "center", gap: "8px", fontSize: "15px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F50D}"), " Message Payload Inspection"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setSelectedLog(null) }, "\u2715 Close")), /* @__PURE__ */ React.createElement("div", { className: "code-box" }, /* @__PURE__ */ React.createElement("pre", null, JSON.stringify(selectedLog, null, 2))))));
 }
+const META_DEFAULT_PRESETS = [
+  {
+    key: "tax_invoice_notification",
+    title: "Tax Invoice Notification with PDF",
+    category: "UTILITY",
+    language: "en_US",
+    header_type: "DOCUMENT",
+    header_sample: "https://whatsapp.sandslab.com/uploads/sample_invoice.pdf",
+    body_text: "Dear {{1}},\n\nYour official Tax Invoice *{{2}}* for amount *{{3}} {{4}}* has been issued.\nDue Date: *{{5}}*.\n\nPlease find your invoice document attached above.",
+    footer_text: "SaNDS Lab Financial Accounts",
+    sample_params: ["Ahmed Al-Khalifa", "INV/2026/0142", "345.500", "BHD", "25-Oct-2026"],
+    description: "Compliant invoice notification with attached PDF for ERP and accounting systems.",
+    icon: "\u{1F4C4}"
+  },
+  {
+    key: "order_delivery_tracking",
+    title: "Sales Order Confirmation & Tracking",
+    category: "UTILITY",
+    language: "en_US",
+    header_type: "TEXT",
+    header_sample: "Order Confirmation #{{1}}",
+    body_text: "Hello {{1}},\n\nThank you for your order! Your order *{{2}}* totaling *{{3}} {{4}}* is now confirmed.\n\nEstimated Delivery: *{{5}}*.\nYou can track your shipment status with our courier.",
+    footer_text: "Customer Care & Logistics",
+    sample_params: ["Sara Mohamed", "SO-9821", "120.000", "BHD", "Tomorrow, 2:00 PM"],
+    description: "Instant dispatch confirmation for e-commerce, sales orders, and deliveries.",
+    icon: "\u{1F4E6}"
+  },
+  {
+    key: "payment_receipt_voucher",
+    title: "Payment Receipt & Balance Statement",
+    category: "UTILITY",
+    language: "en_US",
+    header_type: "NONE",
+    header_sample: "",
+    body_text: "Dear {{1}},\n\nWe have received your payment of *{{2}} {{3}}* for receipt *{{4}}* on {{5}}.\n\nRemaining Balance: *{{6}} {{3}}*.\nThank you for choosing our services.",
+    footer_text: "Finance & Collections Team",
+    sample_params: ["Ali Hassan", "50.000", "BHD", "REC-4412", "13-Oct-2026", "0.000"],
+    description: "Receipt voucher acknowledging customer settlement and remaining balance.",
+    icon: "\u{1F9FE}"
+  },
+  {
+    key: "appointment_schedule_reminder",
+    title: "Appointment / Meeting Reminder",
+    category: "UTILITY",
+    language: "en_US",
+    header_type: "NONE",
+    header_sample: "",
+    body_text: "Hello {{1}},\n\nThis is a reminder for your upcoming appointment with *{{2}}* on *{{3}}* at *{{4}}*.\nLocation: {{5}}.\n\nIf you need to reschedule, please let us know in advance.",
+    footer_text: "Client Scheduling Desk",
+    sample_params: ["Fatima Ebrahim", "Dr. Al-Sayed", "15-Oct-2026", "10:30 AM", "Manama Office, 4th Floor"],
+    description: "Timely reminders for consultations, doctor visits, meetings, and bookings.",
+    icon: "\u{1F5D3}\uFE0F"
+  },
+  {
+    key: "special_discount_promotion",
+    title: "Seasonal Promotion & Discount Offer",
+    category: "MARKETING",
+    language: "en_US",
+    header_type: "IMAGE",
+    header_sample: "https://whatsapp.sandslab.com/assets/images/QRCodePoster.jpg",
+    body_text: "Special Offer for {{1}}!\n\nEnjoy an exclusive *{{2}}% discount* on all our premium services this week.\nUse Promo Code: *{{3}}*\nValid until: *{{4}}*.\n\nTap below or contact us to claim your discount!",
+    footer_text: "SaNDS Lab Special Offers",
+    sample_params: ["Valued Client", "25", "AUTUMN2026", "31-Oct-2026"],
+    description: "High-converting marketing broadcast with image banner and promo code.",
+    icon: "\u{1F3F7}\uFE0F"
+  },
+  {
+    key: "secure_otp_verification",
+    title: "Security One-Time Passcode (OTP)",
+    category: "AUTHENTICATION",
+    language: "en_US",
+    header_type: "NONE",
+    header_sample: "",
+    body_text: "Your verification code is *{{1}}*.\n\nThis code will expire in {{2}} minutes. For your security, do not share this code with anyone.",
+    footer_text: "Security & Two-Factor Verification",
+    sample_params: ["492817", "10"],
+    description: "High-security OTP login code for web apps, portals, and password resets.",
+    icon: "\u{1F510}"
+  }
+];
+function TemplateStudioModal({ template, onClose, onSave, showToast }) {
+  const [studioTab, setStudioTab] = useState(template && template.id ? "custom" : "presets");
+  const [formData, setFormData] = useState({
+    id: template?.id || null,
+    template_name: template?.template_name || "",
+    display_title: template?.display_title || "",
+    category: template?.category || "UTILITY",
+    language: template?.language || "en_US",
+    header_type: template?.header_type || "NONE",
+    header_sample: template?.header_sample || "",
+    body_text: template?.body_text || "",
+    footer_text: template?.footer_text || "",
+    sample_params: template?.sample_params_json ? typeof template.sample_params_json === "string" ? JSON.parse(template.sample_params_json) : template.sample_params_json : [],
+    is_active: template?.is_active !== void 0 ? template.is_active : 1
+  });
+  const [selectedPresetKey, setSelectedPresetKey] = useState("");
+  const [submittingMeta, setSubmittingMeta] = useState(false);
+  const [savingLocal, setSavingLocal] = useState(false);
+  const [metaError, setMetaError] = useState(null);
+  const detectedVars = useMemo(() => {
+    if (!formData.body_text) return [];
+    const matches = formData.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g);
+    if (matches) {
+      return [...new Set(matches.map((m) => m.replace(/[\{\}]/g, "").trim()))];
+    }
+    const numMatches = formData.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g);
+    if (numMatches) {
+      return [...new Set(numMatches.map((m) => m.replace(/\D/g, "").trim()))];
+    }
+    return [];
+  }, [formData.body_text]);
+  const sampleParams = useMemo(() => {
+    const list = Array.isArray(formData.sample_params) ? [...formData.sample_params] : [];
+    for (let i = list.length; i < detectedVars.length; i++) {
+      list.push(`Sample ${detectedVars[i] || i + 1}`);
+    }
+    return list;
+  }, [formData.sample_params, detectedVars]);
+  const handleUpdateSampleParam = (index, value) => {
+    const next = [...sampleParams];
+    next[index] = value;
+    setFormData((prev) => ({ ...prev, sample_params: next }));
+  };
+  const handleSelectPreset = (preset) => {
+    setSelectedPresetKey(preset.key);
+    setFormData({
+      id: formData.id,
+      template_name: preset.key,
+      display_title: preset.title,
+      category: preset.category,
+      language: preset.language,
+      header_type: preset.header_type,
+      header_sample: preset.header_sample,
+      body_text: preset.body_text,
+      footer_text: preset.footer_text,
+      sample_params: [...preset.sample_params],
+      is_active: 1
+    });
+    setMetaError(null);
+  };
+  const modalTariffs = {
+    AUTHENTICATION: { meta: 0.011, platform: 35e-4, client: 0.0145 },
+    UTILITY: { meta: 0.014, platform: 45e-4, client: 0.0185 },
+    MARKETING: { meta: 0.027, platform: 7e-3, client: 0.034 },
+    SERVICE: { meta: 75e-4, platform: 25e-4, client: 0.01 }
+  };
+  const activeTariff = modalTariffs[formData.category] || modalTariffs.UTILITY;
+  const previewBodyText = useMemo(() => {
+    let text = formData.body_text || "Enter message body text...";
+    detectedVars.forEach((v, idx) => {
+      const val = sampleParams[idx] || `[${v}]`;
+      const regex = new RegExp(`\\{\\{${v}\\}\\}`, "g");
+      text = text.replace(regex, `*${val}*`);
+    });
+    return text;
+  }, [formData.body_text, detectedVars, sampleParams]);
+  const handleSubmit = async (submitToMeta = false) => {
+    if (!formData.template_name || !formData.body_text) {
+      showToast("Template key and body text are required", "error");
+      return;
+    }
+    if (submitToMeta) {
+      setSubmittingMeta(true);
+    } else {
+      setSavingLocal(true);
+    }
+    setMetaError(null);
+    try {
+      const payload = {
+        ...formData,
+        sample_params: sampleParams,
+        sample_params_json: JSON.stringify(sampleParams),
+        submit_to_meta: submitToMeta
+      };
+      const res = await fetch("./api/templates.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (submitToMeta) {
+          showToast(`\u{1F680} Template submitted to Meta! Status: ${data.meta_status || "PENDING"}`);
+        } else {
+          showToast(data.message || "Template saved locally in catalog!");
+        }
+        onSave();
+        onClose();
+      } else {
+        const err = data.error || "Failed to save template";
+        setMetaError(err);
+        showToast(err, "error");
+      }
+    } catch (e) {
+      setMetaError("Network error connecting to API");
+      showToast("Network error saving template", "error");
+    } finally {
+      setSubmittingMeta(false);
+      setSavingLocal(false);
+    }
+  };
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: "modal-content",
+      style: { maxWidth: "1100px", maxHeight: "92vh", display: "flex", flexDirection: "column" },
+      onClick: (e) => e.stopPropagation()
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u2728"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, fontSize: "16px" } }, formData.id ? "Edit WhatsApp Template" : "WhatsApp Template Studio & Meta Approval"), /* @__PURE__ */ React.createElement("p", { style: { margin: "2px 0 0 0", fontSize: "11.5px", color: "rgba(255,255,255,0.85)" } }, "Design Meta-compliant templates, choose from verified presets, preview live on handset, and submit for Meta approval."))), /* @__PURE__ */ React.createElement("button", { className: "close-btn", onClick: onClose }, "\u2715")),
+    /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", padding: "10px 24px", borderBottom: "1px solid #E2E8F0", display: "flex", gap: "10px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: `btn ${studioTab === "presets" ? "btn-primary" : "btn-secondary"}`,
+        style: { fontSize: "12px", padding: "6px 14px", display: "flex", alignItems: "center", gap: "6px" },
+        onClick: () => setStudioTab("presets")
+      },
+      /* @__PURE__ */ React.createElement("span", null, "\u{1F4DA}"),
+      " 1. Choose from Meta Presets (",
+      META_DEFAULT_PRESETS.length,
+      ")"
+    ), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: `btn ${studioTab === "custom" ? "btn-primary" : "btn-secondary"}`,
+        style: { fontSize: "12px", padding: "6px 14px", display: "flex", alignItems: "center", gap: "6px" },
+        onClick: () => setStudioTab("custom")
+      },
+      /* @__PURE__ */ React.createElement("span", null, "\u270F\uFE0F"),
+      " 2. Custom Template Design & Variables"
+    ), selectedPresetKey && /* @__PURE__ */ React.createElement("span", { style: { marginLeft: "auto", fontSize: "11.5px", color: "#047857", fontWeight: "600" } }, "\u2713 Loaded Preset: ", /* @__PURE__ */ React.createElement("code", null, selectedPresetKey))),
+    /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { display: "grid", gridTemplateColumns: "1.45fr 1fr", gap: "24px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", null, metaError && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEE2E2", border: "1px solid #FCA5A5", color: "#B91C1C", padding: "10px 14px", borderRadius: "8px", fontSize: "12.5px", marginBottom: "16px", fontWeight: "600" } }, "\u26A0\uFE0F Meta API: ", metaError), studioTab === "presets" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: "14px" } }, /* @__PURE__ */ React.createElement("h4", { style: { margin: "0 0 4px 0", fontSize: "13.5px", color: "var(--text-primary)" } }, "Standard Pre-Approved Industry Templates"), /* @__PURE__ */ React.createElement("p", { style: { margin: 0, fontSize: "11.5px", color: "var(--text-secondary)" } }, "Select any template below to load compliant wording, media headers, and sample parameters ready for Meta approval.")), /* @__PURE__ */ React.createElement("div", { className: "preset-grid" }, META_DEFAULT_PRESETS.map((p) => {
+      const isSelected = formData.template_name === p.key || selectedPresetKey === p.key;
+      return /* @__PURE__ */ React.createElement(
+        "div",
+        {
+          key: p.key,
+          className: `preset-card ${isSelected ? "selected" : ""}`,
+          onClick: () => handleSelectPreset(p)
+        },
+        /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "preset-card-top" }, /* @__PURE__ */ React.createElement("span", { className: "preset-card-icon" }, p.icon), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "preset-card-title" }, p.title), /* @__PURE__ */ React.createElement("span", { className: `badge cat-${p.category.toLowerCase().substring(0, 4)}`, style: { fontSize: "9.5px" } }, p.category, " \u2022 ", p.header_type))), /* @__PURE__ */ React.createElement("div", { className: "preset-card-desc" }, p.description)),
+        /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px", paddingTop: "8px", borderTop: "1px solid #F1F5F9" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", fontFamily: "monospace", color: "var(--wa-teal)" } }, p.key), /* @__PURE__ */ React.createElement(
+          "button",
+          {
+            type: "button",
+            className: "btn btn-secondary btn-sm",
+            style: { fontSize: "11px", padding: "3px 8px" },
+            onClick: (e) => {
+              e.stopPropagation();
+              handleSelectPreset(p);
+              setStudioTab("custom");
+            }
+          },
+          "Use & Edit \u2192"
+        ))
+      );
+    }))), studioTab === "custom" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Meta Template Key *"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        className: "form-input",
+        placeholder: "e.g. order_dispatch_uniglobal",
+        value: formData.template_name,
+        onChange: (e) => setFormData({
+          ...formData,
+          template_name: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "_")
+        }),
+        required: true
+      }
+    ), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Lowercase letters and underscores only (Meta rule)")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Display Title *"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        className: "form-input",
+        placeholder: "e.g. Tax Invoice Dispatch with PDF",
+        value: formData.display_title,
+        onChange: (e) => setFormData({ ...formData, display_title: e.target.value }),
+        required: true
+      }
+    ))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "4px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Category"), /* @__PURE__ */ React.createElement(
+      "select",
+      {
+        className: "form-select",
+        value: formData.category,
+        onChange: (e) => setFormData({ ...formData, category: e.target.value })
+      },
+      /* @__PURE__ */ React.createElement("option", { value: "UTILITY" }, "Utility (Invoices, Confirmations, Reminders)"),
+      /* @__PURE__ */ React.createElement("option", { value: "MARKETING" }, "Marketing (Promotions, Discounts, Offers)"),
+      /* @__PURE__ */ React.createElement("option", { value: "AUTHENTICATION" }, "Authentication (OTP Verification Codes)"),
+      /* @__PURE__ */ React.createElement("option", { value: "SERVICE" }, "Service (Customer Support)")
+    )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Language Code *"), /* @__PURE__ */ React.createElement(
+      "select",
+      {
+        className: "form-select",
+        value: formData.language || "en_US",
+        onChange: (e) => setFormData({ ...formData, language: e.target.value })
+      },
+      /* @__PURE__ */ React.createElement("option", { value: "en_US" }, "English (US) \u2014 en_US (Standard)"),
+      /* @__PURE__ */ React.createElement("option", { value: "en" }, "English \u2014 en"),
+      /* @__PURE__ */ React.createElement("option", { value: "en_GB" }, "English (UK) \u2014 en_GB"),
+      /* @__PURE__ */ React.createElement("option", { value: "ar" }, "Arabic \u2014 ar"),
+      /* @__PURE__ */ React.createElement("option", { value: "hi" }, "Hindi \u2014 hi")
+    ))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "4px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Header Media Type"), /* @__PURE__ */ React.createElement(
+      "select",
+      {
+        className: "form-select",
+        value: formData.header_type,
+        onChange: (e) => setFormData({ ...formData, header_type: e.target.value })
+      },
+      /* @__PURE__ */ React.createElement("option", { value: "NONE" }, "None (Plain Text Message)"),
+      /* @__PURE__ */ React.createElement("option", { value: "DOCUMENT" }, "Document (PDF Invoice / Report)"),
+      /* @__PURE__ */ React.createElement("option", { value: "IMAGE" }, "Image (Promotion Banner / Photo)"),
+      /* @__PURE__ */ React.createElement("option", { value: "TEXT" }, "Text Headline"),
+      /* @__PURE__ */ React.createElement("option", { value: "VIDEO" }, "Video")
+    )), formData.header_type !== "NONE" && /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Header Sample URL / Headline"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        className: "form-input",
+        placeholder: "https://... or header headline",
+        value: formData.header_sample || "",
+        onChange: (e) => setFormData({ ...formData, header_sample: e.target.value })
+      }
+    ))), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginTop: "4px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Message Body Format *"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-auth", style: { fontSize: "10px" } }, detectedVars.length, " variable", detectedVars.length !== 1 ? "s" : "", " detected")), /* @__PURE__ */ React.createElement(
+      "textarea",
+      {
+        className: "form-textarea",
+        style: { minHeight: "110px", fontFamily: "inherit" },
+        placeholder: "Dear {{1}}, your order {{2}} for BHD {{3}} has been confirmed.",
+        value: formData.body_text,
+        onChange: (e) => setFormData({ ...formData, body_text: e.target.value }),
+        required: true
+      }
+    ), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Use sequential placeholders like ", /* @__PURE__ */ React.createElement("code", null, "{{1}}"), ", ", /* @__PURE__ */ React.createElement("code", null, "{{2}}"), " for customer name, invoice number, amount, etc.")), detectedVars.length > 0 && /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "10px", padding: "12px 14px", margin: "10px 0" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "4px" } }, "\u26A1 Meta Review Sample Values (Required by Meta AI):"), /* @__PURE__ */ React.createElement("p", { style: { margin: "0 0 10px 0", fontSize: "11px", color: "var(--text-secondary)" } }, "Provide realistic example values for each placeholder so Meta reviewers understand your message intent."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "10px" } }, detectedVars.map((v, idx) => /* @__PURE__ */ React.createElement("div", { key: v }, /* @__PURE__ */ React.createElement("label", { style: { fontSize: "11px", fontWeight: "600", color: "#475569", display: "block", marginBottom: "2px" } }, "Variable {{", v, "}} Sample:"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        className: "form-input",
+        style: { padding: "6px 10px", fontSize: "12px" },
+        value: sampleParams[idx] || "",
+        onChange: (e) => handleUpdateSampleParam(idx, e.target.value),
+        placeholder: `e.g. Value ${idx + 1}`
+      }
+    ))))), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginTop: "4px" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Footer Tagline (Optional)"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        className: "form-input",
+        placeholder: "e.g. UniGlobal Accounts | Powered by SaNDS Lab",
+        value: formData.footer_text || "",
+        onChange: (e) => setFormData({ ...formData, footer_text: e.target.value })
+      }
+    )), /* @__PURE__ */ React.createElement("div", { className: "tariff-estimate-banner", style: { margin: "14px 0" } }, /* @__PURE__ */ React.createElement("div", { className: "tariff-info" }, /* @__PURE__ */ React.createElement("span", { className: "title" }, "Bahrain Tariff Rate (", formData.category, ")"), /* @__PURE__ */ React.createElement("span", { className: "breakdown" }, "Meta Cost: ", activeTariff.meta.toFixed(4), " BHD | Platform Margin: +", activeTariff.platform.toFixed(4), " BHD")), /* @__PURE__ */ React.createElement("div", { className: "tariff-rate-badge" }, "BHD ", activeTariff.client.toFixed(4), " / msg")))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", fontWeight: "700", color: "#475569" } }, "\u{1F4F1} Live WhatsApp Handset Simulator:"), /* @__PURE__ */ React.createElement("span", { className: "badge status-read", style: { fontSize: "10px" } }, "\u25CF Real-Time Mockup")), /* @__PURE__ */ React.createElement("div", { className: "phone-mockup-wrapper" }, /* @__PURE__ */ React.createElement("div", { className: "phone-screen" }, /* @__PURE__ */ React.createElement("div", { className: "phone-header" }, /* @__PURE__ */ React.createElement("div", { className: "phone-header-info" }, /* @__PURE__ */ React.createElement("div", { className: "phone-avatar" }, "SL"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "phone-header-title" }, /* @__PURE__ */ React.createElement("span", null, "SaNDS Lab Business"), /* @__PURE__ */ React.createElement("span", { style: { color: "#25D366", fontSize: "11px" } }, "\u2713")), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "9.5px", color: "rgba(255,255,255,0.8)" } }, "Official Business Account"))), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "14px", color: "rgba(255,255,255,0.7)" } }, "\u22EE")), /* @__PURE__ */ React.createElement("div", { className: "phone-chat-body" }, /* @__PURE__ */ React.createElement("div", { style: { alignSelf: "center", background: "#E1F3FB", color: "#0369A1", fontSize: "9.5px", padding: "3px 8px", borderRadius: "6px", margin: "6px 0 12px 0" } }, "\u{1F512} Messages are end-to-end encrypted"), /* @__PURE__ */ React.createElement("div", { className: "phone-bubble" }, formData.header_type === "DOCUMENT" && /* @__PURE__ */ React.createElement("div", { className: "phone-bubble-media" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F4C4}"), /* @__PURE__ */ React.createElement("div", { style: { overflow: "hidden" } }, /* @__PURE__ */ React.createElement("strong", { style: { display: "block", fontSize: "11px", whiteSpace: "nowrap", textOverflow: "ellipsis" } }, formData.header_sample ? formData.header_sample.split("/").pop() : "Invoice_Document.pdf"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "9.5px", color: "#64748B" } }, "1.2 MB \u2022 PDF Document"))), formData.header_type === "IMAGE" && /* @__PURE__ */ React.createElement("div", { style: { borderRadius: "6px", overflow: "hidden", marginBottom: "8px", maxHeight: "140px", background: "#E2E8F0" } }, /* @__PURE__ */ React.createElement(
+      "img",
+      {
+        src: formData.header_sample || "./assets/images/QRCodePoster.jpg",
+        alt: "Banner Preview",
+        style: { width: "100%", height: "100%", objectFit: "cover", display: "block" },
+        onError: (e) => {
+          e.target.style.display = "none";
+        }
+      }
+    )), formData.header_type === "TEXT" && /* @__PURE__ */ React.createElement("div", { className: "phone-bubble-header" }, formData.header_sample || formData.display_title || "Headline"), /* @__PURE__ */ React.createElement("div", { className: "phone-bubble-text" }, previewBodyText), formData.footer_text && /* @__PURE__ */ React.createElement("div", { className: "phone-bubble-footer" }, formData.footer_text), /* @__PURE__ */ React.createElement("div", { className: "phone-bubble-meta" }, /* @__PURE__ */ React.createElement("span", null, "14:30"), /* @__PURE__ */ React.createElement("span", { style: { color: "#53BDEB" } }, "\u2713\u2713")))))))),
+    /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "#64748B" } }, "Approval Time: Utility ~2 mins \u2022 Marketing ~30 mins")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", alignItems: "center" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose, disabled: submittingMeta || savingLocal }, "Cancel"), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: "btn btn-secondary",
+        style: { fontWeight: "700" },
+        onClick: () => handleSubmit(false),
+        disabled: submittingMeta || savingLocal
+      },
+      savingLocal ? "Saving..." : "\u{1F4BE} Save Locally Only"
+    ), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: "btn btn-primary",
+        style: { display: "inline-flex", alignItems: "center", gap: "6px", fontWeight: "700" },
+        onClick: () => handleSubmit(true),
+        disabled: submittingMeta || savingLocal
+      },
+      /* @__PURE__ */ React.createElement("span", null, submittingMeta ? "\u23F3" : "\u{1F680}"),
+      submittingMeta ? "Submitting to Meta..." : "Submit to Meta for Approval"
+    )))
+  ));
+}
 function TemplatesView({ showToast }) {
   const [templates, setTemplates] = useState([]);
   const [editingTemplate, setEditingTemplate] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const [showStudioModal, setShowStudioModal] = useState(false);
+  const [syncingMeta, setSyncingMeta] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(null);
   const loadTemplates = () => {
     fetch("./api/templates.php").then((res) => res.json()).then((res) => {
@@ -2122,31 +2512,40 @@ function TemplatesView({ showToast }) {
   useEffect(() => {
     loadTemplates();
   }, []);
-  const handleSaveTemplate = async (e) => {
-    e.preventDefault();
-    if (!editingTemplate.template_name || !editingTemplate.body_text) {
-      showToast("Template Key and Body Text are required", "error");
-      return;
-    }
-    setSaving(true);
+  const handleToggleActive = async (id, currentStatus, templateName) => {
+    const nextStatus = currentStatus ? 0 : 1;
     try {
-      const res = await fetch("./api/templates.php", {
+      const res = await fetch("./api/templates.php?action=toggle_active", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editingTemplate)
+        body: JSON.stringify({ id, is_active: nextStatus })
       });
       const data = await res.json();
       if (data.success) {
-        showToast(data.message || "Template saved successfully!");
-        setEditingTemplate(null);
+        showToast(nextStatus ? `Template "${templateName}" activated!` : `Template "${templateName}" paused.`);
+        setTemplates((prev) => prev.map((t) => t.id === id ? { ...t, is_active: nextStatus } : t));
+      } else {
+        showToast(data.error || "Failed to update status", "error");
+      }
+    } catch (e) {
+      showToast("Network error toggling status", "error");
+    }
+  };
+  const handleSyncMeta = async () => {
+    setSyncingMeta(true);
+    try {
+      const res = await fetch("./api/templates.php?action=sync_meta");
+      const data = await res.json();
+      if (data.success) {
+        showToast(`\u2713 Synced with Meta WABA! Found ${data.total_meta} templates on Meta.`);
         loadTemplates();
       } else {
-        showToast(data.error || "Failed to save template", "error");
+        showToast(data.error || "Meta sync failed", "error");
       }
-    } catch (err) {
-      showToast("Network error saving template", "error");
+    } catch (e) {
+      showToast("Network error during Meta sync", "error");
     } finally {
-      setSaving(false);
+      setSyncingMeta(false);
     }
   };
   const handleDeleteTemplate = (id, name) => {
@@ -2175,14 +2574,6 @@ function TemplatesView({ showToast }) {
       }
     });
   };
-  const modalTariffs = {
-    AUTHENTICATION: { meta: 0.011, platform: 35e-4, client: 0.0145 },
-    UTILITY: { meta: 0.014, platform: 45e-4, client: 0.0185 },
-    MARKETING: { meta: 0.027, platform: 7e-3, client: 0.034 },
-    SERVICE: { meta: 75e-4, platform: 25e-4, client: 0.01 }
-  };
-  const activeTariff = editingTemplate ? modalTariffs[editingTemplate.category] || modalTariffs.UTILITY : modalTariffs.UTILITY;
-  const varCount = editingTemplate && editingTemplate.body_text ? editingTemplate.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g) ? new Set(editingTemplate.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g).map((s) => s.replace(/[\{\}]/g, "").trim())).size : editingTemplate.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g) ? new Set(editingTemplate.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g).map((s) => parseInt(s.replace(/\D/g, ""), 10))).size : 0 : 0;
   const templateColumns = [
     {
       key: "display_title",
@@ -2191,38 +2582,44 @@ function TemplatesView({ showToast }) {
     },
     {
       key: "category",
-      label: "Category",
-      render: (t) => /* @__PURE__ */ React.createElement("span", { className: `badge cat-${t.category.toLowerCase().substring(0, 4)}` }, t.category)
+      label: "Category & Lang",
+      render: (t) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "3px" } }, /* @__PURE__ */ React.createElement("span", { className: `badge cat-${t.category.toLowerCase().substring(0, 4)}` }, t.category), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "#64748B" } }, t.language || "en_US"))
     },
     {
       key: "header_type",
-      label: "Header Type",
+      label: "Header Media",
       render: (t) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", fontWeight: "700" } }, t.header_type)
     },
     {
       key: "body_text",
       label: "Body Format",
-      render: (t) => /* @__PURE__ */ React.createElement("div", { style: { maxWidth: "280px", fontSize: "11.5px", color: "var(--text-secondary)" } }, t.body_text)
-    },
-    {
-      key: "meta_cost_bhd",
-      label: "Meta Cost",
-      render: (t) => /* @__PURE__ */ React.createElement("span", null, parseFloat(t.meta_cost_bhd).toFixed(4), " BHD")
-    },
-    {
-      key: "platform_charge_bhd",
-      label: "Platform Charges",
-      render: (t) => /* @__PURE__ */ React.createElement("span", { style: { color: "var(--wa-dark-teal)", fontWeight: "700" } }, "+", parseFloat(t.platform_charge_bhd).toFixed(4), " BHD")
+      render: (t) => /* @__PURE__ */ React.createElement("div", { style: { maxWidth: "240px", fontSize: "11.5px", color: "var(--text-secondary)" } }, t.body_text)
     },
     {
       key: "client_rate_bhd",
       label: "Client Rate",
-      render: (t) => /* @__PURE__ */ React.createElement("strong", { style: { color: "var(--wa-teal)", fontSize: "13px" } }, parseFloat(t.client_rate_bhd).toFixed(4), " BHD")
+      render: (t) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { color: "var(--wa-teal)", fontSize: "12.5px" } }, parseFloat(t.client_rate_bhd).toFixed(4), " BHD"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "#64748B" } }, "Meta: ", parseFloat(t.meta_cost_bhd).toFixed(4)))
     },
     {
-      key: "meta_status",
-      label: "Meta Status",
-      render: (t) => /* @__PURE__ */ React.createElement("span", { className: "badge status-read" }, "APPROVED")
+      key: "is_active",
+      label: "Status & Control",
+      render: (t) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "6px", alignItems: "flex-start" } }, /* @__PURE__ */ React.createElement(
+        "div",
+        {
+          className: `tmpl-toggle-pill ${t.is_active ? "active" : "inactive"}`,
+          onClick: () => handleToggleActive(t.id, t.is_active, t.template_name),
+          title: t.is_active ? "Click to Pause / Deactivate Template" : "Click to Activate Template"
+        },
+        /* @__PURE__ */ React.createElement("span", { className: "tmpl-toggle-dot" }),
+        /* @__PURE__ */ React.createElement("span", null, t.is_active ? "Active" : "Paused")
+      ), /* @__PURE__ */ React.createElement(
+        "span",
+        {
+          className: `badge ${t.meta_status === "APPROVED" ? "status-read" : t.meta_status === "PENDING" ? "cat-auth" : "status-failed"}`,
+          style: { fontSize: "10px" }
+        },
+        t.meta_status === "APPROVED" ? "\u2713 APPROVED" : t.meta_status === "PENDING" ? "\u23F3 PENDING" : "\u2715 REJECTED"
+      ))
     },
     {
       key: "actions",
@@ -2232,8 +2629,11 @@ function TemplatesView({ showToast }) {
         "button",
         {
           className: "btn btn-secondary btn-sm",
-          onClick: () => setEditingTemplate({ ...t }),
-          title: "Edit Template"
+          onClick: () => {
+            setEditingTemplate({ ...t });
+            setShowStudioModal(true);
+          },
+          title: "Edit / Re-submit Template"
         },
         "\u270F\uFE0F Edit"
       ), /* @__PURE__ */ React.createElement(
@@ -2248,126 +2648,55 @@ function TemplatesView({ showToast }) {
       ))
     }
   ];
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " WhatsApp Templates & Tariff Schedule"), /* @__PURE__ */ React.createElement("p", null, "Meta-registered message templates, variable placeholders, and official Bahrain Market rates.")), /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary", onClick: () => setEditingTemplate({
-    template_name: "",
-    display_title: "",
-    category: "UTILITY",
-    language: "en_US",
-    header_type: "NONE",
-    header_sample: "",
-    body_text: "",
-    footer_text: ""
-  }) }, /* @__PURE__ */ React.createElement("span", null, "\u2795"), " Register New Template")), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " WhatsApp Templates & Tariff Schedule"), /* @__PURE__ */ React.createElement("p", null, "Meta-registered message templates, variable placeholders, official Bahrain Market rates, and active/inactive status controls.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary",
+      style: { display: "inline-flex", alignItems: "center", gap: "6px" },
+      disabled: syncingMeta,
+      onClick: handleSyncMeta,
+      title: "Query Meta Graph API to refresh approval statuses"
+    },
+    /* @__PURE__ */ React.createElement("span", null, syncingMeta ? "\u23F3" : "\u{1F504}"),
+    syncingMeta ? "Syncing..." : "Sync with Meta"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary",
+      style: { display: "inline-flex", alignItems: "center", gap: "6px" },
+      onClick: () => {
+        setEditingTemplate(null);
+        setShowStudioModal(true);
+      }
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u2728"),
+    " Template Creation Studio"
+  ))), /* @__PURE__ */ React.createElement(
     DataTable,
     {
       columns: templateColumns,
       data: templates,
       title: "whatsapp_templates",
-      searchPlaceholder: "Search template title, category...",
+      searchPlaceholder: "Search template title, key, category...",
       defaultPageSize: 10,
       pageSizeOptions: [5, 10, 20],
       defaultSortKey: "id",
       defaultSortDir: "desc"
     }
-  ), editingTemplate && /* @__PURE__ */ React.createElement("div", { style: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: "rgba(0,0,0,0.55)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1e4,
-    padding: "20px"
-  } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "650px", width: "100%", maxHeight: "90vh", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { marginBottom: "16px" } }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, editingTemplate.id ? "\u270F\uFE0F Edit Template" : "\u2795 Register New WhatsApp Template")), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setEditingTemplate(null) }, "\u2715 Close")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSaveTemplate }, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Meta Template Key *"), /* @__PURE__ */ React.createElement(
-    "input",
+  ), showStudioModal && /* @__PURE__ */ React.createElement(
+    TemplateStudioModal,
     {
-      type: "text",
-      className: "form-input",
-      placeholder: "e.g. uniglobal_invoice_alert",
-      value: editingTemplate.template_name,
-      onChange: (e) => setEditingTemplate({
-        ...editingTemplate,
-        template_name: e.target.value.toLowerCase().replace(/\s+/g, "_")
-      }),
-      required: true
+      template: editingTemplate,
+      onClose: () => {
+        setShowStudioModal(false);
+        setEditingTemplate(null);
+      },
+      onSave: loadTemplates,
+      showToast
     }
-  ), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Lowercase & underscores only")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Display Title *"), /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      type: "text",
-      className: "form-input",
-      placeholder: "e.g. Invoice Notification with PDF",
-      value: editingTemplate.display_title,
-      onChange: (e) => setEditingTemplate({ ...editingTemplate, display_title: e.target.value }),
-      required: true
-    }
-  ))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginTop: "6px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Category"), /* @__PURE__ */ React.createElement(
-    "select",
-    {
-      className: "form-select",
-      value: editingTemplate.category,
-      onChange: (e) => setEditingTemplate({ ...editingTemplate, category: e.target.value })
-    },
-    /* @__PURE__ */ React.createElement("option", { value: "UTILITY" }, "Utility (Invoices, Notifications)"),
-    /* @__PURE__ */ React.createElement("option", { value: "AUTHENTICATION" }, "Authentication (OTP Verification)"),
-    /* @__PURE__ */ React.createElement("option", { value: "MARKETING" }, "Marketing (Offers & Promotions)"),
-    /* @__PURE__ */ React.createElement("option", { value: "SERVICE" }, "Service (Customer Support)")
-  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Language Code *"), /* @__PURE__ */ React.createElement(
-    "select",
-    {
-      className: "form-select",
-      value: editingTemplate.language || "en_US",
-      onChange: (e) => setEditingTemplate({ ...editingTemplate, language: e.target.value })
-    },
-    /* @__PURE__ */ React.createElement("option", { value: "en_US" }, "English (US) \u2014 en_US (Most Common)"),
-    /* @__PURE__ */ React.createElement("option", { value: "en" }, "English \u2014 en"),
-    /* @__PURE__ */ React.createElement("option", { value: "en_GB" }, "English (UK) \u2014 en_GB"),
-    /* @__PURE__ */ React.createElement("option", { value: "ar" }, "Arabic \u2014 ar"),
-    /* @__PURE__ */ React.createElement("option", { value: "hi" }, "Hindi \u2014 hi")
-  ), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Must match the Language set in Meta (e.g. English (US) is ", /* @__PURE__ */ React.createElement("code", null, "en_US"), ")."))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginTop: "6px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Header Media Type"), /* @__PURE__ */ React.createElement(
-    "select",
-    {
-      className: "form-select",
-      value: editingTemplate.header_type,
-      onChange: (e) => setEditingTemplate({ ...editingTemplate, header_type: e.target.value })
-    },
-    /* @__PURE__ */ React.createElement("option", { value: "NONE" }, "None (Plain Message)"),
-    /* @__PURE__ */ React.createElement("option", { value: "DOCUMENT" }, "Document (PDF Invoice/Report)"),
-    /* @__PURE__ */ React.createElement("option", { value: "IMAGE" }, "Image (Banner / JPG / PNG)"),
-    /* @__PURE__ */ React.createElement("option", { value: "TEXT" }, "Text Header"),
-    /* @__PURE__ */ React.createElement("option", { value: "VIDEO" }, "Video")
-  )), editingTemplate.header_type !== "NONE" && /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Header Sample / URL"), /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      type: "text",
-      className: "form-input",
-      placeholder: "https://... or header text",
-      value: editingTemplate.header_sample || "",
-      onChange: (e) => setEditingTemplate({ ...editingTemplate, header_sample: e.target.value })
-    }
-  ))), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginTop: "6px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Body Text (Message Format) *"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-auth", style: { fontSize: "10px" } }, varCount, " variable", varCount !== 1 ? "s" : "", " detected")), /* @__PURE__ */ React.createElement(
-    "textarea",
-    {
-      className: "form-textarea",
-      style: { minHeight: "110px" },
-      placeholder: "Dear {{1}}, your invoice {{2}} for BHD {{3}} has been generated on {{4}}.",
-      value: editingTemplate.body_text,
-      onChange: (e) => setEditingTemplate({ ...editingTemplate, body_text: e.target.value }),
-      required: true
-    }
-  ), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Use placeholders like ", /* @__PURE__ */ React.createElement("code", null, "{{1}}"), ", ", /* @__PURE__ */ React.createElement("code", null, "{{2}}"), " for dynamic ERP variables.")), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginTop: "6px" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Footer Tagline (Optional)"), /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      type: "text",
-      className: "form-input",
-      placeholder: "e.g. UniGlobal Accounts | Powered by SaNDS Lab",
-      value: editingTemplate.footer_text || "",
-      onChange: (e) => setEditingTemplate({ ...editingTemplate, footer_text: e.target.value })
-    }
-  )), /* @__PURE__ */ React.createElement("div", { className: "tariff-estimate-banner", style: { margin: "14px 0" } }, /* @__PURE__ */ React.createElement("div", { className: "tariff-info" }, /* @__PURE__ */ React.createElement("span", { className: "title" }, "Bahrain Tariff (", editingTemplate.category, ")"), /* @__PURE__ */ React.createElement("span", { className: "breakdown" }, "Meta Cost: ", activeTariff.meta.toFixed(4), " BHD | Platform Fee: +", activeTariff.platform.toFixed(4), " BHD")), /* @__PURE__ */ React.createElement("div", { className: "tariff-rate-badge" }, "BHD ", activeTariff.client.toFixed(4), " / msg")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "16px" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: () => setEditingTemplate(null) }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: saving }, saving ? "Saving..." : editingTemplate.id ? "\u{1F4BE} Update Template" : "\u{1F680} Register Template"))))), confirmDialog && /* @__PURE__ */ React.createElement(
+  ), confirmDialog && /* @__PURE__ */ React.createElement(
     ConfirmDialog,
     {
       isOpen: !!confirmDialog,

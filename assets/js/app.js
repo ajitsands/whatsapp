@@ -679,7 +679,7 @@ function App() {
                 title="Click to view Version Architecture, Git Tags & Future Roadmap"
               >
                 <span className="version-pill-dot"></span>
-                <span>v2.3.0</span>
+                <span>v2.4.0</span>
               </button>
             </div>
 
@@ -1169,9 +1169,10 @@ function ComposerView({ showToast, onSent }) {
       .then(res => res.json())
       .then(res => {
         if (res.success) {
-          setTemplates(res.data);
-          if (res.data.length > 0) {
-            pickTemplate(res.data[0]);
+          const activeOnly = res.data.filter(t => t.is_active !== 0);
+          setTemplates(activeOnly);
+          if (activeOnly.length > 0) {
+            pickTemplate(activeOnly[0]);
           }
         }
       });
@@ -2285,7 +2286,7 @@ function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loa
       const res = await fetch('./api/templates.php');
       const data = await res.json();
       if (data.success && data.data) {
-        setTemplates(data.data);
+        setTemplates(data.data.filter(t => t.is_active !== 0));
       }
     } catch (e) {}
   };
@@ -3777,12 +3778,659 @@ function MessageLogsView({ showToast, globalSettings, onOpenInbox }) {
 }
 
 // -----------------------------------------------------------------------------
-// 5. TEMPLATES & TARIFFS VIEW (WITH DATATABLE)
+// -----------------------------------------------------------------------------
+// META STANDARD PRESET TEMPLATES CATALOG (v2.4.0)
+// -----------------------------------------------------------------------------
+const META_DEFAULT_PRESETS = [
+  {
+    key: 'tax_invoice_notification',
+    title: 'Tax Invoice Notification with PDF',
+    category: 'UTILITY',
+    language: 'en_US',
+    header_type: 'DOCUMENT',
+    header_sample: 'https://whatsapp.sandslab.com/uploads/sample_invoice.pdf',
+    body_text: 'Dear {{1}},\n\nYour official Tax Invoice *{{2}}* for amount *{{3}} {{4}}* has been issued.\nDue Date: *{{5}}*.\n\nPlease find your invoice document attached above.',
+    footer_text: 'SaNDS Lab Financial Accounts',
+    sample_params: ['Ahmed Al-Khalifa', 'INV/2026/0142', '345.500', 'BHD', '25-Oct-2026'],
+    description: 'Compliant invoice notification with attached PDF for ERP and accounting systems.',
+    icon: '📄'
+  },
+  {
+    key: 'order_delivery_tracking',
+    title: 'Sales Order Confirmation & Tracking',
+    category: 'UTILITY',
+    language: 'en_US',
+    header_type: 'TEXT',
+    header_sample: 'Order Confirmation #{{1}}',
+    body_text: 'Hello {{1}},\n\nThank you for your order! Your order *{{2}}* totaling *{{3}} {{4}}* is now confirmed.\n\nEstimated Delivery: *{{5}}*.\nYou can track your shipment status with our courier.',
+    footer_text: 'Customer Care & Logistics',
+    sample_params: ['Sara Mohamed', 'SO-9821', '120.000', 'BHD', 'Tomorrow, 2:00 PM'],
+    description: 'Instant dispatch confirmation for e-commerce, sales orders, and deliveries.',
+    icon: '📦'
+  },
+  {
+    key: 'payment_receipt_voucher',
+    title: 'Payment Receipt & Balance Statement',
+    category: 'UTILITY',
+    language: 'en_US',
+    header_type: 'NONE',
+    header_sample: '',
+    body_text: 'Dear {{1}},\n\nWe have received your payment of *{{2}} {{3}}* for receipt *{{4}}* on {{5}}.\n\nRemaining Balance: *{{6}} {{3}}*.\nThank you for choosing our services.',
+    footer_text: 'Finance & Collections Team',
+    sample_params: ['Ali Hassan', '50.000', 'BHD', 'REC-4412', '13-Oct-2026', '0.000'],
+    description: 'Receipt voucher acknowledging customer settlement and remaining balance.',
+    icon: '🧾'
+  },
+  {
+    key: 'appointment_schedule_reminder',
+    title: 'Appointment / Meeting Reminder',
+    category: 'UTILITY',
+    language: 'en_US',
+    header_type: 'NONE',
+    header_sample: '',
+    body_text: 'Hello {{1}},\n\nThis is a reminder for your upcoming appointment with *{{2}}* on *{{3}}* at *{{4}}*.\nLocation: {{5}}.\n\nIf you need to reschedule, please let us know in advance.',
+    footer_text: 'Client Scheduling Desk',
+    sample_params: ['Fatima Ebrahim', 'Dr. Al-Sayed', '15-Oct-2026', '10:30 AM', 'Manama Office, 4th Floor'],
+    description: 'Timely reminders for consultations, doctor visits, meetings, and bookings.',
+    icon: '🗓️'
+  },
+  {
+    key: 'special_discount_promotion',
+    title: 'Seasonal Promotion & Discount Offer',
+    category: 'MARKETING',
+    language: 'en_US',
+    header_type: 'IMAGE',
+    header_sample: 'https://whatsapp.sandslab.com/assets/images/QRCodePoster.jpg',
+    body_text: 'Special Offer for {{1}}!\n\nEnjoy an exclusive *{{2}}% discount* on all our premium services this week.\nUse Promo Code: *{{3}}*\nValid until: *{{4}}*.\n\nTap below or contact us to claim your discount!',
+    footer_text: 'SaNDS Lab Special Offers',
+    sample_params: ['Valued Client', '25', 'AUTUMN2026', '31-Oct-2026'],
+    description: 'High-converting marketing broadcast with image banner and promo code.',
+    icon: '🏷️'
+  },
+  {
+    key: 'secure_otp_verification',
+    title: 'Security One-Time Passcode (OTP)',
+    category: 'AUTHENTICATION',
+    language: 'en_US',
+    header_type: 'NONE',
+    header_sample: '',
+    body_text: 'Your verification code is *{{1}}*.\n\nThis code will expire in {{2}} minutes. For your security, do not share this code with anyone.',
+    footer_text: 'Security & Two-Factor Verification',
+    sample_params: ['492817', '10'],
+    description: 'High-security OTP login code for web apps, portals, and password resets.',
+    icon: '🔐'
+  }
+];
+
+// -----------------------------------------------------------------------------
+// TEMPLATE STUDIO & META APPROVAL MODAL (v2.4.0)
+// -----------------------------------------------------------------------------
+function TemplateStudioModal({ template, onClose, onSave, showToast }) {
+  const [studioTab, setStudioTab] = useState(template && template.id ? 'custom' : 'presets'); // 'presets', 'custom'
+  const [formData, setFormData] = useState({
+    id: template?.id || null,
+    template_name: template?.template_name || '',
+    display_title: template?.display_title || '',
+    category: template?.category || 'UTILITY',
+    language: template?.language || 'en_US',
+    header_type: template?.header_type || 'NONE',
+    header_sample: template?.header_sample || '',
+    body_text: template?.body_text || '',
+    footer_text: template?.footer_text || '',
+    sample_params: template?.sample_params_json ? (typeof template.sample_params_json === 'string' ? JSON.parse(template.sample_params_json) : template.sample_params_json) : [],
+    is_active: template?.is_active !== undefined ? template.is_active : 1
+  });
+
+  const [selectedPresetKey, setSelectedPresetKey] = useState('');
+  const [submittingMeta, setSubmittingMeta] = useState(false);
+  const [savingLocal, setSavingLocal] = useState(false);
+  const [metaError, setMetaError] = useState(null);
+
+  // Extract placeholders from body text
+  const detectedVars = useMemo(() => {
+    if (!formData.body_text) return [];
+    const matches = formData.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g);
+    if (matches) {
+      return [...new Set(matches.map(m => m.replace(/[\{\}]/g, '').trim()))];
+    }
+    const numMatches = formData.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g);
+    if (numMatches) {
+      return [...new Set(numMatches.map(m => m.replace(/\D/g, '').trim()))];
+    }
+    return [];
+  }, [formData.body_text]);
+
+  // Synchronize sample parameters array
+  const sampleParams = useMemo(() => {
+    const list = Array.isArray(formData.sample_params) ? [...formData.sample_params] : [];
+    for (let i = list.length; i < detectedVars.length; i++) {
+      list.push(`Sample ${detectedVars[i] || (i + 1)}`);
+    }
+    return list;
+  }, [formData.sample_params, detectedVars]);
+
+  const handleUpdateSampleParam = (index, value) => {
+    const next = [...sampleParams];
+    next[index] = value;
+    setFormData(prev => ({ ...prev, sample_params: next }));
+  };
+
+  const handleSelectPreset = (preset) => {
+    setSelectedPresetKey(preset.key);
+    setFormData({
+      id: formData.id,
+      template_name: preset.key,
+      display_title: preset.title,
+      category: preset.category,
+      language: preset.language,
+      header_type: preset.header_type,
+      header_sample: preset.header_sample,
+      body_text: preset.body_text,
+      footer_text: preset.footer_text,
+      sample_params: [...preset.sample_params],
+      is_active: 1
+    });
+    setMetaError(null);
+  };
+
+  // Tariff calculation
+  const modalTariffs = {
+    AUTHENTICATION: { meta: 0.0110, platform: 0.0035, client: 0.0145 },
+    UTILITY:        { meta: 0.0140, platform: 0.0045, client: 0.0185 },
+    MARKETING:      { meta: 0.0270, platform: 0.0070, client: 0.0340 },
+    SERVICE:        { meta: 0.0075, platform: 0.0025, client: 0.0100 }
+  };
+  const activeTariff = modalTariffs[formData.category] || modalTariffs.UTILITY;
+
+  // Render preview body text with sample parameters interpolated
+  const previewBodyText = useMemo(() => {
+    let text = formData.body_text || 'Enter message body text...';
+    detectedVars.forEach((v, idx) => {
+      const val = sampleParams[idx] || `[${v}]`;
+      const regex = new RegExp(`\\{\\{${v}\\}\\}`, 'g');
+      text = text.replace(regex, `*${val}*`);
+    });
+    return text;
+  }, [formData.body_text, detectedVars, sampleParams]);
+
+  // Submit Handler
+  const handleSubmit = async (submitToMeta = false) => {
+    if (!formData.template_name || !formData.body_text) {
+      showToast('Template key and body text are required', 'error');
+      return;
+    }
+
+    if (submitToMeta) {
+      setSubmittingMeta(true);
+    } else {
+      setSavingLocal(true);
+    }
+    setMetaError(null);
+
+    try {
+      const payload = {
+        ...formData,
+        sample_params: sampleParams,
+        sample_params_json: JSON.stringify(sampleParams),
+        submit_to_meta: submitToMeta
+      };
+
+      const res = await fetch('./api/templates.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        if (submitToMeta) {
+          showToast(`🚀 Template submitted to Meta! Status: ${data.meta_status || 'PENDING'}`);
+        } else {
+          showToast(data.message || 'Template saved locally in catalog!');
+        }
+        onSave();
+        onClose();
+      } else {
+        const err = data.error || 'Failed to save template';
+        setMetaError(err);
+        showToast(err, 'error');
+      }
+    } catch (e) {
+      setMetaError('Network error connecting to API');
+      showToast('Network error saving template', 'error');
+    } finally {
+      setSubmittingMeta(false);
+      setSavingLocal(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className="modal-content"
+        style={{ maxWidth: '1100px', maxHeight: '92vh', display: 'flex', flexDirection: 'column' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Modal Header */}
+        <div className="modal-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '24px' }}>✨</span>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '16px' }}>
+                {formData.id ? 'Edit WhatsApp Template' : 'WhatsApp Template Studio & Meta Approval'}
+              </h3>
+              <p style={{ margin: '2px 0 0 0', fontSize: '11.5px', color: 'rgba(255,255,255,0.85)' }}>
+                Design Meta-compliant templates, choose from verified presets, preview live on handset, and submit for Meta approval.
+              </p>
+            </div>
+          </div>
+          <button className="close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        {/* Studio Subtabs */}
+        <div style={{ background: '#F8FAFC', padding: '10px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <button
+            type="button"
+            className={`btn ${studioTab === 'presets' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ fontSize: '12px', padding: '6px 14px', display: 'flex', alignItems: 'center', gap: '6px' }}
+            onClick={() => setStudioTab('presets')}
+          >
+            <span>📚</span> 1. Choose from Meta Presets ({META_DEFAULT_PRESETS.length})
+          </button>
+          <button
+            type="button"
+            className={`btn ${studioTab === 'custom' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ fontSize: '12px', padding: '6px 14px', display: 'flex', alignItems: 'center', gap: '6px' }}
+            onClick={() => setStudioTab('custom')}
+          >
+            <span>✏️</span> 2. Custom Template Design & Variables
+          </button>
+          {selectedPresetKey && (
+            <span style={{ marginLeft: 'auto', fontSize: '11.5px', color: '#047857', fontWeight: '600' }}>
+              ✓ Loaded Preset: <code>{selectedPresetKey}</code>
+            </span>
+          )}
+        </div>
+
+        {/* Modal Body: 2-Column Studio (Left: Configurator / Presets | Right: Live Phone Mockup) */}
+        <div className="modal-body" style={{ display: 'grid', gridTemplateColumns: '1.45fr 1fr', gap: '24px', overflowY: 'auto' }}>
+          {/* LEFT COLUMN: Presets or Custom Form */}
+          <div>
+            {metaError && (
+              <div style={{ background: '#FEE2E2', border: '1px solid #FCA5A5', color: '#B91C1C', padding: '10px 14px', borderRadius: '8px', fontSize: '12.5px', marginBottom: '16px', fontWeight: '600' }}>
+                ⚠️ Meta API: {metaError}
+              </div>
+            )}
+
+            {/* TAB 1: META DEFAULT PRESETS GALLERY */}
+            {studioTab === 'presets' && (
+              <div>
+                <div style={{ marginBottom: '14px' }}>
+                  <h4 style={{ margin: '0 0 4px 0', fontSize: '13.5px', color: 'var(--text-primary)' }}>
+                    Standard Pre-Approved Industry Templates
+                  </h4>
+                  <p style={{ margin: 0, fontSize: '11.5px', color: 'var(--text-secondary)' }}>
+                    Select any template below to load compliant wording, media headers, and sample parameters ready for Meta approval.
+                  </p>
+                </div>
+
+                <div className="preset-grid">
+                  {META_DEFAULT_PRESETS.map((p) => {
+                    const isSelected = (formData.template_name === p.key) || (selectedPresetKey === p.key);
+                    return (
+                      <div
+                        key={p.key}
+                        className={`preset-card ${isSelected ? 'selected' : ''}`}
+                        onClick={() => handleSelectPreset(p)}
+                      >
+                        <div>
+                          <div className="preset-card-top">
+                            <span className="preset-card-icon">{p.icon}</span>
+                            <div>
+                              <div className="preset-card-title">{p.title}</div>
+                              <span className={`badge cat-${p.category.toLowerCase().substring(0, 4)}`} style={{ fontSize: '9.5px' }}>
+                                {p.category} • {p.header_type}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="preset-card-desc">{p.description}</div>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #F1F5F9' }}>
+                          <span style={{ fontSize: '11px', fontFamily: 'monospace', color: 'var(--wa-teal)' }}>
+                            {p.key}
+                          </span>
+                          <button
+                            type="button"
+                            className="btn btn-secondary btn-sm"
+                            style={{ fontSize: '11px', padding: '3px 8px' }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSelectPreset(p);
+                              setStudioTab('custom');
+                            }}
+                          >
+                            Use & Edit →
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* TAB 2: CUSTOM TEMPLATE FORM */}
+            {studioTab === 'custom' && (
+              <div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: '700' }}>Meta Template Key *</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. order_dispatch_uniglobal"
+                      value={formData.template_name}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        template_name: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '_')
+                      })}
+                      required
+                    />
+                    <span style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>
+                      Lowercase letters and underscores only (Meta rule)
+                    </span>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: '700' }}>Display Title *</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. Tax Invoice Dispatch with PDF"
+                      value={formData.display_title}
+                      onChange={(e) => setFormData({ ...formData, display_title: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '4px' }}>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: '700' }}>Category</label>
+                    <select
+                      className="form-select"
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    >
+                      <option value="UTILITY">Utility (Invoices, Confirmations, Reminders)</option>
+                      <option value="MARKETING">Marketing (Promotions, Discounts, Offers)</option>
+                      <option value="AUTHENTICATION">Authentication (OTP Verification Codes)</option>
+                      <option value="SERVICE">Service (Customer Support)</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: '700' }}>Language Code *</label>
+                    <select
+                      className="form-select"
+                      value={formData.language || 'en_US'}
+                      onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                    >
+                      <option value="en_US">English (US) — en_US (Standard)</option>
+                      <option value="en">English — en</option>
+                      <option value="en_GB">English (UK) — en_GB</option>
+                      <option value="ar">Arabic — ar</option>
+                      <option value="hi">Hindi — hi</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '4px' }}>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: '700' }}>Header Media Type</label>
+                    <select
+                      className="form-select"
+                      value={formData.header_type}
+                      onChange={(e) => setFormData({ ...formData, header_type: e.target.value })}
+                    >
+                      <option value="NONE">None (Plain Text Message)</option>
+                      <option value="DOCUMENT">Document (PDF Invoice / Report)</option>
+                      <option value="IMAGE">Image (Promotion Banner / Photo)</option>
+                      <option value="TEXT">Text Headline</option>
+                      <option value="VIDEO">Video</option>
+                    </select>
+                  </div>
+
+                  {formData.header_type !== 'NONE' && (
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontWeight: '700' }}>Header Sample URL / Headline</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="https://... or header headline"
+                        value={formData.header_sample || ''}
+                        onChange={(e) => setFormData({ ...formData, header_sample: e.target.value })}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Body Text */}
+                <div className="form-group" style={{ marginTop: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label className="form-label" style={{ fontWeight: '700' }}>Message Body Format *</label>
+                    <span className="badge cat-auth" style={{ fontSize: '10px' }}>
+                      {detectedVars.length} variable{detectedVars.length !== 1 ? 's' : ''} detected
+                    </span>
+                  </div>
+                  <textarea
+                    className="form-textarea"
+                    style={{ minHeight: '110px', fontFamily: 'inherit' }}
+                    placeholder="Dear {{1}}, your order {{2}} for BHD {{3}} has been confirmed."
+                    value={formData.body_text}
+                    onChange={(e) => setFormData({ ...formData, body_text: e.target.value })}
+                    required
+                  />
+                  <span style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>
+                    Use sequential placeholders like <code>&#123;&#123;1&#125;&#125;</code>, <code>&#123;&#123;2&#125;&#125;</code> for customer name, invoice number, amount, etc.
+                  </span>
+                </div>
+
+                {/* Mandatory Sample Parameters Inputs (Meta Review Requirement) */}
+                {detectedVars.length > 0 && (
+                  <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '12px 14px', margin: '10px 0' }}>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '4px' }}>
+                      ⚡ Meta Review Sample Values (Required by Meta AI):
+                    </div>
+                    <p style={{ margin: '0 0 10px 0', fontSize: '11px', color: 'var(--text-secondary)' }}>
+                      Provide realistic example values for each placeholder so Meta reviewers understand your message intent.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px' }}>
+                      {detectedVars.map((v, idx) => (
+                        <div key={v}>
+                          <label style={{ fontSize: '11px', fontWeight: '600', color: '#475569', display: 'block', marginBottom: '2px' }}>
+                            Variable &#123;&#123;{v}&#125;&#125; Sample:
+                          </label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            style={{ padding: '6px 10px', fontSize: '12px' }}
+                            value={sampleParams[idx] || ''}
+                            onChange={(e) => handleUpdateSampleParam(idx, e.target.value)}
+                            placeholder={`e.g. Value ${idx + 1}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Footer Tagline */}
+                <div className="form-group" style={{ marginTop: '4px' }}>
+                  <label className="form-label" style={{ fontWeight: '700' }}>Footer Tagline (Optional)</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. UniGlobal Accounts | Powered by SaNDS Lab"
+                    value={formData.footer_text || ''}
+                    onChange={(e) => setFormData({ ...formData, footer_text: e.target.value })}
+                  />
+                </div>
+
+                {/* Tariff Estimate Banner */}
+                <div className="tariff-estimate-banner" style={{ margin: '14px 0' }}>
+                  <div className="tariff-info">
+                    <span className="title">Bahrain Tariff Rate ({formData.category})</span>
+                    <span className="breakdown">
+                      Meta Cost: {activeTariff.meta.toFixed(4)} BHD | Platform Margin: +{activeTariff.platform.toFixed(4)} BHD
+                    </span>
+                  </div>
+                  <div className="tariff-rate-badge">
+                    BHD {activeTariff.client.toFixed(4)} / msg
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT COLUMN: REAL-TIME WHATSAPP PHONE MOCKUP SIMULATOR */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <span style={{ fontSize: '12px', fontWeight: '700', color: '#475569' }}>
+                📱 Live WhatsApp Handset Simulator:
+              </span>
+              <span className="badge status-read" style={{ fontSize: '10px' }}>
+                ● Real-Time Mockup
+              </span>
+            </div>
+
+            <div className="phone-mockup-wrapper">
+              <div className="phone-screen">
+                {/* Simulated Header */}
+                <div className="phone-header">
+                  <div className="phone-header-info">
+                    <div className="phone-avatar">SL</div>
+                    <div>
+                      <div className="phone-header-title">
+                        <span>SaNDS Lab Business</span>
+                        <span style={{ color: '#25D366', fontSize: '11px' }}>✓</span>
+                      </div>
+                      <div style={{ fontSize: '9.5px', color: 'rgba(255,255,255,0.8)' }}>
+                        Official Business Account
+                      </div>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)' }}>⋮</span>
+                </div>
+
+                {/* Simulated Chat Canvas */}
+                <div className="phone-chat-body">
+                  <div style={{ alignSelf: 'center', background: '#E1F3FB', color: '#0369A1', fontSize: '9.5px', padding: '3px 8px', borderRadius: '6px', margin: '6px 0 12px 0' }}>
+                    🔒 Messages are end-to-end encrypted
+                  </div>
+
+                  <div className="phone-bubble">
+                    {/* Header Preview */}
+                    {formData.header_type === 'DOCUMENT' && (
+                      <div className="phone-bubble-media">
+                        <span style={{ fontSize: '20px' }}>📄</span>
+                        <div style={{ overflow: 'hidden' }}>
+                          <strong style={{ display: 'block', fontSize: '11px', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                            {formData.header_sample ? formData.header_sample.split('/').pop() : 'Invoice_Document.pdf'}
+                          </strong>
+                          <span style={{ fontSize: '9.5px', color: '#64748B' }}>1.2 MB • PDF Document</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {formData.header_type === 'IMAGE' && (
+                      <div style={{ borderRadius: '6px', overflow: 'hidden', marginBottom: '8px', maxHeight: '140px', background: '#E2E8F0' }}>
+                        <img
+                          src={formData.header_sample || './assets/images/QRCodePoster.jpg'}
+                          alt="Banner Preview"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      </div>
+                    )}
+
+                    {formData.header_type === 'TEXT' && (
+                      <div className="phone-bubble-header">
+                        {formData.header_sample || formData.display_title || 'Headline'}
+                      </div>
+                    )}
+
+                    {/* Body Text */}
+                    <div className="phone-bubble-text">
+                      {previewBodyText}
+                    </div>
+
+                    {/* Footer Tagline */}
+                    {formData.footer_text && (
+                      <div className="phone-bubble-footer">
+                        {formData.footer_text}
+                      </div>
+                    )}
+
+                    {/* Meta Time & Double Ticks */}
+                    <div className="phone-bubble-meta">
+                      <span>14:30</span>
+                      <span style={{ color: '#53BDEB' }}>✓✓</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Modal Footer Controls */}
+        <div className="modal-footer" style={{ justifyContent: 'space-between' }}>
+          <div>
+            <span style={{ fontSize: '11.5px', color: '#64748B' }}>
+              Approval Time: Utility ~2 mins • Marketing ~30 mins
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={submittingMeta || savingLocal}>
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              style={{ fontWeight: '700' }}
+              onClick={() => handleSubmit(false)}
+              disabled={submittingMeta || savingLocal}
+            >
+              {savingLocal ? 'Saving...' : '💾 Save Locally Only'}
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: '700' }}
+              onClick={() => handleSubmit(true)}
+              disabled={submittingMeta || savingLocal}
+            >
+              <span>{submittingMeta ? '⏳' : '🚀'}</span>
+              {submittingMeta ? 'Submitting to Meta...' : 'Submit to Meta for Approval'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// 5. TEMPLATES & TARIFFS VIEW (v2.4.0)
 // -----------------------------------------------------------------------------
 function TemplatesView({ showToast }) {
   const [templates, setTemplates] = useState([]);
   const [editingTemplate, setEditingTemplate] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const [showStudioModal, setShowStudioModal] = useState(false);
+  const [syncingMeta, setSyncingMeta] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(null);
 
   const loadTemplates = () => {
@@ -3793,34 +4441,47 @@ function TemplatesView({ showToast }) {
 
   useEffect(() => { loadTemplates(); }, []);
 
-  const handleSaveTemplate = async (e) => {
-    e.preventDefault();
-    if (!editingTemplate.template_name || !editingTemplate.body_text) {
-      showToast('Template Key and Body Text are required', 'error');
-      return;
-    }
-    setSaving(true);
+  // 1-Click Toggle Active / Paused
+  const handleToggleActive = async (id, currentStatus, templateName) => {
+    const nextStatus = currentStatus ? 0 : 1;
     try {
-      const res = await fetch('./api/templates.php', {
+      const res = await fetch('./api/templates.php?action=toggle_active', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editingTemplate)
+        body: JSON.stringify({ id, is_active: nextStatus })
       });
       const data = await res.json();
       if (data.success) {
-        showToast(data.message || 'Template saved successfully!');
-        setEditingTemplate(null);
-        loadTemplates();
+        showToast(nextStatus ? `Template "${templateName}" activated!` : `Template "${templateName}" paused.`);
+        setTemplates(prev => prev.map(t => t.id === id ? { ...t, is_active: nextStatus } : t));
       } else {
-        showToast(data.error || 'Failed to save template', 'error');
+        showToast(data.error || 'Failed to update status', 'error');
       }
-    } catch (err) {
-      showToast('Network error saving template', 'error');
-    } finally {
-      setSaving(false);
+    } catch (e) {
+      showToast('Network error toggling status', 'error');
     }
   };
 
+  // Sync Live Status with Meta Graph API
+  const handleSyncMeta = async () => {
+    setSyncingMeta(true);
+    try {
+      const res = await fetch('./api/templates.php?action=sync_meta');
+      const data = await res.json();
+      if (data.success) {
+        showToast(`✓ Synced with Meta WABA! Found ${data.total_meta} templates on Meta.`);
+        loadTemplates();
+      } else {
+        showToast(data.error || 'Meta sync failed', 'error');
+      }
+    } catch (e) {
+      showToast('Network error during Meta sync', 'error');
+    } finally {
+      setSyncingMeta(false);
+    }
+  };
+
+  // Delete Template
   const handleDeleteTemplate = (id, name) => {
     setConfirmDialog({
       title: 'Delete WhatsApp Template?',
@@ -3848,24 +4509,6 @@ function TemplatesView({ showToast }) {
     });
   };
 
-  // Tariff calculation for modal preview
-  const modalTariffs = {
-    AUTHENTICATION: { meta: 0.0110, platform: 0.0035, client: 0.0145 },
-    UTILITY:        { meta: 0.0140, platform: 0.0045, client: 0.0185 },
-    MARKETING:      { meta: 0.0270, platform: 0.0070, client: 0.0340 },
-    SERVICE:        { meta: 0.0075, platform: 0.0025, client: 0.0100 }
-  };
-  const activeTariff = editingTemplate ? (modalTariffs[editingTemplate.category] || modalTariffs.UTILITY) : modalTariffs.UTILITY;
-
-  // Variable counter for preview (supports {{customer_name}}, {{1}}, {(1)}, {1}, etc.)
-  const varCount = editingTemplate && editingTemplate.body_text
-    ? (editingTemplate.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g)
-        ? new Set(editingTemplate.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g).map(s => s.replace(/[\{\}]/g, '').trim())).size
-        : (editingTemplate.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g)
-            ? new Set(editingTemplate.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g).map(s => parseInt(s.replace(/\D/g, ''), 10))).size
-            : 0))
-    : 0;
-
   const templateColumns = [
     {
       key: 'display_title',
@@ -3879,42 +4522,62 @@ function TemplatesView({ showToast }) {
     },
     {
       key: 'category',
-      label: 'Category',
-      render: (t) => <span className={`badge cat-${t.category.toLowerCase().substring(0, 4)}`}>{t.category}</span>
+      label: 'Category & Lang',
+      render: (t) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+          <span className={`badge cat-${t.category.toLowerCase().substring(0, 4)}`}>{t.category}</span>
+          <span style={{ fontSize: '10.5px', color: '#64748B' }}>{t.language || 'en_US'}</span>
+        </div>
+      )
     },
     {
       key: 'header_type',
-      label: 'Header Type',
+      label: 'Header Media',
       render: (t) => <span style={{ fontSize: '11px', fontWeight: '700' }}>{t.header_type}</span>
     },
     {
       key: 'body_text',
       label: 'Body Format',
-      render: (t) => <div style={{ maxWidth: '280px', fontSize: '11.5px', color: 'var(--text-secondary)' }}>{t.body_text}</div>
-    },
-    {
-      key: 'meta_cost_bhd',
-      label: 'Meta Cost',
-      render: (t) => <span>{parseFloat(t.meta_cost_bhd).toFixed(4)} BHD</span>
-    },
-    {
-      key: 'platform_charge_bhd',
-      label: 'Platform Charges',
-      render: (t) => <span style={{ color: 'var(--wa-dark-teal)', fontWeight: '700' }}>+{parseFloat(t.platform_charge_bhd).toFixed(4)} BHD</span>
+      render: (t) => <div style={{ maxWidth: '240px', fontSize: '11.5px', color: 'var(--text-secondary)' }}>{t.body_text}</div>
     },
     {
       key: 'client_rate_bhd',
       label: 'Client Rate',
       render: (t) => (
-        <strong style={{ color: 'var(--wa-teal)', fontSize: '13px' }}>
-          {parseFloat(t.client_rate_bhd).toFixed(4)} BHD
-        </strong>
+        <div>
+          <strong style={{ color: 'var(--wa-teal)', fontSize: '12.5px' }}>
+            {parseFloat(t.client_rate_bhd).toFixed(4)} BHD
+          </strong>
+          <div style={{ fontSize: '10.5px', color: '#64748B' }}>
+            Meta: {parseFloat(t.meta_cost_bhd).toFixed(4)}
+          </div>
+        </div>
       )
     },
     {
-      key: 'meta_status',
-      label: 'Meta Status',
-      render: (t) => <span className="badge status-read">APPROVED</span>
+      key: 'is_active',
+      label: 'Status & Control',
+      render: (t) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'flex-start' }}>
+          {/* Active / Paused Pill */}
+          <div
+            className={`tmpl-toggle-pill ${t.is_active ? 'active' : 'inactive'}`}
+            onClick={() => handleToggleActive(t.id, t.is_active, t.template_name)}
+            title={t.is_active ? 'Click to Pause / Deactivate Template' : 'Click to Activate Template'}
+          >
+            <span className="tmpl-toggle-dot"></span>
+            <span>{t.is_active ? 'Active' : 'Paused'}</span>
+          </div>
+
+          {/* Meta Status Badge */}
+          <span
+            className={`badge ${t.meta_status === 'APPROVED' ? 'status-read' : (t.meta_status === 'PENDING' ? 'cat-auth' : 'status-failed')}`}
+            style={{ fontSize: '10px' }}
+          >
+            {t.meta_status === 'APPROVED' ? '✓ APPROVED' : (t.meta_status === 'PENDING' ? '⏳ PENDING' : '✕ REJECTED')}
+          </span>
+        </div>
+      )
     },
     {
       key: 'actions',
@@ -3924,8 +4587,11 @@ function TemplatesView({ showToast }) {
         <div style={{ display: 'flex', gap: '6px' }}>
           <button
             className="btn btn-secondary btn-sm"
-            onClick={() => setEditingTemplate({ ...t })}
-            title="Edit Template"
+            onClick={() => {
+              setEditingTemplate({ ...t });
+              setShowStudioModal(true);
+            }}
+            title="Edit / Re-submit Template"
           >
             ✏️ Edit
           </button>
@@ -3944,195 +4610,63 @@ function TemplatesView({ showToast }) {
 
   return (
     <div>
+      {/* Page Header */}
       <div className="page-header-row">
         <div className="page-title-group">
           <h1><span>📋</span> WhatsApp Templates & Tariff Schedule</h1>
-          <p>Meta-registered message templates, variable placeholders, and official Bahrain Market rates.</p>
+          <p>
+            Meta-registered message templates, variable placeholders, official Bahrain Market rates, and active/inactive status controls.
+          </p>
         </div>
-        <button className="btn btn-primary" onClick={() => setEditingTemplate({
-          template_name: '', display_title: '', category: 'UTILITY', language: 'en_US',
-          header_type: 'NONE', header_sample: '', body_text: '', footer_text: ''
-        })}>
-          <span>➕</span> Register New Template
-        </button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            disabled={syncingMeta}
+            onClick={handleSyncMeta}
+            title="Query Meta Graph API to refresh approval statuses"
+          >
+            <span>{syncingMeta ? '⏳' : '🔄'}</span>
+            {syncingMeta ? 'Syncing...' : 'Sync with Meta'}
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-primary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            onClick={() => {
+              setEditingTemplate(null);
+              setShowStudioModal(true);
+            }}
+          >
+            <span>✨</span> Template Creation Studio
+          </button>
+        </div>
       </div>
 
       <DataTable
         columns={templateColumns}
         data={templates}
         title="whatsapp_templates"
-        searchPlaceholder="Search template title, category..."
+        searchPlaceholder="Search template title, key, category..."
         defaultPageSize={10}
         pageSizeOptions={[5, 10, 20]}
         defaultSortKey="id"
         defaultSortDir="desc"
       />
 
-      {/* Register & Edit Template Modal */}
-      {editingTemplate && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000,
-          padding: '20px'
-        }}>
-          <div className="card" style={{ maxWidth: '650px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
-            <div className="card-header" style={{ marginBottom: '16px' }}>
-              <span className="card-title">
-                <span>{editingTemplate.id ? '✏️ Edit Template' : '➕ Register New WhatsApp Template'}</span>
-              </span>
-              <button className="btn btn-secondary btn-sm" onClick={() => setEditingTemplate(null)}>✕ Close</button>
-            </div>
-
-            <form onSubmit={handleSaveTemplate}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                <div className="form-group">
-                  <label className="form-label">Meta Template Key *</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="e.g. uniglobal_invoice_alert"
-                    value={editingTemplate.template_name}
-                    onChange={(e) => setEditingTemplate({
-                      ...editingTemplate,
-                      template_name: e.target.value.toLowerCase().replace(/\s+/g, '_')
-                    })}
-                    required
-                  />
-                  <span style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>Lowercase & underscores only</span>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Display Title *</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="e.g. Invoice Notification with PDF"
-                    value={editingTemplate.display_title}
-                    onChange={(e) => setEditingTemplate({ ...editingTemplate, display_title: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginTop: '6px' }}>
-                <div className="form-group">
-                  <label className="form-label">Category</label>
-                  <select
-                    className="form-select"
-                    value={editingTemplate.category}
-                    onChange={(e) => setEditingTemplate({ ...editingTemplate, category: e.target.value })}
-                  >
-                    <option value="UTILITY">Utility (Invoices, Notifications)</option>
-                    <option value="AUTHENTICATION">Authentication (OTP Verification)</option>
-                    <option value="MARKETING">Marketing (Offers & Promotions)</option>
-                    <option value="SERVICE">Service (Customer Support)</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Language Code *</label>
-                  <select
-                    className="form-select"
-                    value={editingTemplate.language || 'en_US'}
-                    onChange={(e) => setEditingTemplate({ ...editingTemplate, language: e.target.value })}
-                  >
-                    <option value="en_US">English (US) — en_US (Most Common)</option>
-                    <option value="en">English — en</option>
-                    <option value="en_GB">English (UK) — en_GB</option>
-                    <option value="ar">Arabic — ar</option>
-                    <option value="hi">Hindi — hi</option>
-                  </select>
-                  <span style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>
-                    Must match the Language set in Meta (e.g. English (US) is <code>en_US</code>).
-                  </span>
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginTop: '6px' }}>
-                <div className="form-group">
-                  <label className="form-label">Header Media Type</label>
-                  <select
-                    className="form-select"
-                    value={editingTemplate.header_type}
-                    onChange={(e) => setEditingTemplate({ ...editingTemplate, header_type: e.target.value })}
-                  >
-                    <option value="NONE">None (Plain Message)</option>
-                    <option value="DOCUMENT">Document (PDF Invoice/Report)</option>
-                    <option value="IMAGE">Image (Banner / JPG / PNG)</option>
-                    <option value="TEXT">Text Header</option>
-                    <option value="VIDEO">Video</option>
-                  </select>
-                </div>
-
-                {editingTemplate.header_type !== 'NONE' && (
-                  <div className="form-group">
-                    <label className="form-label">Header Sample / URL</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="https://... or header text"
-                      value={editingTemplate.header_sample || ''}
-                      onChange={(e) => setEditingTemplate({ ...editingTemplate, header_sample: e.target.value })}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="form-group" style={{ marginTop: '6px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label className="form-label">Body Text (Message Format) *</label>
-                  <span className="badge cat-auth" style={{ fontSize: '10px' }}>
-                    {varCount} variable{varCount !== 1 ? 's' : ''} detected
-                  </span>
-                </div>
-                <textarea
-                  className="form-textarea"
-                  style={{ minHeight: '110px' }}
-                  placeholder="Dear {{1}}, your invoice {{2}} for BHD {{3}} has been generated on {{4}}."
-                  value={editingTemplate.body_text}
-                  onChange={(e) => setEditingTemplate({ ...editingTemplate, body_text: e.target.value })}
-                  required
-                />
-                <span style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>
-                  Use placeholders like <code>&#123;&#123;1&#125;&#125;</code>, <code>&#123;&#123;2&#125;&#125;</code> for dynamic ERP variables.
-                </span>
-              </div>
-
-              <div className="form-group" style={{ marginTop: '6px' }}>
-                <label className="form-label">Footer Tagline (Optional)</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="e.g. UniGlobal Accounts | Powered by SaNDS Lab"
-                  value={editingTemplate.footer_text || ''}
-                  onChange={(e) => setEditingTemplate({ ...editingTemplate, footer_text: e.target.value })}
-                />
-              </div>
-
-              {/* Live Tariff Calculation Banner */}
-              <div className="tariff-estimate-banner" style={{ margin: '14px 0' }}>
-                <div className="tariff-info">
-                  <span className="title">Bahrain Tariff ({editingTemplate.category})</span>
-                  <span className="breakdown">
-                    Meta Cost: {activeTariff.meta.toFixed(4)} BHD | Platform Fee: +{activeTariff.platform.toFixed(4)} BHD
-                  </span>
-                </div>
-                <div className="tariff-rate-badge">
-                  BHD {activeTariff.client.toFixed(4)} / msg
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '16px' }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setEditingTemplate(null)}>
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-primary" disabled={saving}>
-                  {saving ? 'Saving...' : (editingTemplate.id ? '💾 Update Template' : '🚀 Register Template')}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+      {/* TEMPLATE STUDIO MODAL (PRESET LIBRARY + PHONE SIMULATOR + META SUBMISSION) */}
+      {showStudioModal && (
+        <TemplateStudioModal
+          template={editingTemplate}
+          onClose={() => {
+            setShowStudioModal(false);
+            setEditingTemplate(null);
+          }}
+          onSave={loadTemplates}
+          showToast={showToast}
+        />
       )}
 
       {/* Confirmation Dialog */}

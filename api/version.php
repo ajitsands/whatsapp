@@ -55,9 +55,29 @@ sendJsonResponse([
                 'title'          => 'Odoo ERP Automated Action Webhook & Model Sync',
                 'status'         => 'Completed & Production Active (v2.3.0 Released)',
                 'scope'          => 'Inbound webhook triggers for automated invoice generation (account.move), sales order confirmations, dynamic PDF attachment streaming, and real-time delivery status synchronization with Odoo ERP.'
+            ],
+            [
+                'target_version' => '2.4.0',
+                'title'          => 'WhatsApp Template Creation Studio & Meta Graph API Live Approval',
+                'status'         => 'Completed & Production Active (v2.4.0 Released)',
+                'scope'          => 'Direct Meta Graph API submission for message templates, curated library of pre-built standard Meta presets, live handset mockup preview, Meta approval status synchronization, and active/inactive template lifecycle toggling.'
             ]
         ],
         'changelog' => [
+            [
+                'version' => '2.4.0',
+                'type'    => 'minor',
+                'date'    => '2026-10-13',
+                'status'  => 'Production Released',
+                'highlights' => [
+                    'Built dedicated WhatsApp Template Creation Studio with Meta Graph API submission endpoint',
+                    'Integrated curated library of 6 pre-built Meta-compliant industry preset templates (Invoices, Orders, Receipts, Reminders, Offers, OTPs)',
+                    'Engineered live interactive handset mockup phone simulator for real-time visual preview of template bubbles',
+                    'Implemented automatic variable placeholder detection and mandatory Meta example value generator',
+                    'Engineered Live Meta Status Sync endpoint querying WABA /message_templates to refresh approval states',
+                    'Added 1-click Active/Inactive lifecycle toggle with instant DB synchronization and Composer/Campaign filtering'
+                ]
+            ],
             [
                 'version' => '2.3.0',
                 'type'    => 'minor',
