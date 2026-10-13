@@ -906,7 +906,7 @@ function App() {
 // 1. LOGIN VIEW
 // -----------------------------------------------------------------------------
 function LoginView({ onLogin, onSwitchDemo }) {
-  const [email, setEmail] = useState('superadmin@sandslab.com');
+  const [email, setEmail] = useState('admin@uniglobal.bh');
   const [password, setPassword] = useState('Password@123');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -953,9 +953,6 @@ function LoginView({ onLogin, onSwitchDemo }) {
         <div className="preset-roles-box">
           <div className="preset-roles-title">⚡ Quick Sign-In by Role:</div>
           <div className="preset-buttons-row">
-            <button type="button" className="btn-preset" onClick={() => pickPreset('superadmin@sandslab.com', 'superadmin')}>
-              👑 Superadmin
-            </button>
             <button type="button" className="btn-preset" onClick={() => pickPreset('admin@uniglobal.bh', 'admin')}>
               🛡️ Admin
             </button>
