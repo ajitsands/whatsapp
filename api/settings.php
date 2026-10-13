@@ -7,35 +7,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../config/db.php';
 
-$db = Database::getConnection();
-$method = $_SERVER['REQUEST_METHOD'];
-
-// Determine caller role if session or headers present
-$auth = null;
-$userRole = null;
-$userId = $_SESSION['user_id'] ?? $_SERVER['HTTP_X_USER_ID'] ?? null;
-$userEmail = $_SERVER['HTTP_X_USER_EMAIL'] ?? null;
-
-if ($userId || $userEmail) {
-    if ($userId) {
-        $stmtU = $db->prepare("SELECT id, name, email, role, status FROM users WHERE id = ? AND status = 'active' LIMIT 1");
-        $stmtU->execute([(int)$userId]);
-    } else {
-        $stmtU = $db->prepare("SELECT id, name, email, role, status FROM users WHERE email = ? AND status = 'active' LIMIT 1");
-        $stmtU->execute([$userEmail]);
-    }
-    $uRow = $stmtU->fetch();
-    if ($uRow) {
-        $auth = ['type' => 'session', 'user' => $uRow];
-        $userRole = $uRow['role'];
-    }
-}
-
-// Fallback to active superadmin if session not explicit (matches authenticateRequest convention)
-if (!$auth && $method === 'POST') {
-    $auth = authenticateRequest(['superadmin', 'admin']);
-    $userRole = $auth['role'] ?? ($auth['user']['role'] ?? 'admin');
-}
+$auth = authenticateRequest(['superadmin', 'admin', 'user']);
+$userRole = $auth['role'] ?? ($auth['user']['role'] ?? 'admin');
+$isSuperadmin = ($userRole === 'superadmin');
+$db   = Database::getConnection();
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 switch ($method) {
     case 'GET':
@@ -96,7 +72,9 @@ switch ($method) {
         break;
 
     case 'POST':
-        $userRole = $auth['role'] ?? ($auth['user']['role'] ?? 'admin');
+        if (!in_array($userRole, ['superadmin', 'admin'], true)) {
+            sendJsonResponse(['success' => false, 'error' => 'Forbidden: Insufficient privileges'], 403);
+        }
         $isSuperadmin = ($userRole === 'superadmin');
         $action = $_GET['action'] ?? '';
 

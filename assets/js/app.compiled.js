@@ -463,6 +463,7 @@ function App() {
       className: "brand-logo",
       style: { maxHeight: "38px", maxWidth: "160px", objectFit: "contain" },
       onError: (e) => {
+        e.target.onerror = null;
         e.target.src = "./assets/logos/SaNDSLab-LogoNewUpdated.png";
       }
     }
@@ -1046,6 +1047,7 @@ function LoginView({ onLogin, onSwitchDemo, licenseInfo, globalSettings: globalS
       className: "login-logo",
       style: { maxHeight: "60px", maxWidth: "220px", objectFit: "contain", margin: "0 auto 12px auto" },
       onError: (e) => {
+        e.target.onerror = null;
         e.target.src = "./assets/logos/SaNDSLab-LogoNewUpdated.png";
       }
     }
@@ -5171,6 +5173,7 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       alt: "Brand Preview",
       style: { maxHeight: "36px", maxWidth: "140px", objectFit: "contain", background: "rgba(255,255,255,0.1)", padding: "2px 6px", borderRadius: "6px" },
       onError: (e) => {
+        e.target.onerror = null;
         e.target.src = "./assets/logos/SaNDSLab-LogoNewUpdated.png";
       }
     }
@@ -5181,11 +5184,13 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
       alt: "Login Preview",
       style: { maxHeight: "44px", maxWidth: "160px", objectFit: "contain", margin: "0 auto 8px auto", display: "block" },
       onError: (e) => {
+        e.target.onerror = null;
         e.target.src = "./assets/logos/SaNDSLab-LogoNewUpdated.png";
       }
     }
   ), /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "800", fontSize: "14px", color: "#0F172A" } }, settings.company_name || "WhatsApp Integration Platform"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", marginTop: "2px" } }, "Sign in to manage messaging, templates, and Odoo ERP webhooks"), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "8px", fontSize: "10.5px", color: "#10B981", fontWeight: "700" } }, "\u2713 Login Card Preview")), /* @__PURE__ */ React.createElement("div", { style: { background: "#005D4B", borderRadius: "10px", padding: "10px 14px", display: "flex", alignItems: "center", gap: "10px", color: "#FFF" } }, /* @__PURE__ */ React.createElement("div", { style: { width: "34px", height: "34px", borderRadius: "50%", background: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" } }, settings.company_logo ? /* @__PURE__ */ React.createElement("img", { src: settings.company_logo, alt: "Handset Avatar", style: { width: "100%", height: "100%", objectFit: "cover" }, onError: (e) => {
-    e.target.src = "./assets/logos/SaNDSLab-LogoNewUpdated.png";
+    e.target.onerror = null;
+    e.target.style.display = "none";
   } }) : /* @__PURE__ */ React.createElement("span", { style: { color: "#005D4B", fontWeight: "800", fontSize: "12px" } }, (settings.company_name || "UG").substring(0, 2).toUpperCase())), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12.5px", fontWeight: "700", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, settings.company_name || "Business Account", " ", /* @__PURE__ */ React.createElement("span", { style: { color: "#25D366" } }, "\u2713")), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "rgba(255,255,255,0.75)" } }, "Official Business Account")), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10px", color: "rgba(255,255,255,0.6)" } }, "Phone Simulator"))))), activeSubTab === "tariffs" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "950px" } }, !isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEF3C7", border: "1.5px solid #FCD34D", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F512}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#92400E" } }, "Read-Only Official Tariff Schedule"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "#78350F", marginTop: "2px" } }, "WhatsApp Meta base costs, platform margins, and billing engine rules are managed exclusively by SaNDS Lab Superadmin. Admin accounts have view-only access."))), !isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A" } }, "Active Charging Engine Model:"), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: settings.billing_model === "24h_session" ? "#DBEAFE" : "#DCFCE7", color: settings.billing_model === "24h_session" ? "#1E40AF" : "#15803D", fontWeight: "700", padding: "5px 12px" } }, settings.billing_model === "24h_session" ? "\u26A1 Option B: Meta 24-Hour Session Billing" : "\u{1F4C4} Option A: Standard Per-Message Billing"))), isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1.5px solid #0D9488", borderRadius: "12px", padding: "18px", marginBottom: "22px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u26A1"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#0F172A" } }, "WhatsApp Tariff & Charging Engine Model")), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#CCFBF1", color: "#0F766E", fontWeight: "800", fontSize: "11px", padding: "4px 9px" } }, "\u{1F451} Superadmin Exclusive Rule")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", margin: "0 0 16px 0", lineHeight: "1.4" } }, "Choose how the platform calculates Meta tariffs and debits client prepaid balances for outgoing messages:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "14px" } }, /* @__PURE__ */ React.createElement(
     "div",
     {

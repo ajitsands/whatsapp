@@ -780,7 +780,7 @@ function App() {
                 alt={globalSettings?.company_name || "Company Logo"}
                 className="brand-logo"
                 style={{ maxHeight: '38px', maxWidth: '160px', objectFit: 'contain' }}
-                onError={(e) => { e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }}
+                onError={(e) => { e.target.onerror = null; e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }}
               />
               <div className="brand-badge">
                 <span className="dot"></span> {globalSettings?.company_name ? globalSettings.company_name : 'WhatsApp Gateway'}
@@ -1721,7 +1721,7 @@ function LoginView({ onLogin, onSwitchDemo, licenseInfo, globalSettings, onOpenL
             alt={globalSettings?.company_name || "Company Logo"}
             className="login-logo"
             style={{ maxHeight: '60px', maxWidth: '220px', objectFit: 'contain', margin: '0 auto 12px auto' }}
-            onError={(e) => { e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }}
+            onError={(e) => { e.target.onerror = null; e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }}
           />
           <h2>{globalSettings?.company_name || "WhatsApp Integration Platform"}</h2>
           <p>Sign in to manage messaging, templates, and Odoo ERP webhooks</p>
@@ -8460,7 +8460,7 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                       src={settings.company_logo || './assets/logos/SaNDSLab-LogoNewUpdated.png'}
                       alt="Brand Preview"
                       style={{ maxHeight: '36px', maxWidth: '140px', objectFit: 'contain', background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '6px' }}
-                      onError={(e) => { e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }}
+                      onError={(e) => { e.target.onerror = null; e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }}
                     />
                     <div style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#25D366' }}></span>
@@ -8476,7 +8476,7 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                     src={settings.company_logo || './assets/logos/SaNDSLab-LogoNewUpdated.png'}
                     alt="Login Preview"
                     style={{ maxHeight: '44px', maxWidth: '160px', objectFit: 'contain', margin: '0 auto 8px auto', display: 'block' }}
-                    onError={(e) => { e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }}
+                    onError={(e) => { e.target.onerror = null; e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }}
                   />
                   <div style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>
                     {settings.company_name || 'WhatsApp Integration Platform'}
@@ -8493,7 +8493,7 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
                 <div style={{ background: '#005D4B', borderRadius: '10px', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '10px', color: '#FFF' }}>
                   <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                     {settings.company_logo ? (
-                      <img src={settings.company_logo} alt="Handset Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = './assets/logos/SaNDSLab-LogoNewUpdated.png'; }} />
+                      <img src={settings.company_logo} alt="Handset Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; }} />
                     ) : (
                       <span style={{ color: '#005D4B', fontWeight: '800', fontSize: '12px' }}>
                         {(settings.company_name || 'UG').substring(0, 2).toUpperCase()}
