@@ -1,40 +1,3349 @@
-(()=>{var{useState:s,useEffect:U,useMemo:Q,useRef:ce}=React;function Z({columns:n,data:r=[],searchable:g=!0,searchPlaceholder:o="Search records...",pageSizeOptions:c=[5,10,25,50],defaultPageSize:f=10,defaultSortKey:e="",defaultSortDir:d="desc",title:T="export",actions:m=null,emptyMessage:v="No matching records found."}){let[l,u]=s(""),[D,P]=s(f),[z,y]=s(1),p=e!==void 0&&e!==""?e:n.find(S=>S.key==="created_at"||S.key==="id")?.key||n[0]?.key||"",[C,b]=s(p),[I,F]=s(d),O=Q(()=>{if(!l.trim())return r;let S=l.toLowerCase();return r.filter(E=>n.some(h=>{let W=E[h.key];return W==null?!1:String(W).toLowerCase().includes(S)}))},[r,l,n]),R=Q(()=>C?[...O].sort((S,E)=>{let h=S[C],W=E[C];if(h==null&&(h=""),W==null&&(W=""),typeof h=="number"&&typeof W=="number")return I==="asc"?h-W:W-h;let $=Number(h),K=Number(W);return!isNaN($)&&!isNaN(K)&&typeof h!="boolean"&&typeof W!="boolean"&&h!==""&&W!==""?I==="asc"?$-K:K-$:I==="asc"?String(h).localeCompare(String(W),void 0,{numeric:!0,sensitivity:"base"}):String(W).localeCompare(String(h),void 0,{numeric:!0,sensitivity:"base"})}):O,[O,C,I]),_=R.length,t=Math.ceil(_/D)||1,x=Math.min(Math.max(1,z),t),A=Q(()=>{let S=(x-1)*D;return R.slice(S,S+D)},[R,x,D]),M=(S,E=!0)=>{E&&(C===S?F(h=>h==="asc"?"desc":"asc"):(b(S),F("desc")))},N=()=>{let S=n.map(K=>`"${K.label.replace(/"/g,'""')}"`).join(","),E=R.map(K=>n.map(H=>{let j=K[H.key];return j==null&&(j=""),`"${String(j).replace(/"/g,'""')}"`}).join(",")),h="data:text/csv;charset=utf-8,"+[S,...E].join(`
-`),W=encodeURI(h),$=document.createElement("a");$.setAttribute("href",W),$.setAttribute("download",`${T}_${Date.now()}.csv`),document.body.appendChild($),$.click(),document.body.removeChild($)},i=_===0?0:(x-1)*D+1,a=Math.min(x*D,_);return React.createElement("div",{className:"datatable-container"},React.createElement("div",{className:"datatable-header"},React.createElement("div",{className:"datatable-length"},React.createElement("span",null,"Show"),React.createElement("select",{value:D,onChange:S=>{P(Number(S.target.value)),y(1)}},c.map(S=>React.createElement("option",{key:S,value:S},S))),React.createElement("span",null,"entries")),React.createElement("div",{className:"datatable-tools"},m,React.createElement("button",{className:"btn-export",onClick:N,title:"Export table data to CSV file"},React.createElement("span",null,"\u{1F4E5}")," Export CSV"),g&&React.createElement("div",{className:"datatable-search"},React.createElement("span",{className:"datatable-search-icon"},"\u{1F50D}"),React.createElement("input",{type:"text",placeholder:o,value:l,onChange:S=>{u(S.target.value),y(1)}})))),React.createElement("div",{className:"data-table-wrapper"},React.createElement("table",{className:"data-table"},React.createElement("thead",null,React.createElement("tr",null,n.map(S=>{let E=C===S.key,h=S.sortable!==!1;return React.createElement("th",{key:S.key,className:`${h?"sortable":""} ${E?"sorted":""}`,onClick:()=>M(S.key,h),style:S.width?{width:S.width}:{}},S.label,h&&React.createElement("span",{className:"sort-indicator"},E?I==="asc"?" \u25B2":" \u25BC":" \u21C5"))}))),React.createElement("tbody",null,A.length===0?React.createElement("tr",null,React.createElement("td",{colSpan:n.length,style:{textAlign:"center",padding:"32px",color:"var(--text-muted)"}},v)):A.map((S,E)=>React.createElement("tr",{key:S.id||E},n.map(h=>React.createElement("td",{key:h.key},h.render?h.render(S):S[h.key]??""))))))),React.createElement("div",{className:"datatable-footer"},React.createElement("div",{className:"datatable-info"},"Showing ",i," to ",a," of ",_," entries",l&&` (filtered from ${r.length} total entries)`),React.createElement("div",{className:"datatable-pagination"},React.createElement("button",{className:"page-btn",disabled:x<=1,onClick:()=>y(S=>Math.max(1,S-1))},"\u2039 Prev"),Array.from({length:Math.min(5,t)},(S,E)=>{let h=x<=3?E+1:x+E-2;return h>t&&(h=t-(4-E)),h<1&&(h=E+1),h>t?null:React.createElement("button",{key:h,className:`page-btn ${x===h?"active":""}`,onClick:()=>y(h)},h)}),React.createElement("button",{className:"page-btn",disabled:x>=t,onClick:()=>y(S=>Math.min(t,S+1))},"Next \u203A"))))}function me({isOpen:n,onClose:r,onConfirm:g,title:o,subtitle:c,icon:f="\u{1F504}",badgeClass:e="primary",confirmText:d="Confirm",cancelText:T="Cancel",isProcessing:m=!1}){return n?React.createElement("div",{className:"confirm-modal-overlay",onClick:r,style:{zIndex:12e3}},React.createElement("div",{className:"confirm-modal-card",onClick:v=>v.stopPropagation()},React.createElement("div",{className:"confirm-modal-body"},React.createElement("div",{className:`confirm-modal-icon-badge ${e}`},React.createElement("span",null,f)),React.createElement("div",{className:"confirm-modal-title"},o),c&&React.createElement("div",{className:"confirm-modal-subtitle",style:{fontSize:"13.5px",color:"#64748B",lineHeight:"1.55",marginTop:"6px"}},c)),React.createElement("div",{className:"confirm-modal-actions"},React.createElement("button",{type:"button",className:"btn-confirm-cancel",onClick:r,disabled:m},T),React.createElement("button",{type:"button",className:e==="danger"?"btn-confirm-delete":"btn-confirm-primary",onClick:g,disabled:m},m?"Processing...":d)))):null}function Ne({isOpen:n,onClose:r}){return n?React.createElement("div",{className:"version-modal-overlay",onClick:r},React.createElement("div",{className:"version-modal-card",onClick:g=>g.stopPropagation()},React.createElement("div",{className:"version-modal-header"},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"12px"}},React.createElement("span",{style:{fontSize:"26px"}},"\u{1F680}"),React.createElement("div",null,React.createElement("h2",{style:{fontSize:"17px",fontWeight:"800",margin:0,color:"#FFFFFF"}},"WhatsApp Integration Platform \u2014 Version Architecture"),React.createElement("p",{style:{fontSize:"12px",margin:"2px 0 0 0",opacity:.9,color:"#E8F8F5"}},"Engineered by SaNDS Lab Middle East W.L.L. \u2022 Enterprise Release Registry"))),React.createElement("button",{onClick:r,style:{background:"rgba(255,255,255,0.2)",border:"none",color:"#FFFFFF",borderRadius:"8px",width:"32px",height:"32px",cursor:"pointer",fontSize:"18px",display:"flex",alignItems:"center",justifyContent:"center"},title:"Close"},"\u2715")),React.createElement("div",{className:"version-modal-body"},React.createElement("div",{className:"version-card-block",style:{borderLeft:"4px solid #10B981",background:"#F0FDF4"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"8px"}},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"8px"}},React.createElement("span",{style:{fontSize:"20px"}},"\u26A1"),React.createElement("strong",{style:{fontSize:"15px",color:"#065F46"}},"Active Release: Version 2.5.0 (Production Live)")),React.createElement("span",{className:"version-chip",style:{background:"#DCFCE7",color:"#166534",border:"1px solid #BBF7D0"}},"\u{1F7E2} v2.5.0 USER SECURITY & APPLICATION KEY LICENSING LIVE")),React.createElement("p",{style:{fontSize:"12.5px",color:"#065F46",margin:0,lineHeight:"1.5"}},"Version 2.5.0 delivers Enterprise User Security Management (Admin Edit, Suspend/Reactivate, and Password Resets) along with the official SaNDS Lab Application Key Licensing Engine with offline asymmetric RSA-SHA256 verification, top header expiry countdown, and strict security lock enforcement.")),React.createElement("div",{className:"version-card-block",style:{borderLeft:"4px solid #10B981",background:"#F0FDF4"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"8px"}},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"8px"}},React.createElement("span",{style:{fontSize:"20px"}},"\u{1F512}"),React.createElement("strong",{style:{fontSize:"15px",color:"#065F46"}},"Baseline Milestone: Version 1.0.0 (LOCKED)")),React.createElement("div",{style:{display:"flex",gap:"6px"}},React.createElement("span",{className:"version-chip",style:{background:"#DCFCE7",color:"#166534",border:"1px solid #BBF7D0"}},"GIT TAG: v1.0.0"),React.createElement("span",{className:"version-chip",style:{background:"#DCFCE7",color:"#166534",border:"1px solid #BBF7D0"}},"GIT TAG: v1.0"))),React.createElement("p",{style:{fontSize:"12px",color:"#047857",marginBottom:"10px",lineHeight:"1.4"}},React.createElement("strong",null,"Commit Hash:")," ",React.createElement("code",{style:{background:"#E2E8F0",padding:"1px 5px",borderRadius:"4px",color:"#0F172A"}},"9dd6ebc")," | Production verified & deployed on ",React.createElement("code",{style:{background:"#E2E8F0",padding:"1px 5px",borderRadius:"4px",color:"#0F172A"}},"https://whatsapp.sandslab.com"),"."),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))",gap:"8px",fontSize:"11.5px",color:"#065F46"}},React.createElement("div",null,"\u2713 Superadmin RBAC Security Restrictions"),React.createElement("div",null,"\u2713 Dual Charging Engine (Option A vs B)"),React.createElement("div",null,"\u2713 Meta WhatsApp Cloud API v19.0 Dispatch"),React.createElement("div",null,"\u2713 Multi-Language Odoo API Hub"),React.createElement("div",null,"\u2713 Prepaid Wallet & BHD 3-Dec Audit Ledger"),React.createElement("div",null,"\u2713 Enterprise DataTables (DESC Sort)"))),React.createElement("div",{className:"version-card-block",style:{background:"#FFFFFF"}},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"10px"}},React.createElement("span",{style:{fontSize:"18px"}},"\u{1F4D0}"),React.createElement("strong",{style:{fontSize:"14px",color:"#0F172A"}},"Minor Version Management Protocol (SemVer 2.0.0)")),React.createElement("p",{style:{fontSize:"12px",color:"var(--text-secondary)",marginBottom:"12px"}},"Starting from Version 2.0, all ongoing changes are version-controlled using structured semantic numbering:"),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px"}},React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"8px",padding:"10px"}},React.createElement("strong",{style:{color:"#2563EB",fontSize:"12px"}},"v2.0.0 (MAJOR)"),React.createElement("p",{style:{fontSize:"11px",color:"#64748B",margin:"4px 0 0 0"}},"Major generation architecture shift & foundational framework upgrades.")),React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"8px",padding:"10px"}},React.createElement("strong",{style:{color:"#059669",fontSize:"12px"}},"v2.x.0 (MINOR)"),React.createElement("p",{style:{fontSize:"11px",color:"#64748B",margin:"4px 0 0 0"}},"Scheduled roadmap feature milestones (v2.1 Live Chat, v2.2 Campaigns, v2.3 Odoo, v2.4 Templates, v2.5 License).")),React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"8px",padding:"10px"}},React.createElement("strong",{style:{color:"#D97706",fontSize:"12px"}},"v2.x.y (PATCH)"),React.createElement("p",{style:{fontSize:"11px",color:"#64748B",margin:"4px 0 0 0"}},"Targeted bug fixes, security patches, styling polish, and maintenance hotfixes.")))),React.createElement("div",{className:"version-card-block",style:{background:"#FFFFFF"}},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"12px"}},React.createElement("span",{style:{fontSize:"18px"}},"\u{1F4CB}"),React.createElement("strong",{style:{fontSize:"14px",color:"#0F172A"}},"Version 2.0 Execution Roadmap (All Milestones Completed & Production Live \u2705)")),React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"10px"}},React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:"12px",padding:"10px 12px",background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"8px"}},React.createElement("span",{className:"version-chip",style:{background:"#16A34A",color:"#FFFFFF",marginTop:"2px"}},"v2.1.0"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",color:"#15803D"}},"Inbound Live Chat & Two-Way Agent Inbox (Completed & Released \u2705)"),React.createElement("p",{style:{fontSize:"11.5px",color:"#166534",margin:"2px 0 0 0"}},"Two-way conversational workspace, Meta 24-hour customer care session window tracking, canned replies, free-text replies, and simulated inbound testing."))),React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:"12px",padding:"10px 12px",background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"8px"}},React.createElement("span",{className:"version-chip",style:{background:"#16A34A",color:"#FFFFFF",marginTop:"2px"}},"v2.2.0"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",color:"#15803D"}},"Bulk Campaign Broadcasts & Queue Pacing (Completed & Released \u2705)"),React.createElement("p",{style:{fontSize:"11.5px",color:"#166534",margin:"2px 0 0 0"}},"CSV contact upload with dynamic variable mapping, anti-spam dispatch queue pacing, live animated monitor, and verified Meta webhook delivery receipts."))),React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:"12px",padding:"10px 12px",background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"8px"}},React.createElement("span",{className:"version-chip",style:{background:"#16A34A",color:"#FFFFFF",marginTop:"2px"}},"v2.3.0"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",color:"#15803D"}},"Odoo ERP Automated Action Webhook & Model Sync (Completed & Released \u2705)"),React.createElement("p",{style:{fontSize:"11.5px",color:"#166534",margin:"2px 0 0 0"}},"Inbound webhook triggers for automated invoice generation (account.move), sales order confirmations, dynamic PDF attachment streaming, and bi-directional chatter delivery callbacks."))),React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:"12px",padding:"10px 12px",background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"8px"}},React.createElement("span",{className:"version-chip",style:{background:"#16A34A",color:"#FFFFFF",marginTop:"2px"}},"v2.4.0"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",color:"#15803D"}},"WhatsApp Template Studio & Meta Graph API Live Approval (Completed & Released \u2705)"),React.createElement("p",{style:{fontSize:"11.5px",color:"#166534",margin:"2px 0 0 0"}},"Direct Meta Graph API submission for message templates, curated library of pre-built Meta presets, live handset mockup phone preview, and active/inactive template filtering."))),React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:"12px",padding:"10px 12px",background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"8px"}},React.createElement("span",{className:"version-chip",style:{background:"#16A34A",color:"#FFFFFF",marginTop:"2px"}},"v2.5.0"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",color:"#15803D"}},"Enterprise User Security & SaNDS Lab Application Key Licensing (Active & Released \u2705)"),React.createElement("p",{style:{fontSize:"11.5px",color:"#166534",margin:"2px 0 0 0"}},"Admin user edit & suspension controls, self and admin password reset flows, SaNDS Lab Application Key licensing engine with offline asymmetric RSA-SHA256 verification, top header expiry duration pill, and strict lock security protection.")))))),React.createElement("div",{style:{padding:"14px 24px",background:"#F8FAFC",borderTop:"1px solid #E2E8F0",display:"flex",justifyContent:"flex-end"}},React.createElement("button",{type:"button",className:"btn btn-primary",onClick:r,style:{padding:"8px 20px",fontSize:"13px",fontWeight:"700"}},"Close Version Inspector")))):null}function Se(){let[n,r]=s(()=>{try{let B=localStorage.getItem("wa_user");return B?JSON.parse(B):null}catch{return null}}),[g,o]=s(!n),[c,f]=s(!1),[e,d]=s({system_currency:"BHD",currency_decimals:"3",system_date_format:"YYYY-MM-DD HH:mm:ss",system_timezone:"Asia/Bahrain",tariff_utility_meta:"0.0140",tariff_utility_platform:"0.0045",tariff_auth_meta:"0.0110",tariff_auth_platform:"0.0035",tariff_marketing_meta:"0.0270",tariff_marketing_platform:"0.0070",tariff_service_meta:"0.0075",tariff_service_platform:"0.0025",wallet_enforcement:"1"}),[T,m]=s(0),[v,l]=s(()=>{let B=window.location.hash.replace("#","").trim(),L=localStorage.getItem("wa_tab"),Y=["dashboard","inbox","campaigns","composer","logs","templates","api_hub","api_keys","users","wallet","settings"];return B&&Y.includes(B)?B:L&&Y.includes(L)?L:"dashboard"}),[u,D]=s(null),[P,z]=s(0),[y,p]=s(!1),[C,b]=s(!1),I=ce(null),[F,O]=s(null),[R,_]=s(!0),[t,x]=s(!1),[A,M]=s(!1),N=async(B=!0)=>{try{let Y=await(await fetch("./api/license.php?action=status")).json();Y.success&&Y.data&&(O(Y.data),!Y.data.valid&&B&&x(!0))}catch(L){console.error("License check error:",L)}finally{_(!1)}};U(()=>{let B=L=>{I.current&&!I.current.contains(L.target)&&p(!1)};return document.addEventListener("mousedown",B),()=>document.removeEventListener("mousedown",B)},[]);let i=B=>{l(B);try{window.location.hash=B,localStorage.setItem("wa_tab",B)}catch{}};U(()=>{let B=()=>{let L=window.location.hash.replace("#","").trim();L&&["dashboard","inbox","campaigns","composer","logs","templates","api_hub","api_keys","users","wallet","settings"].includes(L)&&(l(L),localStorage.setItem("wa_tab",L))};return window.addEventListener("hashchange",B),()=>window.removeEventListener("hashchange",B)},[]);let a=async()=>{try{let L=await(await fetch("./api/settings.php")).json();L.success&&L.settings&&d(Y=>({...Y,...L.settings}))}catch{}},S=async()=>{try{let L=await(await fetch("./api/wallet.php?limit=1")).json();L.success&&L.wallet_balance!==void 0&&m(parseFloat(L.wallet_balance))}catch{}};U(()=>{h(),a(),S(),N(!0)},[]);let E=(B,L="success")=>{D({message:B,type:L}),setTimeout(()=>D(null),4e3)},h=async()=>{try{let L=await(await fetch("./api/auth.php?action=check",{headers:n?{"X-User-Id":String(n.id),"X-User-Email":n.email}:{}})).json();L.success&&L.authenticated&&L.user?(r(L.user),localStorage.setItem("wa_user",JSON.stringify(L.user)),S()):n||(r(null),localStorage.removeItem("wa_user"))}catch(B){console.error("Auth check error",B)}finally{o(!1)}},W=B=>{r(B);try{localStorage.setItem("wa_user",JSON.stringify(B))}catch{}E(`Welcome back, ${B.name}!`),a(),S()},$=async()=>{try{await fetch("./api/auth.php?action=logout"),r(null),localStorage.removeItem("wa_user"),localStorage.removeItem("wa_tab"),window.location.hash="",E("You have been logged out.")}catch(B){console.error(B)}},K=async B=>{try{let Y=await(await fetch("./api/auth.php?action=switch_demo_user",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({role:B})})).json();if(Y.success){r(Y.user);try{localStorage.setItem("wa_user",JSON.stringify(Y.user))}catch{}E(`Switched to ${Y.user.name} (${B.toUpperCase()})`),S()}}catch(L){console.error(L)}};if(R||g&&!n)return React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",gap:"12px"}},React.createElement("div",{className:"brand-badge"},React.createElement("span",{className:"dot"})," Loading SaNDS Platform..."));let H=!!(F&&!F.valid);if(n&&H)return React.createElement("div",{style:{minHeight:"100vh",background:"radial-gradient(circle at 50% 50%, #152033 0%, #0A0E17 100%)",display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}},React.createElement(pe,{licenseInfo:F,isLockedScreen:!0,currentUser:n,onSuccess:B=>{O(B),x(!1),E("\u2713 Application Key activated successfully! Access granted.")},onClose:()=>{$()},showToast:E}));if(!n)return React.createElement(React.Fragment,null,React.createElement(ke,{onLogin:W,onSwitchDemo:K,licenseInfo:F,onOpenLicenseActivation:()=>x(!0)}),(t||H)&&React.createElement(pe,{licenseInfo:F,isLockedScreen:H,onSuccess:B=>{O(B),x(!1),E("\u2713 Application Key activated successfully!")},onClose:()=>x(!1),showToast:E}));let j=e?.system_currency||"BHD",X=parseInt(e?.currency_decimals||"3",10);return React.createElement("div",{style:{display:"flex",flexDirection:"column",minHeight:"100vh"}},u&&React.createElement("div",{style:{position:"fixed",top:"20px",right:"24px",zIndex:9999,background:u.type==="error"?"#EF4444":"#075E54",color:"#fff",padding:"12px 20px",borderRadius:"8px",boxShadow:"0 8px 16px rgba(0,0,0,0.15)",fontSize:"13px",fontWeight:"600",display:"flex",alignItems:"center",gap:"10px"}},React.createElement("span",null,u.type==="error"?"\u26A0\uFE0F":"\u2705"),u.message),React.createElement("header",{className:"app-header"},React.createElement("div",{className:"header-top-bar"},React.createElement("div",{className:"header-top-inner"},React.createElement("div",{className:"header-brand"},React.createElement("img",{src:"./assets/logos/SaNDSLab-LogoNewUpdated.png",alt:"SaNDS Lab Middle East",className:"brand-logo"}),React.createElement("div",{className:"brand-badge"},React.createElement("span",{className:"dot"})," WhatsApp Gateway"),React.createElement("button",{type:"button",className:"version-pill-btn",onClick:()=>f(!0),title:"Click to view Version Architecture, Git Tags & Future Roadmap"},React.createElement("span",{className:"version-pill-dot"}),React.createElement("span",null,"v2.5.0"))),React.createElement("div",{className:"header-actions"},React.createElement("div",{className:`license-header-pill ${!F||!F.valid?"status-unlicensed":F.days_left<=7?"status-expiring-soon":F.days_left<=30?"status-expiring-month":"status-active"}`,onClick:()=>M(!0),title:"Click to view SaNDS Lab Application Key & Expiry details"},React.createElement("span",null,!F||!F.valid?"\u26A0\uFE0F":F.days_left<=7?"\u23F3":"\u{1F6E1}\uFE0F"),React.createElement("span",null,"License: ",React.createElement("strong",null,F?.duration_text||(R?"Checking...":"Unlicensed")))),React.createElement("div",{className:"wallet-header-pill",onClick:()=>i("wallet"),title:"Click to manage Wallet & view Billing Statement"},React.createElement("span",null,"\u{1F4B3}"),React.createElement("span",null,"Wallet: ",React.createElement("strong",null,G(T,j,X)))),React.createElement("div",{className:"user-profile-pill",title:`Logged in as ${n.email}`},React.createElement("div",{className:"avatar",style:{background:n.avatar_color||"#128C7E"}},n.name.charAt(0)),React.createElement("div",{className:"user-details"},React.createElement("span",{className:"user-name"},n.name),React.createElement("span",{className:"user-role-badge"},n.role))),React.createElement("button",{type:"button",className:"btn-header-action",onClick:()=>b(!0),title:"Change Your Account Password"},React.createElement("span",null,"\u{1F511}"),React.createElement("span",null,"Change Password")),React.createElement("button",{className:"btn-logout",onClick:$,title:"Sign Out"},React.createElement("span",null,"\u{1F6AA}")," Logout")))),React.createElement("div",{className:"header-nav-bar"},React.createElement("div",{className:"header-nav-inner"},React.createElement("nav",{className:"horizontal-nav"},React.createElement("button",{className:`nav-item ${v==="dashboard"?"active":""}`,onClick:()=>i("dashboard")},React.createElement("span",null,"\u{1F4CA}")," Dashboard"),React.createElement("div",{className:"nav-dropdown-wrap",ref:I},React.createElement("button",{type:"button",className:`nav-dropdown-btn ${["inbox","campaigns","composer","logs"].includes(v)?"active":""}`,onClick:()=>p(B=>!B),title:"Messages Menu (Inbox, Campaigns, Send Message, Logs)"},React.createElement("span",null,"\u{1F4AC}"),React.createElement("span",null,"Messages"),P>0&&React.createElement("span",{style:{background:["inbox","campaigns","composer","logs"].includes(v)?"#FFFFFF":"#25D366",color:["inbox","campaigns","composer","logs"].includes(v)?"#075E54":"#FFFFFF",fontSize:"10px",fontWeight:"800",padding:"1px 6px",borderRadius:"10px",marginLeft:"2px"}},P),React.createElement("span",{className:`nav-chevron ${y?"open":""}`},"\u25BC")),y&&React.createElement("div",{className:"nav-dropdown-menu"},React.createElement("button",{type:"button",className:`nav-dropdown-item ${v==="inbox"?"active":""}`,onClick:()=>{i("inbox"),p(!1)}},React.createElement("div",{className:"nav-dropdown-item-left"},React.createElement("span",{style:{fontSize:"15px"}},"\u{1F4AC}"),React.createElement("div",null,React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"6px"}},React.createElement("span",null,"Live Agent Inbox"),P>0&&React.createElement("span",{style:{background:"#25D366",color:"#FFFFFF",fontSize:"10px",fontWeight:"800",padding:"1px 6px",borderRadius:"10px"}},P)),React.createElement("div",{style:{fontSize:"11px",color:"#64748B",fontWeight:"400",marginTop:"1px"}},"2-Way Live Chat & Care Session"))),v==="inbox"&&React.createElement("span",{className:"nav-item-indicator"})),React.createElement("button",{type:"button",className:`nav-dropdown-item ${v==="campaigns"?"active":""}`,onClick:()=>{i("campaigns"),p(!1)}},React.createElement("div",{className:"nav-dropdown-item-left"},React.createElement("span",{style:{fontSize:"15px"}},"\u{1F4E2}"),React.createElement("div",null,React.createElement("div",null,"Bulk Broadcasts"),React.createElement("div",{style:{fontSize:"11px",color:"#64748B",fontWeight:"400",marginTop:"1px"}},"Paced Queue & CSV Campaigns"))),v==="campaigns"&&React.createElement("span",{className:"nav-item-indicator"})),React.createElement("button",{type:"button",className:`nav-dropdown-item ${v==="composer"?"active":""}`,onClick:()=>{i("composer"),p(!1)}},React.createElement("div",{className:"nav-dropdown-item-left"},React.createElement("span",{style:{fontSize:"15px"}},"\u{1F4E4}"),React.createElement("div",null,React.createElement("div",null,"Send Message"),React.createElement("div",{style:{fontSize:"11px",color:"#64748B",fontWeight:"400",marginTop:"1px"}},"Direct Template Composer"))),v==="composer"&&React.createElement("span",{className:"nav-item-indicator"})),React.createElement("button",{type:"button",className:`nav-dropdown-item ${v==="logs"?"active":""}`,onClick:()=>{i("logs"),p(!1)}},React.createElement("div",{className:"nav-dropdown-item-left"},React.createElement("span",{style:{fontSize:"15px"}},"\u{1F4DC}"),React.createElement("div",null,React.createElement("div",null,"Message Logs"),React.createElement("div",{style:{fontSize:"11px",color:"#64748B",fontWeight:"400",marginTop:"1px"}},"Delivery & Status Telemetry"))),v==="logs"&&React.createElement("span",{className:"nav-item-indicator"})))),React.createElement("button",{className:`nav-item ${v==="templates"?"active":""}`,onClick:()=>i("templates")},React.createElement("span",null,"\u{1F4CB}")," Templates & Tariffs"),React.createElement("button",{className:`nav-item ${v==="wallet"?"active":""}`,onClick:()=>i("wallet")},React.createElement("span",null,"\u{1F4B3}")," Wallet & Billing"),React.createElement("button",{className:`nav-item ${v==="api_hub"?"active":""}`,onClick:()=>i("api_hub")},React.createElement("span",null,"\u26A1")," Odoo API Hub"),["superadmin","admin"].includes(n.role)&&React.createElement(React.Fragment,null,React.createElement("button",{className:`nav-item ${v==="api_keys"?"active":""}`,onClick:()=>i("api_keys")},React.createElement("span",null,"\u{1F511}")," API Keys"),React.createElement("button",{className:`nav-item ${v==="users"?"active":""}`,onClick:()=>i("users")},React.createElement("span",null,"\u{1F465}")," Users"),React.createElement("button",{className:`nav-item ${v==="settings"?"active":""}`,onClick:()=>i("settings")},React.createElement("span",null,"\u2699\uFE0F")," Engine Settings")))))),React.createElement("main",{className:"app-body"},v==="dashboard"&&React.createElement(Ae,{onNavigate:i,globalSettings:e}),v==="inbox"&&React.createElement(Ee,{currentUser:n,showToast:E,globalSettings:e,onUnreadCountChange:z,onNavigate:i}),v==="campaigns"&&React.createElement(Pe,{currentUser:n,showToast:E,globalSettings:e,onNavigate:i,loadWalletBalance:S}),v==="composer"&&React.createElement(Fe,{showToast:E,onSent:()=>{i("inbox"),S()},globalSettings:e}),v==="logs"&&React.createElement(ze,{showToast:E,globalSettings:e,onOpenInbox:B=>{i("inbox")}}),v==="templates"&&React.createElement(Me,{showToast:E,globalSettings:e}),v==="wallet"&&React.createElement(je,{currentUser:n,showToast:E,globalSettings:e,onBalanceChange:m}),v==="api_hub"&&React.createElement(We,{showToast:E,globalSettings:e}),v==="api_keys"&&React.createElement(Le,{showToast:E}),v==="users"&&React.createElement($e,{currentUser:n,showToast:E}),v==="settings"&&React.createElement(Ue,{currentUser:n,showToast:E,onSettingsChange:B=>{d(L=>({...L,...B})),S()}})),React.createElement("footer",{className:"app-footer"},React.createElement("div",{className:"footer-inner"},React.createElement("div",{className:"footer-left"},"All Rights Reserved | Engineered By SaNDS Lab Middle East W.L.L."),React.createElement("div",{className:"footer-right"},React.createElement("span",{className:"footer-badge version-footer-clickable",onClick:()=>f(!0),title:"Click to inspect Version 2.5.0 Architecture & Locked v1.0.0 Baseline"},"Platform v2.5.0 (v1.0.0 Locked \u{1F512})"),React.createElement("span",{className:"footer-badge"},"WhatsApp Cloud API v19.0"),React.createElement("span",{className:"footer-badge"},"Odoo ERP Connector Active"),React.createElement("span",null,"Bahrain (BHD) Tariff Active")))),React.createElement(Ne,{isOpen:c,onClose:()=>f(!1)}),C&&React.createElement(we,{currentUser:n,onClose:()=>b(!1),showToast:E}),t&&React.createElement(pe,{licenseInfo:F,onSuccess:B=>{O(B),x(!1),E("\u2713 Application Key activated successfully!")},onClose:()=>x(!1),showToast:E}),A&&React.createElement(Ce,{licenseInfo:F,onClose:()=>M(!1),onChangeKey:()=>{M(!1),x(!0)},onRefresh:()=>N(!1),showToast:E}))}function pe({licenseInfo:n,isLockedScreen:r,currentUser:g,onSuccess:o,onClose:c,showToast:f}){let[e,d]=s(""),[T,m]=s(n?.detected_domain||"localhost"),[v,l]=s(!1),[u,D]=s("");return React.createElement("div",{className:"modal-overlay",onClick:r?void 0:c},React.createElement("div",{className:"modal-content",style:{maxWidth:"520px",border:r?"2px solid #EF4444":void 0},onClick:y=>y.stopPropagation()},React.createElement("div",{className:"modal-header",style:{background:r?"linear-gradient(135deg, #7F1D1D 0%, #991B1B 100%)":void 0}},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"10px"}},React.createElement("span",{style:{fontSize:"24px"}},r?"\u{1F512}":"\u{1F6E1}\uFE0F"),React.createElement("div",null,React.createElement("h3",{style:{margin:0,fontSize:"16px"}},r?"Application Key Required (Locked)":"Application Key Activation"),React.createElement("p",{style:{margin:"2px 0 0 0",fontSize:"12px",color:"rgba(255,255,255,0.85)"}},"SaNDS Lab Licensing Server (key.sandslab.com)"))),React.createElement("button",{type:"button",className:"close-btn",onClick:c,title:r?"Close and Return to Login":"Close"},"\u2715")),React.createElement("form",{onSubmit:async y=>{if(y.preventDefault(),!e.trim()){D("Please enter a license key");return}l(!0),D("");try{let C=await(await fetch("./api/license.php?action=activate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({license_key:e.trim(),domain_name:T.trim()})})).json();C.success?o(C.data):D(C.error||"Activation failed")}catch{D("Network error connecting to activation service")}finally{l(!1)}}},React.createElement("div",{className:"modal-body",style:{padding:"22px"}},r?React.createElement("div",{style:{background:"#FEF2F2",border:"1px solid #FCA5A5",color:"#991B1B",padding:"12px 14px",borderRadius:"8px",fontSize:"12.5px",marginBottom:"18px",lineHeight:"1.5"}},React.createElement("strong",{style:{display:"block",fontSize:"13px",marginBottom:"2px"}},"\u26D4 Platform Access Locked"),"The application requires a valid, active License Key to be unlocked. Closing this window will return you to the login screen."):React.createElement("div",{style:{background:"#F0FDF4",border:"1px solid #BBF7D0",color:"#166534",padding:"12px 14px",borderRadius:"8px",fontSize:"12.5px",marginBottom:"18px",lineHeight:"1.5"}},"\u{1F4A1} ",React.createElement("strong",null,"License Required:")," This application authenticates via an asymmetric offline RSA verification model. Please enter your SaNDS Lab License Key."),u&&React.createElement("div",{style:{background:"#FEE2E2",border:"1px solid #FCA5A5",color:"#B91C1C",padding:"10px 14px",borderRadius:"8px",fontSize:"12.5px",marginBottom:"16px",fontWeight:"600"}},"\u26A0\uFE0F ",u),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Application License Key ",React.createElement("span",{style:{color:"#EF4444"}},"*")),React.createElement("input",{type:"text",className:"form-input",placeholder:"INV-XXXXXX-XXXXXX-XXXXXX-XXXXXX",value:e,onChange:y=>d(y.target.value),required:!0,style:{fontFamily:"monospace",letterSpacing:"1px",fontWeight:"700",textTransform:"uppercase"}}),React.createElement("span",{className:"form-hint"},"Obtain your key from ",React.createElement("a",{href:"https://key.sandslab.com/public/docs",target:"_blank",rel:"noreferrer",style:{color:"var(--wa-teal)",textDecoration:"underline"}},"key.sandslab.com/public/docs"))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Licensed Domain Name"),React.createElement("input",{type:"text",className:"form-input",value:T,onChange:y=>m(y.target.value),required:!0,style:{fontFamily:"monospace"}}),React.createElement("span",{className:"form-hint"},"Automatically detected server host domain.")),React.createElement("div",{style:{marginTop:"16px",padding:"12px 14px",background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"8px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"12px"}},React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",display:"block",color:"var(--text-primary)"}},"Need a Quick Test Key?"),React.createElement("span",{style:{fontSize:"11.5px",color:"var(--text-muted)"}},"Activate a 30-day developer trial key for localhost.")),React.createElement("button",{type:"button",className:"btn btn-secondary btn-sm",onClick:async()=>{l(!0),D("");try{let p=await(await fetch("./api/license.php?action=activate_eval",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({domain_name:T.trim()})})).json();p.success?o(p.data):D(p.error||"Failed to start evaluation")}catch{D("Network error starting evaluation")}finally{l(!1)}},disabled:v,style:{whiteSpace:"nowrap"}},"\u26A1 30-Day Trial"))),React.createElement("div",{className:"modal-footer",style:{padding:"14px 22px",display:"flex",gap:"10px",justifyContent:"flex-end"}},React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:c,disabled:v},r?"\u{1F6AA} Exit to Login":"Close"),React.createElement("button",{type:"submit",className:"btn btn-primary",disabled:v},v?"Activating...":"\u{1F680} Activate Application")))))}function Ce({licenseInfo:n,onClose:r,onChangeKey:g,onRefresh:o,showToast:c}){let[f,e]=s(!1),[d,T]=s(!1),m=async()=>{e(!0);try{let u=await(await fetch("./api/license.php?action=refresh",{method:"POST"})).json();u.success?(c("\u2713 License status re-verified successfully!"),o&&o()):c(u.error||"Refresh failed","error")}catch{c("Network error while refreshing license","error")}finally{e(!1)}},v=()=>{let l=n?.full_license_key||n?.license_key;l&&navigator.clipboard&&(navigator.clipboard.writeText(l),c("\u{1F4CB} License Key copied to clipboard"))};return React.createElement("div",{className:"modal-overlay",onClick:r},React.createElement("div",{className:"modal-content",style:{maxWidth:"520px"},onClick:l=>l.stopPropagation()},React.createElement("div",{className:"modal-header"},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"10px"}},React.createElement("span",{style:{fontSize:"24px"}},"\u{1F6E1}\uFE0F"),React.createElement("div",null,React.createElement("h3",{style:{margin:0,fontSize:"16px"}},"SaNDS Lab License & Expiry Status"),React.createElement("p",{style:{margin:"2px 0 0 0",fontSize:"12px",color:"rgba(255,255,255,0.85)"}},"Asymmetric Offline Verification (key.sandslab.com)"))),React.createElement("button",{type:"button",className:"close-btn",onClick:r},"\u2715")),React.createElement("div",{className:"modal-body",style:{padding:"22px"}},React.createElement("div",{style:{background:n?.valid?"#DCFCE7":"#FEE2E2",border:`1px solid ${n?.valid?"#86EFAC":"#FCA5A5"}`,color:n?.valid?"#15803D":"#B91C1C",padding:"14px",borderRadius:"10px",marginBottom:"18px",display:"flex",alignItems:"center",justifyContent:"space-between"}},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"10px"}},React.createElement("span",{style:{fontSize:"22px"}},n?.valid?"\u2713":"\u26A0\uFE0F"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"14px",display:"block"}},n?.valid?"License Active & Valid":"License Inactive or Expired"),React.createElement("span",{style:{fontSize:"12px"}},n?.message||(n?.valid?"Cryptographically Verified (RSA SHA-256)":"Activation required")))),React.createElement("span",{style:{background:n?.valid?"#15803D":"#B91C1C",color:"#FFF",padding:"4px 10px",borderRadius:"20px",fontSize:"11.5px",fontWeight:"700"}},n?.duration_text||"Unlicensed")),React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"12px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",padding:"10px 12px",background:"#F8FAFC",borderRadius:"8px"}},React.createElement("span",{style:{color:"var(--text-muted)",fontSize:"12.5px"}},"Expiry Duration Left:"),React.createElement("strong",{style:{color:n?.days_left<=7?"#DC2626":"var(--wa-dark-teal)",fontSize:"13px"}},"\u23F3 ",n?.duration_text||"N/A")),React.createElement("div",{style:{display:"flex",justifyContent:"space-between",padding:"10px 12px",background:"#F8FAFC",borderRadius:"8px"}},React.createElement("span",{style:{color:"var(--text-muted)",fontSize:"12.5px"}},"Expiration Date:"),React.createElement("strong",{style:{fontSize:"13px"}},n?.expires_at||"Lifetime")),React.createElement("div",{style:{display:"flex",justifyContent:"space-between",padding:"10px 12px",background:"#F8FAFC",borderRadius:"8px"}},React.createElement("span",{style:{color:"var(--text-muted)",fontSize:"12.5px"}},"Licensed Domain:"),React.createElement("strong",{style:{fontFamily:"monospace",fontSize:"13px"}},n?.domain||"localhost")),React.createElement("div",{style:{display:"flex",justifyContent:"space-between",padding:"10px 12px",background:"#F8FAFC",borderRadius:"8px"}},React.createElement("span",{style:{color:"var(--text-muted)",fontSize:"12.5px"}},"Product Plan / Tier:"),React.createElement("strong",{style:{fontSize:"13px"}},n?.plan||"Enterprise License")),React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"#F8FAFC",borderRadius:"8px"}},React.createElement("span",{style:{color:"var(--text-muted)",fontSize:"12.5px"}},"License Key:"),React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"8px"}},React.createElement("span",{style:{fontFamily:"monospace",fontSize:"12px",fontWeight:"700"}},d?n?.full_license_key||n?.license_key:n?.stored_license_key||"\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"),React.createElement("button",{type:"button",className:"btn btn-secondary btn-sm",onClick:()=>T(l=>!l),title:"Toggle show/hide"},d?"\u{1F648}":"\u{1F441}\uFE0F"),React.createElement("button",{type:"button",className:"btn btn-secondary btn-sm",onClick:v,title:"Copy key"},"\u{1F4CB}"))))),React.createElement("div",{className:"modal-footer",style:{padding:"14px 22px",display:"flex",gap:"10px",justifyContent:"space-between"}},React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:g},"\u{1F511} Change / Renew Key"),React.createElement("div",{style:{display:"flex",gap:"8px"}},React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:m,disabled:f},f?"Refreshing...":"\u{1F504} Refresh Status"),React.createElement("button",{type:"button",className:"btn btn-primary",onClick:r},"Close")))))}function we({currentUser:n,onClose:r,showToast:g}){let[o,c]=s(""),[f,e]=s(""),[d,T]=s(""),[m,v]=s(!1),[l,u]=s(""),D=async P=>{if(P.preventDefault(),f.length<6){u("New password must be at least 6 characters long");return}if(f!==d){u("New password and confirm password do not match");return}v(!0),u("");try{let y=await(await fetch("./api/auth.php?action=change_password",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({current_password:o,new_password:f})})).json();y.success?(g("\u2713 Password updated successfully!"),r()):u(y.error||"Failed to update password")}catch{u("Network error while updating password")}finally{v(!1)}};return React.createElement("div",{className:"modal-overlay",onClick:r},React.createElement("div",{className:"modal-content",style:{maxWidth:"440px"},onClick:P=>P.stopPropagation()},React.createElement("div",{className:"modal-header"},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"10px"}},React.createElement("span",{style:{fontSize:"20px"}},"\u{1F511}"),React.createElement("div",null,React.createElement("h3",{style:{margin:0,fontSize:"15px"}},"Change Account Password"),React.createElement("p",{style:{margin:"2px 0 0 0",fontSize:"11.5px",color:"rgba(255,255,255,0.85)"}},n?.name," (",n?.email,")"))),React.createElement("button",{className:"close-btn",onClick:r},"\u2715")),React.createElement("form",{onSubmit:D},React.createElement("div",{className:"modal-body",style:{padding:"20px"}},l&&React.createElement("div",{style:{background:"#FEE2E2",border:"1px solid #FCA5A5",color:"#B91C1C",padding:"10px 14px",borderRadius:"8px",fontSize:"12px",marginBottom:"14px",fontWeight:"600"}},"\u26A0\uFE0F ",l),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Current Password"),React.createElement("input",{type:"password",className:"form-input",placeholder:"Enter current password",value:o,onChange:P=>c(P.target.value)}),React.createElement("span",{className:"form-hint"},"Leave blank if this is a newly assigned account password.")),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"New Password ",React.createElement("span",{style:{color:"#EF4444"}},"*")),React.createElement("input",{type:"password",className:"form-input",placeholder:"At least 6 characters",value:f,onChange:P=>e(P.target.value),required:!0,minLength:6})),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Confirm New Password ",React.createElement("span",{style:{color:"#EF4444"}},"*")),React.createElement("input",{type:"password",className:"form-input",placeholder:"Re-type new password",value:d,onChange:P=>T(P.target.value),required:!0,minLength:6}))),React.createElement("div",{className:"modal-footer",style:{padding:"12px 20px",display:"flex",gap:"8px",justifyContent:"flex-end"}},React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:r,disabled:m},"Cancel"),React.createElement("button",{type:"submit",className:"btn btn-primary",disabled:m},m?"Updating...":"\u{1F4BE} Update Password")))))}function ke({onLogin:n,onSwitchDemo:r,licenseInfo:g,onOpenLicenseActivation:o}){let[c,f]=s("admin@uniglobal.bh"),[e,d]=s("Password@123"),[T,m]=s(!1),[v,l]=s(""),u=async P=>{if(P.preventDefault(),g&&!g.valid){l("Application is locked: You must enter and activate a valid SaNDS Lab License Key before using the application."),o&&o();return}m(!0),l("");try{let y=await(await fetch("./api/auth.php?action=login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:c,password:e})})).json();y.success?n(y.user):l(y.error||"Login failed")}catch{l("Connection error. Please try again.")}finally{m(!1)}},D=(P,z)=>{if(g&&!g.valid){l("Application is locked: You must enter and activate a valid SaNDS Lab License Key before using the application."),o&&o();return}f(P),d("Password@123"),r(z)};return React.createElement("div",{className:"login-container"},React.createElement("div",{className:"login-card"},React.createElement("div",{className:"login-header"},React.createElement("img",{src:"./assets/logos/SaNDSLab-LogoNewUpdated.png",alt:"SaNDS Lab",className:"login-logo"}),React.createElement("h2",null,"WhatsApp Integration Platform"),React.createElement("p",null,"Sign in to manage messaging, templates, and Odoo ERP webhooks")),g&&!g.valid&&React.createElement("div",{style:{background:"#FEF2F2",border:"1px solid #FCA5A5",color:"#991B1B",padding:"12px 14px",borderRadius:"10px",fontSize:"12.5px",marginBottom:"16px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"10px"}},React.createElement("div",null,React.createElement("strong",{style:{display:"block",fontSize:"13px"}},"\u26A0\uFE0F Application Key Required"),React.createElement("span",{style:{fontSize:"11.5px",color:"#B91C1C"}},g.message||"Please activate your SaNDS Lab License.")),React.createElement("button",{type:"button",className:"btn btn-sm",style:{background:"#DC2626",color:"#FFF",whiteSpace:"nowrap",border:"none",fontWeight:"bold"},onClick:o},"\u{1F511} Enter Key")),g&&g.valid&&React.createElement("div",{style:{background:"#F0FDF4",border:"1px solid #BBF7D0",color:"#15803D",padding:"8px 12px",borderRadius:"8px",fontSize:"12px",marginBottom:"16px",display:"flex",alignItems:"center",justifyContent:"space-between",fontWeight:"600"}},React.createElement("span",null,"\u{1F6E1}\uFE0F License: ",React.createElement("strong",null,g.duration_text)," (",g.expires_at,")"),React.createElement("button",{type:"button",className:"btn btn-secondary btn-sm",style:{fontSize:"11px",padding:"2px 8px"},onClick:o},"Details")),React.createElement("div",{className:"preset-roles-box"},React.createElement("div",{className:"preset-roles-title"},"\u26A1 Quick Sign-In by Role:"),React.createElement("div",{className:"preset-buttons-row"},React.createElement("button",{type:"button",className:"btn-preset",onClick:()=>D("admin@uniglobal.bh","admin")},"\u{1F6E1}\uFE0F Admin"),React.createElement("button",{type:"button",className:"btn-preset",onClick:()=>D("user@uniglobal.bh","user")},"\u{1F464} User"))),v&&React.createElement("div",{style:{background:"#FEE2E2",color:"#B91C1C",padding:"10px 14px",borderRadius:"8px",fontSize:"12.5px",marginBottom:"16px",fontWeight:"600"}},"\u26A0\uFE0F ",v),React.createElement("form",{onSubmit:u},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Email Address"),React.createElement("input",{type:"email",className:"form-input",value:c,onChange:P=>f(P.target.value),required:!0})),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Password"),React.createElement("input",{type:"password",className:"form-input",value:e,onChange:P=>d(P.target.value),required:!0})),React.createElement("button",{type:"submit",className:"btn btn-primary",style:{width:"100%",padding:"10px",marginTop:"6px"},disabled:T},T?"Authenticating...":"Sign In to Gateway")),React.createElement("div",{style:{textAlign:"center",marginTop:"24px",fontSize:"11.5px",color:"var(--text-muted)"}},"All Rights Reserved | Engineered By SaNDS Lab Middle East W.L.L.")))}function Ae({onNavigate:n}){let[r,g]=s(null),[o,c]=s(!0);if(U(()=>{let v=()=>{fetch("./api/analytics.php").then(u=>u.json()).then(u=>{u.success&&g(u)}).finally(()=>c(!1))};v();let l=setInterval(v,4e3);return()=>clearInterval(l)},[]),o&&!r)return React.createElement("div",{className:"card"},"Loading real-time analytics...");if(!r)return null;let{kpis:f,categories:e,daily_volume:d,integrations:T}=r,m=[{key:"source_system",label:"Source Integration",render:v=>React.createElement("strong",null,v.source_system)},{key:"volume",label:"Message Volume",render:v=>React.createElement("span",{className:"badge status-read"},v.volume," msgs")},{key:"last_activity",label:"Last Activity",render:v=>React.createElement("span",{style:{color:"var(--text-muted)",fontSize:"11.5px"}},v.last_activity)}];return React.createElement("div",null,React.createElement("div",{className:"page-header-row"},React.createElement("div",{className:"page-title-group"},React.createElement("h1",null,React.createElement("span",null,"\u{1F4CA}")," Operational Dashboard & Metrics"),React.createElement("p",null,"Real-time telemetry of WhatsApp Business API throughput, delivery reliability, and billing tariffs.")),React.createElement("button",{className:"btn btn-success",onClick:()=>n("composer")},React.createElement("span",null,"\u{1F4AC}")," Send New Message")),React.createElement("div",{className:"kpi-grid"},React.createElement("div",{className:"kpi-card accent-green"},React.createElement("span",{className:"kpi-label"},"Total Volume"),React.createElement("span",{className:"kpi-value"},f.total_messages.toLocaleString()),React.createElement("span",{className:"kpi-sub positive"},React.createElement("span",null,"\u2191")," ",f.outbound_count," Outbound | ",f.inbound_count," Inbound")),React.createElement("div",{className:"kpi-card accent-blue"},React.createElement("span",{className:"kpi-label"},"Delivery Reliability"),React.createElement("span",{className:"kpi-value"},f.delivery_rate,"%"),React.createElement("span",{className:"kpi-sub positive"},React.createElement("span",null,"\u2713\u2713")," ",f.read_rate,"% Read Rate")),React.createElement("div",{className:"kpi-card accent-purple"},React.createElement("span",{className:"kpi-label"},"Total Billed (BHD)"),React.createElement("span",{className:"kpi-value"},"BHD ",f.total_client_bhd),React.createElement("span",{className:"kpi-sub"},"Bahrain Market Official Schedule")),React.createElement("div",{className:"kpi-card accent-amber"},React.createElement("span",{className:"kpi-label"},"Cost Breakdown"),React.createElement("span",{className:"kpi-value"},"BHD ",f.total_platform_bhd),React.createElement("span",{className:"kpi-sub"},"Platform Margin | Meta Cost: BHD ",f.total_meta_cost_bhd))),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"20px",marginBottom:"20px"}},React.createElement("div",{className:"card",style:{margin:0}},React.createElement("div",{className:"card-header"},React.createElement("span",{className:"card-title"},React.createElement("span",null,"\u{1F3F7}\uFE0F")," Message Volume by Meta Category")),React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"14px"}},e.map((v,l)=>React.createElement("div",{key:l,style:{display:"flex",flexDirection:"column",gap:"5px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",fontSize:"12.5px",fontWeight:"700"}},React.createElement("span",{className:`badge cat-${v.category.toLowerCase().substring(0,4)}`},v.category),React.createElement("span",null,v.message_count," msgs (",parseFloat(v.category_billed_bhd).toFixed(4)," BHD)")),React.createElement("div",{style:{height:"7px",background:"#F1F5F9",borderRadius:"4px",overflow:"hidden"}},React.createElement("div",{style:{width:`${Math.min(100,v.message_count/(f.total_messages||1)*100)}%`,height:"100%",background:v.category==="UTILITY"?"#10B981":v.category==="AUTHENTICATION"?"#3B82F6":v.category==="MARKETING"?"#8B5CF6":"#06B6D4"}})))))),React.createElement("div",null,React.createElement("div",{style:{marginBottom:"10px",fontWeight:"700",fontSize:"14px",color:"var(--text-primary)"}},React.createElement("span",null,"\u{1F517}")," Active System Connectors"),React.createElement(Z,{columns:m,data:T,title:"active_integrations",searchPlaceholder:"Search connectors...",defaultPageSize:5,pageSizeOptions:[5,10,20]}))))}function Fe({showToast:n,onSent:r}){let[g,o]=s([]),[c,f]=s(""),[e,d]=s("+97339000000"),[T,m]=s("UTILITY"),[v,l]=s("https://erp.uniglobal.bh/INV_9941.pdf"),[u,D]=s("INV_9941.pdf"),[P,z]=s(["Ahmed Al-Khalifa","INV/2026/0142","BHD 345.500","15-Oct-2026"]),[y,p]=s(""),[C,b]=s(!1);U(()=>{fetch("./api/templates.php?active_only=1").then(t=>t.json()).then(t=>{if(t.success){let x=t.data.filter(A=>(A.is_active===1||A.is_active===!0||A.is_active==="1")&&["APPROVED","ACTIVE"].includes((A.meta_status||"").toUpperCase()));o(x),x.length>0&&I(x[0])}})},[]);let I=t=>{f(t.template_name),m(t.category);let x=t.body_text?t.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g):null,A=x?x.map(a=>a.replace(/[\{\}]/g,"").trim()):[];if(A.length===0){let a=t.body_text?t.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g):null;a&&(A=a.map(S=>S.replace(/\D/g,"").trim()))}let M=Math.max(A.length,parseInt(t.variable_count)||0),N=[];if(t.sample_params_json)try{let a=typeof t.sample_params_json=="string"?JSON.parse(t.sample_params_json):t.sample_params_json;Array.isArray(a)&&(N=a)}catch{}let i=[];for(let a=0;a<M;a++)if(N[a]!==void 0&&N[a]!==null&&N[a]!=="")i.push(N[a]);else{let S=A[a]||`Param ${a+1}`;i.push(S.includes("_")?S.replace(/_/g," "):`Value ${a+1}`)}z(i),t.header_sample?(l(t.header_sample),D(t.header_sample.split("/").pop()||"document.pdf")):(l(""),D(""))},F=Q(()=>{if(!c)return y||"Type your message...";let t=g.find(N=>N.template_name===c);if(!t)return"";let x=t.body_text,A=t.body_text?t.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g):null,M=A?A.map(N=>N.replace(/[\{\}]/g,"").trim()):[];return P.forEach((N,i)=>{let a=M[i]||String(i+1),S=N||`[${a}]`;x=x.split(`{{${a}}}`).join(S);let E=new RegExp(`\\{+[\\(\\[]?\\s*${a}\\s*[\\)\\]]?\\}+`,"g");x=x.replace(E,S)}),x},[c,g,P,y]),O=g.find(t=>t.template_name===c),R=Q(()=>{let t={AUTHENTICATION:{meta:.011,platform:.0035,client:.0145},UTILITY:{meta:.014,platform:.0045,client:.0185},MARKETING:{meta:.027,platform:.007,client:.034},SERVICE:{meta:.0075,platform:.0025,client:.01}};return t[T]||t.UTILITY},[T]);return React.createElement("div",null,React.createElement("div",{className:"page-header-row"},React.createElement("div",{className:"page-title-group"},React.createElement("h1",null,React.createElement("span",null,"\u{1F4AC}")," Interactive Message Composer"),React.createElement("p",null,"Compose pre-approved WhatsApp templates or direct customer notifications with real-time phone preview."))),React.createElement("div",{className:"composer-layout"},React.createElement("div",{className:"card"},React.createElement("form",{onSubmit:async t=>{t.preventDefault(),b(!0);try{let A=await fetch("./api/messages.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({to_phone:e,template_name:c||null,category:T,message:y,body_parameters:P,header_media:v?{url:v,filename:u}:null,source_system:"Manual Web Console"})}),M=await A.json().catch(()=>null);M&&M.success?(M.status==="failed"&&M.meta_error?n(`Meta Error: ${M.meta_error}`,"error"):M.status==="simulated"?n("Dispatched in Simulation Mode (Enter Meta Token in Settings for Live)","success"):n(`WhatsApp Message Dispatched to ${e}! (Rate: ${M.tariff?.client_rate})`),r()):n(M&&M.error||`Server Error (HTTP ${A.status})`,"error")}catch(x){n("Error: "+x.message,"error")}finally{b(!1)}}},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Recipient Phone Number (E.164 Format)"),React.createElement("input",{type:"text",className:"form-input",value:e,onChange:t=>d(t.target.value),placeholder:"+97339000000",required:!0}),React.createElement("span",{className:"form-hint"},"Includes Bahrain country code (+973) or international destination")),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"WhatsApp Meta Template"),React.createElement("select",{className:"form-select",value:c,onChange:t=>{let x=g.find(A=>A.template_name===t.target.value);x?I(x):f("")}},g.filter(t=>(t.is_active===1||t.is_active===!0||t.is_active==="1")&&["APPROVED","ACTIVE"].includes((t.meta_status||"").toUpperCase())).map(t=>React.createElement("option",{key:t.id,value:t.template_name},t.display_title," [",t.category,"]")),React.createElement("option",{value:""},"-- Custom Direct Text Message --"))),c&&O&&React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Template Dynamic Parameters (",P.length," Variables)"),React.createElement("div",{className:"param-grid"},P.map((t,x)=>{let A=(O.body_text||"").match(/\{\{([a-zA-Z0-9_]+)\}\}/g),N=(A?A.map(i=>i.replace(/[\{\}]/g,"").trim()):[])[x]||String(x+1);return React.createElement("div",{key:x},React.createElement("label",{style:{fontSize:"11px",fontWeight:"700",color:"var(--wa-dark-teal)"}},N.includes("_")?`{{${N}}}`:`Variable #${x+1}`),React.createElement("input",{type:"text",className:"form-input",value:t,onChange:i=>{let a=[...P];a[x]=i.target.value,z(a)}}))}))),O?.header_type==="DOCUMENT"&&React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"PDF Invoice Attachment URL"),React.createElement("input",{type:"text",className:"form-input",value:v,onChange:t=>l(t.target.value),placeholder:"https://erp.uniglobal.bh/INV_9941.pdf"})),!c&&React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Custom Message Content"),React.createElement("textarea",{className:"form-textarea",value:y,onChange:t=>p(t.target.value),placeholder:"Type direct WhatsApp message here..."})),React.createElement("div",{className:"tariff-estimate-banner"},React.createElement("div",{className:"tariff-info"},React.createElement("span",{className:"title"},"Category: ",T),React.createElement("span",{className:"breakdown"},"Meta Cost: ",R.meta.toFixed(4)," BHD | Platform Charges: +",R.platform.toFixed(4)," BHD")),React.createElement("div",{className:"tariff-rate-badge"},"BHD ",R.client.toFixed(4)," / msg")),React.createElement("button",{type:"submit",className:"btn btn-success",style:{width:"100%",marginTop:"20px",padding:"12px"},disabled:C},C?"Dispatching via Meta API...":"\u{1F680} Send WhatsApp Notification Now"))),React.createElement("div",{className:"phone-mockup-wrapper"},React.createElement("div",{className:"phone-device"},React.createElement("div",{className:"phone-notch"},React.createElement("div",{className:"phone-speaker"})),React.createElement("div",{className:"phone-screen"},React.createElement("div",{className:"wa-chat-header"},React.createElement("div",{className:"wa-avatar"},"UG"),React.createElement("div",{className:"wa-user-info"},React.createElement("div",{className:"wa-contact-name"},"UniGlobal Consultancy ",React.createElement("span",{className:"wa-verified-icon"},"\u2713")),React.createElement("div",{className:"wa-status-text"},"Official Business Account"))),React.createElement("div",{className:"wa-chat-body"},React.createElement("div",{className:"wa-date-pill"},"TODAY"),React.createElement("div",{className:"wa-bubble"},O?.header_type==="DOCUMENT"&&React.createElement("div",{className:"wa-bubble-doc"},React.createElement("span",null,"\u{1F4C4}"),React.createElement("div",{style:{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},u||"INV_9941.pdf",React.createElement("div",{style:{fontSize:"9px",color:"#4B5563"}},"PDF Document \u2022 345 KB"))),React.createElement("div",{style:{whiteSpace:"pre-line"}},F),O?.footer_text&&React.createElement("div",{className:"wa-bubble-footer"},O.footer_text),React.createElement("div",{className:"wa-bubble-meta"},React.createElement("span",null,"10:42 AM"),React.createElement("span",{className:"wa-ticks"},"\u2713\u2713")))),React.createElement("div",{className:"wa-chat-input-bar"},React.createElement("div",{className:"wa-dummy-input"},"Message"),React.createElement("span",{style:{color:"#075E54",fontSize:"14px"}},"\u{1F3A4}")))))))}function Te({phone:n,onClose:r,showToast:g,globalSettings:o}){let[c,f]=s([]),[e,d]=s(""),[T,m]=s(!1),[v,l]=s(!0),u=ce(null),D=n?n.replace(/[^0-9\+]/g,""):"",P=()=>{u.current&&u.current.scrollIntoView({behavior:"smooth"})},z=async(b=!1)=>{if(n){b||l(!0);try{let F=await(await fetch(`./api/messages.php?phone=${encodeURIComponent(D)}&order=asc&limit=100`)).json();F.success&&f(F.data||[])}catch(I){console.error(I)}finally{b||l(!1)}}};U(()=>{z(!1)},[n]),U(()=>{let b=setInterval(()=>{z(!0)},2e3);return()=>clearInterval(b)},[n]),U(()=>{P()},[c]);let y=async b=>{if(b&&b.preventDefault(),!(!e.trim()||T)){m(!0);try{let F=await(await fetch("./api/messages.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({to_phone:D,message:e.trim(),category:"SERVICE",source_system:"Live Chat Console"})})).json();F.success?(d(""),z(!0),g(`WhatsApp message sent to ${D}`)):g(F.error||"Failed to send WhatsApp message","error")}catch{g("Network error sending message","error")}finally{m(!1)}}},p=b=>{b.key==="Enter"&&!b.shiftKey&&(b.preventDefault(),y())},C=Q(()=>{let b=c.filter(O=>O.direction==="inbound");if(b.length===0)return!1;let I=b[b.length-1];return(Date.now()-new Date(I.created_at).getTime())/(1e3*60*60)<=24},[c]);return React.createElement("div",{className:"chat-modal-overlay",onClick:b=>{b.target===b.currentTarget&&r()}},React.createElement("div",{className:"chat-modal-box"},React.createElement("div",{className:"chat-modal-header"},React.createElement("div",{className:"chat-header-user"},React.createElement("div",{className:"chat-avatar"},D.slice(-2),React.createElement("span",{className:"chat-avatar-online",title:"WhatsApp Connected"})),React.createElement("div",{className:"chat-user-meta"},React.createElement("span",{className:"chat-user-phone"},D),React.createElement("span",{className:"chat-user-sub"},"Official WhatsApp Gateway \u2022 ",C?React.createElement("span",{className:"chat-window-pill"},"\u{1F7E2} 24h Window Active"):React.createElement("span",{className:"chat-window-pill",style:{background:"rgba(234, 179, 8, 0.2)",color:"#FEF08A"}},"\u{1F7E1} Outbound Session")))),React.createElement("div",{className:"chat-header-actions"},React.createElement("button",{className:"btn-chat-close",onClick:r,title:"Close Chat"},"\u2715"))),React.createElement("div",{className:"chat-messages-canvas"},React.createElement("div",{className:"chat-date-separator"},"\u{1F512} WhatsApp Cloud API Live Conversation Thread"),v&&c.length===0?React.createElement("div",{style:{textAlign:"center",color:"#64748B",padding:"30px"}},"Loading conversation history..."):c.length===0?React.createElement("div",{style:{textAlign:"center",color:"#64748B",padding:"30px"}},"No messages exchanged with ",D," yet."):c.map((b,I)=>{let F=b.direction==="outbound";return React.createElement("div",{key:b.id||I,className:`chat-bubble-row ${F?"outbound":"inbound"}`},React.createElement("div",{className:"chat-bubble"},b.template_name&&React.createElement("span",{className:"chat-bubble-template-tag"},"\u{1F4CB} ",b.template_name," [",b.category,"]"),b.header_media_name&&React.createElement("div",{className:"chat-bubble-media"},React.createElement("span",null,"\u{1F4CE}"),React.createElement("span",null,b.header_media_name)),React.createElement("div",{style:{whiteSpace:"pre-wrap"}},b.message_body),React.createElement("div",{className:"chat-bubble-footer"},React.createElement("span",null,ee(b.created_at,o?.system_date_format)),F&&React.createElement("span",null,b.status==="read"?React.createElement("span",{className:"chat-tick-read",title:"Read"},"\u2713\u2713"):b.status==="delivered"?React.createElement("span",{className:"chat-tick-delivered",title:"Delivered"},"\u2713\u2713"):b.status==="sent"?React.createElement("span",{title:"Sent"},"\u2713"):b.status==="failed"?React.createElement("span",{style:{color:"#EF4444"},title:b.error_message||"Failed"},"\u26A0\uFE0F"):React.createElement("span",{style:{color:"#94A3B8"},title:"Queued"},"\u23F1\uFE0F")))))}),React.createElement("div",{ref:u})),React.createElement("form",{onSubmit:y,className:"chat-input-bar"},React.createElement("textarea",{className:"chat-textarea",placeholder:C?"Type a direct WhatsApp message... (Press Enter to send)":"Type a WhatsApp reply... (Press Enter to send)",value:e,onChange:b=>d(b.target.value),onKeyDown:p,rows:"1"}),React.createElement("button",{type:"submit",className:"btn-chat-send",disabled:T||!e.trim(),title:"Send WhatsApp Message"},T?"\u23F3":"\u27A4"))))}function De({isOpen:n,onClose:r,onSimulated:g,showToast:o}){let[c,f]=s("+97335078079"),[e,d]=s("Hello UniGlobal Support! I received my invoice and need to confirm my payment details."),[T,m]=s(!1);return n?React.createElement("div",{className:"version-modal-overlay",onClick:r},React.createElement("div",{className:"version-modal-card",style:{maxWidth:"520px"},onClick:l=>l.stopPropagation()},React.createElement("div",{className:"version-modal-header"},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"10px"}},React.createElement("span",{style:{fontSize:"22px"}},"\u{1F9EA}"),React.createElement("div",null,React.createElement("h3",{style:{fontSize:"15px",fontWeight:"800",margin:0,color:"#FFFFFF"}},"Simulate Inbound WhatsApp Message"),React.createElement("p",{style:{fontSize:"11.5px",margin:"2px 0 0 0",opacity:.9,color:"#E8F8F5"}},"Test customer inbound reply & trigger 24h session window"))),React.createElement("button",{onClick:r,style:{background:"rgba(255,255,255,0.2)",border:"none",color:"#FFFFFF",borderRadius:"6px",width:"28px",height:"28px",cursor:"pointer"}},"\u2715")),React.createElement("form",{onSubmit:async l=>{if(l.preventDefault(),!c||!e.trim()){o("Phone and message text are required","error");return}m(!0);try{let D=await(await fetch("./api/inbox.php?action=simulate_inbound",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:c,message:e.trim()})})).json();D.success?(o(`Simulated customer inbound message from ${c}! 24h window active.`),g&&g(c),r()):o(D.error||"Failed to simulate message","error")}catch{o("Network error simulating message","error")}finally{m(!1)}},style:{padding:"20px"}},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Customer Mobile Phone"),React.createElement("input",{type:"text",className:"form-input",value:c,onChange:l=>f(l.target.value),placeholder:"+97335078079",required:!0}),React.createElement("span",{className:"form-hint"},"E.164 formatted international WhatsApp number.")),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Customer Message Text"),React.createElement("textarea",{className:"form-input",rows:"3",value:e,onChange:l=>d(l.target.value),placeholder:"Type customer reply here...",required:!0})),React.createElement("div",{style:{display:"flex",gap:"10px",marginTop:"20px"}},React.createElement("button",{type:"submit",className:"btn btn-primary",style:{flex:1},disabled:T},T?"Simulating...":"\u{1F4E5} Ingest Inbound Message"),React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:r},"Cancel"))))):null}function Ee({currentUser:n,showToast:r,globalSettings:g,onUnreadCountChange:o,onNavigate:c}){let[f,e]=s([]),[d,T]=s(!0),[m,v]=s(null),[l,u]=s(null),[D,P]=s(!1),[z,y]=s(""),[p,C]=s("all"),[b,I]=s(""),[F,O]=s(!1),[R,_]=s(!0),[t,x]=s(!1),[A,M]=s([]),[N,i]=s([]),[a,S]=s(!1),[E,h]=s(""),[W,$]=s({}),K=ce(null),H=async(w=!1)=>{w||T(!0);try{let V=await(await fetch(`./api/inbox.php?action=threads&search=${encodeURIComponent(z)}&filter=${p}`)).json();if(V.success&&V.threads){e(V.threads);let J=V.threads.reduce((ae,ie)=>ae+(ie.unread_inbound||0),0);o&&o(J),!m&&V.threads.length>0&&v(V.threads[0].contact_phone)}}catch(q){console.error(q)}finally{w||T(!1)}},j=async(w,q=!1)=>{if(w){q||P(!0);try{let J=await(await fetch(`./api/inbox.php?action=messages&phone=${encodeURIComponent(w)}`)).json();J.success&&u(J)}catch(V){console.error(V)}finally{q||P(!1)}}};U(()=>{H(!1),fetch("./api/inbox.php?action=canned_replies").then(w=>w.json()).then(w=>{w.success&&w.canned_replies&&M(w.canned_replies)}),fetch("./api/templates.php?active_only=1").then(w=>w.json()).then(w=>{if(w.success&&w.data){let q=w.data.filter(V=>(V.is_active===1||V.is_active===!0||V.is_active==="1")&&["APPROVED","ACTIVE"].includes((V.meta_status||"").toUpperCase()));i(q)}})},[]),U(()=>{H(!1)},[z,p]),U(()=>{m&&(j(m,!1),S(!1),I(""))},[m]),U(()=>{if(!R)return;let w=setInterval(()=>{H(!0),m&&j(m,!0)},2500);return()=>clearInterval(w)},[R,m,z,p]),U(()=>{K.current?.scrollIntoView({behavior:"smooth"})},[l?.messages]);let X=async w=>{if(w&&w.preventDefault(),!!m){if(a){if(!E){r("Please select an approved template","error");return}}else if(!b.trim())return;O(!0);try{let q={to_phone:m,phone:m,recipient:m,message:a?"":b.trim(),template_name:a?E:"",params:a?W:[]},J=await(await fetch("./api/inbox.php?action=send_reply",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(q)})).json();J.success?(I(""),S(!1),r(`Reply sent to ${m}`),j(m,!0),H(!0)):r(J.error||"Failed to dispatch reply","error")}catch{r("Network error sending reply","error")}finally{O(!1)}}},B=w=>{w.key==="Enter"&&!w.shiftKey&&(w.preventDefault(),X())},L=async()=>{if(m)try{await fetch("./api/inbox.php?action=mark_read",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:m})}),r("Marked thread as read"),H(!0),j(m,!0)}catch{}},Y=f.find(w=>w.contact_phone===m),te=l?.is_24h_active??Y?.is_24h_active??!1,re=l?.hours_remaining??Y?.hours_remaining??0,oe=l?.contact_name??Y?.contact_name??m??"Customer";return React.createElement("div",null,React.createElement("div",{className:"page-header-row",style:{marginBottom:"16px"}},React.createElement("div",{className:"page-title-group"},React.createElement("h1",null,React.createElement("span",null,"\u{1F4AC}")," Inbound Live Chat & Two-Way Agent Inbox"),React.createElement("p",null,"Real-time customer care console with official Meta 24-hour conversational session window tracking and instant replies.")),React.createElement("div",{style:{display:"flex",gap:"10px",alignItems:"center"}},React.createElement("button",{className:`btn ${R?"btn-success":"btn-secondary"}`,style:{fontSize:"12px",padding:"6px 12px",display:"flex",alignItems:"center",gap:"6px"},onClick:()=>_(!R),title:R?"Live Sync Active (2.5s)":"Live Sync Paused"},React.createElement("span",{style:{display:"inline-block",width:"8px",height:"8px",borderRadius:"50%",background:R?"#22C55E":"#9CA3AF",boxShadow:R?"0 0 8px #22C55E":"none"}}),R?"\u{1F7E2} Live Auto-Sync Active":"\u23F8\uFE0F Paused"),React.createElement("button",{className:"btn btn-primary",style:{fontSize:"12.5px",padding:"6px 14px",display:"flex",alignItems:"center",gap:"6px"},onClick:()=>x(!0)},React.createElement("span",null,"\u{1F9EA}")," Simulate Inbound"),React.createElement("button",{className:"btn btn-secondary",onClick:()=>{H(!1),m&&j(m,!1)}},React.createElement("span",null,"\u{1F504}")," Refresh"))),React.createElement("div",{className:"inbox-wrapper"},React.createElement("div",{className:"inbox-sidebar"},React.createElement("div",{className:"inbox-sidebar-header"},React.createElement("input",{type:"text",className:"inbox-search-input",placeholder:"Search contacts, phone, text...",value:z,onChange:w=>y(w.target.value)}),React.createElement("div",{className:"inbox-filters-bar"},React.createElement("button",{className:`inbox-filter-btn ${p==="all"?"active":""}`,onClick:()=>C("all")},"All (",f.length,")"),React.createElement("button",{className:`inbox-filter-btn ${p==="unread"?"active":""}`,onClick:()=>C("unread")},"Unread"),React.createElement("button",{className:`inbox-filter-btn ${p==="active_24h"?"active":""}`,onClick:()=>C("active_24h")},"24h Active \u{1F7E2}"))),React.createElement("div",{className:"inbox-threads-list"},d&&f.length===0?React.createElement("div",{style:{textAlign:"center",padding:"30px",color:"#64748B",fontSize:"12.5px"}},"Loading conversations..."):f.length===0?React.createElement("div",{style:{textAlign:"center",padding:"30px",color:"#64748B",fontSize:"12.5px"}},"No conversations match this filter."):f.map(w=>{let q=w.contact_phone===m;return React.createElement("div",{key:w.contact_phone,className:`inbox-thread-item ${q?"active":""}`,onClick:()=>v(w.contact_phone)},React.createElement("div",{className:`inbox-thread-avatar ${w.is_24h_active?"online":""}`},w.avatar_letter),React.createElement("div",{className:"inbox-thread-info"},React.createElement("div",{className:"inbox-thread-top"},React.createElement("span",{className:"inbox-thread-name"},w.contact_name),React.createElement("span",{className:"inbox-thread-time"},ee(w.latest_message?.created_at,"HH:mm"))),React.createElement("div",{className:"inbox-thread-bottom"},React.createElement("span",{className:"inbox-thread-snippet"},w.latest_message?.direction==="inbound"?"\u{1F4E5} ":"\u{1F4E4} ",w.latest_message?.message_body||"Attachment"),React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"4px"}},w.is_24h_active?React.createElement("span",{style:{fontSize:"10px",background:"#DCFCE7",color:"#166534",padding:"1px 5px",borderRadius:"4px",fontWeight:"700"},title:`24h Window: ${w.hours_remaining}h left`},w.hours_remaining,"h"):React.createElement("span",{style:{fontSize:"10px",background:"#F1F5F9",color:"#64748B",padding:"1px 5px",borderRadius:"4px"},title:"Session Expired"},"\u23F1\uFE0F"),w.unread_inbound>0&&React.createElement("span",{className:"inbox-unread-badge"},w.unread_inbound)))))}))),React.createElement("div",{className:"inbox-main-pane"},m?React.createElement("div",{style:{display:"flex",flexDirection:"column",height:"100%"}},React.createElement("div",{className:"inbox-chat-header"},React.createElement("div",{className:"inbox-chat-user"},React.createElement("div",{className:"inbox-thread-avatar",style:{width:"40px",height:"40px",fontSize:"13px"}},Y?.avatar_letter||"WA"),React.createElement("div",null,React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"8px"}},React.createElement("strong",{style:{fontSize:"14.5px",color:"#0F172A"}},oe),React.createElement("span",{style:{fontSize:"12px",color:"#64748B"}},"(",m,")")),React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"6px",marginTop:"3px"}},te?React.createElement("span",{className:"inbox-session-pill active"},React.createElement("span",{style:{width:"6px",height:"6px",borderRadius:"50%",background:"#16A34A"}}),"\u{1F7E2} 24h Customer Care Window Active (",re,"h left) \u2022 Free-Text Allowed (Meta Fee Waived)"):React.createElement("span",{className:"inbox-session-pill expired"},"\u26A0\uFE0F 24h Session Closed \u2022 Pre-Approved Template Required by Meta")))),React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"8px"}},React.createElement("button",{className:"btn btn-secondary btn-sm",onClick:L,title:"Mark All Read"},"\u2713 Read"),React.createElement("button",{className:"btn btn-secondary btn-sm",onClick:()=>x(!0),title:"Simulate reply from this customer"},"\u{1F9EA} Simulate Reply"),React.createElement("button",{className:"btn btn-secondary btn-sm",onClick:()=>c&&c("logs"),title:"View In Message Telemetry"},"\u{1F4DC} Telemetry"))),React.createElement("div",{className:"inbox-chat-canvas"},React.createElement("div",{style:{textAlign:"center",margin:"6px 0"}},React.createElement("span",{style:{background:"#FFFFFF",padding:"4px 12px",borderRadius:"12px",fontSize:"11px",color:"#64748B",boxShadow:"0 1px 2px rgba(0,0,0,0.06)"}},"\u{1F512} Official WhatsApp Cloud API End-to-End Encrypted Session")),D&&(!l||l.messages?.length===0)?React.createElement("div",{style:{textAlign:"center",padding:"40px",color:"#64748B"}},"Loading messages..."):l?.messages?.length===0?React.createElement("div",{style:{textAlign:"center",padding:"40px",color:"#64748B"}},"No messages exchanged yet. Send a greeting to start!"):l?.messages?.map((w,q)=>{let V=w.direction==="outbound";return React.createElement("div",{key:w.id||q,className:`inbox-bubble-row ${V?"outbound":"inbound"}`},React.createElement("div",{className:`inbox-bubble ${V?"outbound":"inbound"}`},w.template_name&&React.createElement("div",{style:{fontSize:"11px",fontWeight:"700",color:"#0369A1",marginBottom:"3px"}},"\u{1F4CB} ",w.template_name," [",w.category,"]"),w.header_media_name&&React.createElement("div",{style:{fontSize:"11.5px",fontWeight:"600",color:"#059669",marginBottom:"4px"}},"\u{1F4CE} [",w.header_media_name,"]"),React.createElement("div",{style:{whiteSpace:"pre-wrap"}},w.message_body),React.createElement("div",{className:"inbox-bubble-footer"},React.createElement("span",null,ee(w.created_at,g?.system_date_format||"HH:mm")),V&&React.createElement("span",null,w.status==="read"?React.createElement("span",{style:{color:"#0284C7",fontWeight:"800"}},"\u2713\u2713"):w.status==="delivered"?React.createElement("span",{style:{color:"#64748B",fontWeight:"800"}},"\u2713\u2713"):w.status==="sent"?React.createElement("span",null,"\u2713"):w.status==="failed"?React.createElement("span",{style:{color:"#EF4444"},title:w.error_message||"Failed"},"\u26A0\uFE0F"):React.createElement("span",null,"\u23F1\uFE0F")))))}),React.createElement("div",{ref:K})),React.createElement("div",{className:"inbox-canned-bar"},React.createElement("span",{style:{fontSize:"11px",fontWeight:"700",color:"#64748B",alignSelf:"center",marginRight:"4px"}},"\u26A1 Quick:"),A.map(w=>React.createElement("button",{key:w.id,type:"button",className:"inbox-canned-chip",onClick:()=>{I(w.text),S(!1)},title:w.text},w.title))),React.createElement("div",{className:"inbox-composer-area"},!te&&!a?React.createElement("div",{style:{flex:1,background:"#FEF3C7",border:"1px solid #FCD34D",borderRadius:"8px",padding:"10px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"10px"}},React.createElement("div",{style:{fontSize:"12px",color:"#92400E"}},"\u26A0\uFE0F ",React.createElement("strong",null,"24h Customer Service Window Closed.")," Meta requires an approved template to re-engage this contact."),React.createElement("button",{type:"button",className:"btn btn-primary btn-sm",onClick:()=>S(!0)},"\u{1F4CB} Select Approved Template")):a?React.createElement("div",{style:{flex:1,background:"#FFFFFF",border:"1px solid #CBD5E1",borderRadius:"8px",padding:"12px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"8px"}},React.createElement("strong",{style:{fontSize:"12.5px",color:"#0F172A"}},"\u{1F4CB} Dispatch Approved WhatsApp Template"),React.createElement("button",{type:"button",className:"btn btn-secondary btn-sm",onClick:()=>S(!1)},"\u2715 Switch to Free Text")),React.createElement("div",{style:{display:"flex",gap:"10px",alignItems:"center"}},React.createElement("select",{className:"form-input",style:{flex:1,padding:"7px 10px",fontSize:"12.5px"},value:E,onChange:w=>h(w.target.value)},React.createElement("option",{value:""},"-- Choose Template --"),N.filter(w=>(w.is_active===1||w.is_active===!0||w.is_active==="1")&&["APPROVED","ACTIVE"].includes((w.meta_status||"").toUpperCase())).map(w=>React.createElement("option",{key:w.template_name,value:w.template_name},w.display_title||w.template_name," (",w.category,")"))),React.createElement("button",{type:"button",className:"btn btn-primary",style:{padding:"8px 18px",fontSize:"12.5px",fontWeight:"700"},disabled:F||!E,onClick:X},F?"Sending...":"\u{1F680} Send Template"))):React.createElement(React.Fragment,null,React.createElement("textarea",{className:"inbox-textarea",placeholder:"Type a direct WhatsApp message... (Press Enter to send, Shift+Enter for new line)",value:b,onChange:w=>I(w.target.value),onKeyDown:B,rows:"1"}),React.createElement("button",{type:"button",className:"inbox-btn-send",disabled:F||!b.trim(),onClick:X,title:"Send WhatsApp Message"},F?"\u23F3":"\u27A4")))):React.createElement("div",{className:"inbox-pane-empty"},React.createElement("span",{style:{fontSize:"48px",marginBottom:"12px"}},"\u{1F4AC}"),React.createElement("strong",{style:{fontSize:"16px",color:"#0F172A",marginBottom:"4px"}},"No Conversation Selected"),React.createElement("p",{style:{fontSize:"12.5px",maxWidth:"340px"}},'Select a customer conversation from the left to read live messages, or click "Simulate Inbound" to test two-way communication.')))),React.createElement(De,{isOpen:t,onClose:()=>x(!1),onSimulated:w=>{v(w),H(!0),j(w,!0)},showToast:r}))}function Pe({currentUser:n,showToast:r,globalSettings:g,onNavigate:o,loadWalletBalance:c}){let[f,e]=s([]),[d,T]=s(null),[m,v]=s(!0),[l,u]=s(!1),[D,P]=s(null),[z,y]=s([]),[p,C]=s(null),[b,I]=s(null),F=async(N=!1)=>{N||v(!0);try{let a=await(await fetch("./api/campaigns.php?action=list")).json();a.success&&(e(a.campaigns||[]),T(a.summary||null))}catch(i){console.error(i)}finally{N||v(!1)}},O=async()=>{try{let i=await(await fetch("./api/templates.php?active_only=1")).json();i.success&&i.data&&y(i.data.filter(a=>(a.is_active===1||a.is_active===!0||a.is_active==="1")&&["APPROVED","ACTIVE"].includes((a.meta_status||"").toUpperCase())))}catch{}};U(()=>{F(!1),O()},[]);let R=Q(()=>f.find(N=>N.status==="running")||null,[f]);U(()=>{if(!R)return;let N=setInterval(async()=>{try{let a=await(await fetch("./api/campaigns.php?action=process_batch",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({campaign_id:R.id,batch_size:5})})).json();a.success&&(F(!0),c&&c(),a.status==="completed"&&r(`Campaign "${R.name}" broadcast completed!`,"success"))}catch{}},2500);return()=>clearInterval(N)},[R]);let _=async N=>{C(N);try{let a=await(await fetch("./api/campaigns.php?action=process_batch",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({campaign_id:N,batch_size:5})})).json();a.success?(r("Campaign queue started! Processing recipients...","success"),F(!0)):r(a.error||"Failed to start campaign","error")}catch{r("Network error","error")}finally{C(null)}},t=async N=>{try{(await(await fetch("./api/campaigns.php?action=pause",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({campaign_id:N})})).json()).success&&(r("Campaign paused"),F(!0))}catch{}},x=N=>{I({title:"Cancel Broadcast Campaign?",subtitle:"Are you sure you want to cancel this broadcast? Any unsent recipients remaining in the queue will be halted.",icon:"\u{1F6D1}",badgeClass:"danger",confirmText:"Yes, Cancel Broadcast",cancelText:"Keep Running",onConfirm:async()=>{try{(await(await fetch("./api/campaigns.php?action=cancel",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({campaign_id:N})})).json()).success&&(r("Campaign cancelled"),F(!0))}catch{}finally{I(null)}}})},A=N=>{let i=f.find(E=>E.id===N),a=i?`"${i.name}"`:"this campaign",S=i?.total_recipients||"all";I({title:"Re-run Broadcast Campaign?",subtitle:`Reset the broadcast queue for ${a} and re-dispatch official template messages to ${S} recipients via Meta Cloud API?`,icon:"\u{1F504}",badgeClass:"primary",confirmText:"Yes, Re-broadcast Now",cancelText:"Cancel",onConfirm:async()=>{try{let h=await(await fetch("./api/campaigns.php?action=rerun",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({campaign_id:N})})).json();h.success?(r("Campaign queue reset. Starting Meta broadcast...","success"),await F(!0),_(N)):r(h.error||"Failed to re-run campaign","error")}catch{r("Error re-running campaign","error")}finally{I(null)}}})},M=[{key:"name",label:"Campaign Details",sortable:!0,render:N=>React.createElement("div",null,React.createElement("div",{style:{fontWeight:"700",fontSize:"13.5px",color:"var(--text-color)"}},N.name),React.createElement("div",{style:{fontSize:"11px",color:"var(--text-muted)",marginTop:"2px"}},React.createElement("span",null,"\u{1F4CB} ",N.template_title||N.template_name)," \u2022 ",React.createElement("span",{className:`badge category-${N.category?.toLowerCase()}`},N.category)),React.createElement("div",{style:{fontSize:"10.5px",color:"var(--text-muted)",marginTop:"2px"}},"Created: ",ee(N.created_at,g?.system_date_format)))},{key:"pace_per_minute",label:"Queue Pacing",sortable:!0,render:N=>React.createElement("div",null,React.createElement("span",{style:{fontWeight:"700",color:"#0369A1"}},"\u23F1\uFE0F ",N.pace_per_minute," msgs/min"),React.createElement("div",{style:{fontSize:"10.5px",color:"var(--text-muted)"}},"Anti-spam rate"))},{key:"progress_percent",label:"Broadcast Progress",sortable:!0,render:N=>React.createElement("div",{style:{minWidth:"140px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",fontSize:"11.5px",fontWeight:"700",marginBottom:"3px"}},React.createElement("span",null,N.sent_count+N.failed_count," / ",N.total_recipients),React.createElement("span",null,N.progress_percent,"%")),React.createElement("div",{style:{width:"100%",height:"8px",background:"#E2E8F0",borderRadius:"4px",overflow:"hidden"}},React.createElement("div",{style:{width:`${N.progress_percent}%`,height:"100%",background:N.status==="completed"?"#10B981":N.status==="running"?"linear-gradient(90deg, #10B981, #0284C7)":"#94A3B8",borderRadius:"4px",transition:"width 0.3s ease"}})),N.failed_count>0&&React.createElement("div",{style:{fontSize:"10px",color:"#EF4444",marginTop:"2px"}},"\u26A0\uFE0F ",N.failed_count," failed"))},{key:"delivery_rate",label:"Delivery & Reads",sortable:!0,render:N=>React.createElement("div",null,React.createElement("div",{style:{fontSize:"12px"}},React.createElement("strong",null,"\u2713\u2713 ",N.delivery_rate,"%")," Delivered (",N.delivered_count,")"),React.createElement("div",{style:{fontSize:"11.5px",color:"#0284C7",marginTop:"2px"}},React.createElement("strong",null,"\u2713\u2713 ",N.read_rate,"%")," Read (",N.read_count,")"))},{key:"actual_cost",label:"Total Spend",sortable:!0,render:N=>React.createElement("div",null,React.createElement("strong",{style:{color:"var(--text-color)"}},G(N.actual_cost,g?.system_currency,g?.currency_decimals)),React.createElement("div",{style:{fontSize:"10.5px",color:"var(--text-muted)"}},"Est: ",G(N.estimated_cost,g?.system_currency,g?.currency_decimals)))},{key:"status",label:"Status",sortable:!0,render:N=>{let i={completed:{label:"\u2713 Completed",cls:"status-read",bg:"#DCFCE7",color:"#166534"},running:{label:"\u25CF Running",cls:"status-sent",bg:"#DBEAFE",color:"#1E40AF"},paused:{label:"\u23F8 Paused",cls:"status-queued",bg:"#FEF3C7",color:"#92400E"},draft:{label:"\u{1F4DD} Draft",cls:"status-queued",bg:"#F1F5F9",color:"#475569"},cancelled:{label:"\u2715 Cancelled",cls:"status-failed",bg:"#FEE2E2",color:"#991B1B"}},a=i[N.status]||i.draft;return React.createElement("span",{style:{background:a.bg,color:a.color,padding:"3px 8px",borderRadius:"6px",fontSize:"11px",fontWeight:"700",textTransform:"uppercase"}},a.label)}},{key:"actions",label:"Actions",sortable:!1,render:N=>React.createElement("div",{style:{display:"flex",gap:"6px"}},React.createElement("button",{type:"button",className:"btn btn-secondary btn-sm",onClick:()=>P(N.id),title:"Inspect Recipients Log"},"\u{1F441}\uFE0F Inspect"),N.status==="draft"&&React.createElement("button",{type:"button",className:"btn btn-primary btn-sm",disabled:p===N.id,onClick:()=>_(N.id),title:"Start Broadcast"},"\u{1F680} Launch"),N.status==="running"&&React.createElement("button",{type:"button",className:"btn btn-warning btn-sm",onClick:()=>t(N.id),title:"Pause Queue"},"\u23F8 Pause"),N.status==="paused"&&React.createElement("button",{type:"button",className:"btn btn-primary btn-sm",onClick:()=>_(N.id),title:"Resume Queue"},"\u25B6 Resume"),N.status==="completed"&&React.createElement("button",{type:"button",className:"btn btn-secondary btn-sm",disabled:p===N.id,onClick:()=>A(N.id),title:"Re-run broadcast to all recipients via Meta Cloud API"},"\u{1F504} Re-run"))}];return React.createElement("div",{className:"campaigns-view-container"},React.createElement("div",{className:"view-header",style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement("div",null,React.createElement("h2",{style:{margin:0,display:"flex",alignItems:"center",gap:"8px"}},React.createElement("span",null,"\u{1F4E2}")," Bulk Broadcast Campaigns"),React.createElement("p",{style:{margin:"4px 0 0 0",color:"var(--text-muted)",fontSize:"13px"}},"Schedule mass WhatsApp campaigns with CSV contact mapping and anti-spam queue pacing.")),React.createElement("div",{style:{display:"flex",gap:"10px"}},React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:()=>F(!1),title:"Refresh List"},"\u{1F504} Refresh"),React.createElement("button",{type:"button",className:"btn btn-primary",onClick:()=>u(!0),style:{display:"flex",alignItems:"center",gap:"6px"}},React.createElement("span",null,"\u{1F680}")," Create Broadcast Campaign"))),React.createElement("div",{className:"campaigns-stats-grid"},React.createElement("div",{className:"campaign-stat-card"},React.createElement("div",{className:"campaign-stat-icon",style:{background:"#EFF6FF",color:"#2563EB"}},"\u{1F4E2}"),React.createElement("div",{className:"campaign-stat-info"},React.createElement("span",{className:"campaign-stat-label"},"Total Campaigns"),React.createElement("span",{className:"campaign-stat-val"},d?.total_campaigns||0),React.createElement("span",{className:"campaign-stat-sub"},"Active broadcast programs"))),React.createElement("div",{className:"campaign-stat-card"},React.createElement("div",{className:"campaign-stat-icon",style:{background:"#F0FDF4",color:"#16A34A"}},"\u{1F465}"),React.createElement("div",{className:"campaign-stat-info"},React.createElement("span",{className:"campaign-stat-label"},"Total Audience"),React.createElement("span",{className:"campaign-stat-val"},d?.total_recipients||0),React.createElement("span",{className:"campaign-stat-sub"},d?.total_sent||0," dispatched"))),React.createElement("div",{className:"campaign-stat-card"},React.createElement("div",{className:"campaign-stat-icon",style:{background:"#ECFDF5",color:"#059669"}},"\u2713\u2713"),React.createElement("div",{className:"campaign-stat-info"},React.createElement("span",{className:"campaign-stat-label"},"Delivery Success"),React.createElement("span",{className:"campaign-stat-val"},d?.overall_delivery_rate||0,"%"),React.createElement("span",{className:"campaign-stat-sub"},d?.total_delivered||0," verified delivered"))),React.createElement("div",{className:"campaign-stat-card"},React.createElement("div",{className:"campaign-stat-icon",style:{background:"#F5F3FF",color:"#7C3AED"}},"\u{1F441}\uFE0F"),React.createElement("div",{className:"campaign-stat-info"},React.createElement("span",{className:"campaign-stat-label"},"Average Read Rate"),React.createElement("span",{className:"campaign-stat-val"},d?.overall_read_rate||0,"%"),React.createElement("span",{className:"campaign-stat-sub"},d?.total_read||0," customer reads")))),R&&React.createElement("div",{className:"campaign-live-monitor"},React.createElement("div",{className:"monitor-header"},React.createElement("div",{className:"monitor-title"},React.createElement("span",{className:"monitor-pulse-dot"}),React.createElement("span",null,"Broadcasting: ",R.name)),React.createElement("div",{style:{display:"flex",gap:"8px"}},React.createElement("button",{type:"button",className:"btn btn-warning btn-sm",onClick:()=>t(R.id)},"\u23F8 Pause Queue"),React.createElement("button",{type:"button",className:"btn btn-danger btn-sm",onClick:()=>x(R.id)},"\u2715 Cancel"))),React.createElement("div",{className:"campaign-progress-bar-wrap"},React.createElement("div",{className:"campaign-progress-bar-fill",style:{width:`${R.progress_percent}%`}})),React.createElement("div",{className:"monitor-meta-grid"},React.createElement("div",null,"\u{1F4C8} Progress: ",React.createElement("strong",null,R.sent_count+R.failed_count," / ",R.total_recipients," (",R.progress_percent,"%)")),React.createElement("div",null,"\u23F1\uFE0F Pacing Rate: ",React.createElement("strong",null,R.pace_per_minute," messages/min")),React.createElement("div",null,"\u{1F4CB} Template: ",React.createElement("strong",null,R.template_title||R.template_name)),React.createElement("div",null,"\u{1F4B3} Total Spent: ",React.createElement("strong",null,G(R.actual_cost,g?.system_currency,g?.currency_decimals))))),React.createElement("div",{className:"card"},React.createElement(Z,{columns:M,data:f,searchPlaceholder:"Search campaigns by name, template, status...",defaultSortKey:"id",defaultSortDir:"desc",emptyMessage:"No broadcast campaigns created yet. Click 'Create Broadcast Campaign' to launch your first mass WhatsApp announcement."})),l&&React.createElement(Ie,{isOpen:l,onClose:()=>u(!1),templates:z,globalSettings:g,currentUser:n,showToast:r,onCampaignCreated:N=>{u(!1),F(!1),_(N)}}),D&&React.createElement(Re,{campaignId:D,onClose:()=>P(null),globalSettings:g,showToast:r,onRerun:A}),b&&React.createElement(me,{isOpen:!!b,title:b.title,subtitle:b.subtitle,icon:b.icon,badgeClass:b.badgeClass,confirmText:b.confirmText,cancelText:b.cancelText,onClose:()=>I(null),onConfirm:b.onConfirm}))}function Ie({isOpen:n,onClose:r,templates:g,globalSettings:o,currentUser:c,showToast:f,onCampaignCreated:e}){let[d,T]=s(1),[m,v]=s(""),[l,u]=s(g[0]?.template_name||"offer_sandslab"),[D,P]=s(""),[z,y]=s(""),[p,C]=s(50),[b,I]=s(""),[F,O]=s([]),[R,_]=s([]),[t,x]=s(!1),A=Q(()=>g.find(h=>h.template_name===l)||g[0]||null,[g,l]);U(()=>{A&&A.header_sample&&(P(A.header_sample),y(A.header_sample.split("/").pop()||"header_image.jpg"))},[A]);let M=h=>{let W=h.target.files?.[0];if(!W)return;let $=new FileReader;$.onload=K=>{let H=K.target?.result;typeof H=="string"&&N(H)},$.readAsText(W)},N=h=>{I(h);let W=h.split(/\r?\n/).map(j=>j.trim()).filter(j=>j.length>0);if(W.length===0)return;let $=W[0].split(",").map(j=>j.trim().replace(/^["']|["']$/g,""));_($);let K=$[0].toLowerCase().includes("phone")?1:0,H=[];for(let j=K;j<W.length;j++){let X=W[j].split(",").map(B=>B.trim().replace(/^["']|["']$/g,""));X[0]&&H.push({phone:X[0],name:X[1]||"",variables:X.slice(2)})}O(H),H.length>0&&T(3)},i=()=>{if(!b.trim()){f("Please paste recipient records or upload a CSV file","error");return}N(b)},a=async()=>{if(!m.trim()){f("Please enter a campaign name","error"),T(1);return}if(F.length===0){f("Please provide at least one valid recipient","error"),T(2);return}x(!0);try{let h={name:m.trim(),template_name:l,pace_per_minute:p,header_media_url:D||null,header_media_name:z||null,recipients:F},$=await(await fetch("./api/campaigns.php?action=create",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(h)})).json();$.success?(f(`Broadcast campaign "${m}" created with ${$.total_recipients} recipients!`,"success"),e($.campaign_id)):f($.error||"Failed to create campaign","error")}catch{f("Network error creating campaign","error")}finally{x(!1)}},S=parseFloat(A?.client_rate_bhd||.034),E=F.length*S;return React.createElement("div",{className:"modal-overlay",onClick:r},React.createElement("div",{className:"modal-content",style:{maxWidth:"780px",width:"95%"},onClick:h=>h.stopPropagation()},React.createElement("div",{className:"modal-header"},React.createElement("h3",{style:{margin:0,display:"flex",alignItems:"center",gap:"8px"}},React.createElement("span",null,"\u{1F4E2}")," Create Broadcast Campaign"),React.createElement("button",{type:"button",className:"close-btn",onClick:r},"\u2715")),React.createElement("div",{className:"wizard-steps-indicator",style:{padding:"0 24px 16px 24px",margin:"16px 0"}},React.createElement("div",{className:`wizard-step-node ${d===1?"active":""}`,onClick:()=>T(1),style:{cursor:"pointer"}},React.createElement("span",{className:"step-num"},"1")," Template & Info"),React.createElement("div",{className:`wizard-step-node ${d===2?"active":""}`,onClick:()=>T(2),style:{cursor:"pointer"}},React.createElement("span",{className:"step-num"},"2")," Upload Recipients"),React.createElement("div",{className:`wizard-step-node ${d===3?"active":""}`,onClick:()=>T(3),style:{cursor:"pointer"}},React.createElement("span",{className:"step-num"},"3")," Column Mapping & Preview"),React.createElement("div",{className:`wizard-step-node ${d===4?"active":""}`,onClick:()=>T(4),style:{cursor:"pointer"}},React.createElement("span",{className:"step-num"},"4")," Pacing & Launch")),React.createElement("div",{className:"modal-body",style:{maxHeight:"65vh",overflowY:"auto",padding:"0 24px"}},d===1&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"16px"}},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Campaign Title ",React.createElement("span",{style:{color:"#EF4444"}},"*")),React.createElement("input",{type:"text",className:"form-input",placeholder:"e.g. October Partner Special Promo Blast",value:m,onChange:h=>v(h.target.value),autoFocus:!0})),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Select Approved WhatsApp Template ",React.createElement("span",{style:{color:"#EF4444"}},"*")),React.createElement("select",{className:"form-select",value:l,onChange:h=>u(h.target.value)},g.filter(h=>(h.is_active===1||h.is_active===!0||h.is_active==="1")&&["APPROVED","ACTIVE"].includes((h.meta_status||"").toUpperCase())).map(h=>React.createElement("option",{key:h.template_name,value:h.template_name},h.display_title||h.template_name," [",h.category,"] \u2022 Rate: ",h.client_rate_bhd," BHD (",h.variable_count," variables)")))),A&&React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"10px",padding:"16px",display:"flex",flexDirection:"column",gap:"10px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement("span",{style:{fontWeight:"700",fontSize:"13px",color:"#0369A1"}},"\u{1F4CB} Template Preview: ",A.display_title),React.createElement("span",{className:`badge category-${A.category?.toLowerCase()}`},A.category)),A.header_sample&&React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"8px",fontSize:"12px",color:"#059669",background:"#ECFDF5",padding:"6px 10px",borderRadius:"6px"}},React.createElement("span",null,"\u{1F5BC}\uFE0F Header Media:"),React.createElement("a",{href:A.header_sample,target:"_blank",rel:"noreferrer",style:{color:"#059669",textDecoration:"underline"}},A.header_sample.split("/").pop())),React.createElement("div",{style:{background:"#FFFFFF",border:"1px solid #CBD5E1",borderRadius:"8px",padding:"12px",whiteSpace:"pre-wrap",fontSize:"13px",lineHeight:"1.5",fontFamily:"inherit"}},A.body_text),React.createElement("div",{style:{fontSize:"11.5px",color:"var(--text-muted)"}},"Requires ",React.createElement("strong",null,A.variable_count," dynamic variable(s)")," per contact row."))),d===2&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"16px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement("span",{style:{fontWeight:"700",fontSize:"13.5px"}},"Upload Contact Audience"),React.createElement("a",{href:`./api/campaigns.php?action=sample_csv&template_name=${encodeURIComponent(l)}`,className:"btn btn-secondary btn-sm",download:!0,style:{display:"flex",alignItems:"center",gap:"4px"}},"\u{1F4E5} Download Sample CSV")),React.createElement("label",{className:"csv-upload-dropzone"},React.createElement("input",{type:"file",accept:".csv,text/csv",onChange:M,style:{display:"none"}}),React.createElement("div",{style:{fontSize:"28px",marginBottom:"8px"}},"\u{1F4C2}"),React.createElement("div",{style:{fontWeight:"700",fontSize:"14px",color:"var(--text-color)"}},"Click to select CSV File or Drag & Drop here"),React.createElement("div",{style:{fontSize:"12px",color:"var(--text-muted)",marginTop:"4px"}},"Supports CSV with international phone numbers and parameters")),React.createElement("div",{style:{textAlign:"center",color:"var(--text-muted)",fontSize:"12px",fontWeight:"700"}},"\u2014 OR PASTE RECIPIENT DATA BELOW \u2014"),React.createElement("div",{className:"form-group"},React.createElement("textarea",{className:"form-textarea",rows:"4",placeholder:`phone,name,param_1,param_2
+const { useState, useEffect, useMemo, useRef } = React;
+function DataTable({
+  columns,
+  data = [],
+  searchable = true,
+  searchPlaceholder = "Search records...",
+  pageSizeOptions = [5, 10, 25, 50],
+  defaultPageSize = 10,
+  defaultSortKey = "",
+  defaultSortDir = "desc",
+  title = "export",
+  actions = null,
+  emptyMessage = "No matching records found."
+}) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [pageSize, setPageSize] = useState(defaultPageSize);
+  const [currentPage, setCurrentPage] = useState(1);
+  const initialSortKey = defaultSortKey !== void 0 && defaultSortKey !== "" ? defaultSortKey : columns.find((c) => c.key === "created_at" || c.key === "id")?.key || (columns[0]?.key || "");
+  const [sortKey, setSortKey] = useState(initialSortKey);
+  const [sortDir, setSortDir] = useState(defaultSortDir);
+  const filteredData = useMemo(() => {
+    if (!searchTerm.trim()) return data;
+    const term = searchTerm.toLowerCase();
+    return data.filter((row) => {
+      return columns.some((col) => {
+        const val = row[col.key];
+        if (val === null || val === void 0) return false;
+        return String(val).toLowerCase().includes(term);
+      });
+    });
+  }, [data, searchTerm, columns]);
+  const sortedData = useMemo(() => {
+    if (!sortKey) return filteredData;
+    return [...filteredData].sort((a, b) => {
+      let aVal = a[sortKey];
+      let bVal = b[sortKey];
+      if (aVal === null || aVal === void 0) aVal = "";
+      if (bVal === null || bVal === void 0) bVal = "";
+      if (typeof aVal === "number" && typeof bVal === "number") {
+        return sortDir === "asc" ? aVal - bVal : bVal - aVal;
+      }
+      const numA = Number(aVal);
+      const numB = Number(bVal);
+      if (!isNaN(numA) && !isNaN(numB) && typeof aVal !== "boolean" && typeof bVal !== "boolean" && aVal !== "" && bVal !== "") {
+        return sortDir === "asc" ? numA - numB : numB - numA;
+      }
+      return sortDir === "asc" ? String(aVal).localeCompare(String(bVal), void 0, { numeric: true, sensitivity: "base" }) : String(bVal).localeCompare(String(aVal), void 0, { numeric: true, sensitivity: "base" });
+    });
+  }, [filteredData, sortKey, sortDir]);
+  const totalEntries = sortedData.length;
+  const totalPages = Math.ceil(totalEntries / pageSize) || 1;
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+  const paginatedData = useMemo(() => {
+    const start = (safeCurrentPage - 1) * pageSize;
+    return sortedData.slice(start, start + pageSize);
+  }, [sortedData, safeCurrentPage, pageSize]);
+  const handleSort = (key, sortable = true) => {
+    if (!sortable) return;
+    if (sortKey === key) {
+      setSortDir((prev) => prev === "asc" ? "desc" : "asc");
+    } else {
+      setSortKey(key);
+      setSortDir("desc");
+    }
+  };
+  const exportCSV = () => {
+    const headerRow = columns.map((c) => `"${c.label.replace(/"/g, '""')}"`).join(",");
+    const bodyRows = sortedData.map((row) => {
+      return columns.map((c) => {
+        let val = row[c.key];
+        if (val === null || val === void 0) val = "";
+        return `"${String(val).replace(/"/g, '""')}"`;
+      }).join(",");
+    });
+    const csvContent = "data:text/csv;charset=utf-8," + [headerRow, ...bodyRows].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${title}_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  const startIdx = totalEntries === 0 ? 0 : (safeCurrentPage - 1) * pageSize + 1;
+  const endIdx = Math.min(safeCurrentPage * pageSize, totalEntries);
+  return /* @__PURE__ */ React.createElement("div", { className: "datatable-container" }, /* @__PURE__ */ React.createElement("div", { className: "datatable-header" }, /* @__PURE__ */ React.createElement("div", { className: "datatable-length" }, /* @__PURE__ */ React.createElement("span", null, "Show"), /* @__PURE__ */ React.createElement("select", { value: pageSize, onChange: (e) => {
+    setPageSize(Number(e.target.value));
+    setCurrentPage(1);
+  } }, pageSizeOptions.map((opt) => /* @__PURE__ */ React.createElement("option", { key: opt, value: opt }, opt))), /* @__PURE__ */ React.createElement("span", null, "entries")), /* @__PURE__ */ React.createElement("div", { className: "datatable-tools" }, actions, /* @__PURE__ */ React.createElement("button", { className: "btn-export", onClick: exportCSV, title: "Export table data to CSV file" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4E5}"), " Export CSV"), searchable && /* @__PURE__ */ React.createElement("div", { className: "datatable-search" }, /* @__PURE__ */ React.createElement("span", { className: "datatable-search-icon" }, "\u{1F50D}"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      placeholder: searchPlaceholder,
+      value: searchTerm,
+      onChange: (e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+      }
+    }
+  )))), /* @__PURE__ */ React.createElement("div", { className: "data-table-wrapper" }, /* @__PURE__ */ React.createElement("table", { className: "data-table" }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, columns.map((col) => {
+    const isSorted = sortKey === col.key;
+    const isSortable = col.sortable !== false;
+    return /* @__PURE__ */ React.createElement(
+      "th",
+      {
+        key: col.key,
+        className: `${isSortable ? "sortable" : ""} ${isSorted ? "sorted" : ""}`,
+        onClick: () => handleSort(col.key, isSortable),
+        style: col.width ? { width: col.width } : {}
+      },
+      col.label,
+      isSortable && /* @__PURE__ */ React.createElement("span", { className: "sort-indicator" }, isSorted ? sortDir === "asc" ? " \u25B2" : " \u25BC" : " \u21C5")
+    );
+  }))), /* @__PURE__ */ React.createElement("tbody", null, paginatedData.length === 0 ? /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { colSpan: columns.length, style: { textAlign: "center", padding: "32px", color: "var(--text-muted)" } }, emptyMessage)) : paginatedData.map((row, rowIdx) => /* @__PURE__ */ React.createElement("tr", { key: row.id || rowIdx }, columns.map((col) => /* @__PURE__ */ React.createElement("td", { key: col.key }, col.render ? col.render(row) : row[col.key] ?? ""))))))), /* @__PURE__ */ React.createElement("div", { className: "datatable-footer" }, /* @__PURE__ */ React.createElement("div", { className: "datatable-info" }, "Showing ", startIdx, " to ", endIdx, " of ", totalEntries, " entries", searchTerm && ` (filtered from ${data.length} total entries)`), /* @__PURE__ */ React.createElement("div", { className: "datatable-pagination" }, /* @__PURE__ */ React.createElement("button", { className: "page-btn", disabled: safeCurrentPage <= 1, onClick: () => setCurrentPage((prev) => Math.max(1, prev - 1)) }, "\u2039 Prev"), Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+    let pageNum = safeCurrentPage <= 3 ? i + 1 : safeCurrentPage + i - 2;
+    if (pageNum > totalPages) pageNum = totalPages - (4 - i);
+    if (pageNum < 1) pageNum = i + 1;
+    if (pageNum > totalPages) return null;
+    return /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        key: pageNum,
+        className: `page-btn ${safeCurrentPage === pageNum ? "active" : ""}`,
+        onClick: () => setCurrentPage(pageNum)
+      },
+      pageNum
+    );
+  }), /* @__PURE__ */ React.createElement("button", { className: "page-btn", disabled: safeCurrentPage >= totalPages, onClick: () => setCurrentPage((prev) => Math.min(totalPages, prev + 1)) }, "Next \u203A"))));
+}
+function ConfirmDialog({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  subtitle,
+  icon = "\u{1F504}",
+  badgeClass = "primary",
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  isProcessing = false
+}) {
+  if (!isOpen) return null;
+  return /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-overlay", onClick: onClose, style: { zIndex: 12e3 } }, /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-card", onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-body" }, /* @__PURE__ */ React.createElement("div", { className: `confirm-modal-icon-badge ${badgeClass}` }, /* @__PURE__ */ React.createElement("span", null, icon)), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-title" }, title), subtitle && /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-subtitle", style: { fontSize: "13.5px", color: "#64748B", lineHeight: "1.55", marginTop: "6px" } }, subtitle)), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-actions" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn-confirm-cancel",
+      onClick: onClose,
+      disabled: isProcessing
+    },
+    cancelText
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: badgeClass === "danger" ? "btn-confirm-delete" : "btn-confirm-primary",
+      onClick: onConfirm,
+      disabled: isProcessing
+    },
+    isProcessing ? "Processing..." : confirmText
+  ))));
+}
+function VersionArchitectureModal({ isOpen, onClose }) {
+  if (!isOpen) return null;
+  return /* @__PURE__ */ React.createElement("div", { className: "version-modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("div", { className: "version-modal-card", onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "version-modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "26px" } }, "\u{1F680}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h2", { style: { fontSize: "17px", fontWeight: "800", margin: 0, color: "#FFFFFF" } }, "WhatsApp Integration Platform \u2014 Version Architecture"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", margin: "2px 0 0 0", opacity: 0.9, color: "#E8F8F5" } }, "Engineered by SaNDS Lab Middle East W.L.L. \u2022 Enterprise Release Registry"))), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: onClose,
+      style: {
+        background: "rgba(255,255,255,0.2)",
+        border: "none",
+        color: "#FFFFFF",
+        borderRadius: "8px",
+        width: "32px",
+        height: "32px",
+        cursor: "pointer",
+        fontSize: "18px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      },
+      title: "Close"
+    },
+    "\u2715"
+  )), /* @__PURE__ */ React.createElement("div", { className: "version-modal-body" }, /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { borderLeft: "4px solid #10B981", background: "#F0FDF4" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u26A1"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#065F46" } }, "Active Release: Version 2.5.0 (Production Live)")), /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "\u{1F7E2} v2.5.0 USER SECURITY & APPLICATION KEY LICENSING LIVE")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "#065F46", margin: 0, lineHeight: "1.5" } }, "Version 2.5.0 delivers Enterprise User Security Management (Admin Edit, Suspend/Reactivate, and Password Resets) along with the official SaNDS Lab Application Key Licensing Engine with offline asymmetric RSA-SHA256 verification, top header expiry countdown, and strict security lock enforcement.")), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { borderLeft: "4px solid #10B981", background: "#F0FDF4" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F512}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#065F46" } }, "Baseline Milestone: Version 1.0.0 (LOCKED)")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "GIT TAG: v1.0.0"), /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0" } }, "GIT TAG: v1.0"))), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "#047857", marginBottom: "10px", lineHeight: "1.4" } }, /* @__PURE__ */ React.createElement("strong", null, "Commit Hash:"), " ", /* @__PURE__ */ React.createElement("code", { style: { background: "#E2E8F0", padding: "1px 5px", borderRadius: "4px", color: "#0F172A" } }, "9dd6ebc"), " | Production verified & deployed on ", /* @__PURE__ */ React.createElement("code", { style: { background: "#E2E8F0", padding: "1px 5px", borderRadius: "4px", color: "#0F172A" } }, "https://whatsapp.sandslab.com"), "."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "8px", fontSize: "11.5px", color: "#065F46" } }, /* @__PURE__ */ React.createElement("div", null, "\u2713 Superadmin RBAC Security Restrictions"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Dual Charging Engine (Option A vs B)"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Meta WhatsApp Cloud API v19.0 Dispatch"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Multi-Language Odoo API Hub"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Prepaid Wallet & BHD 3-Dec Audit Ledger"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Enterprise DataTables (DESC Sort)"))), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { background: "#FFFFFF" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u{1F4D0}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "Minor Version Management Protocol (SemVer 2.0.0)")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "Starting from Version 2.0, all ongoing changes are version-controlled using structured semantic numbering:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#2563EB", fontSize: "12px" } }, "v2.0.0 (MAJOR)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Major generation architecture shift & foundational framework upgrades.")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#059669", fontSize: "12px" } }, "v2.x.0 (MINOR)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Scheduled roadmap feature milestones (v2.1 Live Chat, v2.2 Campaigns, v2.3 Odoo, v2.4 Templates, v2.5 License).")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "10px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#D97706", fontSize: "12px" } }, "v2.x.y (PATCH)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11px", color: "#64748B", margin: "4px 0 0 0" } }, "Targeted bug fixes, security patches, styling polish, and maintenance hotfixes.")))), /* @__PURE__ */ React.createElement("div", { className: "version-card-block", style: { background: "#FFFFFF" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u{1F4CB}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "Version 2.0 Execution Roadmap (All Milestones Completed & Production Live \u2705)")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.1.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "Inbound Live Chat & Two-Way Agent Inbox (Completed & Released \u2705)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#166534", margin: "2px 0 0 0" } }, "Two-way conversational workspace, Meta 24-hour customer care session window tracking, canned replies, free-text replies, and simulated inbound testing."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.2.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "Bulk Campaign Broadcasts & Queue Pacing (Completed & Released \u2705)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#166534", margin: "2px 0 0 0" } }, "CSV contact upload with dynamic variable mapping, anti-spam dispatch queue pacing, live animated monitor, and verified Meta webhook delivery receipts."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.3.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "Odoo ERP Automated Action Webhook & Model Sync (Completed & Released \u2705)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#166534", margin: "2px 0 0 0" } }, "Inbound webhook triggers for automated invoice generation (account.move), sales order confirmations, dynamic PDF attachment streaming, and bi-directional chatter delivery callbacks."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.4.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "WhatsApp Template Studio & Meta Graph API Live Approval (Completed & Released \u2705)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#166534", margin: "2px 0 0 0" } }, "Direct Meta Graph API submission for message templates, curated library of pre-built Meta presets, live handset mockup phone preview, and active/inactive template filtering."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "10px 12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.5.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "Enterprise User Security & SaNDS Lab Application Key Licensing (Active & Released \u2705)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "#166534", margin: "2px 0 0 0" } }, "Admin user edit & suspension controls, self and admin password reset flows, SaNDS Lab Application Key licensing engine with offline asymmetric RSA-SHA256 verification, top header expiry duration pill, and strict lock security protection.")))))), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 24px", background: "#F8FAFC", borderTop: "1px solid #E2E8F0", display: "flex", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary",
+      onClick: onClose,
+      style: { padding: "8px 20px", fontSize: "13px", fontWeight: "700" }
+    },
+    "Close Version Inspector"
+  ))));
+}
+function App() {
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem("wa_user");
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+  const [loading, setLoading] = useState(!currentUser);
+  const [showVersionModal, setShowVersionModal] = useState(false);
+  const [globalSettings, setGlobalSettings] = useState({
+    system_currency: "BHD",
+    currency_decimals: "3",
+    system_date_format: "YYYY-MM-DD HH:mm:ss",
+    system_timezone: "Asia/Bahrain",
+    tariff_utility_meta: "0.0140",
+    tariff_utility_platform: "0.0045",
+    tariff_auth_meta: "0.0110",
+    tariff_auth_platform: "0.0035",
+    tariff_marketing_meta: "0.0270",
+    tariff_marketing_platform: "0.0070",
+    tariff_service_meta: "0.0075",
+    tariff_service_platform: "0.0025",
+    wallet_enforcement: "1"
+  });
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [activeTab, setActiveTab] = useState(() => {
+    const hash = window.location.hash.replace("#", "").trim();
+    const saved = localStorage.getItem("wa_tab");
+    const validTabs = ["dashboard", "inbox", "campaigns", "composer", "logs", "templates", "api_hub", "api_keys", "users", "wallet", "settings"];
+    if (hash && validTabs.includes(hash)) return hash;
+    if (saved && validTabs.includes(saved)) return saved;
+    return "dashboard";
+  });
+  const [toast, setToast] = useState(null);
+  const [inboxUnreadTotal, setInboxUnreadTotal] = useState(0);
+  const [messagesDropdownOpen, setMessagesDropdownOpen] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const messagesDropdownRef = useRef(null);
+  const [licenseInfo, setLicenseInfo] = useState(null);
+  const [checkingLicense, setCheckingLicense] = useState(true);
+  const [showLicenseActivationModal, setShowLicenseActivationModal] = useState(false);
+  const [showLicenseDetailsModal, setShowLicenseDetailsModal] = useState(false);
+  const loadLicenseStatus = async (autoShowModalIfInvalid = true) => {
+    try {
+      const res = await fetch("./api/license.php?action=status");
+      const data = await res.json();
+      if (data.success && data.data) {
+        setLicenseInfo(data.data);
+        if (!data.data.valid && autoShowModalIfInvalid) {
+          setShowLicenseActivationModal(true);
+        }
+      }
+    } catch (err) {
+      console.error("License check error:", err);
+    } finally {
+      setCheckingLicense(false);
+    }
+  };
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (messagesDropdownRef.current && !messagesDropdownRef.current.contains(e.target)) {
+        setMessagesDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+  const navigateToTab = (tab) => {
+    setActiveTab(tab);
+    try {
+      window.location.hash = tab;
+      localStorage.setItem("wa_tab", tab);
+    } catch (e) {
+    }
+  };
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "").trim();
+      const validTabs = ["dashboard", "inbox", "campaigns", "composer", "logs", "templates", "api_hub", "api_keys", "users", "wallet", "settings"];
+      if (hash && validTabs.includes(hash)) {
+        setActiveTab(hash);
+        localStorage.setItem("wa_tab", hash);
+      }
+    };
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+  const loadGlobalSettings = async () => {
+    try {
+      const res = await fetch("./api/settings.php");
+      const data = await res.json();
+      if (data.success && data.settings) {
+        setGlobalSettings((prev) => ({ ...prev, ...data.settings }));
+      }
+    } catch (e) {
+    }
+  };
+  const loadWalletBalance = async () => {
+    try {
+      const res = await fetch("./api/wallet.php?limit=1");
+      const data = await res.json();
+      if (data.success && data.wallet_balance !== void 0) {
+        setWalletBalance(parseFloat(data.wallet_balance));
+      }
+    } catch (e) {
+    }
+  };
+  useEffect(() => {
+    checkAuth();
+    loadGlobalSettings();
+    loadWalletBalance();
+    loadLicenseStatus(true);
+  }, []);
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4e3);
+  };
+  const checkAuth = async () => {
+    try {
+      const res = await fetch("./api/auth.php?action=check", {
+        headers: currentUser ? { "X-User-Id": String(currentUser.id), "X-User-Email": currentUser.email } : {}
+      });
+      const data = await res.json();
+      if (data.success && data.authenticated && data.user) {
+        setCurrentUser(data.user);
+        localStorage.setItem("wa_user", JSON.stringify(data.user));
+        loadWalletBalance();
+      } else if (!currentUser) {
+        setCurrentUser(null);
+        localStorage.removeItem("wa_user");
+      }
+    } catch (e) {
+      console.error("Auth check error", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleLogin = (user) => {
+    setCurrentUser(user);
+    try {
+      localStorage.setItem("wa_user", JSON.stringify(user));
+    } catch (e) {
+    }
+    showToast(`Welcome back, ${user.name}!`);
+    loadGlobalSettings();
+    loadWalletBalance();
+  };
+  const handleLogout = async () => {
+    try {
+      await fetch("./api/auth.php?action=logout");
+      setCurrentUser(null);
+      localStorage.removeItem("wa_user");
+      localStorage.removeItem("wa_tab");
+      window.location.hash = "";
+      showToast("You have been logged out.");
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  const switchDemoRole = async (role) => {
+    try {
+      const res = await fetch("./api/auth.php?action=switch_demo_user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCurrentUser(data.user);
+        try {
+          localStorage.setItem("wa_user", JSON.stringify(data.user));
+        } catch (e) {
+        }
+        showToast(`Switched to ${data.user.name} (${role.toUpperCase()})`);
+        loadWalletBalance();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  if (checkingLicense || loading && !currentUser) {
+    return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", gap: "12px" } }, /* @__PURE__ */ React.createElement("div", { className: "brand-badge" }, /* @__PURE__ */ React.createElement("span", { className: "dot" }), " Loading SaNDS Platform..."));
+  }
+  const isLicenseLocked = !!(licenseInfo && !licenseInfo.valid);
+  if (currentUser && isLicenseLocked) {
+    return /* @__PURE__ */ React.createElement("div", { style: {
+      minHeight: "100vh",
+      background: "radial-gradient(circle at 50% 50%, #152033 0%, #0A0E17 100%)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "20px"
+    } }, /* @__PURE__ */ React.createElement(
+      LicenseActivationModal,
+      {
+        licenseInfo,
+        isLockedScreen: true,
+        currentUser,
+        onSuccess: (newInfo) => {
+          setLicenseInfo(newInfo);
+          setShowLicenseActivationModal(false);
+          showToast("\u2713 Application Key activated successfully! Access granted.");
+        },
+        onClose: () => {
+          handleLogout();
+        },
+        showToast
+      }
+    ));
+  }
+  if (!currentUser) {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(
+      LoginView,
+      {
+        onLogin: handleLogin,
+        onSwitchDemo: switchDemoRole,
+        licenseInfo,
+        globalSettings,
+        onOpenLicenseActivation: () => setShowLicenseActivationModal(true)
+      }
+    ), (showLicenseActivationModal || isLicenseLocked) && /* @__PURE__ */ React.createElement(
+      LicenseActivationModal,
+      {
+        licenseInfo,
+        isLockedScreen: isLicenseLocked,
+        onSuccess: (newInfo) => {
+          setLicenseInfo(newInfo);
+          setShowLicenseActivationModal(false);
+          showToast("\u2713 Application Key activated successfully!");
+        },
+        onClose: () => setShowLicenseActivationModal(false),
+        showToast
+      }
+    ));
+  }
+  const curr = globalSettings?.system_currency || "BHD";
+  const dec = parseInt(globalSettings?.currency_decimals || "3", 10);
+  return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh" } }, toast && /* @__PURE__ */ React.createElement("div", { style: {
+    position: "fixed",
+    top: "20px",
+    right: "24px",
+    zIndex: 9999,
+    background: toast.type === "error" ? "#EF4444" : "#075E54",
+    color: "#fff",
+    padding: "12px 20px",
+    borderRadius: "8px",
+    boxShadow: "0 8px 16px rgba(0,0,0,0.15)",
+    fontSize: "13px",
+    fontWeight: "600",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px"
+  } }, /* @__PURE__ */ React.createElement("span", null, toast.type === "error" ? "\u26A0\uFE0F" : "\u2705"), toast.message), /* @__PURE__ */ React.createElement("header", { className: "app-header" }, /* @__PURE__ */ React.createElement("div", { className: "header-top-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-top-inner" }, /* @__PURE__ */ React.createElement("div", { className: "header-brand" }, /* @__PURE__ */ React.createElement("img", { src: "./assets/logos/SaNDSLab-LogoNewUpdated.png", alt: "SaNDS Lab Middle East", className: "brand-logo" }), /* @__PURE__ */ React.createElement("div", { className: "brand-badge" }, /* @__PURE__ */ React.createElement("span", { className: "dot" }), " WhatsApp Gateway"), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "version-pill-btn",
+      onClick: () => setShowVersionModal(true),
+      title: "Click to view Version Architecture, Git Tags & Future Roadmap"
+    },
+    /* @__PURE__ */ React.createElement("span", { className: "version-pill-dot" }),
+    /* @__PURE__ */ React.createElement("span", null, "v2.5.0")
+  )), /* @__PURE__ */ React.createElement("div", { className: "header-actions" }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `license-header-pill ${!licenseInfo || !licenseInfo.valid ? "status-unlicensed" : licenseInfo.days_left <= 7 ? "status-expiring-soon" : licenseInfo.days_left <= 30 ? "status-expiring-month" : "status-active"}`,
+      onClick: () => setShowLicenseDetailsModal(true),
+      title: licenseInfo?.expires_at ? `Click to view License details (Expires: ${formatExpiryDate(licenseInfo.expires_at, globalSettings?.system_date_format)})` : "Click to view SaNDS Lab Application Key & Expiry details"
+    },
+    /* @__PURE__ */ React.createElement("span", null, !licenseInfo || !licenseInfo.valid ? "\u26A0\uFE0F" : licenseInfo.days_left <= 7 ? "\u23F3" : "\u{1F6E1}\uFE0F"),
+    /* @__PURE__ */ React.createElement("span", null, "License: ", /* @__PURE__ */ React.createElement("strong", null, licenseInfo?.duration_text || (checkingLicense ? "Checking..." : "Unlicensed")))
+  ), /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: "wallet-header-pill",
+      onClick: () => navigateToTab("wallet"),
+      title: "Click to manage Wallet & view Billing Statement"
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"),
+    /* @__PURE__ */ React.createElement("span", null, "Wallet: ", /* @__PURE__ */ React.createElement("strong", null, formatCurrency(walletBalance, curr, dec)))
+  ), /* @__PURE__ */ React.createElement("div", { className: "user-profile-pill", title: `Logged in as ${currentUser.email}` }, /* @__PURE__ */ React.createElement("div", { className: "avatar", style: { background: currentUser.avatar_color || "#128C7E" } }, currentUser.name.charAt(0)), /* @__PURE__ */ React.createElement("div", { className: "user-details" }, /* @__PURE__ */ React.createElement("span", { className: "user-name" }, currentUser.name), /* @__PURE__ */ React.createElement("span", { className: "user-role-badge" }, currentUser.role))), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn-header-action",
+      onClick: () => setShowChangePasswordModal(true),
+      title: "Change Your Account Password"
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"),
+    /* @__PURE__ */ React.createElement("span", null, "Change Password")
+  ), /* @__PURE__ */ React.createElement("button", { className: "btn-logout", onClick: handleLogout, title: "Sign Out" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6AA}"), " Logout")))), /* @__PURE__ */ React.createElement("div", { className: "header-nav-bar" }, /* @__PURE__ */ React.createElement("div", { className: "header-nav-inner" }, /* @__PURE__ */ React.createElement("nav", { className: "horizontal-nav" }, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "dashboard" ? "active" : ""}`, onClick: () => navigateToTab("dashboard") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CA}"), " Dashboard"), /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-wrap", ref: messagesDropdownRef }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `nav-dropdown-btn ${["inbox", "campaigns", "composer", "logs"].includes(activeTab) ? "active" : ""}`,
+      onClick: () => setMessagesDropdownOpen((prev) => !prev),
+      title: "Messages Menu (Inbox, Campaigns, Send Message, Logs)"
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"),
+    /* @__PURE__ */ React.createElement("span", null, "Messages"),
+    inboxUnreadTotal > 0 && /* @__PURE__ */ React.createElement("span", { style: {
+      background: ["inbox", "campaigns", "composer", "logs"].includes(activeTab) ? "#FFFFFF" : "#25D366",
+      color: ["inbox", "campaigns", "composer", "logs"].includes(activeTab) ? "#075E54" : "#FFFFFF",
+      fontSize: "10px",
+      fontWeight: "800",
+      padding: "1px 6px",
+      borderRadius: "10px",
+      marginLeft: "2px"
+    } }, inboxUnreadTotal),
+    /* @__PURE__ */ React.createElement("span", { className: `nav-chevron ${messagesDropdownOpen ? "open" : ""}` }, "\u25BC")
+  ), messagesDropdownOpen && /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-menu" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `nav-dropdown-item ${activeTab === "inbox" ? "active" : ""}`,
+      onClick: () => {
+        navigateToTab("inbox");
+        setMessagesDropdownOpen(false);
+      }
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-item-left" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "15px" } }, "\u{1F4AC}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "Live Agent Inbox"), inboxUnreadTotal > 0 && /* @__PURE__ */ React.createElement("span", { style: {
+      background: "#25D366",
+      color: "#FFFFFF",
+      fontSize: "10px",
+      fontWeight: "800",
+      padding: "1px 6px",
+      borderRadius: "10px"
+    } }, inboxUnreadTotal)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", fontWeight: "400", marginTop: "1px" } }, "2-Way Live Chat & Care Session"))),
+    activeTab === "inbox" && /* @__PURE__ */ React.createElement("span", { className: "nav-item-indicator" })
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `nav-dropdown-item ${activeTab === "campaigns" ? "active" : ""}`,
+      onClick: () => {
+        navigateToTab("campaigns");
+        setMessagesDropdownOpen(false);
+      }
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-item-left" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "15px" } }, "\u{1F4E2}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, "Bulk Broadcasts"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", fontWeight: "400", marginTop: "1px" } }, "Paced Queue & CSV Campaigns"))),
+    activeTab === "campaigns" && /* @__PURE__ */ React.createElement("span", { className: "nav-item-indicator" })
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `nav-dropdown-item ${activeTab === "composer" ? "active" : ""}`,
+      onClick: () => {
+        navigateToTab("composer");
+        setMessagesDropdownOpen(false);
+      }
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-item-left" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "15px" } }, "\u{1F4E4}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, "Send Message"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", fontWeight: "400", marginTop: "1px" } }, "Direct Template Composer"))),
+    activeTab === "composer" && /* @__PURE__ */ React.createElement("span", { className: "nav-item-indicator" })
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `nav-dropdown-item ${activeTab === "logs" ? "active" : ""}`,
+      onClick: () => {
+        navigateToTab("logs");
+        setMessagesDropdownOpen(false);
+      }
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "nav-dropdown-item-left" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "15px" } }, "\u{1F4DC}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, "Message Logs"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", fontWeight: "400", marginTop: "1px" } }, "Delivery & Status Telemetry"))),
+    activeTab === "logs" && /* @__PURE__ */ React.createElement("span", { className: "nav-item-indicator" })
+  ))), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "templates" ? "active" : ""}`, onClick: () => navigateToTab("templates") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Templates & Tariffs"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "wallet" ? "active" : ""}`, onClick: () => navigateToTab("wallet") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Wallet & Billing"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_hub" ? "active" : ""}`, onClick: () => navigateToTab("api_hub") }, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo API Hub"), ["superadmin", "admin"].includes(currentUser.role) && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "api_keys" ? "active" : ""}`, onClick: () => navigateToTab("api_keys") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"), " API Keys"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "users" ? "active" : ""}`, onClick: () => navigateToTab("users") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " Users"), /* @__PURE__ */ React.createElement("button", { className: `nav-item ${activeTab === "settings" ? "active" : ""}`, onClick: () => navigateToTab("settings") }, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Engine Settings")))))), /* @__PURE__ */ React.createElement("main", { className: "app-body" }, activeTab === "dashboard" && /* @__PURE__ */ React.createElement(DashboardView, { onNavigate: navigateToTab, globalSettings }), activeTab === "inbox" && /* @__PURE__ */ React.createElement(LiveAgentInboxView, { currentUser, showToast, globalSettings, onUnreadCountChange: setInboxUnreadTotal, onNavigate: navigateToTab }), activeTab === "campaigns" && /* @__PURE__ */ React.createElement(CampaignsView, { currentUser, showToast, globalSettings, onNavigate: navigateToTab, loadWalletBalance }), activeTab === "composer" && /* @__PURE__ */ React.createElement(ComposerView, { showToast, onSent: () => {
+    navigateToTab("inbox");
+    loadWalletBalance();
+  }, globalSettings }), activeTab === "logs" && /* @__PURE__ */ React.createElement(MessageLogsView, { showToast, globalSettings, onOpenInbox: (phone) => {
+    navigateToTab("inbox");
+  } }), activeTab === "templates" && /* @__PURE__ */ React.createElement(TemplatesView, { showToast, globalSettings }), activeTab === "wallet" && /* @__PURE__ */ React.createElement(WalletView, { currentUser, showToast, globalSettings, onBalanceChange: setWalletBalance }), activeTab === "api_hub" && /* @__PURE__ */ React.createElement(OdooApiHubView, { showToast, globalSettings }), activeTab === "api_keys" && /* @__PURE__ */ React.createElement(ApiKeysView, { showToast }), activeTab === "users" && /* @__PURE__ */ React.createElement(UsersView, { currentUser, showToast }), activeTab === "settings" && /* @__PURE__ */ React.createElement(SettingsView, { currentUser, showToast, onSettingsChange: (s) => {
+    setGlobalSettings((prev) => ({ ...prev, ...s }));
+    loadWalletBalance();
+  } })), /* @__PURE__ */ React.createElement("footer", { className: "app-footer" }, /* @__PURE__ */ React.createElement("div", { className: "footer-inner" }, /* @__PURE__ */ React.createElement("div", { className: "footer-left" }, "All Rights Reserved | Engineered By SaNDS Lab Middle East W.L.L."), /* @__PURE__ */ React.createElement("div", { className: "footer-right" }, /* @__PURE__ */ React.createElement(
+    "span",
+    {
+      className: "footer-badge version-footer-clickable",
+      onClick: () => setShowVersionModal(true),
+      title: "Click to inspect Version 2.5.0 Architecture & Locked v1.0.0 Baseline"
+    },
+    "Platform v2.5.0 (v1.0.0 Locked \u{1F512})"
+  ), /* @__PURE__ */ React.createElement("span", { className: "footer-badge" }, "WhatsApp Cloud API v19.0"), /* @__PURE__ */ React.createElement("span", { className: "footer-badge" }, "Odoo ERP Connector Active"), /* @__PURE__ */ React.createElement("span", null, "Bahrain (BHD) Tariff Active")))), /* @__PURE__ */ React.createElement(VersionArchitectureModal, { isOpen: showVersionModal, onClose: () => setShowVersionModal(false) }), showChangePasswordModal && /* @__PURE__ */ React.createElement(
+    ChangePasswordModal,
+    {
+      currentUser,
+      onClose: () => setShowChangePasswordModal(false),
+      showToast
+    }
+  ), showLicenseActivationModal && /* @__PURE__ */ React.createElement(
+    LicenseActivationModal,
+    {
+      licenseInfo,
+      onSuccess: (newInfo) => {
+        setLicenseInfo(newInfo);
+        setShowLicenseActivationModal(false);
+        showToast("\u2713 Application Key activated successfully!");
+      },
+      onClose: () => setShowLicenseActivationModal(false),
+      showToast
+    }
+  ), showLicenseDetailsModal && /* @__PURE__ */ React.createElement(
+    LicenseDetailsModal,
+    {
+      licenseInfo,
+      globalSettings,
+      onClose: () => setShowLicenseDetailsModal(false),
+      onChangeKey: () => {
+        setShowLicenseDetailsModal(false);
+        setShowLicenseActivationModal(true);
+      },
+      onRefresh: () => loadLicenseStatus(false),
+      showToast
+    }
+  ));
+}
+function LicenseActivationModal({ licenseInfo, isLockedScreen, currentUser, onSuccess, onClose, showToast }) {
+  const [key, setKey] = useState("");
+  const [domain, setDomain] = useState(licenseInfo?.detected_domain || "localhost");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const handleActivate = async (e) => {
+    e.preventDefault();
+    if (!key.trim()) {
+      setError("Please enter a license key");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("./api/license.php?action=activate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ license_key: key.trim(), domain_name: domain.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        onSuccess(data.data);
+      } else {
+        setError(data.error || "Activation failed");
+      }
+    } catch (err) {
+      setError("Network error connecting to activation service");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleStartTrial = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("./api/license.php?action=activate_eval", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain_name: domain.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        onSuccess(data.data);
+      } else {
+        setError(data.error || "Failed to start evaluation");
+      }
+    } catch (err) {
+      setError("Network error starting evaluation");
+    } finally {
+      setLoading(false);
+    }
+  };
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: isLockedScreen ? void 0 : onClose }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "520px", border: isLockedScreen ? "2px solid #EF4444" : void 0 }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header", style: { background: isLockedScreen ? "linear-gradient(135deg, #7F1D1D 0%, #991B1B 100%)" : void 0 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, isLockedScreen ? "\u{1F512}" : "\u{1F6E1}\uFE0F"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, fontSize: "16px" } }, isLockedScreen ? "Application Key Required (Locked)" : "Application Key Activation"), /* @__PURE__ */ React.createElement("p", { style: { margin: "2px 0 0 0", fontSize: "12px", color: "rgba(255,255,255,0.85)" } }, "SaNDS Lab Licensing Server (key.sandslab.com)"))), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "close-btn",
+      onClick: onClose,
+      title: isLockedScreen ? "Close and Return to Login" : "Close"
+    },
+    "\u2715"
+  )), /* @__PURE__ */ React.createElement("form", { onSubmit: handleActivate }, /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "22px" } }, isLockedScreen ? /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#FEF2F2",
+    border: "1px solid #FCA5A5",
+    color: "#991B1B",
+    padding: "12px 14px",
+    borderRadius: "8px",
+    fontSize: "12.5px",
+    marginBottom: "18px",
+    lineHeight: "1.5"
+  } }, /* @__PURE__ */ React.createElement("strong", { style: { display: "block", fontSize: "13px", marginBottom: "2px" } }, "\u26D4 Platform Access Locked"), "The application requires a valid, active License Key to be unlocked. Closing this window will return you to the login screen.") : /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#F0FDF4",
+    border: "1px solid #BBF7D0",
+    color: "#166534",
+    padding: "12px 14px",
+    borderRadius: "8px",
+    fontSize: "12.5px",
+    marginBottom: "18px",
+    lineHeight: "1.5"
+  } }, "\u{1F4A1} ", /* @__PURE__ */ React.createElement("strong", null, "License Required:"), " This application authenticates via an asymmetric offline RSA verification model. Please enter your SaNDS Lab License Key."), error && /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#FEE2E2",
+    border: "1px solid #FCA5A5",
+    color: "#B91C1C",
+    padding: "10px 14px",
+    borderRadius: "8px",
+    fontSize: "12.5px",
+    marginBottom: "16px",
+    fontWeight: "600"
+  } }, "\u26A0\uFE0F ", error), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Application License Key ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      placeholder: "INV-XXXXXX-XXXXXX-XXXXXX-XXXXXX",
+      value: key,
+      onChange: (e) => setKey(e.target.value),
+      required: true,
+      style: {
+        fontFamily: "monospace",
+        letterSpacing: "1px",
+        fontWeight: "700",
+        textTransform: "uppercase"
+      }
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Obtain your key from ", /* @__PURE__ */ React.createElement("a", { href: "https://key.sandslab.com/public/docs", target: "_blank", rel: "noreferrer", style: { color: "var(--wa-teal)", textDecoration: "underline" } }, "key.sandslab.com/public/docs"))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Licensed Domain Name"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: domain,
+      onChange: (e) => setDomain(e.target.value),
+      required: true,
+      style: { fontFamily: "monospace" }
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Automatically detected server host domain.")), /* @__PURE__ */ React.createElement("div", { style: {
+    marginTop: "16px",
+    padding: "12px 14px",
+    background: "#F8FAFC",
+    border: "1px solid #E2E8F0",
+    borderRadius: "8px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "12px"
+  } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", display: "block", color: "var(--text-primary)" } }, "Need a Quick Test Key?"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-muted)" } }, "Activate a 30-day developer trial key for localhost.")), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      onClick: handleStartTrial,
+      disabled: loading,
+      style: { whiteSpace: "nowrap" }
+    },
+    "\u26A1 30-Day Trial"
+  ))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "14px 22px", display: "flex", gap: "10px", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary",
+      onClick: onClose,
+      disabled: loading
+    },
+    isLockedScreen ? "\u{1F6AA} Exit to Login" : "Close"
+  ), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: loading }, loading ? "Activating..." : "\u{1F680} Activate Application")))));
+}
+function formatExpiryDate(dateStr, format = "YYYY-MM-DD HH:mm:ss") {
+  if (!dateStr) return "";
+  if (dateStr === "Lifetime" || dateStr === "Lifetime License") return "Lifetime License";
+  try {
+    const str = String(dateStr).trim();
+    let YYYY = "", MM = "", DD = "", hours = null, minutes = null, seconds = null;
+    const isoMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+    const dmySlashMatch = str.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+    const dmyDashMatch = str.match(/^(\d{2})-(\d{2})-(\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+    if (isoMatch) {
+      YYYY = isoMatch[1];
+      MM = isoMatch[2];
+      DD = isoMatch[3];
+      if (isoMatch[4] !== void 0) {
+        hours = parseInt(isoMatch[4], 10);
+        minutes = isoMatch[5] || "00";
+        seconds = isoMatch[6] || "00";
+      }
+    } else if (dmyDashMatch) {
+      DD = dmyDashMatch[1];
+      MM = dmyDashMatch[2];
+      YYYY = dmyDashMatch[3];
+      if (dmyDashMatch[4] !== void 0) {
+        hours = parseInt(dmyDashMatch[4], 10);
+        minutes = dmyDashMatch[5] || "00";
+        seconds = dmyDashMatch[6] || "00";
+      }
+    } else if (dmySlashMatch) {
+      DD = dmySlashMatch[1];
+      MM = dmySlashMatch[2];
+      YYYY = dmySlashMatch[3];
+      if (dmySlashMatch[4] !== void 0) {
+        hours = parseInt(dmySlashMatch[4], 10);
+        minutes = dmySlashMatch[5] || "00";
+        seconds = dmySlashMatch[6] || "00";
+      }
+    } else {
+      const d = new Date(str);
+      if (isNaN(d.getTime())) return dateStr;
+      YYYY = String(d.getFullYear());
+      MM = String(d.getMonth() + 1).padStart(2, "0");
+      DD = String(d.getDate()).padStart(2, "0");
+      hours = d.getHours();
+      minutes = String(d.getMinutes()).padStart(2, "0");
+      seconds = String(d.getSeconds()).padStart(2, "0");
+    }
+    let datePart = `${YYYY}-${MM}-${DD}`;
+    if (format && format.includes("DD/MM/YYYY")) {
+      datePart = `${DD}/${MM}/${YYYY}`;
+    } else if (format && format.includes("DD-MM-YYYY")) {
+      datePart = `${DD}-${MM}-${YYYY}`;
+    } else if (format && format.includes("MM/DD/YYYY")) {
+      datePart = `${MM}/${DD}/${YYYY}`;
+    } else if (format && format.includes("YYYY-MM-DD")) {
+      datePart = `${YYYY}-${MM}-${DD}`;
+    }
+    if (hours === null || hours === 0 && minutes === "00" && (seconds === "00" || !seconds)) {
+      return datePart;
+    }
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const hh12 = String(hours % 12 || 12).padStart(2, "0");
+    const HH24 = String(hours).padStart(2, "0");
+    if (format === "DD/MM/YYYY hh:mm:ss A") return `${datePart} ${hh12}:${minutes}:${seconds} ${ampm}`;
+    if (format === "DD-MM-YYYY HH:mm") return `${datePart} ${HH24}:${minutes}`;
+    if (format === "MM/DD/YYYY hh:mm A") return `${datePart} ${hh12}:${minutes} ${ampm}`;
+    if (format === "YYYY-MM-DD hh:mm A") return `${datePart} ${hh12}:${minutes} ${ampm}`;
+    return `${datePart} ${HH24}:${minutes}:${seconds}`;
+  } catch (e) {
+    return dateStr;
+  }
+}
+function LicenseDetailsModal({ licenseInfo, globalSettings, onClose, onChangeKey, onRefresh, showToast }) {
+  const [refreshing, setRefreshing] = useState(false);
+  const [showFullKey, setShowFullKey] = useState(false);
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const res = await fetch("./api/license.php?action=refresh", { method: "POST" });
+      const data = await res.json();
+      if (data.success) {
+        showToast("\u2713 License status re-verified successfully!");
+        if (onRefresh) onRefresh();
+      } else {
+        showToast(data.error || "Refresh failed", "error");
+      }
+    } catch (e) {
+      showToast("Network error while refreshing license", "error");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+  const copyKey = () => {
+    const k = licenseInfo?.full_license_key || licenseInfo?.license_key;
+    if (k && navigator.clipboard) {
+      navigator.clipboard.writeText(k);
+      showToast("\u{1F4CB} License Key copied to clipboard");
+    }
+  };
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "520px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F6E1}\uFE0F"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, fontSize: "16px" } }, "SaNDS Lab License & Expiry Status"), /* @__PURE__ */ React.createElement("p", { style: { margin: "2px 0 0 0", fontSize: "12px", color: "rgba(255,255,255,0.85)" } }, "Asymmetric Offline Verification (key.sandslab.com)"))), /* @__PURE__ */ React.createElement("button", { type: "button", className: "close-btn", onClick: onClose }, "\u2715")), /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "22px" } }, /* @__PURE__ */ React.createElement("div", { style: {
+    background: licenseInfo?.valid ? "#DCFCE7" : "#FEE2E2",
+    border: `1px solid ${licenseInfo?.valid ? "#86EFAC" : "#FCA5A5"}`,
+    color: licenseInfo?.valid ? "#15803D" : "#B91C1C",
+    padding: "14px",
+    borderRadius: "10px",
+    marginBottom: "18px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between"
+  } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "22px" } }, licenseInfo?.valid ? "\u2713" : "\u26A0\uFE0F"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", display: "block" } }, licenseInfo?.valid ? "License Active & Valid" : "License Inactive or Expired"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px" } }, licenseInfo?.message || (licenseInfo?.valid ? "Cryptographically Verified (RSA SHA-256)" : "Activation required")))), /* @__PURE__ */ React.createElement("span", { style: {
+    background: licenseInfo?.valid ? "#15803D" : "#B91C1C",
+    color: "#FFF",
+    padding: "4px 10px",
+    borderRadius: "20px",
+    fontSize: "11.5px",
+    fontWeight: "700"
+  } }, licenseInfo?.duration_text || "Unlicensed")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "12px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Expiry Duration Left:"), /* @__PURE__ */ React.createElement("strong", { style: { color: licenseInfo?.days_left <= 7 ? "#DC2626" : "var(--wa-dark-teal)", fontSize: "13px" } }, "\u23F3 ", licenseInfo?.duration_text || "N/A")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Expiration Date:"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, formatExpiryDate(licenseInfo?.expires_at, globalSettings?.system_date_format) || "Lifetime")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Licensed Domain:"), /* @__PURE__ */ React.createElement("strong", { style: { fontFamily: "monospace", fontSize: "13px" } }, licenseInfo?.domain || "localhost")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Product Plan / Tier:"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, licenseInfo?.plan || "Enterprise License")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "Remote Server Sync:"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#047857" } }, "\u2713 Every 24h Auto-Check ", licenseInfo?.last_online_check ? `(Last: ${formatExpiryDate(licenseInfo.last_online_check, globalSettings?.system_date_format)})` : "")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "#F8FAFC", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "12.5px" } }, "License Key:"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontFamily: "monospace", fontSize: "12px", fontWeight: "700" } }, showFullKey ? licenseInfo?.full_license_key || licenseInfo?.license_key : licenseInfo?.stored_license_key || "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      onClick: () => setShowFullKey((prev) => !prev),
+      title: "Toggle show/hide"
+    },
+    showFullKey ? "\u{1F648}" : "\u{1F441}\uFE0F"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      onClick: copyKey,
+      title: "Copy key"
+    },
+    "\u{1F4CB}"
+  ))))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "14px 22px", display: "flex", gap: "10px", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary",
+      onClick: onChangeKey
+    },
+    "\u{1F511} Change / Renew Key"
+  ), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary",
+      onClick: handleRefresh,
+      disabled: refreshing
+    },
+    refreshing ? "Refreshing..." : "\u{1F504} Refresh Status"
+  ), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-primary", onClick: onClose }, "Close")))));
+}
+function ChangePasswordModal({ currentUser, onClose, showToast }) {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      setError("New password must be at least 6 characters long");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError("New password and confirm password do not match");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("./api/auth.php?action=change_password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("\u2713 Password updated successfully!");
+        onClose();
+      } else {
+        setError(data.error || "Failed to update password");
+      }
+    } catch (err) {
+      setError("Network error while updating password");
+    } finally {
+      setLoading(false);
+    }
+  };
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "440px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F511}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, fontSize: "15px" } }, "Change Account Password"), /* @__PURE__ */ React.createElement("p", { style: { margin: "2px 0 0 0", fontSize: "11.5px", color: "rgba(255,255,255,0.85)" } }, currentUser?.name, " (", currentUser?.email, ")"))), /* @__PURE__ */ React.createElement("button", { className: "close-btn", onClick: onClose }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSubmit }, /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "20px" } }, error && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEE2E2", border: "1px solid #FCA5A5", color: "#B91C1C", padding: "10px 14px", borderRadius: "8px", fontSize: "12px", marginBottom: "14px", fontWeight: "600" } }, "\u26A0\uFE0F ", error), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Current Password"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "password",
+      className: "form-input",
+      placeholder: "Enter current password",
+      value: currentPassword,
+      onChange: (e) => setCurrentPassword(e.target.value)
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Leave blank if this is a newly assigned account password.")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "New Password ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "password",
+      className: "form-input",
+      placeholder: "At least 6 characters",
+      value: newPassword,
+      onChange: (e) => setNewPassword(e.target.value),
+      required: true,
+      minLength: 6
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Confirm New Password ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "password",
+      className: "form-input",
+      placeholder: "Re-type new password",
+      value: confirmPassword,
+      onChange: (e) => setConfirmPassword(e.target.value),
+      required: true,
+      minLength: 6
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "12px 20px", display: "flex", gap: "8px", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose, disabled: loading }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: loading }, loading ? "Updating..." : "\u{1F4BE} Update Password")))));
+}
+function LoginView({ onLogin, onSwitchDemo, licenseInfo, globalSettings, onOpenLicenseActivation }) {
+  const [email, setEmail] = useState("admin@uniglobal.bh");
+  const [password, setPassword] = useState("Password@123");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const submitLogin = async (e) => {
+    e.preventDefault();
+    if (licenseInfo && !licenseInfo.valid) {
+      setError("Application is locked: You must enter and activate a valid SaNDS Lab License Key before using the application.");
+      if (onOpenLicenseActivation) onOpenLicenseActivation();
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("./api/auth.php?action=login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        onLogin(data.user);
+      } else {
+        setError(data.error || "Login failed");
+      }
+    } catch (err) {
+      setError("Connection error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const pickPreset = (presetEmail, role) => {
+    if (licenseInfo && !licenseInfo.valid) {
+      setError("Application is locked: You must enter and activate a valid SaNDS Lab License Key before using the application.");
+      if (onOpenLicenseActivation) onOpenLicenseActivation();
+      return;
+    }
+    setEmail(presetEmail);
+    setPassword("Password@123");
+    onSwitchDemo(role);
+  };
+  return /* @__PURE__ */ React.createElement("div", { className: "login-container" }, /* @__PURE__ */ React.createElement("div", { className: "login-card" }, /* @__PURE__ */ React.createElement("div", { className: "login-header" }, /* @__PURE__ */ React.createElement("img", { src: "./assets/logos/SaNDSLab-LogoNewUpdated.png", alt: "SaNDS Lab", className: "login-logo" }), /* @__PURE__ */ React.createElement("h2", null, "WhatsApp Integration Platform"), /* @__PURE__ */ React.createElement("p", null, "Sign in to manage messaging, templates, and Odoo ERP webhooks")), licenseInfo && !licenseInfo.valid && /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#FEF2F2",
+    border: "1px solid #FCA5A5",
+    color: "#991B1B",
+    padding: "12px 14px",
+    borderRadius: "10px",
+    fontSize: "12.5px",
+    marginBottom: "16px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "10px"
+  } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { display: "block", fontSize: "13px" } }, "\u26A0\uFE0F Application Key Required"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "#B91C1C" } }, licenseInfo.message || "Please activate your SaNDS Lab License.")), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-sm",
+      style: { background: "#DC2626", color: "#FFF", whiteSpace: "nowrap", border: "none", fontWeight: "bold" },
+      onClick: onOpenLicenseActivation
+    },
+    "\u{1F511} Enter Key"
+  )), licenseInfo && licenseInfo.valid && /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#F0FDF4",
+    border: "1px solid #BBF7D0",
+    color: "#15803D",
+    padding: "8px 12px",
+    borderRadius: "8px",
+    fontSize: "12px",
+    marginBottom: "16px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    fontWeight: "600"
+  } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6E1}\uFE0F License: ", /* @__PURE__ */ React.createElement("strong", null, licenseInfo.duration_text), " (", formatExpiryDate(licenseInfo.expires_at, globalSettings?.system_date_format), ")"), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      style: { fontSize: "11px", padding: "2px 8px" },
+      onClick: onOpenLicenseActivation
+    },
+    "Details"
+  )), /* @__PURE__ */ React.createElement("div", { className: "preset-roles-box" }, /* @__PURE__ */ React.createElement("div", { className: "preset-roles-title" }, "\u26A1 Quick Sign-In by Role:"), /* @__PURE__ */ React.createElement("div", { className: "preset-buttons-row" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn-preset", onClick: () => pickPreset("admin@uniglobal.bh", "admin") }, "\u{1F6E1}\uFE0F Admin"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn-preset", onClick: () => pickPreset("user@uniglobal.bh", "user") }, "\u{1F464} User"))), error && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEE2E2", color: "#B91C1C", padding: "10px 14px", borderRadius: "8px", fontSize: "12.5px", marginBottom: "16px", fontWeight: "600" } }, "\u26A0\uFE0F ", error), /* @__PURE__ */ React.createElement("form", { onSubmit: submitLogin }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Email Address"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "email",
+      className: "form-input",
+      value: email,
+      onChange: (e) => setEmail(e.target.value),
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Password"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "password",
+      className: "form-input",
+      value: password,
+      onChange: (e) => setPassword(e.target.value),
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { width: "100%", padding: "10px", marginTop: "6px" }, disabled: loading }, loading ? "Authenticating..." : "Sign In to Gateway")), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginTop: "24px", fontSize: "11.5px", color: "var(--text-muted)" } }, "All Rights Reserved | Engineered By SaNDS Lab Middle East W.L.L.")));
+}
+function DashboardView({ onNavigate }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const loadAnalytics = () => {
+      fetch("./api/analytics.php").then((res) => res.json()).then((res) => {
+        if (res.success) setData(res);
+      }).finally(() => setLoading(false));
+    };
+    loadAnalytics();
+    const interval = setInterval(loadAnalytics, 4e3);
+    return () => clearInterval(interval);
+  }, []);
+  if (loading && !data) {
+    return /* @__PURE__ */ React.createElement("div", { className: "card" }, "Loading real-time analytics...");
+  }
+  if (!data) return null;
+  const { kpis, categories, daily_volume, integrations } = data;
+  const integrationColumns = [
+    {
+      key: "source_system",
+      label: "Source Integration",
+      render: (row) => /* @__PURE__ */ React.createElement("strong", null, row.source_system)
+    },
+    {
+      key: "volume",
+      label: "Message Volume",
+      render: (row) => /* @__PURE__ */ React.createElement("span", { className: "badge status-read" }, row.volume, " msgs")
+    },
+    {
+      key: "last_activity",
+      label: "Last Activity",
+      render: (row) => /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-muted)", fontSize: "11.5px" } }, row.last_activity)
+    }
+  ];
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CA}"), " Operational Dashboard & Metrics"), /* @__PURE__ */ React.createElement("p", null, "Real-time telemetry of WhatsApp Business API throughput, delivery reliability, and billing tariffs.")), /* @__PURE__ */ React.createElement("button", { className: "btn btn-success", onClick: () => onNavigate("composer") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"), " Send New Message")), /* @__PURE__ */ React.createElement("div", { className: "kpi-grid" }, /* @__PURE__ */ React.createElement("div", { className: "kpi-card accent-green" }, /* @__PURE__ */ React.createElement("span", { className: "kpi-label" }, "Total Volume"), /* @__PURE__ */ React.createElement("span", { className: "kpi-value" }, kpis.total_messages.toLocaleString()), /* @__PURE__ */ React.createElement("span", { className: "kpi-sub positive" }, /* @__PURE__ */ React.createElement("span", null, "\u2191"), " ", kpis.outbound_count, " Outbound | ", kpis.inbound_count, " Inbound")), /* @__PURE__ */ React.createElement("div", { className: "kpi-card accent-blue" }, /* @__PURE__ */ React.createElement("span", { className: "kpi-label" }, "Delivery Reliability"), /* @__PURE__ */ React.createElement("span", { className: "kpi-value" }, kpis.delivery_rate, "%"), /* @__PURE__ */ React.createElement("span", { className: "kpi-sub positive" }, /* @__PURE__ */ React.createElement("span", null, "\u2713\u2713"), " ", kpis.read_rate, "% Read Rate")), /* @__PURE__ */ React.createElement("div", { className: "kpi-card accent-purple" }, /* @__PURE__ */ React.createElement("span", { className: "kpi-label" }, "Total Billed (BHD)"), /* @__PURE__ */ React.createElement("span", { className: "kpi-value" }, "BHD ", kpis.total_client_bhd), /* @__PURE__ */ React.createElement("span", { className: "kpi-sub" }, "Bahrain Market Official Schedule")), /* @__PURE__ */ React.createElement("div", { className: "kpi-card accent-amber" }, /* @__PURE__ */ React.createElement("span", { className: "kpi-label" }, "Cost Breakdown"), /* @__PURE__ */ React.createElement("span", { className: "kpi-value" }, "BHD ", kpis.total_platform_bhd), /* @__PURE__ */ React.createElement("span", { className: "kpi-sub" }, "Platform Margin | Meta Cost: BHD ", kpis.total_meta_cost_bhd))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "20px" } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F3F7}\uFE0F"), " Message Volume by Meta Category")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "14px" } }, categories.map((cat, i) => /* @__PURE__ */ React.createElement("div", { key: i, style: { display: "flex", flexDirection: "column", gap: "5px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "12.5px", fontWeight: "700" } }, /* @__PURE__ */ React.createElement("span", { className: `badge cat-${cat.category.toLowerCase().substring(0, 4)}` }, cat.category), /* @__PURE__ */ React.createElement("span", null, cat.message_count, " msgs (", parseFloat(cat.category_billed_bhd).toFixed(4), " BHD)")), /* @__PURE__ */ React.createElement("div", { style: { height: "7px", background: "#F1F5F9", borderRadius: "4px", overflow: "hidden" } }, /* @__PURE__ */ React.createElement("div", { style: {
+    width: `${Math.min(100, cat.message_count / (kpis.total_messages || 1) * 100)}%`,
+    height: "100%",
+    background: cat.category === "UTILITY" ? "#10B981" : cat.category === "AUTHENTICATION" ? "#3B82F6" : cat.category === "MARKETING" ? "#8B5CF6" : "#06B6D4"
+  } })))))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: "10px", fontWeight: "700", fontSize: "14px", color: "var(--text-primary)" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F517}"), " Active System Connectors"), /* @__PURE__ */ React.createElement(
+    DataTable,
+    {
+      columns: integrationColumns,
+      data: integrations,
+      title: "active_integrations",
+      searchPlaceholder: "Search connectors...",
+      defaultPageSize: 5,
+      pageSizeOptions: [5, 10, 20]
+    }
+  ))));
+}
+function ComposerView({ showToast, onSent }) {
+  const [templates, setTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [toPhone, setToPhone] = useState("+97339000000");
+  const [category, setCategory] = useState("UTILITY");
+  const [mediaUrl, setMediaUrl] = useState("https://erp.uniglobal.bh/INV_9941.pdf");
+  const [mediaName, setMediaName] = useState("INV_9941.pdf");
+  const [params, setParams] = useState(["Ahmed Al-Khalifa", "INV/2026/0142", "BHD 345.500", "15-Oct-2026"]);
+  const [customText, setCustomText] = useState("");
+  const [sending, setSending] = useState(false);
+  useEffect(() => {
+    fetch("./api/templates.php?active_only=1").then((res) => res.json()).then((res) => {
+      if (res.success) {
+        const activeOnly = res.data.filter((t) => (t.is_active === 1 || t.is_active === true || t.is_active === "1") && ["APPROVED", "ACTIVE"].includes((t.meta_status || "").toUpperCase()));
+        setTemplates(activeOnly);
+        if (activeOnly.length > 0) {
+          pickTemplate(activeOnly[0]);
+        }
+      }
+    });
+  }, []);
+  const pickTemplate = (tmpl) => {
+    setSelectedTemplate(tmpl.template_name);
+    setCategory(tmpl.category);
+    const varMatches = tmpl.body_text ? tmpl.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g) : null;
+    let detectedVarNames = varMatches ? varMatches.map((m) => m.replace(/[\{\}]/g, "").trim()) : [];
+    if (detectedVarNames.length === 0) {
+      const numMatches = tmpl.body_text ? tmpl.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g) : null;
+      if (numMatches) {
+        detectedVarNames = numMatches.map((m) => m.replace(/\D/g, "").trim());
+      }
+    }
+    const totalVars = Math.max(detectedVarNames.length, parseInt(tmpl.variable_count) || 0);
+    let existingParams = [];
+    if (tmpl.sample_params_json) {
+      try {
+        const parsed = typeof tmpl.sample_params_json === "string" ? JSON.parse(tmpl.sample_params_json) : tmpl.sample_params_json;
+        if (Array.isArray(parsed)) existingParams = parsed;
+      } catch (e) {
+      }
+    }
+    const finalParams = [];
+    for (let i = 0; i < totalVars; i++) {
+      if (existingParams[i] !== void 0 && existingParams[i] !== null && existingParams[i] !== "") {
+        finalParams.push(existingParams[i]);
+      } else {
+        const vName = detectedVarNames[i] || `Param ${i + 1}`;
+        finalParams.push(vName.includes("_") ? vName.replace(/_/g, " ") : `Value ${i + 1}`);
+      }
+    }
+    setParams(finalParams);
+    if (tmpl.header_sample) {
+      setMediaUrl(tmpl.header_sample);
+      setMediaName(tmpl.header_sample.split("/").pop() || "document.pdf");
+    } else {
+      setMediaUrl("");
+      setMediaName("");
+    }
+  };
+  const renderedText = useMemo(() => {
+    if (!selectedTemplate) return customText || "Type your message...";
+    const tmpl = templates.find((t) => t.template_name === selectedTemplate);
+    if (!tmpl) return "";
+    let body = tmpl.body_text;
+    const varMatches = tmpl.body_text ? tmpl.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g) : null;
+    const detectedVarNames = varMatches ? varMatches.map((m) => m.replace(/[\{\}]/g, "").trim()) : [];
+    params.forEach((val, idx) => {
+      const varName = detectedVarNames[idx] || String(idx + 1);
+      const valText = val || `[${varName}]`;
+      body = body.split(`{{${varName}}}`).join(valText);
+      const pattern = new RegExp(`\\{+[\\(\\[]?\\s*${varName}\\s*[\\)\\]]?\\}+`, "g");
+      body = body.replace(pattern, valText);
+    });
+    return body;
+  }, [selectedTemplate, templates, params, customText]);
+  const currentTemplateObj = templates.find((t) => t.template_name === selectedTemplate);
+  const tariffEstimate = useMemo(() => {
+    const rates = {
+      "AUTHENTICATION": { meta: 0.011, platform: 35e-4, client: 0.0145 },
+      "UTILITY": { meta: 0.014, platform: 45e-4, client: 0.0185 },
+      "MARKETING": { meta: 0.027, platform: 7e-3, client: 0.034 },
+      "SERVICE": { meta: 75e-4, platform: 25e-4, client: 0.01 }
+    };
+    return rates[category] || rates["UTILITY"];
+  }, [category]);
+  const handleSend = async (e) => {
+    e.preventDefault();
+    setSending(true);
+    try {
+      const payload = {
+        to_phone: toPhone,
+        template_name: selectedTemplate || null,
+        category,
+        message: customText,
+        body_parameters: params,
+        header_media: mediaUrl ? { url: mediaUrl, filename: mediaName } : null,
+        source_system: "Manual Web Console"
+      };
+      const res = await fetch("./api/messages.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => null);
+      if (data && data.success) {
+        if (data.status === "failed" && data.meta_error) {
+          showToast(`Meta Error: ${data.meta_error}`, "error");
+        } else if (data.status === "simulated") {
+          showToast(`Dispatched in Simulation Mode (Enter Meta Token in Settings for Live)`, "success");
+        } else {
+          showToast(`WhatsApp Message Dispatched to ${toPhone}! (Rate: ${data.tariff?.client_rate})`);
+        }
+        onSent();
+      } else {
+        showToast(data && data.error || `Server Error (HTTP ${res.status})`, "error");
+      }
+    } catch (err) {
+      showToast("Error: " + err.message, "error");
+    } finally {
+      setSending(false);
+    }
+  };
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"), " Interactive Message Composer"), /* @__PURE__ */ React.createElement("p", null, "Compose pre-approved WhatsApp templates or direct customer notifications with real-time phone preview."))), /* @__PURE__ */ React.createElement("div", { className: "composer-layout" }, /* @__PURE__ */ React.createElement("div", { className: "card" }, /* @__PURE__ */ React.createElement("form", { onSubmit: handleSend }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Recipient Phone Number (E.164 Format)"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: toPhone,
+      onChange: (e) => setToPhone(e.target.value),
+      placeholder: "+97339000000",
+      required: true
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Includes Bahrain country code (+973) or international destination")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "WhatsApp Meta Template"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: selectedTemplate,
+      onChange: (e) => {
+        const tmpl = templates.find((t) => t.template_name === e.target.value);
+        if (tmpl) pickTemplate(tmpl);
+        else setSelectedTemplate("");
+      }
+    },
+    templates.filter((t) => (t.is_active === 1 || t.is_active === true || t.is_active === "1") && ["APPROVED", "ACTIVE"].includes((t.meta_status || "").toUpperCase())).map((t) => /* @__PURE__ */ React.createElement("option", { key: t.id, value: t.template_name }, t.display_title, " [", t.category, "]")),
+    /* @__PURE__ */ React.createElement("option", { value: "" }, "-- Custom Direct Text Message --")
+  )), selectedTemplate && currentTemplateObj && /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Template Dynamic Parameters (", params.length, " Variables)"), /* @__PURE__ */ React.createElement("div", { className: "param-grid" }, params.map((val, idx) => {
+    const varMatches = (currentTemplateObj.body_text || "").match(/\{\{([a-zA-Z0-9_]+)\}\}/g);
+    const detectedVarNames = varMatches ? varMatches.map((m) => m.replace(/[\{\}]/g, "").trim()) : [];
+    const varName = detectedVarNames[idx] || String(idx + 1);
+    return /* @__PURE__ */ React.createElement("div", { key: idx }, /* @__PURE__ */ React.createElement("label", { style: { fontSize: "11px", fontWeight: "700", color: "var(--wa-dark-teal)" } }, varName.includes("_") ? `{{${varName}}}` : `Variable #${idx + 1}`), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        className: "form-input",
+        value: val,
+        onChange: (e) => {
+          const newParams = [...params];
+          newParams[idx] = e.target.value;
+          setParams(newParams);
+        }
+      }
+    ));
+  }))), currentTemplateObj?.header_type === "DOCUMENT" && /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "PDF Invoice Attachment URL"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: mediaUrl,
+      onChange: (e) => setMediaUrl(e.target.value),
+      placeholder: "https://erp.uniglobal.bh/INV_9941.pdf"
+    }
+  )), !selectedTemplate && /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Custom Message Content"), /* @__PURE__ */ React.createElement(
+    "textarea",
+    {
+      className: "form-textarea",
+      value: customText,
+      onChange: (e) => setCustomText(e.target.value),
+      placeholder: "Type direct WhatsApp message here..."
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "tariff-estimate-banner" }, /* @__PURE__ */ React.createElement("div", { className: "tariff-info" }, /* @__PURE__ */ React.createElement("span", { className: "title" }, "Category: ", category), /* @__PURE__ */ React.createElement("span", { className: "breakdown" }, "Meta Cost: ", tariffEstimate.meta.toFixed(4), " BHD | Platform Charges: +", tariffEstimate.platform.toFixed(4), " BHD")), /* @__PURE__ */ React.createElement("div", { className: "tariff-rate-badge" }, "BHD ", tariffEstimate.client.toFixed(4), " / msg")), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-success", style: { width: "100%", marginTop: "20px", padding: "12px" }, disabled: sending }, sending ? "Dispatching via Meta API..." : "\u{1F680} Send WhatsApp Notification Now"))), /* @__PURE__ */ React.createElement("div", { className: "phone-mockup-wrapper" }, /* @__PURE__ */ React.createElement("div", { className: "phone-device" }, /* @__PURE__ */ React.createElement("div", { className: "phone-notch" }, /* @__PURE__ */ React.createElement("div", { className: "phone-speaker" })), /* @__PURE__ */ React.createElement("div", { className: "phone-screen" }, /* @__PURE__ */ React.createElement("div", { className: "wa-chat-header" }, /* @__PURE__ */ React.createElement("div", { className: "wa-avatar" }, "UG"), /* @__PURE__ */ React.createElement("div", { className: "wa-user-info" }, /* @__PURE__ */ React.createElement("div", { className: "wa-contact-name" }, "UniGlobal Consultancy ", /* @__PURE__ */ React.createElement("span", { className: "wa-verified-icon" }, "\u2713")), /* @__PURE__ */ React.createElement("div", { className: "wa-status-text" }, "Official Business Account"))), /* @__PURE__ */ React.createElement("div", { className: "wa-chat-body" }, /* @__PURE__ */ React.createElement("div", { className: "wa-date-pill" }, "TODAY"), /* @__PURE__ */ React.createElement("div", { className: "wa-bubble" }, currentTemplateObj?.header_type === "DOCUMENT" && /* @__PURE__ */ React.createElement("div", { className: "wa-bubble-doc" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4C4}"), /* @__PURE__ */ React.createElement("div", { style: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, mediaName || "INV_9941.pdf", /* @__PURE__ */ React.createElement("div", { style: { fontSize: "9px", color: "#4B5563" } }, "PDF Document \u2022 345 KB"))), /* @__PURE__ */ React.createElement("div", { style: { whiteSpace: "pre-line" } }, renderedText), currentTemplateObj?.footer_text && /* @__PURE__ */ React.createElement("div", { className: "wa-bubble-footer" }, currentTemplateObj.footer_text), /* @__PURE__ */ React.createElement("div", { className: "wa-bubble-meta" }, /* @__PURE__ */ React.createElement("span", null, "10:42 AM"), /* @__PURE__ */ React.createElement("span", { className: "wa-ticks" }, "\u2713\u2713")))), /* @__PURE__ */ React.createElement("div", { className: "wa-chat-input-bar" }, /* @__PURE__ */ React.createElement("div", { className: "wa-dummy-input" }, "Message"), /* @__PURE__ */ React.createElement("span", { style: { color: "#075E54", fontSize: "14px" } }, "\u{1F3A4}")))))));
+}
+function ConversationChatModal({ phone, onClose, showToast, globalSettings }) {
+  const [thread, setThread] = useState([]);
+  const [replyText, setReplyText] = useState("");
+  const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const messagesEndRef = useRef(null);
+  const cleanPhone = phone ? phone.replace(/[^0-9\+]/g, "") : "";
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+  const fetchThread = async (silent = false) => {
+    if (!phone) return;
+    if (!silent) setLoading(true);
+    try {
+      const res = await fetch(`./api/messages.php?phone=${encodeURIComponent(cleanPhone)}&order=asc&limit=100`);
+      const data = await res.json();
+      if (data.success) {
+        setThread(data.data || []);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      if (!silent) setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchThread(false);
+  }, [phone]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchThread(true);
+    }, 2e3);
+    return () => clearInterval(interval);
+  }, [phone]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [thread]);
+  const handleSendReply = async (e) => {
+    if (e) e.preventDefault();
+    if (!replyText.trim() || sending) return;
+    setSending(true);
+    try {
+      const res = await fetch("./api/messages.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to_phone: cleanPhone,
+          message: replyText.trim(),
+          category: "SERVICE",
+          source_system: "Live Chat Console"
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setReplyText("");
+        fetchThread(true);
+        showToast(`WhatsApp message sent to ${cleanPhone}`);
+      } else {
+        showToast(data.error || "Failed to send WhatsApp message", "error");
+      }
+    } catch (err) {
+      showToast("Network error sending message", "error");
+    } finally {
+      setSending(false);
+    }
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendReply();
+    }
+  };
+  const hasRecentInbound = useMemo(() => {
+    const inboundMsgs = thread.filter((m) => m.direction === "inbound");
+    if (inboundMsgs.length === 0) return false;
+    const lastInbound = inboundMsgs[inboundMsgs.length - 1];
+    const diffHours = (Date.now() - new Date(lastInbound.created_at).getTime()) / (1e3 * 60 * 60);
+    return diffHours <= 24;
+  }, [thread]);
+  return /* @__PURE__ */ React.createElement("div", { className: "chat-modal-overlay", onClick: (e) => {
+    if (e.target === e.currentTarget) onClose();
+  } }, /* @__PURE__ */ React.createElement("div", { className: "chat-modal-box" }, /* @__PURE__ */ React.createElement("div", { className: "chat-modal-header" }, /* @__PURE__ */ React.createElement("div", { className: "chat-header-user" }, /* @__PURE__ */ React.createElement("div", { className: "chat-avatar" }, cleanPhone.slice(-2), /* @__PURE__ */ React.createElement("span", { className: "chat-avatar-online", title: "WhatsApp Connected" })), /* @__PURE__ */ React.createElement("div", { className: "chat-user-meta" }, /* @__PURE__ */ React.createElement("span", { className: "chat-user-phone" }, cleanPhone), /* @__PURE__ */ React.createElement("span", { className: "chat-user-sub" }, "Official WhatsApp Gateway \u2022 ", hasRecentInbound ? /* @__PURE__ */ React.createElement("span", { className: "chat-window-pill" }, "\u{1F7E2} 24h Window Active") : /* @__PURE__ */ React.createElement("span", { className: "chat-window-pill", style: { background: "rgba(234, 179, 8, 0.2)", color: "#FEF08A" } }, "\u{1F7E1} Outbound Session")))), /* @__PURE__ */ React.createElement("div", { className: "chat-header-actions" }, /* @__PURE__ */ React.createElement("button", { className: "btn-chat-close", onClick: onClose, title: "Close Chat" }, "\u2715"))), /* @__PURE__ */ React.createElement("div", { className: "chat-messages-canvas" }, /* @__PURE__ */ React.createElement("div", { className: "chat-date-separator" }, "\u{1F512} WhatsApp Cloud API Live Conversation Thread"), loading && thread.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", color: "#64748B", padding: "30px" } }, "Loading conversation history...") : thread.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", color: "#64748B", padding: "30px" } }, "No messages exchanged with ", cleanPhone, " yet.") : thread.map((msg, idx) => {
+    const isOutbound = msg.direction === "outbound";
+    return /* @__PURE__ */ React.createElement("div", { key: msg.id || idx, className: `chat-bubble-row ${isOutbound ? "outbound" : "inbound"}` }, /* @__PURE__ */ React.createElement("div", { className: "chat-bubble" }, msg.template_name && /* @__PURE__ */ React.createElement("span", { className: "chat-bubble-template-tag" }, "\u{1F4CB} ", msg.template_name, " [", msg.category, "]"), msg.header_media_name && /* @__PURE__ */ React.createElement("div", { className: "chat-bubble-media" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CE}"), /* @__PURE__ */ React.createElement("span", null, msg.header_media_name)), /* @__PURE__ */ React.createElement("div", { style: { whiteSpace: "pre-wrap" } }, msg.message_body), /* @__PURE__ */ React.createElement("div", { className: "chat-bubble-footer" }, /* @__PURE__ */ React.createElement("span", null, formatDateTime(msg.created_at, globalSettings?.system_date_format)), isOutbound && /* @__PURE__ */ React.createElement("span", null, msg.status === "read" ? /* @__PURE__ */ React.createElement("span", { className: "chat-tick-read", title: "Read" }, "\u2713\u2713") : msg.status === "delivered" ? /* @__PURE__ */ React.createElement("span", { className: "chat-tick-delivered", title: "Delivered" }, "\u2713\u2713") : msg.status === "sent" ? /* @__PURE__ */ React.createElement("span", { title: "Sent" }, "\u2713") : msg.status === "failed" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" }, title: msg.error_message || "Failed" }, "\u26A0\uFE0F") : /* @__PURE__ */ React.createElement("span", { style: { color: "#94A3B8" }, title: "Queued" }, "\u23F1\uFE0F")))));
+  }), /* @__PURE__ */ React.createElement("div", { ref: messagesEndRef })), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSendReply, className: "chat-input-bar" }, /* @__PURE__ */ React.createElement(
+    "textarea",
+    {
+      className: "chat-textarea",
+      placeholder: hasRecentInbound ? "Type a direct WhatsApp message... (Press Enter to send)" : "Type a WhatsApp reply... (Press Enter to send)",
+      value: replyText,
+      onChange: (e) => setReplyText(e.target.value),
+      onKeyDown: handleKeyDown,
+      rows: "1"
+    }
+  ), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn-chat-send", disabled: sending || !replyText.trim(), title: "Send WhatsApp Message" }, sending ? "\u23F3" : "\u27A4"))));
+}
+function SimulateInboundModal({ isOpen, onClose, onSimulated, showToast }) {
+  const [phone, setPhone] = useState("+97335078079");
+  const [message, setMessage] = useState("Hello UniGlobal Support! I received my invoice and need to confirm my payment details.");
+  const [submitting, setSubmitting] = useState(false);
+  if (!isOpen) return null;
+  const handleSimulate = async (e) => {
+    e.preventDefault();
+    if (!phone || !message.trim()) {
+      showToast("Phone and message text are required", "error");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch("./api/inbox.php?action=simulate_inbound", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, message: message.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Simulated customer inbound message from ${phone}! 24h window active.`);
+        if (onSimulated) onSimulated(phone);
+        onClose();
+      } else {
+        showToast(data.error || "Failed to simulate message", "error");
+      }
+    } catch (err) {
+      showToast("Network error simulating message", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  return /* @__PURE__ */ React.createElement("div", { className: "version-modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("div", { className: "version-modal-card", style: { maxWidth: "520px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "version-modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "22px" } }, "\u{1F9EA}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", margin: 0, color: "#FFFFFF" } }, "Simulate Inbound WhatsApp Message"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", margin: "2px 0 0 0", opacity: 0.9, color: "#E8F8F5" } }, "Test customer inbound reply & trigger 24h session window"))), /* @__PURE__ */ React.createElement("button", { onClick: onClose, style: { background: "rgba(255,255,255,0.2)", border: "none", color: "#FFFFFF", borderRadius: "6px", width: "28px", height: "28px", cursor: "pointer" } }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSimulate, style: { padding: "20px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Customer Mobile Phone"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: phone, onChange: (e) => setPhone(e.target.value), placeholder: "+97335078079", required: true }), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "E.164 formatted international WhatsApp number.")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Customer Message Text"), /* @__PURE__ */ React.createElement("textarea", { className: "form-input", rows: "3", value: message, onChange: (e) => setMessage(e.target.value), placeholder: "Type customer reply here...", required: true })), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", marginTop: "20px" } }, /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { flex: 1 }, disabled: submitting }, submitting ? "Simulating..." : "\u{1F4E5} Ingest Inbound Message"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose }, "Cancel")))));
+}
+function LiveAgentInboxView({ currentUser, showToast, globalSettings, onUnreadCountChange, onNavigate }) {
+  const [threads, setThreads] = useState([]);
+  const [loadingThreads, setLoadingThreads] = useState(true);
+  const [selectedPhone, setSelectedPhone] = useState(null);
+  const [activeThreadData, setActiveThreadData] = useState(null);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [replyText, setReplyText] = useState("");
+  const [sending, setSending] = useState(false);
+  const [autoSync, setAutoSync] = useState(true);
+  const [showSimulateModal, setShowSimulateModal] = useState(false);
+  const [cannedReplies, setCannedReplies] = useState([]);
+  const [templates, setTemplates] = useState([]);
+  const [useTemplateMode, setUseTemplateMode] = useState(false);
+  const [selectedTemplateName, setSelectedTemplateName] = useState("");
+  const [templateParams, setTemplateParams] = useState({});
+  const messagesEndRef = useRef(null);
+  const fetchThreads = async (silent = false) => {
+    if (!silent) setLoadingThreads(true);
+    try {
+      const res = await fetch(`./api/inbox.php?action=threads&search=${encodeURIComponent(search)}&filter=${filter}`);
+      const data = await res.json();
+      if (data.success && data.threads) {
+        setThreads(data.threads);
+        const totalUnread = data.threads.reduce((acc, t) => acc + (t.unread_inbound || 0), 0);
+        if (onUnreadCountChange) onUnreadCountChange(totalUnread);
+        if (!selectedPhone && data.threads.length > 0) {
+          setSelectedPhone(data.threads[0].contact_phone);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      if (!silent) setLoadingThreads(false);
+    }
+  };
+  const fetchThreadMessages = async (phone, silent = false) => {
+    if (!phone) return;
+    if (!silent) setLoadingMessages(true);
+    try {
+      const res = await fetch(`./api/inbox.php?action=messages&phone=${encodeURIComponent(phone)}`);
+      const data = await res.json();
+      if (data.success) {
+        setActiveThreadData(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      if (!silent) setLoadingMessages(false);
+    }
+  };
+  useEffect(() => {
+    fetchThreads(false);
+    fetch("./api/inbox.php?action=canned_replies").then((res) => res.json()).then((data) => {
+      if (data.success && data.canned_replies) setCannedReplies(data.canned_replies);
+    });
+    fetch("./api/templates.php?active_only=1").then((res) => res.json()).then((data) => {
+      if (data.success && data.data) {
+        const activeApproved = data.data.filter((t) => (t.is_active === 1 || t.is_active === true || t.is_active === "1") && ["APPROVED", "ACTIVE"].includes((t.meta_status || "").toUpperCase()));
+        setTemplates(activeApproved);
+      }
+    });
+  }, []);
+  useEffect(() => {
+    fetchThreads(false);
+  }, [search, filter]);
+  useEffect(() => {
+    if (selectedPhone) {
+      fetchThreadMessages(selectedPhone, false);
+      setUseTemplateMode(false);
+      setReplyText("");
+    }
+  }, [selectedPhone]);
+  useEffect(() => {
+    if (!autoSync) return;
+    const timer = setInterval(() => {
+      fetchThreads(true);
+      if (selectedPhone) {
+        fetchThreadMessages(selectedPhone, true);
+      }
+    }, 2500);
+    return () => clearInterval(timer);
+  }, [autoSync, selectedPhone, search, filter]);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [activeThreadData?.messages]);
+  const handleSendReply = async (e) => {
+    if (e) e.preventDefault();
+    if (!selectedPhone) return;
+    if (useTemplateMode) {
+      if (!selectedTemplateName) {
+        showToast("Please select an approved template", "error");
+        return;
+      }
+    } else if (!replyText.trim()) {
+      return;
+    }
+    setSending(true);
+    try {
+      const payload = {
+        to_phone: selectedPhone,
+        phone: selectedPhone,
+        recipient: selectedPhone,
+        message: useTemplateMode ? "" : replyText.trim(),
+        template_name: useTemplateMode ? selectedTemplateName : "",
+        params: useTemplateMode ? templateParams : []
+      };
+      const res = await fetch("./api/inbox.php?action=send_reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setReplyText("");
+        setUseTemplateMode(false);
+        showToast(`Reply sent to ${selectedPhone}`);
+        fetchThreadMessages(selectedPhone, true);
+        fetchThreads(true);
+      } else {
+        showToast(data.error || "Failed to dispatch reply", "error");
+      }
+    } catch (err) {
+      showToast("Network error sending reply", "error");
+    } finally {
+      setSending(false);
+    }
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendReply();
+    }
+  };
+  const handleMarkRead = async () => {
+    if (!selectedPhone) return;
+    try {
+      await fetch("./api/inbox.php?action=mark_read", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: selectedPhone })
+      });
+      showToast("Marked thread as read");
+      fetchThreads(true);
+      fetchThreadMessages(selectedPhone, true);
+    } catch (e) {
+    }
+  };
+  const selectedThread = threads.find((t) => t.contact_phone === selectedPhone);
+  const is24hActive = activeThreadData?.is_24h_active ?? selectedThread?.is_24h_active ?? false;
+  const hoursLeft = activeThreadData?.hours_remaining ?? selectedThread?.hours_remaining ?? 0;
+  const contactName = activeThreadData?.contact_name ?? selectedThread?.contact_name ?? selectedPhone ?? "Customer";
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row", style: { marginBottom: "16px" } }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"), " Inbound Live Chat & Two-Way Agent Inbox"), /* @__PURE__ */ React.createElement("p", null, "Real-time customer care console with official Meta 24-hour conversational session window tracking and instant replies.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      className: `btn ${autoSync ? "btn-success" : "btn-secondary"}`,
+      style: { fontSize: "12px", padding: "6px 12px", display: "flex", alignItems: "center", gap: "6px" },
+      onClick: () => setAutoSync(!autoSync),
+      title: autoSync ? "Live Sync Active (2.5s)" : "Live Sync Paused"
+    },
+    /* @__PURE__ */ React.createElement("span", { style: { display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: autoSync ? "#22C55E" : "#9CA3AF", boxShadow: autoSync ? "0 0 8px #22C55E" : "none" } }),
+    autoSync ? "\u{1F7E2} Live Auto-Sync Active" : "\u23F8\uFE0F Paused"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      className: "btn btn-primary",
+      style: { fontSize: "12.5px", padding: "6px 14px", display: "flex", alignItems: "center", gap: "6px" },
+      onClick: () => setShowSimulateModal(true)
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F9EA}"),
+    " Simulate Inbound"
+  ), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary", onClick: () => {
+    fetchThreads(false);
+    if (selectedPhone) fetchThreadMessages(selectedPhone, false);
+  } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F504}"), " Refresh"))), /* @__PURE__ */ React.createElement("div", { className: "inbox-wrapper" }, /* @__PURE__ */ React.createElement("div", { className: "inbox-sidebar" }, /* @__PURE__ */ React.createElement("div", { className: "inbox-sidebar-header" }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "inbox-search-input",
+      placeholder: "Search contacts, phone, text...",
+      value: search,
+      onChange: (e) => setSearch(e.target.value)
+    }
+  ), /* @__PURE__ */ React.createElement("div", { className: "inbox-filters-bar" }, /* @__PURE__ */ React.createElement("button", { className: `inbox-filter-btn ${filter === "all" ? "active" : ""}`, onClick: () => setFilter("all") }, "All (", threads.length, ")"), /* @__PURE__ */ React.createElement("button", { className: `inbox-filter-btn ${filter === "unread" ? "active" : ""}`, onClick: () => setFilter("unread") }, "Unread"), /* @__PURE__ */ React.createElement("button", { className: `inbox-filter-btn ${filter === "active_24h" ? "active" : ""}`, onClick: () => setFilter("active_24h") }, "24h Active \u{1F7E2}"))), /* @__PURE__ */ React.createElement("div", { className: "inbox-threads-list" }, loadingThreads && threads.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "30px", color: "#64748B", fontSize: "12.5px" } }, "Loading conversations...") : threads.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "30px", color: "#64748B", fontSize: "12.5px" } }, "No conversations match this filter.") : threads.map((t) => {
+    const isSelected = t.contact_phone === selectedPhone;
+    return /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        key: t.contact_phone,
+        className: `inbox-thread-item ${isSelected ? "active" : ""}`,
+        onClick: () => setSelectedPhone(t.contact_phone)
+      },
+      /* @__PURE__ */ React.createElement("div", { className: `inbox-thread-avatar ${t.is_24h_active ? "online" : ""}` }, t.avatar_letter),
+      /* @__PURE__ */ React.createElement("div", { className: "inbox-thread-info" }, /* @__PURE__ */ React.createElement("div", { className: "inbox-thread-top" }, /* @__PURE__ */ React.createElement("span", { className: "inbox-thread-name" }, t.contact_name), /* @__PURE__ */ React.createElement("span", { className: "inbox-thread-time" }, formatDateTime(t.latest_message?.created_at, "HH:mm"))), /* @__PURE__ */ React.createElement("div", { className: "inbox-thread-bottom" }, /* @__PURE__ */ React.createElement("span", { className: "inbox-thread-snippet" }, t.latest_message?.direction === "inbound" ? "\u{1F4E5} " : "\u{1F4E4} ", t.latest_message?.message_body || "Attachment"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "4px" } }, t.is_24h_active ? /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10px", background: "#DCFCE7", color: "#166534", padding: "1px 5px", borderRadius: "4px", fontWeight: "700" }, title: `24h Window: ${t.hours_remaining}h left` }, t.hours_remaining, "h") : /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10px", background: "#F1F5F9", color: "#64748B", padding: "1px 5px", borderRadius: "4px" }, title: "Session Expired" }, "\u23F1\uFE0F"), t.unread_inbound > 0 && /* @__PURE__ */ React.createElement("span", { className: "inbox-unread-badge" }, t.unread_inbound))))
+    );
+  }))), /* @__PURE__ */ React.createElement("div", { className: "inbox-main-pane" }, !selectedPhone ? /* @__PURE__ */ React.createElement("div", { className: "inbox-pane-empty" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "48px", marginBottom: "12px" } }, "\u{1F4AC}"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "16px", color: "#0F172A", marginBottom: "4px" } }, "No Conversation Selected"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", maxWidth: "340px" } }, 'Select a customer conversation from the left to read live messages, or click "Simulate Inbound" to test two-way communication.')) : /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", height: "100%" } }, /* @__PURE__ */ React.createElement("div", { className: "inbox-chat-header" }, /* @__PURE__ */ React.createElement("div", { className: "inbox-chat-user" }, /* @__PURE__ */ React.createElement("div", { className: "inbox-thread-avatar", style: { width: "40px", height: "40px", fontSize: "13px" } }, selectedThread?.avatar_letter || "WA"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14.5px", color: "#0F172A" } }, contactName), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "#64748B" } }, "(", selectedPhone, ")")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "6px", marginTop: "3px" } }, is24hActive ? /* @__PURE__ */ React.createElement("span", { className: "inbox-session-pill active" }, /* @__PURE__ */ React.createElement("span", { style: { width: "6px", height: "6px", borderRadius: "50%", background: "#16A34A" } }), "\u{1F7E2} 24h Customer Care Window Active (", hoursLeft, "h left) \u2022 Free-Text Allowed (Meta Fee Waived)") : /* @__PURE__ */ React.createElement("span", { className: "inbox-session-pill expired" }, "\u26A0\uFE0F 24h Session Closed \u2022 Pre-Approved Template Required by Meta")))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: handleMarkRead, title: "Mark All Read" }, "\u2713 Read"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setShowSimulateModal(true), title: "Simulate reply from this customer" }, "\u{1F9EA} Simulate Reply"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => onNavigate && onNavigate("logs"), title: "View In Message Telemetry" }, "\u{1F4DC} Telemetry"))), /* @__PURE__ */ React.createElement("div", { className: "inbox-chat-canvas" }, /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", margin: "6px 0" } }, /* @__PURE__ */ React.createElement("span", { style: { background: "#FFFFFF", padding: "4px 12px", borderRadius: "12px", fontSize: "11px", color: "#64748B", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" } }, "\u{1F512} Official WhatsApp Cloud API End-to-End Encrypted Session")), loadingMessages && (!activeThreadData || activeThreadData.messages?.length === 0) ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "40px", color: "#64748B" } }, "Loading messages...") : activeThreadData?.messages?.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "40px", color: "#64748B" } }, "No messages exchanged yet. Send a greeting to start!") : activeThreadData?.messages?.map((msg, idx) => {
+    const isOutbound = msg.direction === "outbound";
+    return /* @__PURE__ */ React.createElement("div", { key: msg.id || idx, className: `inbox-bubble-row ${isOutbound ? "outbound" : "inbound"}` }, /* @__PURE__ */ React.createElement("div", { className: `inbox-bubble ${isOutbound ? "outbound" : "inbound"}` }, msg.template_name && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", fontWeight: "700", color: "#0369A1", marginBottom: "3px" } }, "\u{1F4CB} ", msg.template_name, " [", msg.category, "]"), msg.header_media_name && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", fontWeight: "600", color: "#059669", marginBottom: "4px" } }, "\u{1F4CE} [", msg.header_media_name, "]"), /* @__PURE__ */ React.createElement("div", { style: { whiteSpace: "pre-wrap" } }, msg.message_body), /* @__PURE__ */ React.createElement("div", { className: "inbox-bubble-footer" }, /* @__PURE__ */ React.createElement("span", null, formatDateTime(msg.created_at, globalSettings?.system_date_format || "HH:mm")), isOutbound && /* @__PURE__ */ React.createElement("span", null, msg.status === "read" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#0284C7", fontWeight: "800" } }, "\u2713\u2713") : msg.status === "delivered" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#64748B", fontWeight: "800" } }, "\u2713\u2713") : msg.status === "sent" ? /* @__PURE__ */ React.createElement("span", null, "\u2713") : msg.status === "failed" ? /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" }, title: msg.error_message || "Failed" }, "\u26A0\uFE0F") : /* @__PURE__ */ React.createElement("span", null, "\u23F1\uFE0F")))));
+  }), /* @__PURE__ */ React.createElement("div", { ref: messagesEndRef })), /* @__PURE__ */ React.createElement("div", { className: "inbox-canned-bar" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", fontWeight: "700", color: "#64748B", alignSelf: "center", marginRight: "4px" } }, "\u26A1 Quick:"), cannedReplies.map((cr) => /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      key: cr.id,
+      type: "button",
+      className: "inbox-canned-chip",
+      onClick: () => {
+        setReplyText(cr.text);
+        setUseTemplateMode(false);
+      },
+      title: cr.text
+    },
+    cr.title
+  ))), /* @__PURE__ */ React.createElement("div", { className: "inbox-composer-area" }, !is24hActive && !useTemplateMode ? /* @__PURE__ */ React.createElement("div", { style: { flex: 1, background: "#FEF3C7", border: "1px solid #FCD34D", borderRadius: "8px", padding: "10px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "#92400E" } }, "\u26A0\uFE0F ", /* @__PURE__ */ React.createElement("strong", null, "24h Customer Service Window Closed."), " Meta requires an approved template to re-engage this contact."), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary btn-sm",
+      onClick: () => setUseTemplateMode(true)
+    },
+    "\u{1F4CB} Select Approved Template"
+  )) : useTemplateMode ? /* @__PURE__ */ React.createElement("div", { style: { flex: 1, background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: "8px", padding: "12px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#0F172A" } }, "\u{1F4CB} Dispatch Approved WhatsApp Template"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary btn-sm", onClick: () => setUseTemplateMode(false) }, "\u2715 Switch to Free Text")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-input",
+      style: { flex: 1, padding: "7px 10px", fontSize: "12.5px" },
+      value: selectedTemplateName,
+      onChange: (e) => setSelectedTemplateName(e.target.value)
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "" }, "-- Choose Template --"),
+    templates.filter((t) => (t.is_active === 1 || t.is_active === true || t.is_active === "1") && ["APPROVED", "ACTIVE"].includes((t.meta_status || "").toUpperCase())).map((t) => /* @__PURE__ */ React.createElement("option", { key: t.template_name, value: t.template_name }, t.display_title || t.template_name, " (", t.category, ")"))
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary",
+      style: { padding: "8px 18px", fontSize: "12.5px", fontWeight: "700" },
+      disabled: sending || !selectedTemplateName,
+      onClick: handleSendReply
+    },
+    sending ? "Sending..." : "\u{1F680} Send Template"
+  ))) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(
+    "textarea",
+    {
+      className: "inbox-textarea",
+      placeholder: "Type a direct WhatsApp message... (Press Enter to send, Shift+Enter for new line)",
+      value: replyText,
+      onChange: (e) => setReplyText(e.target.value),
+      onKeyDown: handleKeyDown,
+      rows: "1"
+    }
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "inbox-btn-send",
+      disabled: sending || !replyText.trim(),
+      onClick: handleSendReply,
+      title: "Send WhatsApp Message"
+    },
+    sending ? "\u23F3" : "\u27A4"
+  )))))), /* @__PURE__ */ React.createElement(
+    SimulateInboundModal,
+    {
+      isOpen: showSimulateModal,
+      onClose: () => setShowSimulateModal(false),
+      onSimulated: (phone) => {
+        setSelectedPhone(phone);
+        fetchThreads(true);
+        fetchThreadMessages(phone, true);
+      },
+      showToast
+    }
+  ));
+}
+function CampaignsView({ currentUser, showToast, globalSettings, onNavigate, loadWalletBalance }) {
+  const [campaigns, setCampaigns] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showWizard, setShowWizard] = useState(false);
+  const [inspectCampaignId, setInspectCampaignId] = useState(null);
+  const [templates, setTemplates] = useState([]);
+  const [processingId, setProcessingId] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
+  const fetchCampaigns = async (silent = false) => {
+    if (!silent) setLoading(true);
+    try {
+      const res = await fetch("./api/campaigns.php?action=list");
+      const data = await res.json();
+      if (data.success) {
+        setCampaigns(data.campaigns || []);
+        setSummary(data.summary || null);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      if (!silent) setLoading(false);
+    }
+  };
+  const fetchTemplates = async () => {
+    try {
+      const res = await fetch("./api/templates.php?active_only=1");
+      const data = await res.json();
+      if (data.success && data.data) {
+        setTemplates(data.data.filter((t) => (t.is_active === 1 || t.is_active === true || t.is_active === "1") && ["APPROVED", "ACTIVE"].includes((t.meta_status || "").toUpperCase())));
+      }
+    } catch (e) {
+    }
+  };
+  useEffect(() => {
+    fetchCampaigns(false);
+    fetchTemplates();
+  }, []);
+  const runningCampaign = useMemo(() => {
+    return campaigns.find((c) => c.status === "running") || null;
+  }, [campaigns]);
+  useEffect(() => {
+    if (!runningCampaign) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch("./api/campaigns.php?action=process_batch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ campaign_id: runningCampaign.id, batch_size: 5 })
+        });
+        const data = await res.json();
+        if (data.success) {
+          fetchCampaigns(true);
+          if (loadWalletBalance) loadWalletBalance();
+          if (data.status === "completed") {
+            showToast(`Campaign "${runningCampaign.name}" broadcast completed!`, "success");
+          }
+        }
+      } catch (err) {
+      }
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [runningCampaign]);
+  const handleStartCampaign = async (id) => {
+    setProcessingId(id);
+    try {
+      const res = await fetch("./api/campaigns.php?action=process_batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaign_id: id, batch_size: 5 })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("Campaign queue started! Processing recipients...", "success");
+        fetchCampaigns(true);
+      } else {
+        showToast(data.error || "Failed to start campaign", "error");
+      }
+    } catch (e) {
+      showToast("Network error", "error");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+  const handlePauseCampaign = async (id) => {
+    try {
+      const res = await fetch("./api/campaigns.php?action=pause", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaign_id: id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("Campaign paused");
+        fetchCampaigns(true);
+      }
+    } catch (e) {
+    }
+  };
+  const handleCancelCampaign = (id) => {
+    setConfirmDialog({
+      title: "Cancel Broadcast Campaign?",
+      subtitle: "Are you sure you want to cancel this broadcast? Any unsent recipients remaining in the queue will be halted.",
+      icon: "\u{1F6D1}",
+      badgeClass: "danger",
+      confirmText: "Yes, Cancel Broadcast",
+      cancelText: "Keep Running",
+      onConfirm: async () => {
+        try {
+          const res = await fetch("./api/campaigns.php?action=cancel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ campaign_id: id })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast("Campaign cancelled");
+            fetchCampaigns(true);
+          }
+        } catch (e) {
+        } finally {
+          setConfirmDialog(null);
+        }
+      }
+    });
+  };
+  const handleRerunCampaign = (id) => {
+    const targetCamp = campaigns.find((c) => c.id === id);
+    const campName = targetCamp ? `"${targetCamp.name}"` : "this campaign";
+    const recCount = targetCamp?.total_recipients || "all";
+    setConfirmDialog({
+      title: "Re-run Broadcast Campaign?",
+      subtitle: `Reset the broadcast queue for ${campName} and re-dispatch official template messages to ${recCount} recipients via Meta Cloud API?`,
+      icon: "\u{1F504}",
+      badgeClass: "primary",
+      confirmText: "Yes, Re-broadcast Now",
+      cancelText: "Cancel",
+      onConfirm: async () => {
+        try {
+          const res = await fetch("./api/campaigns.php?action=rerun", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ campaign_id: id })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast("Campaign queue reset. Starting Meta broadcast...", "success");
+            await fetchCampaigns(true);
+            handleStartCampaign(id);
+          } else {
+            showToast(data.error || "Failed to re-run campaign", "error");
+          }
+        } catch (e) {
+          showToast("Error re-running campaign", "error");
+        } finally {
+          setConfirmDialog(null);
+        }
+      }
+    });
+  };
+  const columns = [
+    {
+      key: "name",
+      label: "Campaign Details",
+      sortable: true,
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", fontSize: "13.5px", color: "var(--text-color)" } }, c.name), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)", marginTop: "2px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB} ", c.template_title || c.template_name), " \u2022 ", /* @__PURE__ */ React.createElement("span", { className: `badge category-${c.category?.toLowerCase()}` }, c.category)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "var(--text-muted)", marginTop: "2px" } }, "Created: ", formatDateTime(c.created_at, globalSettings?.system_date_format)))
+    },
+    {
+      key: "pace_per_minute",
+      label: "Queue Pacing",
+      sortable: true,
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: "700", color: "#0369A1" } }, "\u23F1\uFE0F ", c.pace_per_minute, " msgs/min"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Anti-spam rate"))
+    },
+    {
+      key: "progress_percent",
+      label: "Broadcast Progress",
+      sortable: true,
+      render: (c) => /* @__PURE__ */ React.createElement("div", { style: { minWidth: "140px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "11.5px", fontWeight: "700", marginBottom: "3px" } }, /* @__PURE__ */ React.createElement("span", null, c.sent_count + c.failed_count, " / ", c.total_recipients), /* @__PURE__ */ React.createElement("span", null, c.progress_percent, "%")), /* @__PURE__ */ React.createElement("div", { style: { width: "100%", height: "8px", background: "#E2E8F0", borderRadius: "4px", overflow: "hidden" } }, /* @__PURE__ */ React.createElement("div", { style: {
+        width: `${c.progress_percent}%`,
+        height: "100%",
+        background: c.status === "completed" ? "#10B981" : c.status === "running" ? "linear-gradient(90deg, #10B981, #0284C7)" : "#94A3B8",
+        borderRadius: "4px",
+        transition: "width 0.3s ease"
+      } })), c.failed_count > 0 && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "#EF4444", marginTop: "2px" } }, "\u26A0\uFE0F ", c.failed_count, " failed"))
+    },
+    {
+      key: "delivery_rate",
+      label: "Delivery & Reads",
+      sortable: true,
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px" } }, /* @__PURE__ */ React.createElement("strong", null, "\u2713\u2713 ", c.delivery_rate, "%"), " Delivered (", c.delivered_count, ")"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#0284C7", marginTop: "2px" } }, /* @__PURE__ */ React.createElement("strong", null, "\u2713\u2713 ", c.read_rate, "%"), " Read (", c.read_count, ")"))
+    },
+    {
+      key: "actual_cost",
+      label: "Total Spend",
+      sortable: true,
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { color: "var(--text-color)" } }, formatCurrency(c.actual_cost, globalSettings?.system_currency, globalSettings?.currency_decimals)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Est: ", formatCurrency(c.estimated_cost, globalSettings?.system_currency, globalSettings?.currency_decimals)))
+    },
+    {
+      key: "status",
+      label: "Status",
+      sortable: true,
+      render: (c) => {
+        const statusMap = {
+          completed: { label: "\u2713 Completed", cls: "status-read", bg: "#DCFCE7", color: "#166534" },
+          running: { label: "\u25CF Running", cls: "status-sent", bg: "#DBEAFE", color: "#1E40AF" },
+          paused: { label: "\u23F8 Paused", cls: "status-queued", bg: "#FEF3C7", color: "#92400E" },
+          draft: { label: "\u{1F4DD} Draft", cls: "status-queued", bg: "#F1F5F9", color: "#475569" },
+          cancelled: { label: "\u2715 Cancelled", cls: "status-failed", bg: "#FEE2E2", color: "#991B1B" }
+        };
+        const s = statusMap[c.status] || statusMap.draft;
+        return /* @__PURE__ */ React.createElement("span", { style: {
+          background: s.bg,
+          color: s.color,
+          padding: "3px 8px",
+          borderRadius: "6px",
+          fontSize: "11px",
+          fontWeight: "700",
+          textTransform: "uppercase"
+        } }, s.label);
+      }
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      sortable: false,
+      render: (c) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          type: "button",
+          className: "btn btn-secondary btn-sm",
+          onClick: () => setInspectCampaignId(c.id),
+          title: "Inspect Recipients Log"
+        },
+        "\u{1F441}\uFE0F Inspect"
+      ), c.status === "draft" && /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          type: "button",
+          className: "btn btn-primary btn-sm",
+          disabled: processingId === c.id,
+          onClick: () => handleStartCampaign(c.id),
+          title: "Start Broadcast"
+        },
+        "\u{1F680} Launch"
+      ), c.status === "running" && /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          type: "button",
+          className: "btn btn-warning btn-sm",
+          onClick: () => handlePauseCampaign(c.id),
+          title: "Pause Queue"
+        },
+        "\u23F8 Pause"
+      ), c.status === "paused" && /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          type: "button",
+          className: "btn btn-primary btn-sm",
+          onClick: () => handleStartCampaign(c.id),
+          title: "Resume Queue"
+        },
+        "\u25B6 Resume"
+      ), c.status === "completed" && /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          type: "button",
+          className: "btn btn-secondary btn-sm",
+          disabled: processingId === c.id,
+          onClick: () => handleRerunCampaign(c.id),
+          title: "Re-run broadcast to all recipients via Meta Cloud API"
+        },
+        "\u{1F504} Re-run"
+      ))
+    }
+  ];
+  return /* @__PURE__ */ React.createElement("div", { className: "campaigns-view-container" }, /* @__PURE__ */ React.createElement("div", { className: "view-header", style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h2", { style: { margin: 0, display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4E2}"), " Bulk Broadcast Campaigns"), /* @__PURE__ */ React.createElement("p", { style: { margin: "4px 0 0 0", color: "var(--text-muted)", fontSize: "13px" } }, "Schedule mass WhatsApp campaigns with CSV contact mapping and anti-spam queue pacing.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary",
+      onClick: () => fetchCampaigns(false),
+      title: "Refresh List"
+    },
+    "\u{1F504} Refresh"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary",
+      onClick: () => setShowWizard(true),
+      style: { display: "flex", alignItems: "center", gap: "6px" }
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F680}"),
+    " Create Broadcast Campaign"
+  ))), /* @__PURE__ */ React.createElement("div", { className: "campaigns-stats-grid" }, /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-card" }, /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-icon", style: { background: "#EFF6FF", color: "#2563EB" } }, "\u{1F4E2}"), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-info" }, /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-label" }, "Total Campaigns"), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-val" }, summary?.total_campaigns || 0), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-sub" }, "Active broadcast programs"))), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-card" }, /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-icon", style: { background: "#F0FDF4", color: "#16A34A" } }, "\u{1F465}"), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-info" }, /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-label" }, "Total Audience"), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-val" }, summary?.total_recipients || 0), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-sub" }, summary?.total_sent || 0, " dispatched"))), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-card" }, /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-icon", style: { background: "#ECFDF5", color: "#059669" } }, "\u2713\u2713"), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-info" }, /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-label" }, "Delivery Success"), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-val" }, summary?.overall_delivery_rate || 0, "%"), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-sub" }, summary?.total_delivered || 0, " verified delivered"))), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-card" }, /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-icon", style: { background: "#F5F3FF", color: "#7C3AED" } }, "\u{1F441}\uFE0F"), /* @__PURE__ */ React.createElement("div", { className: "campaign-stat-info" }, /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-label" }, "Average Read Rate"), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-val" }, summary?.overall_read_rate || 0, "%"), /* @__PURE__ */ React.createElement("span", { className: "campaign-stat-sub" }, summary?.total_read || 0, " customer reads")))), runningCampaign && /* @__PURE__ */ React.createElement("div", { className: "campaign-live-monitor" }, /* @__PURE__ */ React.createElement("div", { className: "monitor-header" }, /* @__PURE__ */ React.createElement("div", { className: "monitor-title" }, /* @__PURE__ */ React.createElement("span", { className: "monitor-pulse-dot" }), /* @__PURE__ */ React.createElement("span", null, "Broadcasting: ", runningCampaign.name)), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-warning btn-sm",
+      onClick: () => handlePauseCampaign(runningCampaign.id)
+    },
+    "\u23F8 Pause Queue"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-danger btn-sm",
+      onClick: () => handleCancelCampaign(runningCampaign.id)
+    },
+    "\u2715 Cancel"
+  ))), /* @__PURE__ */ React.createElement("div", { className: "campaign-progress-bar-wrap" }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: "campaign-progress-bar-fill",
+      style: { width: `${runningCampaign.progress_percent}%` }
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "monitor-meta-grid" }, /* @__PURE__ */ React.createElement("div", null, "\u{1F4C8} Progress: ", /* @__PURE__ */ React.createElement("strong", null, runningCampaign.sent_count + runningCampaign.failed_count, " / ", runningCampaign.total_recipients, " (", runningCampaign.progress_percent, "%)")), /* @__PURE__ */ React.createElement("div", null, "\u23F1\uFE0F Pacing Rate: ", /* @__PURE__ */ React.createElement("strong", null, runningCampaign.pace_per_minute, " messages/min")), /* @__PURE__ */ React.createElement("div", null, "\u{1F4CB} Template: ", /* @__PURE__ */ React.createElement("strong", null, runningCampaign.template_title || runningCampaign.template_name)), /* @__PURE__ */ React.createElement("div", null, "\u{1F4B3} Total Spent: ", /* @__PURE__ */ React.createElement("strong", null, formatCurrency(runningCampaign.actual_cost, globalSettings?.system_currency, globalSettings?.currency_decimals))))), /* @__PURE__ */ React.createElement("div", { className: "card" }, /* @__PURE__ */ React.createElement(
+    DataTable,
+    {
+      columns,
+      data: campaigns,
+      searchPlaceholder: "Search campaigns by name, template, status...",
+      defaultSortKey: "id",
+      defaultSortDir: "desc",
+      emptyMessage: "No broadcast campaigns created yet. Click 'Create Broadcast Campaign' to launch your first mass WhatsApp announcement."
+    }
+  )), showWizard && /* @__PURE__ */ React.createElement(
+    NewCampaignWizardModal,
+    {
+      isOpen: showWizard,
+      onClose: () => setShowWizard(false),
+      templates,
+      globalSettings,
+      currentUser,
+      showToast,
+      onCampaignCreated: (newId) => {
+        setShowWizard(false);
+        fetchCampaigns(false);
+        handleStartCampaign(newId);
+      }
+    }
+  ), inspectCampaignId && /* @__PURE__ */ React.createElement(
+    CampaignReportModal,
+    {
+      campaignId: inspectCampaignId,
+      onClose: () => setInspectCampaignId(null),
+      globalSettings,
+      showToast,
+      onRerun: handleRerunCampaign
+    }
+  ), confirmDialog && /* @__PURE__ */ React.createElement(
+    ConfirmDialog,
+    {
+      isOpen: !!confirmDialog,
+      title: confirmDialog.title,
+      subtitle: confirmDialog.subtitle,
+      icon: confirmDialog.icon,
+      badgeClass: confirmDialog.badgeClass,
+      confirmText: confirmDialog.confirmText,
+      cancelText: confirmDialog.cancelText,
+      onClose: () => setConfirmDialog(null),
+      onConfirm: confirmDialog.onConfirm
+    }
+  ));
+}
+function NewCampaignWizardModal({ isOpen, onClose, templates, globalSettings, currentUser, showToast, onCampaignCreated }) {
+  const [step, setStep] = useState(1);
+  const [name, setName] = useState("");
+  const [selectedTemplateName, setSelectedTemplateName] = useState(templates[0]?.template_name || "offer_sandslab");
+  const [headerMediaUrl, setHeaderMediaUrl] = useState("");
+  const [headerMediaName, setHeaderMediaName] = useState("");
+  const [pacePerMinute, setPacePerMinute] = useState(50);
+  const [rawText, setRawText] = useState("");
+  const [recipients, setRecipients] = useState([]);
+  const [csvColumns, setCsvColumns] = useState([]);
+  const [creating, setCreating] = useState(false);
+  const selectedTemplate = useMemo(() => {
+    return templates.find((t) => t.template_name === selectedTemplateName) || templates[0] || null;
+  }, [templates, selectedTemplateName]);
+  useEffect(() => {
+    if (selectedTemplate && selectedTemplate.header_sample) {
+      setHeaderMediaUrl(selectedTemplate.header_sample);
+      setHeaderMediaName(selectedTemplate.header_sample.split("/").pop() || "header_image.jpg");
+    }
+  }, [selectedTemplate]);
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result;
+      if (typeof text === "string") {
+        processCsvText(text);
+      }
+    };
+    reader.readAsText(file);
+  };
+  const processCsvText = (text) => {
+    setRawText(text);
+    const lines = text.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
+    if (lines.length === 0) return;
+    const firstLineCols = lines[0].split(",").map((c) => c.trim().replace(/^["']|["']$/g, ""));
+    setCsvColumns(firstLineCols);
+    const startIdx = firstLineCols[0].toLowerCase().includes("phone") ? 1 : 0;
+    const parsed = [];
+    for (let i = startIdx; i < lines.length; i++) {
+      const parts = lines[i].split(",").map((c) => c.trim().replace(/^["']|["']$/g, ""));
+      if (!parts[0]) continue;
+      parsed.push({
+        phone: parts[0],
+        name: parts[1] || "",
+        variables: parts.slice(2)
+      });
+    }
+    setRecipients(parsed);
+    if (parsed.length > 0) {
+      setStep(3);
+    }
+  };
+  const handleManualParse = () => {
+    if (!rawText.trim()) {
+      showToast("Please paste recipient records or upload a CSV file", "error");
+      return;
+    }
+    processCsvText(rawText);
+  };
+  const handleLaunch = async () => {
+    if (!name.trim()) {
+      showToast("Please enter a campaign name", "error");
+      setStep(1);
+      return;
+    }
+    if (recipients.length === 0) {
+      showToast("Please provide at least one valid recipient", "error");
+      setStep(2);
+      return;
+    }
+    setCreating(true);
+    try {
+      const payload = {
+        name: name.trim(),
+        template_name: selectedTemplateName,
+        pace_per_minute: pacePerMinute,
+        header_media_url: headerMediaUrl || null,
+        header_media_name: headerMediaName || null,
+        recipients
+      };
+      const res = await fetch("./api/campaigns.php?action=create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Broadcast campaign "${name}" created with ${data.total_recipients} recipients!`, "success");
+        onCampaignCreated(data.campaign_id);
+      } else {
+        showToast(data.error || "Failed to create campaign", "error");
+      }
+    } catch (err) {
+      showToast("Network error creating campaign", "error");
+    } finally {
+      setCreating(false);
+    }
+  };
+  const clientRate = parseFloat(selectedTemplate?.client_rate_bhd || 0.034);
+  const estimatedTotalCost = recipients.length * clientRate;
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "780px", width: "95%" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4E2}"), " Create Broadcast Campaign"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "close-btn", onClick: onClose }, "\u2715")), /* @__PURE__ */ React.createElement("div", { className: "wizard-steps-indicator", style: { padding: "0 24px 16px 24px", margin: "16px 0" } }, /* @__PURE__ */ React.createElement("div", { className: `wizard-step-node ${step === 1 ? "active" : ""}`, onClick: () => setStep(1), style: { cursor: "pointer" } }, /* @__PURE__ */ React.createElement("span", { className: "step-num" }, "1"), " Template & Info"), /* @__PURE__ */ React.createElement("div", { className: `wizard-step-node ${step === 2 ? "active" : ""}`, onClick: () => setStep(2), style: { cursor: "pointer" } }, /* @__PURE__ */ React.createElement("span", { className: "step-num" }, "2"), " Upload Recipients"), /* @__PURE__ */ React.createElement("div", { className: `wizard-step-node ${step === 3 ? "active" : ""}`, onClick: () => setStep(3), style: { cursor: "pointer" } }, /* @__PURE__ */ React.createElement("span", { className: "step-num" }, "3"), " Column Mapping & Preview"), /* @__PURE__ */ React.createElement("div", { className: `wizard-step-node ${step === 4 ? "active" : ""}`, onClick: () => setStep(4), style: { cursor: "pointer" } }, /* @__PURE__ */ React.createElement("span", { className: "step-num" }, "4"), " Pacing & Launch")), /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { maxHeight: "65vh", overflowY: "auto", padding: "0 24px" } }, step === 1 && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Campaign Title ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      placeholder: "e.g. October Partner Special Promo Blast",
+      value: name,
+      onChange: (e) => setName(e.target.value),
+      autoFocus: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Select Approved WhatsApp Template ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: selectedTemplateName,
+      onChange: (e) => setSelectedTemplateName(e.target.value)
+    },
+    templates.filter((t) => (t.is_active === 1 || t.is_active === true || t.is_active === "1") && ["APPROVED", "ACTIVE"].includes((t.meta_status || "").toUpperCase())).map((t) => /* @__PURE__ */ React.createElement("option", { key: t.template_name, value: t.template_name }, t.display_title || t.template_name, " [", t.category, "] \u2022 Rate: ", t.client_rate_bhd, " BHD (", t.variable_count, " variables)"))
+  )), selectedTemplate && /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#F8FAFC",
+    border: "1px solid #E2E8F0",
+    borderRadius: "10px",
+    padding: "16px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px"
+  } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: "700", fontSize: "13px", color: "#0369A1" } }, "\u{1F4CB} Template Preview: ", selectedTemplate.display_title), /* @__PURE__ */ React.createElement("span", { className: `badge category-${selectedTemplate.category?.toLowerCase()}` }, selectedTemplate.category)), selectedTemplate.header_sample && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#059669", background: "#ECFDF5", padding: "6px 10px", borderRadius: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F5BC}\uFE0F Header Media:"), /* @__PURE__ */ React.createElement("a", { href: selectedTemplate.header_sample, target: "_blank", rel: "noreferrer", style: { color: "#059669", textDecoration: "underline" } }, selectedTemplate.header_sample.split("/").pop())), /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#FFFFFF",
+    border: "1px solid #CBD5E1",
+    borderRadius: "8px",
+    padding: "12px",
+    whiteSpace: "pre-wrap",
+    fontSize: "13px",
+    lineHeight: "1.5",
+    fontFamily: "inherit"
+  } }, selectedTemplate.body_text), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "var(--text-muted)" } }, "Requires ", /* @__PURE__ */ React.createElement("strong", null, selectedTemplate.variable_count, " dynamic variable(s)"), " per contact row."))), step === 2 && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: "700", fontSize: "13.5px" } }, "Upload Contact Audience"), /* @__PURE__ */ React.createElement(
+    "a",
+    {
+      href: `./api/campaigns.php?action=sample_csv&template_name=${encodeURIComponent(selectedTemplateName)}`,
+      className: "btn btn-secondary btn-sm",
+      download: true,
+      style: { display: "flex", alignItems: "center", gap: "4px" }
+    },
+    "\u{1F4E5} Download Sample CSV"
+  )), /* @__PURE__ */ React.createElement("label", { className: "csv-upload-dropzone" }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "file",
+      accept: ".csv,text/csv",
+      onChange: handleFileUpload,
+      style: { display: "none" }
+    }
+  ), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "28px", marginBottom: "8px" } }, "\u{1F4C2}"), /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", fontSize: "14px", color: "var(--text-color)" } }, "Click to select CSV File or Drag & Drop here"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" } }, "Supports CSV with international phone numbers and parameters")), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", color: "var(--text-muted)", fontSize: "12px", fontWeight: "700" } }, "\u2014 OR PASTE RECIPIENT DATA BELOW \u2014"), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement(
+    "textarea",
+    {
+      className: "form-textarea",
+      rows: "4",
+      placeholder: `phone,name,param_1,param_2
 +97335078079,Ali Al-Hassan,Valued Partner,+97317008899
-+97339000001,Ahmed Al-Khalifa,Executive,+97317008899`,value:b,onChange:h=>I(h.target.value),style:{fontFamily:"monospace",fontSize:"12.5px"}}),React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:"6px"}},React.createElement("span",{style:{fontSize:"11px",color:"var(--text-muted)"}},"One contact per line (Comma separated)"),React.createElement("button",{type:"button",className:"btn btn-secondary btn-sm",onClick:i},"\u26A1 Parse Records"))),F.length>0&&React.createElement("div",{style:{background:"#F0FDF4",border:"1px solid #86EFAC",borderRadius:"8px",padding:"10px 14px",fontSize:"13px",color:"#166534",display:"flex",alignItems:"center",gap:"8px"}},React.createElement("span",null,"\u2713")," Successfully parsed ",React.createElement("strong",null,F.length," recipients")," ready for broadcast!")),d===3&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"16px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement("div",null,React.createElement("span",{style:{fontWeight:"700",fontSize:"14px"}},"Audience Dynamic Preview"),React.createElement("div",{style:{fontSize:"12px",color:"var(--text-muted)"}},"Found ",React.createElement("strong",null,F.length," recipients"),". Previewing first 3 rows with template parameters:"))),React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"10px"}},F.slice(0,3).map((h,W)=>React.createElement("div",{key:W,style:{background:"#FFFFFF",border:"1px solid #CBD5E1",borderRadius:"8px",padding:"12px 14px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:"6px",fontSize:"12.5px"}},React.createElement("span",null,React.createElement("strong",null,"Recipient #",W+1,":")," ",React.createElement("code",{style:{color:"#0369A1"}},h.phone)," ",h.name&&`(${h.name})`),React.createElement("span",{className:"badge badge-success",style:{fontSize:"10px"}},"Valid")),React.createElement("div",{style:{background:"#F8FAFC",padding:"8px 10px",borderRadius:"6px",fontSize:"12px",color:"#334155"}},React.createElement("strong",null,"Substituted Variables:")," ",h.variables&&h.variables.length>0?h.variables.map(($,K)=>`{{${K+1}}}: "${$}"`).join(", "):"None")))),F.length>3&&React.createElement("div",{style:{fontSize:"12px",color:"var(--text-muted)",textAlign:"center"}},"... and ",F.length-3," more recipients queued.")),d===4&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"18px"}},React.createElement("div",null,React.createElement("label",{style:{fontWeight:"700",fontSize:"13.5px",marginBottom:"8px",display:"block"}},"Anti-Spam Dispatch Queue Pacing"),React.createElement("p",{style:{fontSize:"12px",color:"var(--text-muted)",margin:"0 0 12px 0"}},"Throttle broadcast dispatch rate to stay within Meta Cloud API tier limits and protect your phone number reputation."),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(3, 1fr)",gap:"12px"}},React.createElement("div",{className:`pace-option-card ${p===20?"selected":""}`,onClick:()=>C(20)},React.createElement("div",{style:{fontWeight:"700",color:"#047857",fontSize:"14px"}},"\u{1F422} Conservative"),React.createElement("div",{style:{fontSize:"12px",fontWeight:"800",margin:"4px 0"}},"20 msgs / min"),React.createElement("div",{style:{fontSize:"11px",color:"var(--text-muted)"}},"Safe for new numbers")),React.createElement("div",{className:`pace-option-card ${p===50?"selected":""}`,onClick:()=>C(50)},React.createElement("div",{style:{fontWeight:"700",color:"#0369A1",fontSize:"14px"}},"\u26A1 Standard"),React.createElement("div",{style:{fontSize:"12px",fontWeight:"800",margin:"4px 0"}},"50 msgs / min"),React.createElement("div",{style:{fontSize:"11px",color:"var(--text-muted)"}},"Meta Tier 1 recommended")),React.createElement("div",{className:`pace-option-card ${p===100?"selected":""}`,onClick:()=>C(100)},React.createElement("div",{style:{fontWeight:"700",color:"#7C3AED",fontSize:"14px"}},"\u{1F680} Turbo"),React.createElement("div",{style:{fontSize:"12px",fontWeight:"800",margin:"4px 0"}},"100 msgs / min"),React.createElement("div",{style:{fontSize:"11px",color:"var(--text-muted)"}},"Meta Tier 2+ high volume")))),React.createElement("div",{style:{background:"#F0FDF4",border:"1px solid #86EFAC",borderRadius:"10px",padding:"16px",display:"flex",flexDirection:"column",gap:"8px"}},React.createElement("div",{style:{fontWeight:"700",fontSize:"13.5px",color:"#166534",borderBottom:"1px solid #BBF7D0",paddingBottom:"6px"}},"\u{1F4B3} Financial Budget Breakdown"),React.createElement("div",{style:{display:"flex",justifyContent:"space-between",fontSize:"13px"}},React.createElement("span",null,"Total Recipients:"),React.createElement("strong",null,F.length," contacts")),React.createElement("div",{style:{display:"flex",justifyContent:"space-between",fontSize:"13px"}},React.createElement("span",null,"Template Client Rate (",A?.category,"):"),React.createElement("strong",null,G(S,o?.system_currency,o?.currency_decimals)," / msg")),React.createElement("div",{style:{display:"flex",justifyContent:"space-between",fontSize:"14px",fontWeight:"800",color:"#166534",borderTop:"1px solid #BBF7D0",paddingTop:"6px"}},React.createElement("span",null,"Estimated Total Budget:"),React.createElement("span",null,G(E,o?.system_currency,o?.currency_decimals)))))),React.createElement("div",{className:"modal-footer",style:{display:"flex",justifyContent:"space-between",padding:"16px 24px"}},React.createElement("div",null,d>1&&React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:()=>T(d-1),disabled:t},"\u2190 Back")),React.createElement("div",{style:{display:"flex",gap:"10px"}},React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:r,disabled:t},"Cancel"),d<4?React.createElement("button",{type:"button",className:"btn btn-primary",onClick:()=>{if(d===1&&!m.trim()){f("Please enter a campaign name","error");return}if(d===2&&F.length===0){f("Please upload or paste recipient contacts","error");return}T(d+1)}},"Next Step \u2192"):React.createElement("button",{type:"button",className:"btn btn-primary",onClick:a,disabled:t,style:{background:"#059669",borderColor:"#059669"}},t?"Creating Broadcast...":"\u{1F680} Launch Broadcast Now")))))}function Re({campaignId:n,onClose:r,globalSettings:g,showToast:o,onRerun:c}){let[f,e]=s(null),[d,T]=s(!0);U(()=>{fetch(`./api/campaigns.php?action=details&id=${n}`).then(u=>u.json()).then(u=>{u.success&&e(u)}).catch(()=>{}).finally(()=>T(!1))},[n]);let m=f?.campaign,v=f?.recipients||[],l=[{key:"recipient_phone",label:"Recipient Phone",sortable:!0,render:u=>React.createElement("strong",null,u.recipient_phone)},{key:"contact_name",label:"Contact Name",sortable:!0,render:u=>u.contact_name||"-"},{key:"status",label:"Dispatch Status",sortable:!0,render:u=>React.createElement("div",null,React.createElement("span",{className:`badge status-${u.status}`},u.status==="read"?"\u2713\u2713 Read":u.status==="delivered"?"\u2713\u2713 Delivered":u.status==="sent"?"\u2713 Dispatched":u.status==="failed"?"\u26A0\uFE0F Failed":u.status),u.error_message&&React.createElement("div",{style:{fontSize:"10px",color:"#EF4444",marginTop:"2px",wordBreak:"break-word",maxWidth:"280px"}},u.error_message))},{key:"cost_deducted",label:"Debited Tariff",sortable:!0,render:u=>G(u.cost_deducted,g?.system_currency,g?.currency_decimals)},{key:"sent_at",label:"Sent Timestamp",sortable:!0,render:u=>ee(u.sent_at||u.created_at,g?.system_date_format)}];return React.createElement("div",{className:"modal-overlay",onClick:r},React.createElement("div",{className:"modal-content",style:{maxWidth:"850px",width:"95%"},onClick:u=>u.stopPropagation()},React.createElement("div",{className:"modal-header"},React.createElement("h3",{style:{margin:0,display:"flex",alignItems:"center",gap:"8px"}},React.createElement("span",null,"\u{1F4CA}")," Campaign Report: ",m?.name||"Loading..."),React.createElement("button",{type:"button",className:"close-btn",onClick:r},"\u2715")),React.createElement("div",{className:"modal-body",style:{maxHeight:"70vh",overflowY:"auto"}},d?React.createElement("div",{style:{textAlign:"center",padding:"30px"}},"Loading campaign report..."):m?React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"16px"}},React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"8px",padding:"14px 18px",display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(160px, 1fr))",gap:"12px"}},React.createElement("div",null,React.createElement("div",{style:{fontSize:"11px",color:"var(--text-muted)"}},"Template"),React.createElement("strong",{style:{fontSize:"13px"}},m.template_title||m.template_name)),React.createElement("div",null,React.createElement("div",{style:{fontSize:"11px",color:"var(--text-muted)"}},"Total Audience"),React.createElement("strong",{style:{fontSize:"13px"}},m.total_recipients," recipients")),React.createElement("div",null,React.createElement("div",{style:{fontSize:"11px",color:"var(--text-muted)"}},"Sent / Failed"),React.createElement("strong",{style:{fontSize:"13px",color:"#16A34A"}},m.sent_count," sent")," \u2022 ",React.createElement("span",{style:{color:"#EF4444"}},m.failed_count," failed")),React.createElement("div",null,React.createElement("div",{style:{fontSize:"11px",color:"var(--text-muted)"}},"Actual Spend"),React.createElement("strong",{style:{fontSize:"13px"}},G(m.actual_cost,g?.system_currency,g?.currency_decimals)))),React.createElement(Z,{columns:l,data:v,searchPlaceholder:"Search recipient phone, contact name, status...",defaultSortKey:"id",defaultSortDir:"asc",title:`campaign_${m.id}_recipients`,emptyMessage:"No recipients found for this campaign."})):null),React.createElement("div",{className:"modal-footer",style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement("div",null,m?.status==="completed"&&c&&React.createElement("button",{type:"button",className:"btn btn-secondary btn-sm",style:{display:"flex",alignItems:"center",gap:"6px"},onClick:()=>{r(),c(m.id)}},React.createElement("span",null,"\u{1F504}")," Re-broadcast Campaign")),React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:r},"Close"))))}function ze({showToast:n,globalSettings:r,onOpenInbox:g}){let[o,c]=s([]),[f,e]=s(!0),[d,T]=s("all"),[m,v]=s("all"),[l,u]=s(null),[D,P]=s(null),[z,y]=s(!0),[p,C]=s("grouped"),b=async(t=!1)=>{t||e(!0);try{let x=`./api/messages.php?status=${d}&category=${m}&limit=100`,M=await(await fetch(x)).json();M.success&&c(M.data)}catch(x){console.error(x)}finally{t||e(!1)}};U(()=>{b(!1)},[d,m]),U(()=>{if(!z)return;let t=setInterval(()=>{b(!0)},2500);return()=>clearInterval(t)},[z,d,m]);let I=async(t,x)=>{try{(await(await fetch("./api/messages.php",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({message_id:t,status:x})})).json()).success&&(n(`Message status updated to ${x.toUpperCase()}`),b(!0))}catch{n("Error updating status","error")}},F=Q(()=>{let t=new Map;for(let x of o){let A=(x.direction==="inbound"?x.from_phone:x.to_phone)||x.to_phone||x.from_phone;if(A)if(!t.has(A))t.set(A,{...x,contact_phone:A,total_count:1,has_inbound:x.direction==="inbound",unread_inbound:x.direction==="inbound"&&x.status!=="read"?1:0});else{let M=t.get(A);M.total_count+=1,x.direction==="inbound"&&(M.has_inbound=!0,x.status!=="read"&&(M.unread_inbound+=1))}}return Array.from(t.values())},[o]),O=[{key:"contact_phone",label:"Contact / Recipient",render:t=>React.createElement("div",null,React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"6px",flexWrap:"wrap"}},React.createElement("span",{style:{fontWeight:"700",fontSize:"13.5px",color:"#0F172A"}},t.contact_phone),React.createElement("span",{className:"badge",style:{background:"#E0F2FE",color:"#0369A1",fontSize:"11px",padding:"2px 7px",fontWeight:"600"}},t.total_count," ",t.total_count===1?"msg":"msgs"),t.has_inbound&&React.createElement("span",{className:"badge",style:{background:"#DCFCE7",color:"#15803D",fontSize:"10.5px",padding:"2px 6px"}},"\u{1F7E2} 2-Way Active")),React.createElement("div",{style:{fontSize:"11px",color:"var(--text-muted)",marginTop:"2px"}},t.source_system," \u2022 ",t.direction==="inbound"?"\u{1F4E5} Last Inbound":"\u{1F4E4} Last Outbound"))},{key:"category",label:"Category",render:t=>React.createElement("span",{className:`badge cat-${(t.category||"SERVICE").toLowerCase().substring(0,4)}`},t.category)},{key:"message_body",label:"Latest Message Preview",render:t=>React.createElement("div",{style:{maxWidth:"320px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"},title:t.message_body},React.createElement("span",{style:{marginRight:"6px",opacity:.85}},t.direction==="inbound"?"\u{1F4E5}":"\u{1F4E4}"),t.header_media_name&&React.createElement("span",{style:{marginRight:"4px",fontWeight:"600"}},"\u{1F4CE} [",t.header_media_name,"]"),React.createElement("span",null,t.message_body))},{key:"status",label:"Latest Status",render:t=>React.createElement("div",null,React.createElement("span",{className:`badge status-${t.status}`,style:{transition:"all 0.3s ease"}},t.status==="read"?"\u2713\u2713 Read":t.status==="delivered"?"\u2713\u2713 Delivered":t.status==="sent"?"\u2713 Sent":t.status.toUpperCase()),t.status==="failed"&&t.error_message&&React.createElement("div",{style:{fontSize:"10px",color:"#EF4444",marginTop:"3px",maxWidth:"200px",whiteSpace:"normal",lineHeight:"1.2"}},"\u26A0\uFE0F ",t.error_message))},{key:"client_rate_bhd",label:"Latest Rate (BHD)",render:t=>React.createElement("div",null,React.createElement("strong",null,parseFloat(t.client_rate_bhd||0).toFixed(4)," BHD"),React.createElement("div",{style:{fontSize:"10px",color:"var(--text-muted)"}},"Meta: ",parseFloat(t.meta_cost_bhd||0).toFixed(4)))},{key:"created_at",label:"Last Message Time",render:t=>React.createElement("span",{style:{fontSize:"11.5px",color:"var(--text-secondary)"}},ee(t.created_at,r?.system_date_format))},{key:"actions",label:"Actions",sortable:!1,render:t=>React.createElement("div",{style:{display:"flex",gap:"6px"}},React.createElement("button",{className:"btn btn-success btn-sm",style:{padding:"5px 12px",fontSize:"12px",display:"flex",alignItems:"center",gap:"5px",fontWeight:"700"},onClick:()=>P(t.contact_phone),title:`Open Full WhatsApp Chat History with ${t.contact_phone}`},React.createElement("span",null,"\u{1F4AC}")," Open Chat (",t.total_count,")"),React.createElement("button",{className:"btn btn-secondary btn-sm",onClick:()=>u(t),title:"Inspect Latest Payload"},"Inspect"))}],R=[{key:"to_phone",label:"Recipient / Source",render:t=>React.createElement("div",null,React.createElement("div",null,React.createElement("strong",null,t.direction==="inbound"?t.from_phone:t.to_phone)),React.createElement("div",{style:{fontSize:"11px",color:"var(--text-muted)"}},t.direction==="inbound"?"\u{1F4E5} WhatsApp Inbound":`\u{1F4E4} ${t.source_system}`))},{key:"category",label:"Category",render:t=>React.createElement("span",{className:`badge cat-${t.category.toLowerCase().substring(0,4)}`},t.category)},{key:"message_body",label:"Message Content",render:t=>React.createElement("div",{style:{maxWidth:"280px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},t.header_media_name&&React.createElement("span",{style:{marginRight:"4px"}},"\u{1F4CE} [",t.header_media_name,"]"),t.message_body)},{key:"status",label:"Status",render:t=>React.createElement("div",null,React.createElement("span",{className:`badge status-${t.status}`,style:{transition:"all 0.3s ease"}},t.status==="read"?"\u2713\u2713 Read":t.status==="delivered"?"\u2713\u2713 Delivered":t.status==="sent"?"\u2713 Sent":t.status.toUpperCase()),t.status==="failed"&&t.error_message&&React.createElement("div",{style:{fontSize:"10px",color:"#EF4444",marginTop:"3px",maxWidth:"220px",whiteSpace:"normal",wordBreak:"break-word",lineHeight:"1.2"}},"\u26A0\uFE0F ",t.error_message))},{key:"client_rate_bhd",label:"Client Rate (BHD)",render:t=>React.createElement("div",null,React.createElement("strong",null,parseFloat(t.client_rate_bhd).toFixed(4)," BHD"),React.createElement("div",{style:{fontSize:"10px",color:"var(--text-muted)"}},"Meta: ",parseFloat(t.meta_cost_bhd).toFixed(4)," | Platform: +",parseFloat(t.platform_charge_bhd).toFixed(4)))},{key:"created_at",label:"Timestamp",render:t=>React.createElement("span",{style:{fontSize:"11.5px",color:"var(--text-secondary)"}},ee(t.created_at,r?.system_date_format))},{key:"actions",label:"Actions",sortable:!1,render:t=>{let x=t.direction==="inbound"?t.from_phone:t.to_phone;return React.createElement("div",{style:{display:"flex",gap:"5px"}},React.createElement("button",{className:"btn btn-success btn-sm",style:{padding:"4px 9px",fontSize:"11.5px",display:"flex",alignItems:"center",gap:"4px"},onClick:()=>P(x),title:`Open Live WhatsApp Chat with ${x}`},React.createElement("span",null,"\u{1F4AC}")," Chat"),React.createElement("button",{className:"btn btn-secondary btn-sm",onClick:()=>u(t),title:"Inspect Payload"},"Inspect"),t.status!=="read"&&React.createElement("button",{className:"btn btn-primary btn-sm",onClick:()=>I(t.message_id,"read"),title:"Mark Read"},"\u2713 Read"))}}],_=React.createElement("div",{style:{display:"flex",gap:"10px",alignItems:"center",flexWrap:"wrap"}},React.createElement("div",{className:"view-mode-toggle"},React.createElement("button",{type:"button",className:`view-mode-btn ${p==="grouped"?"active":""}`,onClick:()=>C("grouped"),title:"Group conversations by Phone Number (Shows latest message with full chat history on click)"},React.createElement("span",null,"\u{1F4AC} Conversations"),React.createElement("span",{className:"count-badge"},F.length)),React.createElement("button",{type:"button",className:`view-mode-btn ${p==="raw"?"active":""}`,onClick:()=>C("raw"),title:"Show raw individual message logs and telemetry audit trail"},React.createElement("span",null,"\u{1F4DC} Raw Logs"),React.createElement("span",{className:"count-badge"},o.length))),React.createElement("select",{className:"form-select",style:{width:"135px",padding:"5px 8px",fontSize:"12px"},value:d,onChange:t=>T(t.target.value)},React.createElement("option",{value:"all"},"All Statuses"),React.createElement("option",{value:"read"},"Read (\u2713\u2713 Blue)"),React.createElement("option",{value:"delivered"},"Delivered (\u2713\u2713 Grey)"),React.createElement("option",{value:"sent"},"Sent (\u2713 Single)"),React.createElement("option",{value:"queued"},"Queued"),React.createElement("option",{value:"failed"},"Failed")),React.createElement("select",{className:"form-select",style:{width:"145px",padding:"5px 8px",fontSize:"12px"},value:m,onChange:t=>v(t.target.value)},React.createElement("option",{value:"all"},"All Categories"),React.createElement("option",{value:"UTILITY"},"Utility (Invoices)"),React.createElement("option",{value:"AUTHENTICATION"},"Authentication (OTP)"),React.createElement("option",{value:"MARKETING"},"Marketing (Promo)"),React.createElement("option",{value:"SERVICE"},"Service (Support)")));return React.createElement("div",null,React.createElement("div",{className:"page-header-row"},React.createElement("div",{className:"page-title-group"},React.createElement("h1",null,React.createElement("span",null,"\u{1F4DC}")," Message Telemetry & Conversations"),React.createElement("p",null,p==="grouped"?"Grouped active WhatsApp conversations with latest message previews and instant chat consoles.":"Audit trail of all individual inbound and outbound WhatsApp messages, lifecycle, and billing tariffs.")),React.createElement("div",{style:{display:"flex",gap:"10px",alignItems:"center"}},React.createElement("button",{className:`btn ${z?"btn-success":"btn-secondary"}`,style:{fontSize:"12px",padding:"6px 12px",display:"flex",alignItems:"center",gap:"6px"},onClick:()=>y(!z),title:z?"Live Sync Active (Polling every 2.5s)":"Click to enable Auto Sync"},React.createElement("span",{style:{display:"inline-block",width:"8px",height:"8px",borderRadius:"50%",background:z?"#22C55E":"#9CA3AF",boxShadow:z?"0 0 8px #22C55E":"none"}}),z?"\u{1F7E2} Live Auto-Sync Active":"\u23F8\uFE0F Live Sync Paused"),React.createElement("button",{className:"btn btn-secondary",onClick:()=>b(!1)},React.createElement("span",null,"\u{1F504}")," Refresh Now"))),p==="grouped"?React.createElement(Z,{columns:O,data:F,title:"whatsapp_conversations",searchPlaceholder:"Search phone or latest message...",defaultPageSize:10,pageSizeOptions:[10,25,50,100],defaultSortKey:"created_at",defaultSortDir:"desc",actions:_,emptyMessage:f?"Loading conversations...":"No conversations found matching criteria."}):React.createElement(Z,{columns:R,data:o,title:"whatsapp_messages_log",searchPlaceholder:"Search phone, wamid, content...",defaultPageSize:10,pageSizeOptions:[10,25,50,100],defaultSortKey:"created_at",defaultSortDir:"desc",actions:_,emptyMessage:f?"Loading telemetry logs...":"No messages found matching criteria."}),D&&React.createElement(Te,{phone:D,onClose:()=>{P(null),b(!0)},showToast:n,globalSettings:r}),l&&React.createElement("div",{style:{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1e4}},React.createElement("div",{className:"card",style:{width:"600px",maxHeight:"85vh",overflowY:"auto"}},React.createElement("div",{className:"card-header",style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement("span",{className:"card-title",style:{display:"flex",alignItems:"center",gap:"8px",fontSize:"15px"}},React.createElement("span",null,"\u{1F50D}")," Message Payload Inspection"),React.createElement("button",{className:"btn btn-secondary btn-sm",onClick:()=>u(null)},"\u2715 Close")),React.createElement("div",{className:"code-box"},React.createElement("pre",null,JSON.stringify(l,null,2))))))}var fe=[{key:"tax_invoice_notification",title:"Tax Invoice Notification with PDF",category:"UTILITY",language:"en_US",header_type:"DOCUMENT",header_sample:"https://whatsapp.sandslab.com/uploads/sample_invoice.pdf",body_text:`Dear {{1}},
-
-Your official Tax Invoice *{{2}}* for amount *{{3}} {{4}}* has been issued.
-Due Date: *{{5}}*.
-
-Please find your invoice document attached above.`,footer_text:"SaNDS Lab Financial Accounts",sample_params:["Ahmed Al-Khalifa","INV/2026/0142","345.500","BHD","25-Oct-2026"],description:"Compliant invoice notification with attached PDF for ERP and accounting systems.",icon:"\u{1F4C4}"},{key:"order_delivery_tracking",title:"Sales Order Confirmation & Tracking",category:"UTILITY",language:"en_US",header_type:"TEXT",header_sample:"Order Confirmation #{{1}}",body_text:`Hello {{1}},
-
-Thank you for your order! Your order *{{2}}* totaling *{{3}} {{4}}* is now confirmed.
-
-Estimated Delivery: *{{5}}*.
-You can track your shipment status with our courier.`,footer_text:"Customer Care & Logistics",sample_params:["Sara Mohamed","SO-9821","120.000","BHD","Tomorrow, 2:00 PM"],description:"Instant dispatch confirmation for e-commerce, sales orders, and deliveries.",icon:"\u{1F4E6}"},{key:"payment_receipt_voucher",title:"Payment Receipt & Balance Statement",category:"UTILITY",language:"en_US",header_type:"NONE",header_sample:"",body_text:`Dear {{1}},
-
-We have received your payment of *{{2}} {{3}}* for receipt *{{4}}* on {{5}}.
-
-Remaining Balance: *{{6}} {{3}}*.
-Thank you for choosing our services.`,footer_text:"Finance & Collections Team",sample_params:["Ali Hassan","50.000","BHD","REC-4412","13-Oct-2026","0.000"],description:"Receipt voucher acknowledging customer settlement and remaining balance.",icon:"\u{1F9FE}"},{key:"appointment_schedule_reminder",title:"Appointment / Meeting Reminder",category:"UTILITY",language:"en_US",header_type:"NONE",header_sample:"",body_text:`Hello {{1}},
-
-This is a reminder for your upcoming appointment with *{{2}}* on *{{3}}* at *{{4}}*.
-Location: {{5}}.
-
-If you need to reschedule, please let us know in advance.`,footer_text:"Client Scheduling Desk",sample_params:["Fatima Ebrahim","Dr. Al-Sayed","15-Oct-2026","10:30 AM","Manama Office, 4th Floor"],description:"Timely reminders for consultations, doctor visits, meetings, and bookings.",icon:"\u{1F5D3}\uFE0F"},{key:"special_discount_promotion",title:"Seasonal Promotion & Discount Offer",category:"MARKETING",language:"en_US",header_type:"IMAGE",header_sample:"https://whatsapp.sandslab.com/assets/images/QRCodePoster.jpg",body_text:`Special Offer for {{1}}!
-
-Enjoy an exclusive *{{2}}% discount* on all our premium services this week.
-Use Promo Code: *{{3}}*
-Valid until: *{{4}}*.
-
-Tap below or contact us to claim your discount!`,footer_text:"SaNDS Lab Special Offers",sample_params:["Valued Client","25","AUTUMN2026","31-Oct-2026"],description:"High-converting marketing broadcast with image banner and promo code.",icon:"\u{1F3F7}\uFE0F"},{key:"secure_otp_verification",title:"Security One-Time Passcode (OTP)",category:"AUTHENTICATION",language:"en_US",header_type:"NONE",header_sample:"",body_text:`Your verification code is *{{1}}*.
-
-This code will expire in {{2}} minutes. For your security, do not share this code with anyone.`,footer_text:"Security & Two-Factor Verification",sample_params:["492817","10"],description:"High-security OTP login code for web apps, portals, and password resets.",icon:"\u{1F510}"}];function Be({template:n,onClose:r,onSave:g,showToast:o}){let[c,f]=s(n&&n.id?"custom":"presets"),[e,d]=s({id:n?.id||null,template_name:n?.template_name||"",display_title:n?.display_title||"",category:n?.category||"UTILITY",language:n?.language||"en_US",header_type:n?.header_type||"NONE",header_sample:n?.header_sample||"",body_text:n?.body_text||"",footer_text:n?.footer_text||"",sample_params:n?.sample_params_json?typeof n.sample_params_json=="string"?JSON.parse(n.sample_params_json):n.sample_params_json:[],is_active:n?.is_active!==void 0?n.is_active:1}),[T,m]=s(""),[v,l]=s(!1),[u,D]=s(!1),[P,z]=s(null),y=Q(()=>{if(!e.body_text)return[];let _=e.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g);if(_)return[...new Set(_.map(x=>x.replace(/[\{\}]/g,"").trim()))];let t=e.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g);return t?[...new Set(t.map(x=>x.replace(/\D/g,"").trim()))]:[]},[e.body_text]),p=Q(()=>{let _=Array.isArray(e.sample_params)?[...e.sample_params]:[];for(let t=_.length;t<y.length;t++)_.push(`Sample ${y[t]||t+1}`);return _},[e.sample_params,y]),C=(_,t)=>{let x=[...p];x[_]=t,d(A=>({...A,sample_params:x}))},b=_=>{m(_.key),d({id:e.id,template_name:_.key,display_title:_.title,category:_.category,language:_.language,header_type:_.header_type,header_sample:_.header_sample,body_text:_.body_text,footer_text:_.footer_text,sample_params:[..._.sample_params],is_active:1}),z(null)},I={AUTHENTICATION:{meta:.011,platform:.0035,client:.0145},UTILITY:{meta:.014,platform:.0045,client:.0185},MARKETING:{meta:.027,platform:.007,client:.034},SERVICE:{meta:.0075,platform:.0025,client:.01}},F=I[e.category]||I.UTILITY,O=Q(()=>{let _=e.body_text||"Enter message body text...";return y.forEach((t,x)=>{let A=p[x]||`[${t}]`,M=new RegExp(`\\{\\{${t}\\}\\}`,"g");_=_.replace(M,`*${A}*`)}),_},[e.body_text,y,p]),R=async(_=!1)=>{if(!e.template_name||!e.body_text){o("Template key and body text are required","error");return}_?l(!0):D(!0),z(null);try{let t={...e,sample_params:p,sample_params_json:JSON.stringify(p),submit_to_meta:_},A=await(await fetch("./api/templates.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(t)})).json();if(A.success)o(_?`\u{1F680} Template submitted to Meta! Status: ${A.meta_status||"PENDING"}`:A.message||"Template saved locally in catalog!"),g(),r();else{let M=A.error||"Failed to save template";z(M),o(M,"error")}}catch{z("Network error connecting to API"),o("Network error saving template","error")}finally{l(!1),D(!1)}};return React.createElement("div",{className:"modal-overlay",onClick:r},React.createElement("div",{className:"modal-content",style:{maxWidth:"1100px",maxHeight:"92vh",display:"flex",flexDirection:"column"},onClick:_=>_.stopPropagation()},React.createElement("div",{className:"modal-header"},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"10px"}},React.createElement("span",{style:{fontSize:"24px"}},"\u2728"),React.createElement("div",null,React.createElement("h3",{style:{margin:0,fontSize:"16px"}},e.id?"Edit WhatsApp Template":"WhatsApp Template Studio & Meta Approval"),React.createElement("p",{style:{margin:"2px 0 0 0",fontSize:"11.5px",color:"rgba(255,255,255,0.85)"}},"Design Meta-compliant templates, choose from verified presets, preview live on handset, and submit for Meta approval."))),React.createElement("button",{className:"close-btn",onClick:r},"\u2715")),React.createElement("div",{style:{background:"#F8FAFC",padding:"10px 24px",borderBottom:"1px solid #E2E8F0",display:"flex",gap:"10px",alignItems:"center"}},React.createElement("button",{type:"button",className:`btn ${c==="presets"?"btn-primary":"btn-secondary"}`,style:{fontSize:"12px",padding:"6px 14px",display:"flex",alignItems:"center",gap:"6px"},onClick:()=>f("presets")},React.createElement("span",null,"\u{1F4DA}")," 1. Choose from Meta Presets (",fe.length,")"),React.createElement("button",{type:"button",className:`btn ${c==="custom"?"btn-primary":"btn-secondary"}`,style:{fontSize:"12px",padding:"6px 14px",display:"flex",alignItems:"center",gap:"6px"},onClick:()=>f("custom")},React.createElement("span",null,"\u270F\uFE0F")," 2. Custom Template Design & Variables"),T&&React.createElement("span",{style:{marginLeft:"auto",fontSize:"11.5px",color:"#047857",fontWeight:"600"}},"\u2713 Loaded Preset: ",React.createElement("code",null,T))),React.createElement("div",{className:"modal-body",style:{display:"grid",gridTemplateColumns:"1.45fr 1fr",gap:"24px",overflowY:"auto"}},React.createElement("div",null,P&&React.createElement("div",{style:{background:"#FEE2E2",border:"1px solid #FCA5A5",color:"#B91C1C",padding:"10px 14px",borderRadius:"8px",fontSize:"12.5px",marginBottom:"16px",fontWeight:"600"}},"\u26A0\uFE0F Meta API: ",P),c==="presets"&&React.createElement("div",null,React.createElement("div",{style:{marginBottom:"14px"}},React.createElement("h4",{style:{margin:"0 0 4px 0",fontSize:"13.5px",color:"var(--text-primary)"}},"Standard Pre-Approved Industry Templates"),React.createElement("p",{style:{margin:0,fontSize:"11.5px",color:"var(--text-secondary)"}},"Select any template below to load compliant wording, media headers, and sample parameters ready for Meta approval.")),React.createElement("div",{className:"preset-grid"},fe.map(_=>{let t=e.template_name===_.key||T===_.key;return React.createElement("div",{key:_.key,className:`preset-card ${t?"selected":""}`,onClick:()=>b(_)},React.createElement("div",null,React.createElement("div",{className:"preset-card-top"},React.createElement("span",{className:"preset-card-icon"},_.icon),React.createElement("div",null,React.createElement("div",{className:"preset-card-title"},_.title),React.createElement("span",{className:`badge cat-${_.category.toLowerCase().substring(0,4)}`,style:{fontSize:"9.5px"}},_.category," \u2022 ",_.header_type))),React.createElement("div",{className:"preset-card-desc"},_.description)),React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:"10px",paddingTop:"8px",borderTop:"1px solid #F1F5F9"}},React.createElement("span",{style:{fontSize:"11px",fontFamily:"monospace",color:"var(--wa-teal)"}},_.key),React.createElement("button",{type:"button",className:"btn btn-secondary btn-sm",style:{fontSize:"11px",padding:"3px 8px"},onClick:x=>{x.stopPropagation(),b(_),f("custom")}},"Use & Edit \u2192")))}))),c==="custom"&&React.createElement("div",null,React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label",style:{fontWeight:"700"}},"Meta Template Key *"),React.createElement("input",{type:"text",className:"form-input",placeholder:"e.g. order_dispatch_uniglobal",value:e.template_name,onChange:_=>d({...e,template_name:_.target.value.toLowerCase().replace(/[^a-z0-9_]/g,"_")}),required:!0}),React.createElement("span",{style:{fontSize:"10.5px",color:"var(--text-muted)"}},"Lowercase letters and underscores only (Meta rule)")),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label",style:{fontWeight:"700"}},"Display Title *"),React.createElement("input",{type:"text",className:"form-input",placeholder:"e.g. Tax Invoice Dispatch with PDF",value:e.display_title,onChange:_=>d({...e,display_title:_.target.value}),required:!0}))),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginTop:"4px"}},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label",style:{fontWeight:"700"}},"Category"),React.createElement("select",{className:"form-select",value:e.category,onChange:_=>d({...e,category:_.target.value})},React.createElement("option",{value:"UTILITY"},"Utility (Invoices, Confirmations, Reminders)"),React.createElement("option",{value:"MARKETING"},"Marketing (Promotions, Discounts, Offers)"),React.createElement("option",{value:"AUTHENTICATION"},"Authentication (OTP Verification Codes)"),React.createElement("option",{value:"SERVICE"},"Service (Customer Support)"))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label",style:{fontWeight:"700"}},"Language Code *"),React.createElement("select",{className:"form-select",value:e.language||"en_US",onChange:_=>d({...e,language:_.target.value})},React.createElement("option",{value:"en_US"},"English (US) \u2014 en_US (Standard)"),React.createElement("option",{value:"en"},"English \u2014 en"),React.createElement("option",{value:"en_GB"},"English (UK) \u2014 en_GB"),React.createElement("option",{value:"ar"},"Arabic \u2014 ar"),React.createElement("option",{value:"hi"},"Hindi \u2014 hi")))),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginTop:"4px"}},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label",style:{fontWeight:"700"}},"Header Media Type"),React.createElement("select",{className:"form-select",value:e.header_type,onChange:_=>d({...e,header_type:_.target.value})},React.createElement("option",{value:"NONE"},"None (Plain Text Message)"),React.createElement("option",{value:"DOCUMENT"},"Document (PDF Invoice / Report)"),React.createElement("option",{value:"IMAGE"},"Image (Promotion Banner / Photo)"),React.createElement("option",{value:"TEXT"},"Text Headline"),React.createElement("option",{value:"VIDEO"},"Video"))),e.header_type!=="NONE"&&React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label",style:{fontWeight:"700"}},"Header Sample URL / Headline"),React.createElement("input",{type:"text",className:"form-input",placeholder:"https://... or header headline",value:e.header_sample||"",onChange:_=>d({...e,header_sample:_.target.value})}))),React.createElement("div",{className:"form-group",style:{marginTop:"4px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement("label",{className:"form-label",style:{fontWeight:"700"}},"Message Body Format *"),React.createElement("span",{className:"badge cat-auth",style:{fontSize:"10px"}},y.length," variable",y.length!==1?"s":""," detected")),React.createElement("textarea",{className:"form-textarea",style:{minHeight:"110px",fontFamily:"inherit"},placeholder:"Dear {{1}}, your order {{2}} for BHD {{3}} has been confirmed.",value:e.body_text,onChange:_=>d({...e,body_text:_.target.value}),required:!0}),React.createElement("span",{style:{fontSize:"10.5px",color:"var(--text-muted)"}},"Use sequential placeholders like ",React.createElement("code",null,"{{1}}"),", ",React.createElement("code",null,"{{2}}")," for customer name, invoice number, amount, etc.")),y.length>0&&React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"10px",padding:"12px 14px",margin:"10px 0"}},React.createElement("div",{style:{fontSize:"12px",fontWeight:"700",color:"var(--text-primary)",marginBottom:"4px"}},"\u26A1 Meta Review Sample Values (Required by Meta AI):"),React.createElement("p",{style:{margin:"0 0 10px 0",fontSize:"11px",color:"var(--text-secondary)"}},"Provide realistic example values for each placeholder so Meta reviewers understand your message intent."),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(200px, 1fr))",gap:"10px"}},y.map((_,t)=>React.createElement("div",{key:_},React.createElement("label",{style:{fontSize:"11px",fontWeight:"600",color:"#475569",display:"block",marginBottom:"2px"}},"Variable {{",_,"}} Sample:"),React.createElement("input",{type:"text",className:"form-input",style:{padding:"6px 10px",fontSize:"12px"},value:p[t]||"",onChange:x=>C(t,x.target.value),placeholder:`e.g. Value ${t+1}`}))))),React.createElement("div",{className:"form-group",style:{marginTop:"4px"}},React.createElement("label",{className:"form-label",style:{fontWeight:"700"}},"Footer Tagline (Optional)"),React.createElement("input",{type:"text",className:"form-input",placeholder:"e.g. UniGlobal Accounts | Powered by SaNDS Lab",value:e.footer_text||"",onChange:_=>d({...e,footer_text:_.target.value})})),React.createElement("div",{className:"tariff-estimate-banner",style:{margin:"14px 0"}},React.createElement("div",{className:"tariff-info"},React.createElement("span",{className:"title"},"Bahrain Tariff Rate (",e.category,")"),React.createElement("span",{className:"breakdown"},"Meta Cost: ",F.meta.toFixed(4)," BHD | Platform Margin: +",F.platform.toFixed(4)," BHD")),React.createElement("div",{className:"tariff-rate-badge"},"BHD ",F.client.toFixed(4)," / msg")))),React.createElement("div",null,React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}},React.createElement("span",{style:{fontSize:"12px",fontWeight:"700",color:"#475569"}},"\u{1F4F1} Live WhatsApp Handset Simulator:"),React.createElement("span",{className:"badge status-read",style:{fontSize:"10px"}},"\u25CF Real-Time Mockup")),React.createElement("div",{className:"phone-mockup-wrapper"},React.createElement("div",{className:"phone-screen"},React.createElement("div",{className:"phone-header"},React.createElement("div",{className:"phone-header-info"},React.createElement("div",{className:"phone-avatar"},"SL"),React.createElement("div",null,React.createElement("div",{className:"phone-header-title"},React.createElement("span",null,"SaNDS Lab Business"),React.createElement("span",{style:{color:"#25D366",fontSize:"11px"}},"\u2713")),React.createElement("div",{style:{fontSize:"9.5px",color:"rgba(255,255,255,0.8)"}},"Official Business Account"))),React.createElement("span",{style:{fontSize:"14px",color:"rgba(255,255,255,0.7)"}},"\u22EE")),React.createElement("div",{className:"phone-chat-body"},React.createElement("div",{style:{alignSelf:"center",background:"#E1F3FB",color:"#0369A1",fontSize:"9.5px",padding:"3px 8px",borderRadius:"6px",margin:"6px 0 12px 0"}},"\u{1F512} Messages are end-to-end encrypted"),React.createElement("div",{className:"phone-bubble"},e.header_type==="DOCUMENT"&&React.createElement("div",{className:"phone-bubble-media"},React.createElement("span",{style:{fontSize:"20px"}},"\u{1F4C4}"),React.createElement("div",{style:{overflow:"hidden"}},React.createElement("strong",{style:{display:"block",fontSize:"11px",whiteSpace:"nowrap",textOverflow:"ellipsis"}},e.header_sample?e.header_sample.split("/").pop():"Invoice_Document.pdf"),React.createElement("span",{style:{fontSize:"9.5px",color:"#64748B"}},"1.2 MB \u2022 PDF Document"))),e.header_type==="IMAGE"&&React.createElement("div",{style:{borderRadius:"6px",overflow:"hidden",marginBottom:"8px",maxHeight:"140px",background:"#E2E8F0"}},React.createElement("img",{src:e.header_sample||"./assets/images/QRCodePoster.jpg",alt:"Banner Preview",style:{width:"100%",height:"100%",objectFit:"cover",display:"block"},onError:_=>{_.target.style.display="none"}})),e.header_type==="TEXT"&&React.createElement("div",{className:"phone-bubble-header"},e.header_sample||e.display_title||"Headline"),React.createElement("div",{className:"phone-bubble-text"},O),e.footer_text&&React.createElement("div",{className:"phone-bubble-footer"},e.footer_text),React.createElement("div",{className:"phone-bubble-meta"},React.createElement("span",null,"14:30"),React.createElement("span",{style:{color:"#53BDEB"}},"\u2713\u2713")))))))),React.createElement("div",{className:"modal-footer",style:{justifyContent:"space-between"}},React.createElement("div",null,React.createElement("span",{style:{fontSize:"11.5px",color:"#64748B"}},"Approval Time: Utility ~2 mins \u2022 Marketing ~30 mins")),React.createElement("div",{style:{display:"flex",gap:"10px",alignItems:"center"}},React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:r,disabled:v||u},"Cancel"),React.createElement("button",{type:"button",className:"btn btn-secondary",style:{fontWeight:"700"},onClick:()=>R(!1),disabled:v||u},u?"Saving...":"\u{1F4BE} Save Locally Only"),React.createElement("button",{type:"button",className:"btn btn-primary",style:{display:"inline-flex",alignItems:"center",gap:"6px",fontWeight:"700"},onClick:()=>R(!0),disabled:v||u},React.createElement("span",null,v?"\u23F3":"\u{1F680}"),v?"Submitting to Meta...":"Submit to Meta for Approval")))))}function Me({showToast:n}){let[r,g]=s([]),[o,c]=s(null),[f,e]=s(!1),[d,T]=s(!1),[m,v]=s(null),l=(y=!1)=>{fetch(y?"./api/templates.php?auto_sync=1":"./api/templates.php").then(C=>C.json()).then(C=>{C.success&&g(C.data)})};U(()=>{l(!0)},[]),U(()=>{if(!r.some(C=>(C.meta_status||"").toUpperCase()==="PENDING"))return;let p=setInterval(()=>{fetch("./api/templates.php?auto_sync=1").then(C=>C.json()).then(C=>{C.success&&g(C.data)}).catch(()=>{})},8e3);return()=>clearInterval(p)},[r]);let u=async(y,p,C)=>{let b=p?0:1;try{let F=await(await fetch("./api/templates.php?action=toggle_active",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:y,is_active:b})})).json();F.success?(n(b?`Template "${C}" activated!`:`Template "${C}" paused.`),g(O=>O.map(R=>R.id===y?{...R,is_active:b}:R))):n(F.error||"Failed to update status","error")}catch{n("Network error toggling status","error")}},D=async()=>{T(!0);try{let p=await(await fetch("./api/templates.php?action=sync_meta")).json();p.success?(n(`\u2713 Synced with Meta WABA! Found ${p.total_meta} templates on Meta.`),l()):n(p.error||"Meta sync failed","error")}catch{n("Network error during Meta sync","error")}finally{T(!1)}},P=(y,p)=>{v({title:"Delete WhatsApp Template?",subtitle:`Are you sure you want to permanently remove template "${p}" from your catalog?`,icon:"\u{1F5D1}\uFE0F",badgeClass:"danger",confirmText:"Yes, Delete Template",cancelText:"Cancel",onConfirm:async()=>{try{let b=await(await fetch(`./api/templates.php?id=${y}`,{method:"DELETE"})).json();b.success?(n("Template deleted successfully"),l()):n(b.error||"Failed to delete template","error")}catch{n("Error deleting template","error")}finally{v(null)}}})};return React.createElement("div",null,React.createElement("div",{className:"page-header-row"},React.createElement("div",{className:"page-title-group"},React.createElement("h1",null,React.createElement("span",null,"\u{1F4CB}")," WhatsApp Templates & Tariff Schedule"),React.createElement("p",null,"Meta-registered message templates, variable placeholders, official Bahrain Market rates, and active/inactive status controls.")),React.createElement("div",{style:{display:"flex",gap:"8px",alignItems:"center"}},React.createElement("button",{type:"button",className:"btn btn-secondary",style:{display:"inline-flex",alignItems:"center",gap:"6px"},disabled:d,onClick:D,title:"Query Meta Graph API to refresh approval statuses"},React.createElement("span",null,d?"\u23F3":"\u{1F504}"),d?"Syncing...":"Sync with Meta"),React.createElement("button",{type:"button",className:"btn btn-primary",style:{display:"inline-flex",alignItems:"center",gap:"6px"},onClick:()=>{c(null),e(!0)}},React.createElement("span",null,"\u2728")," Template Creation Studio"))),React.createElement(Z,{columns:[{key:"display_title",label:"Template Title & Key",render:y=>React.createElement("div",null,React.createElement("div",null,React.createElement("strong",null,y.display_title)),React.createElement("div",{style:{fontFamily:"monospace",fontSize:"11px",color:"var(--wa-teal)"}},y.template_name))},{key:"category",label:"Category & Lang",render:y=>React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"3px"}},React.createElement("span",{className:`badge cat-${y.category.toLowerCase().substring(0,4)}`},y.category),React.createElement("span",{style:{fontSize:"10.5px",color:"#64748B"}},y.language||"en_US"))},{key:"header_type",label:"Header Media",render:y=>React.createElement("span",{style:{fontSize:"11px",fontWeight:"700"}},y.header_type)},{key:"body_text",label:"Body Format",render:y=>React.createElement("div",{style:{maxWidth:"240px",fontSize:"11.5px",color:"var(--text-secondary)"}},y.body_text)},{key:"client_rate_bhd",label:"Client Rate",render:y=>React.createElement("div",null,React.createElement("strong",{style:{color:"var(--wa-teal)",fontSize:"12.5px"}},parseFloat(y.client_rate_bhd).toFixed(4)," BHD"),React.createElement("div",{style:{fontSize:"10.5px",color:"#64748B"}},"Meta: ",parseFloat(y.meta_cost_bhd).toFixed(4)))},{key:"is_active",label:"Status & Control",render:y=>{let p=(y.meta_status||"").toUpperCase(),C=["APPROVED","ACTIVE"].includes(p),b=p==="PENDING",I=C?"status-read":b?"cat-auth":"status-failed",F=C?"\u2713 APPROVED":b?"\u23F3 PENDING":`\u2715 ${p||"REJECTED"}`;return React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"6px",alignItems:"flex-start"}},React.createElement("div",{className:`tmpl-toggle-pill ${y.is_active?"active":"inactive"}`,onClick:()=>u(y.id,y.is_active,y.template_name),title:y.is_active?"Click to Pause / Deactivate Template":"Click to Activate Template"},React.createElement("span",{className:"tmpl-toggle-dot"}),React.createElement("span",null,y.is_active?"Active":"Paused")),React.createElement("span",{className:`badge ${I}`,style:{fontSize:"10px",display:"inline-flex",alignItems:"center",gap:"4px"}},F))}},{key:"actions",label:"Actions",sortable:!1,render:y=>React.createElement("div",{style:{display:"flex",gap:"6px"}},React.createElement("button",{className:"btn btn-secondary btn-sm",onClick:()=>{c({...y}),e(!0)},title:"Edit / Re-submit Template"},"\u270F\uFE0F Edit"),React.createElement("button",{className:"btn btn-secondary btn-sm",style:{color:"#EF4444"},onClick:()=>P(y.id,y.template_name),title:"Delete Template"},"\u{1F5D1}\uFE0F"))}],data:r,title:"whatsapp_templates",searchPlaceholder:"Search template title, key, category...",defaultPageSize:10,pageSizeOptions:[5,10,20],defaultSortKey:"id",defaultSortDir:"desc"}),f&&React.createElement(Be,{template:o,onClose:()=>{e(!1),c(null)},onSave:l,showToast:n}),m&&React.createElement(me,{isOpen:!!m,title:m.title,subtitle:m.subtitle,icon:m.icon,badgeClass:m.badgeClass,confirmText:m.confirmText,cancelText:m.cancelText,onClose:()=>v(null),onConfirm:m.onConfirm}))}function Oe({onClose:n,showToast:r,apiKey:g}){let[o,c]=s("overview");return React.createElement("div",{className:"modal-overlay",onClick:n},React.createElement("div",{className:"modal-content",style:{maxWidth:"960px",maxHeight:"90vh",display:"flex",flexDirection:"column"},onClick:f=>f.stopPropagation()},React.createElement("div",{className:"modal-header"},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"10px"}},React.createElement("span",{style:{fontSize:"24px"}},"\u{1F4D6}"),React.createElement("div",null,React.createElement("h3",{style:{margin:0,fontSize:"16px"}},"Odoo ERP & WhatsApp Integration Setup Guide"),React.createElement("p",{style:{margin:"2px 0 0 0",fontSize:"11.5px",color:"rgba(255,255,255,0.85)"}},"Step-by-step procedure for Odoo 14, 15, 16, 17 & 18 \u2022 Automated Actions & Webhooks"))),React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"8px"}},React.createElement("a",{href:"./ODOO_INTEGRATION_GUIDE.md",download:"ODOO_INTEGRATION_GUIDE.md",className:"btn btn-secondary",style:{fontSize:"11.5px",padding:"4px 10px",textDecoration:"none",background:"rgba(255,255,255,0.2)",color:"#FFFFFF",border:"none"},title:"Download Full Markdown Documentation"},React.createElement("span",null,"\u2B07\uFE0F")," Download .md"),React.createElement("button",{className:"close-btn",onClick:n},"\u2715"))),React.createElement("div",{style:{background:"#F8FAFC",padding:"10px 24px",borderBottom:"1px solid #E2E8F0",display:"flex",gap:"8px",flexWrap:"wrap"}},React.createElement("button",{type:"button",className:`btn ${o==="overview"?"btn-primary":"btn-secondary"}`,style:{fontSize:"11.5px",padding:"5px 12px"},onClick:()=>c("overview")},"1. Overview & Credentials"),React.createElement("button",{type:"button",className:`btn ${o==="invoice"?"btn-primary":"btn-secondary"}`,style:{fontSize:"11.5px",padding:"5px 12px"},onClick:()=>c("invoice")},"2. Customer Invoices (account.move)"),React.createElement("button",{type:"button",className:`btn ${o==="orders"?"btn-primary":"btn-secondary"}`,style:{fontSize:"11.5px",padding:"5px 12px"},onClick:()=>c("orders")},"3. Orders & Payments (sale.order)"),React.createElement("button",{type:"button",className:`btn ${o==="webhooks"?"btn-primary":"btn-secondary"}`,style:{fontSize:"11.5px",padding:"5px 12px"},onClick:()=>c("webhooks")},"4. Webhooks & Chatter Callbacks")),React.createElement("div",{className:"modal-body",style:{padding:"24px",overflowY:"auto"}},o==="overview"&&React.createElement("div",null,React.createElement("div",{style:{background:"#F0FDF4",border:"1px solid #BBF7D0",padding:"14px",borderRadius:"8px",marginBottom:"16px"}},React.createElement("strong",{style:{color:"#166534",fontSize:"13px"}},"\u26A1 What this integration does automatically:"),React.createElement("p",{style:{color:"#14532D",fontSize:"12px",margin:"4px 0 0 0",lineHeight:"1.5"}},"When an accountant validates an invoice or sales confirmation in Odoo, Odoo renders the official QWeb PDF in memory, sends it to the SaNDS Lab Gateway, and delivers it to the customer on WhatsApp with authentic delivery receipts posted back to Odoo Chatter.")),React.createElement("h4",{style:{fontSize:"13px",marginBottom:"10px"}},"\u{1F511} Integration Credentials"),React.createElement("table",{className:"table",style:{width:"100%",marginBottom:"20px"}},React.createElement("tbody",null,React.createElement("tr",null,React.createElement("td",{style:{width:"220px",fontWeight:"700"}},"Platform Gateway URL"),React.createElement("td",null,React.createElement("code",null,"https://whatsapp.sandslab.com"))),React.createElement("tr",null,React.createElement("td",{style:{fontWeight:"700"}},"Inbound Webhook Endpoint"),React.createElement("td",null,React.createElement("code",null,"https://whatsapp.sandslab.com/api/odoo_webhook.php"))),React.createElement("tr",null,React.createElement("td",{style:{fontWeight:"700"}},"Authentication Header"),React.createElement("td",null,React.createElement("code",null,"X-API-Key: ",g))),React.createElement("tr",null,React.createElement("td",{style:{fontWeight:"700"}},"Supported Odoo Versions"),React.createElement("td",null,"Odoo 14, 15, 16, 17, 18 (Community, Enterprise, Odoo.sh, SaaS)")))),React.createElement("h4",{style:{fontSize:"13px",marginBottom:"10px"}},"\u{1F6E0}\uFE0F Step 1: Activate Developer Mode in Odoo"),React.createElement("ol",{style:{fontSize:"12.5px",lineHeight:"1.7",margin:"0 0 0 20px",color:"var(--text-secondary)"}},React.createElement("li",null,"Log in to your Odoo ERP instance as an Administrator."),React.createElement("li",null,"Go to ",React.createElement("strong",null,"Settings")," application."),React.createElement("li",null,"Scroll to the bottom of the General Settings page."),React.createElement("li",null,"Click ",React.createElement("strong",null,"Activate the developer mode")," (a bug icon \u{1FAB2} will appear in the top header)."))),o==="invoice"&&React.createElement("div",null,React.createElement("h4",{style:{fontSize:"13px",marginBottom:"6px"}},"Step 2: Customer Invoices Automated Action (account.move)"),React.createElement("p",{style:{fontSize:"12px",color:"var(--text-secondary)",marginBottom:"12px"}},"Navigate to ",React.createElement("strong",null,"Settings \u2192 Technical \u2192 Server Actions")," \u2192 click ",React.createElement("strong",null,"New"),":"),React.createElement("ul",{style:{fontSize:"12px",color:"var(--text-secondary)",margin:"0 0 14px 20px",lineHeight:"1.6"}},React.createElement("li",null,React.createElement("strong",null,"Action Name:")," ",React.createElement("code",null,"Send WhatsApp Tax Invoice with PDF")),React.createElement("li",null,React.createElement("strong",null,"Model:")," ",React.createElement("code",null,"Journal Entry")," (",React.createElement("code",null,"account.move"),")"),React.createElement("li",null,React.createElement("strong",null,"Action To Do:")," ",React.createElement("code",null,"Execute Python Code"))),React.createElement("div",{className:"card-header",style:{padding:"8px 12px",background:"#0F172A",color:"#FFFFFF",borderRadius:"8px 8px 0 0",display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement("span",{style:{fontSize:"11.5px",color:"#94A3B8"}},"ir.actions.server.py (Zero Dependencies)"),React.createElement("button",{type:"button",className:"btn-copy-code",onClick:()=>{let f=`import json
++97339000001,Ahmed Al-Khalifa,Executive,+97317008899`,
+      value: rawText,
+      onChange: (e) => setRawText(e.target.value),
+      style: { fontFamily: "monospace", fontSize: "12.5px" }
+    }
+  ), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "One contact per line (Comma separated)"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary btn-sm", onClick: handleManualParse }, "\u26A1 Parse Records"))), recipients.length > 0 && /* @__PURE__ */ React.createElement("div", { style: { background: "#F0FDF4", border: "1px solid #86EFAC", borderRadius: "8px", padding: "10px 14px", fontSize: "13px", color: "#166534", display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", null, "\u2713"), " Successfully parsed ", /* @__PURE__ */ React.createElement("strong", null, recipients.length, " recipients"), " ready for broadcast!")), step === 3 && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: "700", fontSize: "14px" } }, "Audience Dynamic Preview"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "var(--text-muted)" } }, "Found ", /* @__PURE__ */ React.createElement("strong", null, recipients.length, " recipients"), ". Previewing first 3 rows with template parameters:"))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "10px" } }, recipients.slice(0, 3).map((r, idx) => /* @__PURE__ */ React.createElement("div", { key: idx, style: {
+    background: "#FFFFFF",
+    border: "1px solid #CBD5E1",
+    borderRadius: "8px",
+    padding: "12px 14px"
+  } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: "6px", fontSize: "12.5px" } }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("strong", null, "Recipient #", idx + 1, ":"), " ", /* @__PURE__ */ React.createElement("code", { style: { color: "#0369A1" } }, r.phone), " ", r.name && `(${r.name})`), /* @__PURE__ */ React.createElement("span", { className: "badge badge-success", style: { fontSize: "10px" } }, "Valid")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", padding: "8px 10px", borderRadius: "6px", fontSize: "12px", color: "#334155" } }, /* @__PURE__ */ React.createElement("strong", null, "Substituted Variables:"), " ", r.variables && r.variables.length > 0 ? r.variables.map((v, i) => `{{${i + 1}}}: "${v}"`).join(", ") : "None")))), recipients.length > 3 && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "var(--text-muted)", textAlign: "center" } }, "... and ", recipients.length - 3, " more recipients queued.")), step === 4 && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "18px" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { style: { fontWeight: "700", fontSize: "13.5px", marginBottom: "8px", display: "block" } }, "Anti-Spam Dispatch Queue Pacing"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-muted)", margin: "0 0 12px 0" } }, "Throttle broadcast dispatch rate to stay within Meta Cloud API tier limits and protect your phone number reputation."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px" } }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `pace-option-card ${pacePerMinute === 20 ? "selected" : ""}`,
+      onClick: () => setPacePerMinute(20)
+    },
+    /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", color: "#047857", fontSize: "14px" } }, "\u{1F422} Conservative"),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", fontWeight: "800", margin: "4px 0" } }, "20 msgs / min"),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Safe for new numbers")
+  ), /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `pace-option-card ${pacePerMinute === 50 ? "selected" : ""}`,
+      onClick: () => setPacePerMinute(50)
+    },
+    /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", color: "#0369A1", fontSize: "14px" } }, "\u26A1 Standard"),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", fontWeight: "800", margin: "4px 0" } }, "50 msgs / min"),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Meta Tier 1 recommended")
+  ), /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `pace-option-card ${pacePerMinute === 100 ? "selected" : ""}`,
+      onClick: () => setPacePerMinute(100)
+    },
+    /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", color: "#7C3AED", fontSize: "14px" } }, "\u{1F680} Turbo"),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", fontWeight: "800", margin: "4px 0" } }, "100 msgs / min"),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Meta Tier 2+ high volume")
+  ))), /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#F0FDF4",
+    border: "1px solid #86EFAC",
+    borderRadius: "10px",
+    padding: "16px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px"
+  } }, /* @__PURE__ */ React.createElement("div", { style: { fontWeight: "700", fontSize: "13.5px", color: "#166534", borderBottom: "1px solid #BBF7D0", paddingBottom: "6px" } }, "\u{1F4B3} Financial Budget Breakdown"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "13px" } }, /* @__PURE__ */ React.createElement("span", null, "Total Recipients:"), /* @__PURE__ */ React.createElement("strong", null, recipients.length, " contacts")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "13px" } }, /* @__PURE__ */ React.createElement("span", null, "Template Client Rate (", selectedTemplate?.category, "):"), /* @__PURE__ */ React.createElement("strong", null, formatCurrency(clientRate, globalSettings?.system_currency, globalSettings?.currency_decimals), " / msg")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "14px", fontWeight: "800", color: "#166534", borderTop: "1px solid #BBF7D0", paddingTop: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "Estimated Total Budget:"), /* @__PURE__ */ React.createElement("span", null, formatCurrency(estimatedTotalCost, globalSettings?.system_currency, globalSettings?.currency_decimals)))))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { display: "flex", justifyContent: "space-between", padding: "16px 24px" } }, /* @__PURE__ */ React.createElement("div", null, step > 1 && /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary",
+      onClick: () => setStep(step - 1),
+      disabled: creating
+    },
+    "\u2190 Back"
+  )), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose, disabled: creating }, "Cancel"), step < 4 ? /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary",
+      onClick: () => {
+        if (step === 1 && !name.trim()) {
+          showToast("Please enter a campaign name", "error");
+          return;
+        }
+        if (step === 2 && recipients.length === 0) {
+          showToast("Please upload or paste recipient contacts", "error");
+          return;
+        }
+        setStep(step + 1);
+      }
+    },
+    "Next Step \u2192"
+  ) : /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary",
+      onClick: handleLaunch,
+      disabled: creating,
+      style: { background: "#059669", borderColor: "#059669" }
+    },
+    creating ? "Creating Broadcast..." : "\u{1F680} Launch Broadcast Now"
+  )))));
+}
+function CampaignReportModal({ campaignId, onClose, globalSettings, showToast, onRerun }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    fetch(`./api/campaigns.php?action=details&id=${campaignId}`).then((res) => res.json()).then((d) => {
+      if (d.success) setData(d);
+    }).catch(() => {
+    }).finally(() => setLoading(false));
+  }, [campaignId]);
+  const campaign = data?.campaign;
+  const recipients = data?.recipients || [];
+  const recipientColumns = [
+    { key: "recipient_phone", label: "Recipient Phone", sortable: true, render: (r) => /* @__PURE__ */ React.createElement("strong", null, r.recipient_phone) },
+    { key: "contact_name", label: "Contact Name", sortable: true, render: (r) => r.contact_name || "-" },
+    {
+      key: "status",
+      label: "Dispatch Status",
+      sortable: true,
+      render: (r) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: `badge status-${r.status}` }, r.status === "read" ? "\u2713\u2713 Read" : r.status === "delivered" ? "\u2713\u2713 Delivered" : r.status === "sent" ? "\u2713 Dispatched" : r.status === "failed" ? "\u26A0\uFE0F Failed" : r.status), r.error_message && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "#EF4444", marginTop: "2px", wordBreak: "break-word", maxWidth: "280px" } }, r.error_message))
+    },
+    {
+      key: "cost_deducted",
+      label: "Debited Tariff",
+      sortable: true,
+      render: (r) => formatCurrency(r.cost_deducted, globalSettings?.system_currency, globalSettings?.currency_decimals)
+    },
+    {
+      key: "sent_at",
+      label: "Sent Timestamp",
+      sortable: true,
+      render: (r) => formatDateTime(r.sent_at || r.created_at, globalSettings?.system_date_format)
+    }
+  ];
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "850px", width: "95%" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CA}"), " Campaign Report: ", campaign?.name || "Loading..."), /* @__PURE__ */ React.createElement("button", { type: "button", className: "close-btn", onClick: onClose }, "\u2715")), /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { maxHeight: "70vh", overflowY: "auto" } }, loading ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "30px" } }, "Loading campaign report...") : campaign ? /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: {
+    background: "#F8FAFC",
+    border: "1px solid #E2E8F0",
+    borderRadius: "8px",
+    padding: "14px 18px",
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+    gap: "12px"
+  } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Template"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, campaign.template_title || campaign.template_name)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Total Audience"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, campaign.total_recipients, " recipients")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Sent / Failed"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px", color: "#16A34A" } }, campaign.sent_count, " sent"), " \u2022 ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, campaign.failed_count, " failed")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Actual Spend"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px" } }, formatCurrency(campaign.actual_cost, globalSettings?.system_currency, globalSettings?.currency_decimals)))), /* @__PURE__ */ React.createElement(
+    DataTable,
+    {
+      columns: recipientColumns,
+      data: recipients,
+      searchPlaceholder: "Search recipient phone, contact name, status...",
+      defaultSortKey: "id",
+      defaultSortDir: "asc",
+      title: `campaign_${campaign.id}_recipients`,
+      emptyMessage: "No recipients found for this campaign."
+    }
+  )) : null), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("div", null, campaign?.status === "completed" && onRerun && /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      style: { display: "flex", alignItems: "center", gap: "6px" },
+      onClick: () => {
+        onClose();
+        onRerun(campaign.id);
+      }
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F504}"),
+    " Re-broadcast Campaign"
+  )), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose }, "Close"))));
+}
+function MessageLogsView({ showToast, globalSettings, onOpenInbox }) {
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [selectedLog, setSelectedLog] = useState(null);
+  const [activeChatPhone, setActiveChatPhone] = useState(null);
+  const [autoSync, setAutoSync] = useState(true);
+  const [viewMode, setViewMode] = useState("grouped");
+  const fetchLogs = async (silent = false) => {
+    if (!silent) setLoading(true);
+    try {
+      const url = `./api/messages.php?status=${statusFilter}&category=${categoryFilter}&limit=100`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.success) {
+        setMessages(data.data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      if (!silent) setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchLogs(false);
+  }, [statusFilter, categoryFilter]);
+  useEffect(() => {
+    if (!autoSync) return;
+    const interval = setInterval(() => {
+      fetchLogs(true);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [autoSync, statusFilter, categoryFilter]);
+  const simulateStatus = async (msgId, newStatus) => {
+    try {
+      const res = await fetch("./api/messages.php", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message_id: msgId, status: newStatus })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Message status updated to ${newStatus.toUpperCase()}`);
+        fetchLogs(true);
+      }
+    } catch (e) {
+      showToast("Error updating status", "error");
+    }
+  };
+  const groupedConversations = useMemo(() => {
+    const map = /* @__PURE__ */ new Map();
+    for (const m of messages) {
+      const contactPhone = (m.direction === "inbound" ? m.from_phone : m.to_phone) || m.to_phone || m.from_phone;
+      if (!contactPhone) continue;
+      if (!map.has(contactPhone)) {
+        map.set(contactPhone, {
+          ...m,
+          contact_phone: contactPhone,
+          total_count: 1,
+          has_inbound: m.direction === "inbound",
+          unread_inbound: m.direction === "inbound" && m.status !== "read" ? 1 : 0
+        });
+      } else {
+        const entry = map.get(contactPhone);
+        entry.total_count += 1;
+        if (m.direction === "inbound") {
+          entry.has_inbound = true;
+          if (m.status !== "read") entry.unread_inbound += 1;
+        }
+      }
+    }
+    return Array.from(map.values());
+  }, [messages]);
+  const conversationColumns = [
+    {
+      key: "contact_phone",
+      label: "Contact / Recipient",
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: "700", fontSize: "13.5px", color: "#0F172A" } }, c.contact_phone), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#E0F2FE", color: "#0369A1", fontSize: "11px", padding: "2px 7px", fontWeight: "600" } }, c.total_count, " ", c.total_count === 1 ? "msg" : "msgs"), c.has_inbound && /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#DCFCE7", color: "#15803D", fontSize: "10.5px", padding: "2px 6px" } }, "\u{1F7E2} 2-Way Active")), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)", marginTop: "2px" } }, c.source_system, " \u2022 ", c.direction === "inbound" ? "\u{1F4E5} Last Inbound" : "\u{1F4E4} Last Outbound"))
+    },
+    {
+      key: "category",
+      label: "Category",
+      render: (c) => /* @__PURE__ */ React.createElement("span", { className: `badge cat-${(c.category || "SERVICE").toLowerCase().substring(0, 4)}` }, c.category)
+    },
+    {
+      key: "message_body",
+      label: "Latest Message Preview",
+      render: (c) => /* @__PURE__ */ React.createElement("div", { style: { maxWidth: "320px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }, title: c.message_body }, /* @__PURE__ */ React.createElement("span", { style: { marginRight: "6px", opacity: 0.85 } }, c.direction === "inbound" ? "\u{1F4E5}" : "\u{1F4E4}"), c.header_media_name && /* @__PURE__ */ React.createElement("span", { style: { marginRight: "4px", fontWeight: "600" } }, "\u{1F4CE} [", c.header_media_name, "]"), /* @__PURE__ */ React.createElement("span", null, c.message_body))
+    },
+    {
+      key: "status",
+      label: "Latest Status",
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: `badge status-${c.status}`, style: { transition: "all 0.3s ease" } }, c.status === "read" ? "\u2713\u2713 Read" : c.status === "delivered" ? "\u2713\u2713 Delivered" : c.status === "sent" ? "\u2713 Sent" : c.status.toUpperCase()), c.status === "failed" && c.error_message && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "#EF4444", marginTop: "3px", maxWidth: "200px", whiteSpace: "normal", lineHeight: "1.2" } }, "\u26A0\uFE0F ", c.error_message))
+    },
+    {
+      key: "client_rate_bhd",
+      label: "Latest Rate (BHD)",
+      render: (c) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", null, parseFloat(c.client_rate_bhd || 0).toFixed(4), " BHD"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "var(--text-muted)" } }, "Meta: ", parseFloat(c.meta_cost_bhd || 0).toFixed(4)))
+    },
+    {
+      key: "created_at",
+      label: "Last Message Time",
+      render: (c) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, formatDateTime(c.created_at, globalSettings?.system_date_format))
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      sortable: false,
+      render: (c) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-success btn-sm",
+          style: { padding: "5px 12px", fontSize: "12px", display: "flex", alignItems: "center", gap: "5px", fontWeight: "700" },
+          onClick: () => setActiveChatPhone(c.contact_phone),
+          title: `Open Full WhatsApp Chat History with ${c.contact_phone}`
+        },
+        /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"),
+        " Open Chat (",
+        c.total_count,
+        ")"
+      ), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setSelectedLog(c), title: "Inspect Latest Payload" }, "Inspect"))
+    }
+  ];
+  const logColumns = [
+    {
+      key: "to_phone",
+      label: "Recipient / Source",
+      render: (m) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", null, m.direction === "inbound" ? m.from_phone : m.to_phone)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "var(--text-muted)" } }, m.direction === "inbound" ? "\u{1F4E5} WhatsApp Inbound" : `\u{1F4E4} ${m.source_system}`))
+    },
+    {
+      key: "category",
+      label: "Category",
+      render: (m) => /* @__PURE__ */ React.createElement("span", { className: `badge cat-${m.category.toLowerCase().substring(0, 4)}` }, m.category)
+    },
+    {
+      key: "message_body",
+      label: "Message Content",
+      render: (m) => /* @__PURE__ */ React.createElement("div", { style: { maxWidth: "280px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, m.header_media_name && /* @__PURE__ */ React.createElement("span", { style: { marginRight: "4px" } }, "\u{1F4CE} [", m.header_media_name, "]"), m.message_body)
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (m) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: `badge status-${m.status}`, style: { transition: "all 0.3s ease" } }, m.status === "read" ? "\u2713\u2713 Read" : m.status === "delivered" ? "\u2713\u2713 Delivered" : m.status === "sent" ? "\u2713 Sent" : m.status.toUpperCase()), m.status === "failed" && m.error_message && /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "#EF4444", marginTop: "3px", maxWidth: "220px", whiteSpace: "normal", wordBreak: "break-word", lineHeight: "1.2" } }, "\u26A0\uFE0F ", m.error_message))
+    },
+    {
+      key: "client_rate_bhd",
+      label: "Client Rate (BHD)",
+      render: (m) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", null, parseFloat(m.client_rate_bhd).toFixed(4), " BHD"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "var(--text-muted)" } }, "Meta: ", parseFloat(m.meta_cost_bhd).toFixed(4), " | Platform: +", parseFloat(m.platform_charge_bhd).toFixed(4)))
+    },
+    {
+      key: "created_at",
+      label: "Timestamp",
+      render: (m) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, formatDateTime(m.created_at, globalSettings?.system_date_format))
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      sortable: false,
+      render: (m) => {
+        const chatPhone = m.direction === "inbound" ? m.from_phone : m.to_phone;
+        return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "5px" } }, /* @__PURE__ */ React.createElement(
+          "button",
+          {
+            className: "btn btn-success btn-sm",
+            style: { padding: "4px 9px", fontSize: "11.5px", display: "flex", alignItems: "center", gap: "4px" },
+            onClick: () => setActiveChatPhone(chatPhone),
+            title: `Open Live WhatsApp Chat with ${chatPhone}`
+          },
+          /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC}"),
+          " Chat"
+        ), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setSelectedLog(m), title: "Inspect Payload" }, "Inspect"), m.status !== "read" && /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary btn-sm", onClick: () => simulateStatus(m.message_id, "read"), title: "Mark Read" }, "\u2713 Read"));
+      }
+    }
+  ];
+  const customFilterBar = /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("div", { className: "view-mode-toggle" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `view-mode-btn ${viewMode === "grouped" ? "active" : ""}`,
+      onClick: () => setViewMode("grouped"),
+      title: "Group conversations by Phone Number (Shows latest message with full chat history on click)"
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4AC} Conversations"),
+    /* @__PURE__ */ React.createElement("span", { className: "count-badge" }, groupedConversations.length)
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `view-mode-btn ${viewMode === "raw" ? "active" : ""}`,
+      onClick: () => setViewMode("raw"),
+      title: "Show raw individual message logs and telemetry audit trail"
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC} Raw Logs"),
+    /* @__PURE__ */ React.createElement("span", { className: "count-badge" }, messages.length)
+  )), /* @__PURE__ */ React.createElement("select", { className: "form-select", style: { width: "135px", padding: "5px 8px", fontSize: "12px" }, value: statusFilter, onChange: (e) => setStatusFilter(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "all" }, "All Statuses"), /* @__PURE__ */ React.createElement("option", { value: "read" }, "Read (\u2713\u2713 Blue)"), /* @__PURE__ */ React.createElement("option", { value: "delivered" }, "Delivered (\u2713\u2713 Grey)"), /* @__PURE__ */ React.createElement("option", { value: "sent" }, "Sent (\u2713 Single)"), /* @__PURE__ */ React.createElement("option", { value: "queued" }, "Queued"), /* @__PURE__ */ React.createElement("option", { value: "failed" }, "Failed")), /* @__PURE__ */ React.createElement("select", { className: "form-select", style: { width: "145px", padding: "5px 8px", fontSize: "12px" }, value: categoryFilter, onChange: (e) => setCategoryFilter(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "all" }, "All Categories"), /* @__PURE__ */ React.createElement("option", { value: "UTILITY" }, "Utility (Invoices)"), /* @__PURE__ */ React.createElement("option", { value: "AUTHENTICATION" }, "Authentication (OTP)"), /* @__PURE__ */ React.createElement("option", { value: "MARKETING" }, "Marketing (Promo)"), /* @__PURE__ */ React.createElement("option", { value: "SERVICE" }, "Service (Support)")));
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Message Telemetry & Conversations"), /* @__PURE__ */ React.createElement("p", null, viewMode === "grouped" ? "Grouped active WhatsApp conversations with latest message previews and instant chat consoles." : "Audit trail of all individual inbound and outbound WhatsApp messages, lifecycle, and billing tariffs.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      className: `btn ${autoSync ? "btn-success" : "btn-secondary"}`,
+      style: { fontSize: "12px", padding: "6px 12px", display: "flex", alignItems: "center", gap: "6px" },
+      onClick: () => setAutoSync(!autoSync),
+      title: autoSync ? "Live Sync Active (Polling every 2.5s)" : "Click to enable Auto Sync"
+    },
+    /* @__PURE__ */ React.createElement("span", { style: { display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: autoSync ? "#22C55E" : "#9CA3AF", boxShadow: autoSync ? "0 0 8px #22C55E" : "none" } }),
+    autoSync ? "\u{1F7E2} Live Auto-Sync Active" : "\u23F8\uFE0F Live Sync Paused"
+  ), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary", onClick: () => fetchLogs(false) }, /* @__PURE__ */ React.createElement("span", null, "\u{1F504}"), " Refresh Now"))), viewMode === "grouped" ? /* @__PURE__ */ React.createElement(
+    DataTable,
+    {
+      columns: conversationColumns,
+      data: groupedConversations,
+      title: "whatsapp_conversations",
+      searchPlaceholder: "Search phone or latest message...",
+      defaultPageSize: 10,
+      pageSizeOptions: [10, 25, 50, 100],
+      defaultSortKey: "created_at",
+      defaultSortDir: "desc",
+      actions: customFilterBar,
+      emptyMessage: loading ? "Loading conversations..." : "No conversations found matching criteria."
+    }
+  ) : /* @__PURE__ */ React.createElement(
+    DataTable,
+    {
+      columns: logColumns,
+      data: messages,
+      title: "whatsapp_messages_log",
+      searchPlaceholder: "Search phone, wamid, content...",
+      defaultPageSize: 10,
+      pageSizeOptions: [10, 25, 50, 100],
+      defaultSortKey: "created_at",
+      defaultSortDir: "desc",
+      actions: customFilterBar,
+      emptyMessage: loading ? "Loading telemetry logs..." : "No messages found matching criteria."
+    }
+  ), activeChatPhone && /* @__PURE__ */ React.createElement(
+    ConversationChatModal,
+    {
+      phone: activeChatPhone,
+      onClose: () => {
+        setActiveChatPhone(null);
+        fetchLogs(true);
+      },
+      showToast,
+      globalSettings
+    }
+  ), selectedLog && /* @__PURE__ */ React.createElement("div", { style: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(0,0,0,0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1e4
+  } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { width: "600px", maxHeight: "85vh", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { className: "card-title", style: { display: "flex", alignItems: "center", gap: "8px", fontSize: "15px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F50D}"), " Message Payload Inspection"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setSelectedLog(null) }, "\u2715 Close")), /* @__PURE__ */ React.createElement("div", { className: "code-box" }, /* @__PURE__ */ React.createElement("pre", null, JSON.stringify(selectedLog, null, 2))))));
+}
+const META_DEFAULT_PRESETS = [
+  {
+    key: "tax_invoice_notification",
+    title: "Tax Invoice Notification with PDF",
+    category: "UTILITY",
+    language: "en_US",
+    header_type: "DOCUMENT",
+    header_sample: "https://whatsapp.sandslab.com/uploads/sample_invoice.pdf",
+    body_text: "Dear {{1}},\n\nYour official Tax Invoice *{{2}}* for amount *{{3}} {{4}}* has been issued.\nDue Date: *{{5}}*.\n\nPlease find your invoice document attached above.",
+    footer_text: "SaNDS Lab Financial Accounts",
+    sample_params: ["Ahmed Al-Khalifa", "INV/2026/0142", "345.500", "BHD", "25-Oct-2026"],
+    description: "Compliant invoice notification with attached PDF for ERP and accounting systems.",
+    icon: "\u{1F4C4}"
+  },
+  {
+    key: "order_delivery_tracking",
+    title: "Sales Order Confirmation & Tracking",
+    category: "UTILITY",
+    language: "en_US",
+    header_type: "TEXT",
+    header_sample: "Order Confirmation #{{1}}",
+    body_text: "Hello {{1}},\n\nThank you for your order! Your order *{{2}}* totaling *{{3}} {{4}}* is now confirmed.\n\nEstimated Delivery: *{{5}}*.\nYou can track your shipment status with our courier.",
+    footer_text: "Customer Care & Logistics",
+    sample_params: ["Sara Mohamed", "SO-9821", "120.000", "BHD", "Tomorrow, 2:00 PM"],
+    description: "Instant dispatch confirmation for e-commerce, sales orders, and deliveries.",
+    icon: "\u{1F4E6}"
+  },
+  {
+    key: "payment_receipt_voucher",
+    title: "Payment Receipt & Balance Statement",
+    category: "UTILITY",
+    language: "en_US",
+    header_type: "NONE",
+    header_sample: "",
+    body_text: "Dear {{1}},\n\nWe have received your payment of *{{2}} {{3}}* for receipt *{{4}}* on {{5}}.\n\nRemaining Balance: *{{6}} {{3}}*.\nThank you for choosing our services.",
+    footer_text: "Finance & Collections Team",
+    sample_params: ["Ali Hassan", "50.000", "BHD", "REC-4412", "13-Oct-2026", "0.000"],
+    description: "Receipt voucher acknowledging customer settlement and remaining balance.",
+    icon: "\u{1F9FE}"
+  },
+  {
+    key: "appointment_schedule_reminder",
+    title: "Appointment / Meeting Reminder",
+    category: "UTILITY",
+    language: "en_US",
+    header_type: "NONE",
+    header_sample: "",
+    body_text: "Hello {{1}},\n\nThis is a reminder for your upcoming appointment with *{{2}}* on *{{3}}* at *{{4}}*.\nLocation: {{5}}.\n\nIf you need to reschedule, please let us know in advance.",
+    footer_text: "Client Scheduling Desk",
+    sample_params: ["Fatima Ebrahim", "Dr. Al-Sayed", "15-Oct-2026", "10:30 AM", "Manama Office, 4th Floor"],
+    description: "Timely reminders for consultations, doctor visits, meetings, and bookings.",
+    icon: "\u{1F5D3}\uFE0F"
+  },
+  {
+    key: "special_discount_promotion",
+    title: "Seasonal Promotion & Discount Offer",
+    category: "MARKETING",
+    language: "en_US",
+    header_type: "IMAGE",
+    header_sample: "https://whatsapp.sandslab.com/assets/images/QRCodePoster.jpg",
+    body_text: "Special Offer for {{1}}!\n\nEnjoy an exclusive *{{2}}% discount* on all our premium services this week.\nUse Promo Code: *{{3}}*\nValid until: *{{4}}*.\n\nTap below or contact us to claim your discount!",
+    footer_text: "SaNDS Lab Special Offers",
+    sample_params: ["Valued Client", "25", "AUTUMN2026", "31-Oct-2026"],
+    description: "High-converting marketing broadcast with image banner and promo code.",
+    icon: "\u{1F3F7}\uFE0F"
+  },
+  {
+    key: "secure_otp_verification",
+    title: "Security One-Time Passcode (OTP)",
+    category: "AUTHENTICATION",
+    language: "en_US",
+    header_type: "NONE",
+    header_sample: "",
+    body_text: "Your verification code is *{{1}}*.\n\nThis code will expire in {{2}} minutes. For your security, do not share this code with anyone.",
+    footer_text: "Security & Two-Factor Verification",
+    sample_params: ["492817", "10"],
+    description: "High-security OTP login code for web apps, portals, and password resets.",
+    icon: "\u{1F510}"
+  }
+];
+function TemplateStudioModal({ template, onClose, onSave, showToast }) {
+  const [studioTab, setStudioTab] = useState(template && template.id ? "custom" : "presets");
+  const [formData, setFormData] = useState({
+    id: template?.id || null,
+    template_name: template?.template_name || "",
+    display_title: template?.display_title || "",
+    category: template?.category || "UTILITY",
+    language: template?.language || "en_US",
+    header_type: template?.header_type || "NONE",
+    header_sample: template?.header_sample || "",
+    body_text: template?.body_text || "",
+    footer_text: template?.footer_text || "",
+    sample_params: template?.sample_params_json ? typeof template.sample_params_json === "string" ? JSON.parse(template.sample_params_json) : template.sample_params_json : [],
+    is_active: template?.is_active !== void 0 ? template.is_active : 1
+  });
+  const [selectedPresetKey, setSelectedPresetKey] = useState("");
+  const [submittingMeta, setSubmittingMeta] = useState(false);
+  const [savingLocal, setSavingLocal] = useState(false);
+  const [metaError, setMetaError] = useState(null);
+  const detectedVars = useMemo(() => {
+    if (!formData.body_text) return [];
+    const matches = formData.body_text.match(/\{\{([a-zA-Z0-9_]+)\}\}/g);
+    if (matches) {
+      return [...new Set(matches.map((m) => m.replace(/[\{\}]/g, "").trim()))];
+    }
+    const numMatches = formData.body_text.match(/\{+[\(\[]?\s*(\d+)\s*[\)\]]?\}+/g);
+    if (numMatches) {
+      return [...new Set(numMatches.map((m) => m.replace(/\D/g, "").trim()))];
+    }
+    return [];
+  }, [formData.body_text]);
+  const sampleParams = useMemo(() => {
+    const list = Array.isArray(formData.sample_params) ? [...formData.sample_params] : [];
+    for (let i = list.length; i < detectedVars.length; i++) {
+      list.push(`Sample ${detectedVars[i] || i + 1}`);
+    }
+    return list;
+  }, [formData.sample_params, detectedVars]);
+  const handleUpdateSampleParam = (index, value) => {
+    const next = [...sampleParams];
+    next[index] = value;
+    setFormData((prev) => ({ ...prev, sample_params: next }));
+  };
+  const handleSelectPreset = (preset) => {
+    setSelectedPresetKey(preset.key);
+    setFormData({
+      id: formData.id,
+      template_name: preset.key,
+      display_title: preset.title,
+      category: preset.category,
+      language: preset.language,
+      header_type: preset.header_type,
+      header_sample: preset.header_sample,
+      body_text: preset.body_text,
+      footer_text: preset.footer_text,
+      sample_params: [...preset.sample_params],
+      is_active: 1
+    });
+    setMetaError(null);
+  };
+  const modalTariffs = {
+    AUTHENTICATION: { meta: 0.011, platform: 35e-4, client: 0.0145 },
+    UTILITY: { meta: 0.014, platform: 45e-4, client: 0.0185 },
+    MARKETING: { meta: 0.027, platform: 7e-3, client: 0.034 },
+    SERVICE: { meta: 75e-4, platform: 25e-4, client: 0.01 }
+  };
+  const activeTariff = modalTariffs[formData.category] || modalTariffs.UTILITY;
+  const previewBodyText = useMemo(() => {
+    let text = formData.body_text || "Enter message body text...";
+    detectedVars.forEach((v, idx) => {
+      const val = sampleParams[idx] || `[${v}]`;
+      const regex = new RegExp(`\\{\\{${v}\\}\\}`, "g");
+      text = text.replace(regex, `*${val}*`);
+    });
+    return text;
+  }, [formData.body_text, detectedVars, sampleParams]);
+  const handleSubmit = async (submitToMeta = false) => {
+    if (!formData.template_name || !formData.body_text) {
+      showToast("Template key and body text are required", "error");
+      return;
+    }
+    if (submitToMeta) {
+      setSubmittingMeta(true);
+    } else {
+      setSavingLocal(true);
+    }
+    setMetaError(null);
+    try {
+      const payload = {
+        ...formData,
+        sample_params: sampleParams,
+        sample_params_json: JSON.stringify(sampleParams),
+        submit_to_meta: submitToMeta
+      };
+      const res = await fetch("./api/templates.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (submitToMeta) {
+          showToast(`\u{1F680} Template submitted to Meta! Status: ${data.meta_status || "PENDING"}`);
+        } else {
+          showToast(data.message || "Template saved locally in catalog!");
+        }
+        onSave();
+        onClose();
+      } else {
+        const err = data.error || "Failed to save template";
+        setMetaError(err);
+        showToast(err, "error");
+      }
+    } catch (e) {
+      setMetaError("Network error connecting to API");
+      showToast("Network error saving template", "error");
+    } finally {
+      setSubmittingMeta(false);
+      setSavingLocal(false);
+    }
+  };
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: "modal-content",
+      style: { maxWidth: "1100px", maxHeight: "92vh", display: "flex", flexDirection: "column" },
+      onClick: (e) => e.stopPropagation()
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u2728"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, fontSize: "16px" } }, formData.id ? "Edit WhatsApp Template" : "WhatsApp Template Studio & Meta Approval"), /* @__PURE__ */ React.createElement("p", { style: { margin: "2px 0 0 0", fontSize: "11.5px", color: "rgba(255,255,255,0.85)" } }, "Design Meta-compliant templates, choose from verified presets, preview live on handset, and submit for Meta approval."))), /* @__PURE__ */ React.createElement("button", { className: "close-btn", onClick: onClose }, "\u2715")),
+    /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", padding: "10px 24px", borderBottom: "1px solid #E2E8F0", display: "flex", gap: "10px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: `btn ${studioTab === "presets" ? "btn-primary" : "btn-secondary"}`,
+        style: { fontSize: "12px", padding: "6px 14px", display: "flex", alignItems: "center", gap: "6px" },
+        onClick: () => setStudioTab("presets")
+      },
+      /* @__PURE__ */ React.createElement("span", null, "\u{1F4DA}"),
+      " 1. Choose from Meta Presets (",
+      META_DEFAULT_PRESETS.length,
+      ")"
+    ), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: `btn ${studioTab === "custom" ? "btn-primary" : "btn-secondary"}`,
+        style: { fontSize: "12px", padding: "6px 14px", display: "flex", alignItems: "center", gap: "6px" },
+        onClick: () => setStudioTab("custom")
+      },
+      /* @__PURE__ */ React.createElement("span", null, "\u270F\uFE0F"),
+      " 2. Custom Template Design & Variables"
+    ), selectedPresetKey && /* @__PURE__ */ React.createElement("span", { style: { marginLeft: "auto", fontSize: "11.5px", color: "#047857", fontWeight: "600" } }, "\u2713 Loaded Preset: ", /* @__PURE__ */ React.createElement("code", null, selectedPresetKey))),
+    /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { display: "grid", gridTemplateColumns: "1.45fr 1fr", gap: "24px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", null, metaError && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEE2E2", border: "1px solid #FCA5A5", color: "#B91C1C", padding: "10px 14px", borderRadius: "8px", fontSize: "12.5px", marginBottom: "16px", fontWeight: "600" } }, "\u26A0\uFE0F Meta API: ", metaError), studioTab === "presets" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: "14px" } }, /* @__PURE__ */ React.createElement("h4", { style: { margin: "0 0 4px 0", fontSize: "13.5px", color: "var(--text-primary)" } }, "Standard Pre-Approved Industry Templates"), /* @__PURE__ */ React.createElement("p", { style: { margin: 0, fontSize: "11.5px", color: "var(--text-secondary)" } }, "Select any template below to load compliant wording, media headers, and sample parameters ready for Meta approval.")), /* @__PURE__ */ React.createElement("div", { className: "preset-grid" }, META_DEFAULT_PRESETS.map((p) => {
+      const isSelected = formData.template_name === p.key || selectedPresetKey === p.key;
+      return /* @__PURE__ */ React.createElement(
+        "div",
+        {
+          key: p.key,
+          className: `preset-card ${isSelected ? "selected" : ""}`,
+          onClick: () => handleSelectPreset(p)
+        },
+        /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "preset-card-top" }, /* @__PURE__ */ React.createElement("span", { className: "preset-card-icon" }, p.icon), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "preset-card-title" }, p.title), /* @__PURE__ */ React.createElement("span", { className: `badge cat-${p.category.toLowerCase().substring(0, 4)}`, style: { fontSize: "9.5px" } }, p.category, " \u2022 ", p.header_type))), /* @__PURE__ */ React.createElement("div", { className: "preset-card-desc" }, p.description)),
+        /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px", paddingTop: "8px", borderTop: "1px solid #F1F5F9" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", fontFamily: "monospace", color: "var(--wa-teal)" } }, p.key), /* @__PURE__ */ React.createElement(
+          "button",
+          {
+            type: "button",
+            className: "btn btn-secondary btn-sm",
+            style: { fontSize: "11px", padding: "3px 8px" },
+            onClick: (e) => {
+              e.stopPropagation();
+              handleSelectPreset(p);
+              setStudioTab("custom");
+            }
+          },
+          "Use & Edit \u2192"
+        ))
+      );
+    }))), studioTab === "custom" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Meta Template Key *"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        className: "form-input",
+        placeholder: "e.g. order_dispatch_uniglobal",
+        value: formData.template_name,
+        onChange: (e) => setFormData({
+          ...formData,
+          template_name: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "_")
+        }),
+        required: true
+      }
+    ), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Lowercase letters and underscores only (Meta rule)")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Display Title *"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        className: "form-input",
+        placeholder: "e.g. Tax Invoice Dispatch with PDF",
+        value: formData.display_title,
+        onChange: (e) => setFormData({ ...formData, display_title: e.target.value }),
+        required: true
+      }
+    ))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "4px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Category"), /* @__PURE__ */ React.createElement(
+      "select",
+      {
+        className: "form-select",
+        value: formData.category,
+        onChange: (e) => setFormData({ ...formData, category: e.target.value })
+      },
+      /* @__PURE__ */ React.createElement("option", { value: "UTILITY" }, "Utility (Invoices, Confirmations, Reminders)"),
+      /* @__PURE__ */ React.createElement("option", { value: "MARKETING" }, "Marketing (Promotions, Discounts, Offers)"),
+      /* @__PURE__ */ React.createElement("option", { value: "AUTHENTICATION" }, "Authentication (OTP Verification Codes)"),
+      /* @__PURE__ */ React.createElement("option", { value: "SERVICE" }, "Service (Customer Support)")
+    )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Language Code *"), /* @__PURE__ */ React.createElement(
+      "select",
+      {
+        className: "form-select",
+        value: formData.language || "en_US",
+        onChange: (e) => setFormData({ ...formData, language: e.target.value })
+      },
+      /* @__PURE__ */ React.createElement("option", { value: "en_US" }, "English (US) \u2014 en_US (Standard)"),
+      /* @__PURE__ */ React.createElement("option", { value: "en" }, "English \u2014 en"),
+      /* @__PURE__ */ React.createElement("option", { value: "en_GB" }, "English (UK) \u2014 en_GB"),
+      /* @__PURE__ */ React.createElement("option", { value: "ar" }, "Arabic \u2014 ar"),
+      /* @__PURE__ */ React.createElement("option", { value: "hi" }, "Hindi \u2014 hi")
+    ))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "4px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Header Media Type"), /* @__PURE__ */ React.createElement(
+      "select",
+      {
+        className: "form-select",
+        value: formData.header_type,
+        onChange: (e) => setFormData({ ...formData, header_type: e.target.value })
+      },
+      /* @__PURE__ */ React.createElement("option", { value: "NONE" }, "None (Plain Text Message)"),
+      /* @__PURE__ */ React.createElement("option", { value: "DOCUMENT" }, "Document (PDF Invoice / Report)"),
+      /* @__PURE__ */ React.createElement("option", { value: "IMAGE" }, "Image (Promotion Banner / Photo)"),
+      /* @__PURE__ */ React.createElement("option", { value: "TEXT" }, "Text Headline"),
+      /* @__PURE__ */ React.createElement("option", { value: "VIDEO" }, "Video")
+    )), formData.header_type !== "NONE" && /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Header Sample URL / Headline"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        className: "form-input",
+        placeholder: "https://... or header headline",
+        value: formData.header_sample || "",
+        onChange: (e) => setFormData({ ...formData, header_sample: e.target.value })
+      }
+    ))), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginTop: "4px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Message Body Format *"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-auth", style: { fontSize: "10px" } }, detectedVars.length, " variable", detectedVars.length !== 1 ? "s" : "", " detected")), /* @__PURE__ */ React.createElement(
+      "textarea",
+      {
+        className: "form-textarea",
+        style: { minHeight: "110px", fontFamily: "inherit" },
+        placeholder: "Dear {{1}}, your order {{2}} for BHD {{3}} has been confirmed.",
+        value: formData.body_text,
+        onChange: (e) => setFormData({ ...formData, body_text: e.target.value }),
+        required: true
+      }
+    ), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, "Use sequential placeholders like ", /* @__PURE__ */ React.createElement("code", null, "{{1}}"), ", ", /* @__PURE__ */ React.createElement("code", null, "{{2}}"), " for customer name, invoice number, amount, etc.")), detectedVars.length > 0 && /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "10px", padding: "12px 14px", margin: "10px 0" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "4px" } }, "\u26A1 Meta Review Sample Values (Required by Meta AI):"), /* @__PURE__ */ React.createElement("p", { style: { margin: "0 0 10px 0", fontSize: "11px", color: "var(--text-secondary)" } }, "Provide realistic example values for each placeholder so Meta reviewers understand your message intent."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "10px" } }, detectedVars.map((v, idx) => /* @__PURE__ */ React.createElement("div", { key: v }, /* @__PURE__ */ React.createElement("label", { style: { fontSize: "11px", fontWeight: "600", color: "#475569", display: "block", marginBottom: "2px" } }, "Variable {{", v, "}} Sample:"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        className: "form-input",
+        style: { padding: "6px 10px", fontSize: "12px" },
+        value: sampleParams[idx] || "",
+        onChange: (e) => handleUpdateSampleParam(idx, e.target.value),
+        placeholder: `e.g. Value ${idx + 1}`
+      }
+    ))))), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginTop: "4px" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "Footer Tagline (Optional)"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        className: "form-input",
+        placeholder: "e.g. UniGlobal Accounts | Powered by SaNDS Lab",
+        value: formData.footer_text || "",
+        onChange: (e) => setFormData({ ...formData, footer_text: e.target.value })
+      }
+    )), /* @__PURE__ */ React.createElement("div", { className: "tariff-estimate-banner", style: { margin: "14px 0" } }, /* @__PURE__ */ React.createElement("div", { className: "tariff-info" }, /* @__PURE__ */ React.createElement("span", { className: "title" }, "Bahrain Tariff Rate (", formData.category, ")"), /* @__PURE__ */ React.createElement("span", { className: "breakdown" }, "Meta Cost: ", activeTariff.meta.toFixed(4), " BHD | Platform Margin: +", activeTariff.platform.toFixed(4), " BHD")), /* @__PURE__ */ React.createElement("div", { className: "tariff-rate-badge" }, "BHD ", activeTariff.client.toFixed(4), " / msg")))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", fontWeight: "700", color: "#475569" } }, "\u{1F4F1} Live WhatsApp Handset Simulator:"), /* @__PURE__ */ React.createElement("span", { className: "badge status-read", style: { fontSize: "10px" } }, "\u25CF Real-Time Mockup")), /* @__PURE__ */ React.createElement("div", { className: "phone-mockup-wrapper" }, /* @__PURE__ */ React.createElement("div", { className: "phone-screen" }, /* @__PURE__ */ React.createElement("div", { className: "phone-header" }, /* @__PURE__ */ React.createElement("div", { className: "phone-header-info" }, /* @__PURE__ */ React.createElement("div", { className: "phone-avatar" }, "SL"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "phone-header-title" }, /* @__PURE__ */ React.createElement("span", null, "SaNDS Lab Business"), /* @__PURE__ */ React.createElement("span", { style: { color: "#25D366", fontSize: "11px" } }, "\u2713")), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "9.5px", color: "rgba(255,255,255,0.8)" } }, "Official Business Account"))), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "14px", color: "rgba(255,255,255,0.7)" } }, "\u22EE")), /* @__PURE__ */ React.createElement("div", { className: "phone-chat-body" }, /* @__PURE__ */ React.createElement("div", { style: { alignSelf: "center", background: "#E1F3FB", color: "#0369A1", fontSize: "9.5px", padding: "3px 8px", borderRadius: "6px", margin: "6px 0 12px 0" } }, "\u{1F512} Messages are end-to-end encrypted"), /* @__PURE__ */ React.createElement("div", { className: "phone-bubble" }, formData.header_type === "DOCUMENT" && /* @__PURE__ */ React.createElement("div", { className: "phone-bubble-media" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F4C4}"), /* @__PURE__ */ React.createElement("div", { style: { overflow: "hidden" } }, /* @__PURE__ */ React.createElement("strong", { style: { display: "block", fontSize: "11px", whiteSpace: "nowrap", textOverflow: "ellipsis" } }, formData.header_sample ? formData.header_sample.split("/").pop() : "Invoice_Document.pdf"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "9.5px", color: "#64748B" } }, "1.2 MB \u2022 PDF Document"))), formData.header_type === "IMAGE" && /* @__PURE__ */ React.createElement("div", { style: { borderRadius: "6px", overflow: "hidden", marginBottom: "8px", maxHeight: "140px", background: "#E2E8F0" } }, /* @__PURE__ */ React.createElement(
+      "img",
+      {
+        src: formData.header_sample || "./assets/images/QRCodePoster.jpg",
+        alt: "Banner Preview",
+        style: { width: "100%", height: "100%", objectFit: "cover", display: "block" },
+        onError: (e) => {
+          e.target.style.display = "none";
+        }
+      }
+    )), formData.header_type === "TEXT" && /* @__PURE__ */ React.createElement("div", { className: "phone-bubble-header" }, formData.header_sample || formData.display_title || "Headline"), /* @__PURE__ */ React.createElement("div", { className: "phone-bubble-text" }, previewBodyText), formData.footer_text && /* @__PURE__ */ React.createElement("div", { className: "phone-bubble-footer" }, formData.footer_text), /* @__PURE__ */ React.createElement("div", { className: "phone-bubble-meta" }, /* @__PURE__ */ React.createElement("span", null, "14:30"), /* @__PURE__ */ React.createElement("span", { style: { color: "#53BDEB" } }, "\u2713\u2713")))))))),
+    /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "#64748B" } }, "Approval Time: Utility ~2 mins \u2022 Marketing ~30 mins")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", alignItems: "center" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose, disabled: submittingMeta || savingLocal }, "Cancel"), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: "btn btn-secondary",
+        style: { fontWeight: "700" },
+        onClick: () => handleSubmit(false),
+        disabled: submittingMeta || savingLocal
+      },
+      savingLocal ? "Saving..." : "\u{1F4BE} Save Locally Only"
+    ), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: "btn btn-primary",
+        style: { display: "inline-flex", alignItems: "center", gap: "6px", fontWeight: "700" },
+        onClick: () => handleSubmit(true),
+        disabled: submittingMeta || savingLocal
+      },
+      /* @__PURE__ */ React.createElement("span", null, submittingMeta ? "\u23F3" : "\u{1F680}"),
+      submittingMeta ? "Submitting to Meta..." : "Submit to Meta for Approval"
+    )))
+  ));
+}
+function TemplatesView({ showToast }) {
+  const [templates, setTemplates] = useState([]);
+  const [editingTemplate, setEditingTemplate] = useState(null);
+  const [showStudioModal, setShowStudioModal] = useState(false);
+  const [syncingMeta, setSyncingMeta] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState(null);
+  const loadTemplates = (autoSync = false) => {
+    const url = autoSync ? "./api/templates.php?auto_sync=1" : "./api/templates.php";
+    fetch(url).then((res) => res.json()).then((res) => {
+      if (res.success) setTemplates(res.data);
+    });
+  };
+  useEffect(() => {
+    loadTemplates(true);
+  }, []);
+  useEffect(() => {
+    const hasPending = templates.some((t) => (t.meta_status || "").toUpperCase() === "PENDING");
+    if (!hasPending) return;
+    const timer = setInterval(() => {
+      fetch("./api/templates.php?auto_sync=1").then((res) => res.json()).then((res) => {
+        if (res.success) setTemplates(res.data);
+      }).catch(() => {
+      });
+    }, 8e3);
+    return () => clearInterval(timer);
+  }, [templates]);
+  const handleToggleActive = async (id, currentStatus, templateName) => {
+    const nextStatus = currentStatus ? 0 : 1;
+    try {
+      const res = await fetch("./api/templates.php?action=toggle_active", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, is_active: nextStatus })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(nextStatus ? `Template "${templateName}" activated!` : `Template "${templateName}" paused.`);
+        setTemplates((prev) => prev.map((t) => t.id === id ? { ...t, is_active: nextStatus } : t));
+      } else {
+        showToast(data.error || "Failed to update status", "error");
+      }
+    } catch (e) {
+      showToast("Network error toggling status", "error");
+    }
+  };
+  const handleSyncMeta = async () => {
+    setSyncingMeta(true);
+    try {
+      const res = await fetch("./api/templates.php?action=sync_meta");
+      const data = await res.json();
+      if (data.success) {
+        showToast(`\u2713 Synced with Meta WABA! Found ${data.total_meta} templates on Meta.`);
+        loadTemplates();
+      } else {
+        showToast(data.error || "Meta sync failed", "error");
+      }
+    } catch (e) {
+      showToast("Network error during Meta sync", "error");
+    } finally {
+      setSyncingMeta(false);
+    }
+  };
+  const handleDeleteTemplate = (id, name) => {
+    setConfirmDialog({
+      title: "Delete WhatsApp Template?",
+      subtitle: `Are you sure you want to permanently remove template "${name}" from your catalog?`,
+      icon: "\u{1F5D1}\uFE0F",
+      badgeClass: "danger",
+      confirmText: "Yes, Delete Template",
+      cancelText: "Cancel",
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`./api/templates.php?id=${id}`, { method: "DELETE" });
+          const data = await res.json();
+          if (data.success) {
+            showToast("Template deleted successfully");
+            loadTemplates();
+          } else {
+            showToast(data.error || "Failed to delete template", "error");
+          }
+        } catch (err) {
+          showToast("Error deleting template", "error");
+        } finally {
+          setConfirmDialog(null);
+        }
+      }
+    });
+  };
+  const templateColumns = [
+    {
+      key: "display_title",
+      label: "Template Title & Key",
+      render: (t) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", null, t.display_title)), /* @__PURE__ */ React.createElement("div", { style: { fontFamily: "monospace", fontSize: "11px", color: "var(--wa-teal)" } }, t.template_name))
+    },
+    {
+      key: "category",
+      label: "Category & Lang",
+      render: (t) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "3px" } }, /* @__PURE__ */ React.createElement("span", { className: `badge cat-${t.category.toLowerCase().substring(0, 4)}` }, t.category), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "#64748B" } }, t.language || "en_US"))
+    },
+    {
+      key: "header_type",
+      label: "Header Media",
+      render: (t) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", fontWeight: "700" } }, t.header_type)
+    },
+    {
+      key: "body_text",
+      label: "Body Format",
+      render: (t) => /* @__PURE__ */ React.createElement("div", { style: { maxWidth: "240px", fontSize: "11.5px", color: "var(--text-secondary)" } }, t.body_text)
+    },
+    {
+      key: "client_rate_bhd",
+      label: "Client Rate",
+      render: (t) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { color: "var(--wa-teal)", fontSize: "12.5px" } }, parseFloat(t.client_rate_bhd).toFixed(4), " BHD"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "#64748B" } }, "Meta: ", parseFloat(t.meta_cost_bhd).toFixed(4)))
+    },
+    {
+      key: "is_active",
+      label: "Status & Control",
+      render: (t) => {
+        const st = (t.meta_status || "").toUpperCase();
+        const isApproved = ["APPROVED", "ACTIVE"].includes(st);
+        const isPending = st === "PENDING";
+        const badgeClass = isApproved ? "status-read" : isPending ? "cat-auth" : "status-failed";
+        const badgeText = isApproved ? "\u2713 APPROVED" : isPending ? "\u23F3 PENDING" : `\u2715 ${st || "REJECTED"}`;
+        return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "6px", alignItems: "flex-start" } }, /* @__PURE__ */ React.createElement(
+          "div",
+          {
+            className: `tmpl-toggle-pill ${t.is_active ? "active" : "inactive"}`,
+            onClick: () => handleToggleActive(t.id, t.is_active, t.template_name),
+            title: t.is_active ? "Click to Pause / Deactivate Template" : "Click to Activate Template"
+          },
+          /* @__PURE__ */ React.createElement("span", { className: "tmpl-toggle-dot" }),
+          /* @__PURE__ */ React.createElement("span", null, t.is_active ? "Active" : "Paused")
+        ), /* @__PURE__ */ React.createElement(
+          "span",
+          {
+            className: `badge ${badgeClass}`,
+            style: { fontSize: "10px", display: "inline-flex", alignItems: "center", gap: "4px" }
+          },
+          badgeText
+        ));
+      }
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      sortable: false,
+      render: (t) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-secondary btn-sm",
+          onClick: () => {
+            setEditingTemplate({ ...t });
+            setShowStudioModal(true);
+          },
+          title: "Edit / Re-submit Template"
+        },
+        "\u270F\uFE0F Edit"
+      ), /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-secondary btn-sm",
+          style: { color: "#EF4444" },
+          onClick: () => handleDeleteTemplate(t.id, t.template_name),
+          title: "Delete Template"
+        },
+        "\u{1F5D1}\uFE0F"
+      ))
+    }
+  ];
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " WhatsApp Templates & Tariff Schedule"), /* @__PURE__ */ React.createElement("p", null, "Meta-registered message templates, variable placeholders, official Bahrain Market rates, and active/inactive status controls.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary",
+      style: { display: "inline-flex", alignItems: "center", gap: "6px" },
+      disabled: syncingMeta,
+      onClick: handleSyncMeta,
+      title: "Query Meta Graph API to refresh approval statuses"
+    },
+    /* @__PURE__ */ React.createElement("span", null, syncingMeta ? "\u23F3" : "\u{1F504}"),
+    syncingMeta ? "Syncing..." : "Sync with Meta"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary",
+      style: { display: "inline-flex", alignItems: "center", gap: "6px" },
+      onClick: () => {
+        setEditingTemplate(null);
+        setShowStudioModal(true);
+      }
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u2728"),
+    " Template Creation Studio"
+  ))), /* @__PURE__ */ React.createElement(
+    DataTable,
+    {
+      columns: templateColumns,
+      data: templates,
+      title: "whatsapp_templates",
+      searchPlaceholder: "Search template title, key, category...",
+      defaultPageSize: 10,
+      pageSizeOptions: [5, 10, 20],
+      defaultSortKey: "id",
+      defaultSortDir: "desc"
+    }
+  ), showStudioModal && /* @__PURE__ */ React.createElement(
+    TemplateStudioModal,
+    {
+      template: editingTemplate,
+      onClose: () => {
+        setShowStudioModal(false);
+        setEditingTemplate(null);
+      },
+      onSave: loadTemplates,
+      showToast
+    }
+  ), confirmDialog && /* @__PURE__ */ React.createElement(
+    ConfirmDialog,
+    {
+      isOpen: !!confirmDialog,
+      title: confirmDialog.title,
+      subtitle: confirmDialog.subtitle,
+      icon: confirmDialog.icon,
+      badgeClass: confirmDialog.badgeClass,
+      confirmText: confirmDialog.confirmText,
+      cancelText: confirmDialog.cancelText,
+      onClose: () => setConfirmDialog(null),
+      onConfirm: confirmDialog.onConfirm
+    }
+  ));
+}
+function OdooGuideModal({ onClose, showToast, apiKey }) {
+  const [guideTab, setGuideTab] = useState("overview");
+  return /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: "modal-content",
+      style: { maxWidth: "960px", maxHeight: "90vh", display: "flex", flexDirection: "column" },
+      onClick: (e) => e.stopPropagation()
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F4D6}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { margin: 0, fontSize: "16px" } }, "Odoo ERP & WhatsApp Integration Setup Guide"), /* @__PURE__ */ React.createElement("p", { style: { margin: "2px 0 0 0", fontSize: "11.5px", color: "rgba(255,255,255,0.85)" } }, "Step-by-step procedure for Odoo 14, 15, 16, 17 & 18 \u2022 Automated Actions & Webhooks"))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement(
+      "a",
+      {
+        href: "./ODOO_INTEGRATION_GUIDE.md",
+        download: "ODOO_INTEGRATION_GUIDE.md",
+        className: "btn btn-secondary",
+        style: { fontSize: "11.5px", padding: "4px 10px", textDecoration: "none", background: "rgba(255,255,255,0.2)", color: "#FFFFFF", border: "none" },
+        title: "Download Full Markdown Documentation"
+      },
+      /* @__PURE__ */ React.createElement("span", null, "\u2B07\uFE0F"),
+      " Download .md"
+    ), /* @__PURE__ */ React.createElement("button", { className: "close-btn", onClick: onClose }, "\u2715"))),
+    /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", padding: "10px 24px", borderBottom: "1px solid #E2E8F0", display: "flex", gap: "8px", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: `btn ${guideTab === "overview" ? "btn-primary" : "btn-secondary"}`,
+        style: { fontSize: "11.5px", padding: "5px 12px" },
+        onClick: () => setGuideTab("overview")
+      },
+      "1. Overview & Credentials"
+    ), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: `btn ${guideTab === "invoice" ? "btn-primary" : "btn-secondary"}`,
+        style: { fontSize: "11.5px", padding: "5px 12px" },
+        onClick: () => setGuideTab("invoice")
+      },
+      "2. Customer Invoices (account.move)"
+    ), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: `btn ${guideTab === "orders" ? "btn-primary" : "btn-secondary"}`,
+        style: { fontSize: "11.5px", padding: "5px 12px" },
+        onClick: () => setGuideTab("orders")
+      },
+      "3. Orders & Payments (sale.order)"
+    ), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: `btn ${guideTab === "webhooks" ? "btn-primary" : "btn-secondary"}`,
+        style: { fontSize: "11.5px", padding: "5px 12px" },
+        onClick: () => setGuideTab("webhooks")
+      },
+      "4. Webhooks & Chatter Callbacks"
+    )),
+    /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "24px", overflowY: "auto" } }, guideTab === "overview" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { background: "#F0FDF4", border: "1px solid #BBF7D0", padding: "14px", borderRadius: "8px", marginBottom: "16px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#166534", fontSize: "13px" } }, "\u26A1 What this integration does automatically:"), /* @__PURE__ */ React.createElement("p", { style: { color: "#14532D", fontSize: "12px", margin: "4px 0 0 0", lineHeight: "1.5" } }, "When an accountant validates an invoice or sales confirmation in Odoo, Odoo renders the official QWeb PDF in memory, sends it to the SaNDS Lab Gateway, and delivers it to the customer on WhatsApp with authentic delivery receipts posted back to Odoo Chatter.")), /* @__PURE__ */ React.createElement("h4", { style: { fontSize: "13px", marginBottom: "10px" } }, "\u{1F511} Integration Credentials"), /* @__PURE__ */ React.createElement("table", { className: "table", style: { width: "100%", marginBottom: "20px" } }, /* @__PURE__ */ React.createElement("tbody", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { style: { width: "220px", fontWeight: "700" } }, "Platform Gateway URL"), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", null, "https://whatsapp.sandslab.com"))), /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { style: { fontWeight: "700" } }, "Inbound Webhook Endpoint"), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", null, "https://whatsapp.sandslab.com/api/odoo_webhook.php"))), /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { style: { fontWeight: "700" } }, "Authentication Header"), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", null, "X-API-Key: ", apiKey))), /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { style: { fontWeight: "700" } }, "Supported Odoo Versions"), /* @__PURE__ */ React.createElement("td", null, "Odoo 14, 15, 16, 17, 18 (Community, Enterprise, Odoo.sh, SaaS)")))), /* @__PURE__ */ React.createElement("h4", { style: { fontSize: "13px", marginBottom: "10px" } }, "\u{1F6E0}\uFE0F Step 1: Activate Developer Mode in Odoo"), /* @__PURE__ */ React.createElement("ol", { style: { fontSize: "12.5px", lineHeight: "1.7", margin: "0 0 0 20px", color: "var(--text-secondary)" } }, /* @__PURE__ */ React.createElement("li", null, "Log in to your Odoo ERP instance as an Administrator."), /* @__PURE__ */ React.createElement("li", null, "Go to ", /* @__PURE__ */ React.createElement("strong", null, "Settings"), " application."), /* @__PURE__ */ React.createElement("li", null, "Scroll to the bottom of the General Settings page."), /* @__PURE__ */ React.createElement("li", null, "Click ", /* @__PURE__ */ React.createElement("strong", null, "Activate the developer mode"), " (a bug icon \u{1FAB2} will appear in the top header)."))), guideTab === "invoice" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: "13px", marginBottom: "6px" } }, "Step 2: Customer Invoices Automated Action (account.move)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "Navigate to ", /* @__PURE__ */ React.createElement("strong", null, "Settings \u2192 Technical \u2192 Server Actions"), " \u2192 click ", /* @__PURE__ */ React.createElement("strong", null, "New"), ":"), /* @__PURE__ */ React.createElement("ul", { style: { fontSize: "12px", color: "var(--text-secondary)", margin: "0 0 14px 20px", lineHeight: "1.6" } }, /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("strong", null, "Action Name:"), " ", /* @__PURE__ */ React.createElement("code", null, "Send WhatsApp Tax Invoice with PDF")), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("strong", null, "Model:"), " ", /* @__PURE__ */ React.createElement("code", null, "Journal Entry"), " (", /* @__PURE__ */ React.createElement("code", null, "account.move"), ")"), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("strong", null, "Action To Do:"), " ", /* @__PURE__ */ React.createElement("code", null, "Execute Python Code"))), /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { padding: "8px 12px", background: "#0F172A", color: "#FFFFFF", borderRadius: "8px 8px 0 0", display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "#94A3B8" } }, "ir.actions.server.py (Zero Dependencies)"), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: "btn-copy-code",
+        onClick: () => {
+          const code = `import json
 import urllib.request
 import base64
 
 API_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
-API_SECRET_KEY  = "${g}"
+API_SECRET_KEY  = "${apiKey}"
 
 if record.move_type in ('out_invoice', 'out_refund'):
     partner = record.partner_id
@@ -70,12 +3379,19 @@ if record.move_type in ('out_invoice', 'out_refund'):
                 if res_json.get('success'):
                     record.message_post(body=f"\u2705 <b>WhatsApp Sent</b>: <code>{res_json.get('message_id')}</code>")
         except Exception as ex:
-            record.message_post(body=f"\u274C <b>WhatsApp Error</b>: {str(ex)}")`;navigator.clipboard.writeText(f),r("Invoice Python Server Action copied!")}},React.createElement("span",null,"\u{1F4CB}")," Copy Python Code")),React.createElement("div",{className:"code-box",style:{borderRadius:"0 0 8px 8px",maxHeight:"300px",overflowY:"auto"}},React.createElement("pre",{style:{margin:0,fontSize:"11px",whiteSpace:"pre-wrap"}},`import json
+            record.message_post(body=f"\u274C <b>WhatsApp Error</b>: {str(ex)}")`;
+          navigator.clipboard.writeText(code);
+          showToast("Invoice Python Server Action copied!");
+        }
+      },
+      /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"),
+      " Copy Python Code"
+    )), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { borderRadius: "0 0 8px 8px", maxHeight: "300px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, fontSize: "11px", whiteSpace: "pre-wrap" } }, `import json
 import urllib.request
 import base64
 
 API_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
-API_SECRET_KEY  = "${g}"
+API_SECRET_KEY  = "${apiKey}"
 
 if record.move_type in ('out_invoice', 'out_refund'):
     partner = record.partner_id
@@ -111,12 +3427,18 @@ if record.move_type in ('out_invoice', 'out_refund'):
                 if res_json.get('success'):
                     record.message_post(body=f"\u2705 <b>WhatsApp Sent</b>: <code>{res_json.get('message_id')}</code>")
         except Exception as ex:
-            record.message_post(body=f"\u274C <b>WhatsApp Error</b>: {str(ex)}")`)),React.createElement("div",{style:{marginTop:"14px",padding:"10px",background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"6px"}},React.createElement("strong",{style:{fontSize:"12px"}},"\u{1F517} Step 3: Trigger Automation Rule"),React.createElement("p",{style:{fontSize:"11.5px",color:"var(--text-secondary)",margin:"4px 0 0 0"}},"Go to ",React.createElement("strong",null,"Settings \u2192 Technical \u2192 Automation Rules")," \u2192 Create new rule on ",React.createElement("code",null,"Journal Entry")," triggered ",React.createElement("strong",null,"On Save")," where ",React.createElement("code",null,"state = 'posted'")," and link to this action!"))),o==="orders"&&React.createElement("div",null,React.createElement("h4",{style:{fontSize:"13px",marginBottom:"8px"}},"Sales Quotations & Order Confirmations (sale.order)"),React.createElement("p",{style:{fontSize:"12px",color:"var(--text-secondary)",marginBottom:"12px"}},"Trigger on: ",React.createElement("code",null,"state == 'sale'")," (Confirmed Order) or ",React.createElement("code",null,"state == 'sent'")," (Quotation Sent)."),React.createElement("div",{className:"card-header",style:{padding:"8px 12px",background:"#0F172A",color:"#FFFFFF",borderRadius:"8px 8px 0 0",display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement("span",{style:{fontSize:"11.5px",color:"#94A3B8"}},"sale_order_automation.py"),React.createElement("button",{type:"button",className:"btn-copy-code",onClick:()=>{let f=`import json
+            record.message_post(body=f"\u274C <b>WhatsApp Error</b>: {str(ex)}")`)), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "14px", padding: "10px", background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "6px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12px" } }, "\u{1F517} Step 3: Trigger Automation Rule"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "11.5px", color: "var(--text-secondary)", margin: "4px 0 0 0" } }, "Go to ", /* @__PURE__ */ React.createElement("strong", null, "Settings \u2192 Technical \u2192 Automation Rules"), " \u2192 Create new rule on ", /* @__PURE__ */ React.createElement("code", null, "Journal Entry"), " triggered ", /* @__PURE__ */ React.createElement("strong", null, "On Save"), " where ", /* @__PURE__ */ React.createElement("code", null, "state = 'posted'"), " and link to this action!"))), guideTab === "orders" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: "13px", marginBottom: "8px" } }, "Sales Quotations & Order Confirmations (sale.order)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "Trigger on: ", /* @__PURE__ */ React.createElement("code", null, "state == 'sale'"), " (Confirmed Order) or ", /* @__PURE__ */ React.createElement("code", null, "state == 'sent'"), " (Quotation Sent)."), /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { padding: "8px 12px", background: "#0F172A", color: "#FFFFFF", borderRadius: "8px 8px 0 0", display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "#94A3B8" } }, "sale_order_automation.py"), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        type: "button",
+        className: "btn-copy-code",
+        onClick: () => {
+          const code = `import json
 import urllib.request
 import base64
 
 API_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
-API_SECRET_KEY  = "${g}"
+API_SECRET_KEY  = "${apiKey}"
 
 partner = record.partner_id
 dest_phone = (partner.mobile or partner.phone or "").strip()
@@ -151,12 +3473,19 @@ if dest_phone:
             if res.get('success'):
                 record.message_post(body=f"\u2705 WhatsApp Order Confirmation: {res.get('message_id')}")
     except Exception as ex:
-        record.message_post(body=f"\u274C WhatsApp Order Error: {str(ex)}")`;navigator.clipboard.writeText(f),r("Sales Order Python script copied!")}},React.createElement("span",null,"\u{1F4CB}")," Copy Order Script")),React.createElement("div",{className:"code-box",style:{borderRadius:"0 0 8px 8px",maxHeight:"280px",overflowY:"auto"}},React.createElement("pre",{style:{margin:0,fontSize:"11px",whiteSpace:"pre-wrap"}},`import json
+        record.message_post(body=f"\u274C WhatsApp Order Error: {str(ex)}")`;
+          navigator.clipboard.writeText(code);
+          showToast("Sales Order Python script copied!");
+        }
+      },
+      /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"),
+      " Copy Order Script"
+    )), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { borderRadius: "0 0 8px 8px", maxHeight: "280px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, fontSize: "11px", whiteSpace: "pre-wrap" } }, `import json
 import urllib.request
 import base64
 
 API_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
-API_SECRET_KEY  = "${g}"
+API_SECRET_KEY  = "${apiKey}"
 
 partner = record.partner_id
 dest_phone = (partner.mobile or partner.phone or "").strip()
@@ -191,9 +3520,129 @@ if dest_phone:
             if res.get('success'):
                 record.message_post(body=f"\u2705 WhatsApp Order Confirmation: {res.get('message_id')}")
     except Exception as ex:
-        record.message_post(body=f"\u274C WhatsApp Order Error: {str(ex)}")`))),o==="webhooks"&&React.createElement("div",null,React.createElement("h4",{style:{fontSize:"13px",marginBottom:"8px"}},"Odoo 17 & 18 Native Webhooks & Bi-Directional Chatter"),React.createElement("p",{style:{fontSize:"12px",color:"var(--text-secondary)",marginBottom:"12px"}},"If using Odoo 17 or 18, you can configure no-code webhooks directly under ",React.createElement("strong",null,"Automation Rules \u2192 Send Webhook Notification"),":"),React.createElement("table",{className:"table",style:{width:"100%",marginBottom:"16px"}},React.createElement("tbody",null,React.createElement("tr",null,React.createElement("td",{style:{width:"180px",fontWeight:"700"}},"Target URL"),React.createElement("td",null,React.createElement("code",null,"https://whatsapp.sandslab.com/api/odoo_webhook.php"))),React.createElement("tr",null,React.createElement("td",{style:{fontWeight:"700"}},"Headers"),React.createElement("td",null,React.createElement("code",null,"X-API-Key: ",g),React.createElement("br",null),React.createElement("code",null,"Content-Type: application/json"))))),React.createElement("div",{style:{background:"#F0F9FF",border:"1px solid #BAE6FD",padding:"14px",borderRadius:"8px"}},React.createElement("strong",{style:{color:"#0369A1",fontSize:"13px"}},"\u{1F4AC} Bi-Directional Delivery Tracking in Odoo:"),React.createElement("p",{style:{color:"#0C4A6E",fontSize:"12px",margin:"4px 0 0 0",lineHeight:"1.5"}},"When the customer receives or opens the WhatsApp message on their handset, Meta webhooks callback to our platform, which in turn calls your Odoo instance, updating the document chatter with timestamps (e.g. ",React.createElement("code",null,"\u2713\u2713 WhatsApp Read by Customer"),").")))),React.createElement("div",{className:"modal-footer",style:{padding:"12px 24px"}},React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:n,style:{fontSize:"12.5px"}},"Close Guide"))))}function We({showToast:n,globalSettings:r}){let[g,o]=s("studio"),[c,f]=s(!1),[e,d]=s("account.move"),[T,m]=s("posted"),[v,l]=s("uniglobal_invoice_notification"),[u,D]=s(!0),[P,z]=s(!0),[y,p]=s(!0),[C,b]=s("python"),[I,F]=s([]),[O,R]=s("sk_live_odoo_uniglobal_98741362"),[_,t]=s("/api/odoo_webhook.php"),[x,A]=s("account.move"),[M,N]=s("+97335078079"),[i,a]=s("Ahmed Al-Khalifa"),[S,E]=s("INV/2026/0142"),[h,W]=s("345.500"),[$,K]=s("BHD"),[H,j]=s("offer_sandslab"),[X,B]=s(""),[L,Y]=s(!1),[te,re]=s(null),[oe,w]=s([]),[q,V]=s(!1),[J,ae]=s("python");U(()=>{fetch("./api/odoo_webhook.php?action=templates").then(k=>k.json()).then(k=>{k.success&&Array.isArray(k.data)&&F(k.data)}).catch(()=>{})},[]);let ie=()=>{V(!0),fetch("./api/odoo_webhook.php?action=recent").then(k=>k.json()).then(k=>{k.success&&Array.isArray(k.data)&&w(k.data)}).catch(()=>{}).finally(()=>V(!1))};U(()=>{g==="audit"&&ie()},[g]);let le=k=>{k==="invoice"?(A("account.move"),E("INV/2026/0142"),a("Ahmed Al-Khalifa"),W("345.500"),j("offer_sandslab")):k==="order"?(A("sale.order"),E("SO-8821"),a("Dr. Tariq Salman"),W("125.000"),j("offer_sandslab")):k==="payment"&&(A("account.payment"),E("PAY/2026/0045"),a("Fatima Noor"),W("75.250"),j("uniglobal_invoice_notification")),n(`Loaded ${k} simulation preset!`)},he=async()=>{Y(!0),B("Dispatching automated action to WhatsApp Gateway...");try{let k={model:x,record_id:142,record_name:S,partner_name:i,partner_phone:M,amount:h,currency:$,date:new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}),template_name:H,callback_url:"https://whatsapp.sandslab.com/api/odoo_webhook.php?action=simulate_callback"},se=await(await fetch(`.${_}`,{method:"POST",headers:{"Content-Type":"application/json","X-API-Key":O},body:JSON.stringify(k)})).json();B(JSON.stringify(se,null,2)),se.success?(re(se.message_id),n("WhatsApp notification successfully dispatched from Odoo!")):n(se.message||se.error||"Dispatch error","error")}catch(k){B(JSON.stringify({error:k.message},null,2)),n("API execution error: "+k.message,"error")}finally{Y(!1)}},ue=()=>{let k=e==="account.move",de=e==="sale.order",se=e==="account.payment",xe=k?"'account.account_invoices'":de?"'sale.action_report_saleorder'":"'account.action_report_payment_receipt'",_e=k?"record.invoice_date":de?"record.date_order":"record.date",ye=se?"record.amount":"record.amount_total";return`# ==============================================================================
+        record.message_post(body=f"\u274C WhatsApp Order Error: {str(ex)}")`))), guideTab === "webhooks" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: "13px", marginBottom: "8px" } }, "Odoo 17 & 18 Native Webhooks & Bi-Directional Chatter"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "If using Odoo 17 or 18, you can configure no-code webhooks directly under ", /* @__PURE__ */ React.createElement("strong", null, "Automation Rules \u2192 Send Webhook Notification"), ":"), /* @__PURE__ */ React.createElement("table", { className: "table", style: { width: "100%", marginBottom: "16px" } }, /* @__PURE__ */ React.createElement("tbody", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { style: { width: "180px", fontWeight: "700" } }, "Target URL"), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", null, "https://whatsapp.sandslab.com/api/odoo_webhook.php"))), /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { style: { fontWeight: "700" } }, "Headers"), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", null, "X-API-Key: ", apiKey), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("code", null, "Content-Type: application/json"))))), /* @__PURE__ */ React.createElement("div", { style: { background: "#F0F9FF", border: "1px solid #BAE6FD", padding: "14px", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#0369A1", fontSize: "13px" } }, "\u{1F4AC} Bi-Directional Delivery Tracking in Odoo:"), /* @__PURE__ */ React.createElement("p", { style: { color: "#0C4A6E", fontSize: "12px", margin: "4px 0 0 0", lineHeight: "1.5" } }, "When the customer receives or opens the WhatsApp message on their handset, Meta webhooks callback to our platform, which in turn calls your Odoo instance, updating the document chatter with timestamps (e.g. ", /* @__PURE__ */ React.createElement("code", null, "\u2713\u2713 WhatsApp Read by Customer"), ").")))),
+    /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "12px 24px" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onClose, style: { fontSize: "12.5px" } }, "Close Guide"))
+  ));
+}
+function OdooApiHubView({ showToast, globalSettings }) {
+  const [hubTab, setHubTab] = useState("studio");
+  const [showGuideModal, setShowGuideModal] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("account.move");
+  const [selectedTrigger, setSelectedTrigger] = useState("posted");
+  const [selectedTemplate, setSelectedTemplate] = useState("uniglobal_invoice_notification");
+  const [includePdf, setIncludePdf] = useState(true);
+  const [logChatter, setLogChatter] = useState(true);
+  const [phoneFallback, setPhoneFallback] = useState(true);
+  const [studioLang, setStudioLang] = useState("python");
+  const [templatesList, setTemplatesList] = useState([]);
+  const [apiKey, setApiKey] = useState("sk_live_odoo_uniglobal_98741362");
+  const [endpoint, setEndpoint] = useState("/api/odoo_webhook.php");
+  const [testModel, setTestModel] = useState("account.move");
+  const [testRecipient, setTestRecipient] = useState("+97335078079");
+  const [testPartnerName, setTestPartnerName] = useState("Ahmed Al-Khalifa");
+  const [testRecordName, setTestRecordName] = useState("INV/2026/0142");
+  const [testAmount, setTestAmount] = useState("345.500");
+  const [testCurrency, setTestCurrency] = useState("BHD");
+  const [testTemplate, setTestTemplate] = useState("offer_sandslab");
+  const [responseOutput, setResponseOutput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [lastDispatchedId, setLastDispatchedId] = useState(null);
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [loadingAudit, setLoadingAudit] = useState(false);
+  const [activeSnippetLang, setActiveSnippetLang] = useState("python");
+  useEffect(() => {
+    fetch("./api/odoo_webhook.php?action=templates").then((res) => res.json()).then((res) => {
+      if (res.success && Array.isArray(res.data)) {
+        setTemplatesList(res.data);
+      }
+    }).catch(() => {
+    });
+  }, []);
+  const loadAuditLogs = () => {
+    setLoadingAudit(true);
+    fetch("./api/odoo_webhook.php?action=recent").then((res) => res.json()).then((res) => {
+      if (res.success && Array.isArray(res.data)) {
+        setAuditLogs(res.data);
+      }
+    }).catch(() => {
+    }).finally(() => setLoadingAudit(false));
+  };
+  useEffect(() => {
+    if (hubTab === "audit") {
+      loadAuditLogs();
+    }
+  }, [hubTab]);
+  const applyTesterPreset = (presetType) => {
+    if (presetType === "invoice") {
+      setTestModel("account.move");
+      setTestRecordName("INV/2026/0142");
+      setTestPartnerName("Ahmed Al-Khalifa");
+      setTestAmount("345.500");
+      setTestTemplate("offer_sandslab");
+    } else if (presetType === "order") {
+      setTestModel("sale.order");
+      setTestRecordName("SO-8821");
+      setTestPartnerName("Dr. Tariq Salman");
+      setTestAmount("125.000");
+      setTestTemplate("offer_sandslab");
+    } else if (presetType === "payment") {
+      setTestModel("account.payment");
+      setTestRecordName("PAY/2026/0045");
+      setTestPartnerName("Fatima Noor");
+      setTestAmount("75.250");
+      setTestTemplate("uniglobal_invoice_notification");
+    }
+    showToast(`Loaded ${presetType} simulation preset!`);
+  };
+  const runLiveTest = async () => {
+    setLoading(true);
+    setResponseOutput("Dispatching automated action to WhatsApp Gateway...");
+    try {
+      const payload = {
+        model: testModel,
+        record_id: 142,
+        record_name: testRecordName,
+        partner_name: testPartnerName,
+        partner_phone: testRecipient,
+        amount: testAmount,
+        currency: testCurrency,
+        date: (/* @__PURE__ */ new Date()).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+        template_name: testTemplate,
+        callback_url: "https://whatsapp.sandslab.com/api/odoo_webhook.php?action=simulate_callback"
+      };
+      const res = await fetch(`.${endpoint}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": apiKey
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      setResponseOutput(JSON.stringify(data, null, 2));
+      if (data.success) {
+        setLastDispatchedId(data.message_id);
+        showToast("WhatsApp notification successfully dispatched from Odoo!");
+      } else {
+        showToast(data.message || data.error || "Dispatch error", "error");
+      }
+    } catch (err) {
+      setResponseOutput(JSON.stringify({ error: err.message }, null, 2));
+      showToast("API execution error: " + err.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const generateOdooPythonCode = () => {
+    const isInvoice = selectedModel === "account.move";
+    const isOrder = selectedModel === "sale.order";
+    const isPayment = selectedModel === "account.payment";
+    const pdfReportRef = isInvoice ? "'account.account_invoices'" : isOrder ? "'sale.action_report_saleorder'" : "'account.action_report_payment_receipt'";
+    const dateField = isInvoice ? "record.invoice_date" : isOrder ? "record.date_order" : "record.date";
+    const amountField = isPayment ? "record.amount" : "record.amount_total";
+    return `# ==============================================================================
 # SaNDS Lab WhatsApp Gateway \u2014 Odoo Automated Server Action
-# Model: ${e} | Trigger: ${T}
+# Model: ${selectedModel} | Trigger: ${selectedTrigger}
 # Requirements: ZERO EXTERNAL PIP PACKAGES (Native Python standard library)
 # Compatible with: Odoo 14, 15, 16, 17, and 18 (Community & Enterprise / Odoo.sh)
 # ==============================================================================
@@ -202,29 +3651,29 @@ import urllib.request
 import base64
 
 API_GATEWAY_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
-API_SECRET_KEY  = "${O}"
+API_SECRET_KEY  = "${apiKey}"
 
 # 1. Resolve Destination Phone Number
 partner = record.partner_id if hasattr(record, 'partner_id') else record
-${y?'dest_phone = (partner.mobile or partner.phone or "").strip()':'dest_phone = (partner.mobile or "").strip()'}
+${phoneFallback ? 'dest_phone = (partner.mobile or partner.phone or "").strip()' : 'dest_phone = (partner.mobile or "").strip()'}
 
 if not dest_phone:
-    ${P?'record.message_post(body="\u26A0\uFE0F <b>WhatsApp Skipped:</b> Customer has no mobile or phone number on file.")':"pass"}
+    ${logChatter ? 'record.message_post(body="\u26A0\uFE0F <b>WhatsApp Skipped:</b> Customer has no mobile or phone number on file.")' : "pass"}
 else:
     # 2. Extract Document PDF Attachment Binary (Optional)
     pdf_base64 = None
-    ${u?`try:
-        report_action = record.env.ref(${xe}, raise_if_not_found=False)
+    ${includePdf ? `try:
+        report_action = record.env.ref(${pdfReportRef}, raise_if_not_found=False)
         if report_action:
             pdf_binary, _ = report_action._render_qweb_pdf([record.id])
             pdf_base64 = base64.b64encode(pdf_binary).decode('utf-8')
     except Exception as pdf_err:
-        pdf_base64 = None`:"# PDF Attachment disabled in Studio generator"}
+        pdf_base64 = None` : "# PDF Attachment disabled in Studio generator"}
 
     # 3. Build Webhook Payload
-    amount_val = ${ye} if hasattr(record, '${ye.split(".")[1]}') else 0.0
+    amount_val = ${amountField} if hasattr(record, '${amountField.split(".")[1]}') else 0.0
     curr_name  = record.currency_id.name if hasattr(record, 'currency_id') and record.currency_id else "BHD"
-    doc_date   = str(${_e} or record.create_date.date())
+    doc_date   = str(${dateField} or record.create_date.date())
 
     payload = {
         "model": record._name,
@@ -235,7 +3684,7 @@ else:
         "amount": amount_val,
         "currency": curr_name,
         "date": doc_date,
-        "template_name": "${v}",
+        "template_name": "${selectedTemplate}",
         "pdf_base64": pdf_base64,
         "callback_url": "https://whatsapp.sandslab.com/api/odoo_webhook.php?action=simulate_callback"
     }
@@ -258,20 +3707,46 @@ else:
             if res_json.get('success'):
                 wamid = res_json.get('message_id', '')
                 tariff = res_json.get('tariff', {}).get('client_rate', '')
-                ${P?`record.message_post(
+                ${logChatter ? `record.message_post(
                     body=f"\u2705 <b>WhatsApp Notification Sent</b><br/>"
                          f"Template: <code>{res_json.get('template_name')}</code><br/>"
                          f"Recipient: <b>{dest_phone}</b><br/>"
                          f"Tracking ID: <code>{wamid}</code><br/>"
                          f"Tariff Debited: <b>{tariff}</b>"
-                )`:"pass"}
+                )` : "pass"}
             else:
-                ${P?`record.message_post(body=f"\u274C <b>WhatsApp Dispatch Failed:</b> {res_json.get('error', res_json.get('message'))}")`:"pass"}
+                ${logChatter ? `record.message_post(body=f"\u274C <b>WhatsApp Dispatch Failed:</b> {res_json.get('error', res_json.get('message'))}")` : "pass"}
     except Exception as ex:
-        ${P?'record.message_post(body=f"\u274C <b>WhatsApp Gateway Error:</b> {str(ex)}")':"pass"}`},ge=()=>JSON.stringify({webhook_url:"https://whatsapp.sandslab.com/api/odoo_webhook.php",http_headers:{"X-API-Key":O,"Content-Type":"application/json"},payload_fields:{model:e,record_id:"{{ record.id }}",record_name:"{{ record.name }}",partner_name:"{{ record.partner_id.name }}",partner_phone:"{{ record.partner_id.mobile or record.partner_id.phone }}",amount:"{{ record.amount_total }}",currency:"{{ record.currency_id.name }}",date:"{{ record.invoice_date or record.create_date }}",template_name:v}},null,2),ve={python:{title:"Python 3 (Odoo ERP Action / Requests)",filename:"odoo_whatsapp_connector.py",code:`import requests
+        ${logChatter ? 'record.message_post(body=f"\u274C <b>WhatsApp Gateway Error:</b> {str(ex)}")' : "pass"}`;
+  };
+  const generateOdoo17WebhookJson = () => {
+    return JSON.stringify({
+      "webhook_url": "https://whatsapp.sandslab.com/api/odoo_webhook.php",
+      "http_headers": {
+        "X-API-Key": apiKey,
+        "Content-Type": "application/json"
+      },
+      "payload_fields": {
+        "model": selectedModel,
+        "record_id": "{{ record.id }}",
+        "record_name": "{{ record.name }}",
+        "partner_name": "{{ record.partner_id.name }}",
+        "partner_phone": "{{ record.partner_id.mobile or record.partner_id.phone }}",
+        "amount": "{{ record.amount_total }}",
+        "currency": "{{ record.currency_id.name }}",
+        "date": "{{ record.invoice_date or record.create_date }}",
+        "template_name": selectedTemplate
+      }
+    }, null, 2);
+  };
+  const snippets = {
+    python: {
+      title: "Python 3 (Odoo ERP Action / Requests)",
+      filename: "odoo_whatsapp_connector.py",
+      code: `import requests
 
 API_URL = "https://whatsapp.sandslab.com/api/odoo_webhook.php"
-API_KEY = "${O}"
+API_KEY = "${apiKey}"
 
 def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_bhd, date_str, pdf_url=None):
     payload = {
@@ -290,8 +3765,13 @@ def send_odoo_invoice_whatsapp(partner_phone, partner_name, invoice_num, amount_
         "X-API-Key": API_KEY
     }
     response = requests.post(API_URL, json=payload, headers=headers, timeout=12)
-    return response.json()`},php:{title:"PHP 7.4+ / 8.x (cURL Native)",filename:"odoo_sender.php",code:`<?php
-function sendOdooWhatsApp($phone, $name, $invNum, $amount, $date, $apiKey = '${O}') {
+    return response.json()`
+    },
+    php: {
+      title: "PHP 7.4+ / 8.x (cURL Native)",
+      filename: "odoo_sender.php",
+      code: `<?php
+function sendOdooWhatsApp($phone, $name, $invNum, $amount, $date, $apiKey = '${apiKey}') {
     $ch = curl_init('https://whatsapp.sandslab.com/api/odoo_webhook.php');
     curl_setopt_array($ch, [
         CURLOPT_POST => true,
@@ -314,9 +3794,14 @@ function sendOdooWhatsApp($phone, $name, $invNum, $amount, $date, $apiKey = '${O
     $res = curl_exec($ch);
     curl_close($ch);
     return json_decode($res, true);
-}`},curl:{title:"cURL (Bash / Terminal CLI)",filename:"odoo_trigger.sh",code:`curl -X POST "https://whatsapp.sandslab.com/api/odoo_webhook.php" \\
+}`
+    },
+    curl: {
+      title: "cURL (Bash / Terminal CLI)",
+      filename: "odoo_trigger.sh",
+      code: `curl -X POST "https://whatsapp.sandslab.com/api/odoo_webhook.php" \\
   -H "Content-Type: application/json" \\
-  -H "X-API-Key: ${O}" \\
+  -H "X-API-Key: ${apiKey}" \\
   -d '{
     "model": "account.move",
     "record_id": 142,
@@ -327,7 +3812,12 @@ function sendOdooWhatsApp($phone, $name, $invNum, $amount, $date, $apiKey = '${O
     "currency": "BHD",
     "date": "13-Oct-2026",
     "template_name": "offer_sandslab"
-  }'`},dotnet:{title:".NET 6/7/8 C# (HttpClient)",filename:"OdooWhatsAppClient.cs",code:`using System;
+  }'`
+    },
+    dotnet: {
+      title: ".NET 6/7/8 C# (HttpClient)",
+      filename: "OdooWhatsAppClient.cs",
+      code: `using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -337,7 +3827,7 @@ public class OdooWhatsAppClient
 {
     private static readonly HttpClient client = new HttpClient();
     private const string ApiUrl = "https://whatsapp.sandslab.com/api/odoo_webhook.php";
-    private const string ApiKey = "${O}";
+    private const string ApiKey = "${apiKey}";
 
     public static async Task<string> DispatchOdooInvoiceAsync(string phone, string customerName, string invNum, decimal amount)
     {
@@ -357,8 +3847,13 @@ public class OdooWhatsAppClient
         var res = await client.SendAsync(req);
         return await res.Content.ReadAsStringAsync();
     }
-}`},node:{title:"Node.js / Express (Fetch API)",filename:"odoo_sender.js",code:`const API_URL = 'https://whatsapp.sandslab.com/api/odoo_webhook.php';
-const API_KEY = '${O}';
+}`
+    },
+    node: {
+      title: "Node.js / Express (Fetch API)",
+      filename: "odoo_sender.js",
+      code: `const API_URL = 'https://whatsapp.sandslab.com/api/odoo_webhook.php';
+const API_KEY = '${apiKey}';
 
 async function dispatchOdooInvoice({ phone, customerName, invoiceNumber, amount }) {
   const res = await fetch(API_URL, {
@@ -378,4 +3873,1409 @@ async function dispatchOdooInvoice({ phone, customerName, invoiceNumber, amount 
     })
   });
   return await res.json();
-}`}},ne=ve[J]||ve.python;return React.createElement("div",null,React.createElement("div",{className:"page-header-row"},React.createElement("div",{className:"page-title-group"},React.createElement("h1",null,React.createElement("span",null,"\u26A1")," Odoo ERP Automation & Developer Hub"),React.createElement("p",null,"Enterprise Odoo Automated Action Studio, inbound webhook controllers, dynamic PDF streaming, and live bi-directional delivery telemetry.")),React.createElement("div",{style:{display:"flex",gap:"8px",alignItems:"center"}},React.createElement("button",{type:"button",className:"btn btn-primary",style:{display:"inline-flex",alignItems:"center",gap:"6px",padding:"7px 14px",fontSize:"13px",fontWeight:"600",cursor:"pointer"},onClick:()=>f(!0)},React.createElement("span",null,"\u{1F4D6}")," Step-by-Step Setup Guide"),React.createElement("span",{className:"odoo-code-header-badge"},React.createElement("span",null,"\u25CF")," Odoo Gateway Active (v2.3.0)"))),React.createElement("div",{className:"odoo-subnav-bar"},React.createElement("button",{type:"button",className:`odoo-subnav-btn ${g==="studio"?"active":""}`,onClick:()=>o("studio")},React.createElement("span",null,"\u26A1")," Automated Action Studio"),React.createElement("button",{type:"button",className:`odoo-subnav-btn ${g==="tester"?"active":""}`,onClick:()=>o("tester")},React.createElement("span",null,"\u{1F9EA}")," Webhook Tester & Simulator"),React.createElement("button",{type:"button",className:`odoo-subnav-btn ${g==="audit"?"active":""}`,onClick:()=>o("audit")},React.createElement("span",null,"\u{1F4DC}")," Live Odoo Audit Telemetry"),React.createElement("button",{type:"button",className:`odoo-subnav-btn ${g==="connectors"?"active":""}`,onClick:()=>o("connectors")},React.createElement("span",null,"\u{1F50C}")," Multi-Platform Connectors")),g==="studio"&&React.createElement("div",{style:{display:"grid",gridTemplateColumns:"minmax(360px, 420px) 1fr",gap:"20px"}},React.createElement("div",{className:"card",style:{margin:0}},React.createElement("div",{className:"card-header"},React.createElement("span",{className:"card-title"},React.createElement("span",null,"\u2699\uFE0F")," Odoo Automation Configurator")),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label",style:{fontWeight:"700"}},"1. Target Odoo Business Model"),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}},React.createElement("div",{className:`odoo-model-pill ${e==="account.move"?"active":""}`,onClick:()=>d("account.move")},React.createElement("span",{style:{fontSize:"20px"}},"\u{1F4C4}"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",display:"block"}},"account.move"),React.createElement("span",{style:{fontSize:"11px",color:"var(--text-muted)"}},"Customer Invoices"))),React.createElement("div",{className:`odoo-model-pill ${e==="sale.order"?"active":""}`,onClick:()=>d("sale.order")},React.createElement("span",{style:{fontSize:"20px"}},"\u{1F6D2}"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",display:"block"}},"sale.order"),React.createElement("span",{style:{fontSize:"11px",color:"var(--text-muted)"}},"Sales Orders"))),React.createElement("div",{className:`odoo-model-pill ${e==="account.payment"?"active":""}`,onClick:()=>d("account.payment")},React.createElement("span",{style:{fontSize:"20px"}},"\u{1F4B3}"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",display:"block"}},"account.payment"),React.createElement("span",{style:{fontSize:"11px",color:"var(--text-muted)"}},"Payment Receipts"))),React.createElement("div",{className:`odoo-model-pill ${e==="stock.picking"?"active":""}`,onClick:()=>d("stock.picking")},React.createElement("span",{style:{fontSize:"20px"}},"\u{1F69A}"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",display:"block"}},"stock.picking"),React.createElement("span",{style:{fontSize:"11px",color:"var(--text-muted)"}},"Delivery Orders"))))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label",style:{fontWeight:"700"}},"2. Trigger Event Condition"),React.createElement("select",{className:"form-select",value:T,onChange:k=>m(k.target.value)},e==="account.move"&&React.createElement(React.Fragment,null,React.createElement("option",{value:"posted"},"On Invoice Posted / Validated (state == 'posted') [Recommended]"),React.createElement("option",{value:"paid"},"On Payment Completed (payment_state in ('paid', 'in_payment'))"),React.createElement("option",{value:"create"},"On Invoice Creation (Draft Created)")),e==="sale.order"&&React.createElement(React.Fragment,null,React.createElement("option",{value:"posted"},"On Sales Order Confirmed (state == 'sale') [Recommended]"),React.createElement("option",{value:"sent"},"On Quotation Sent to Customer (state == 'sent')")),e==="account.payment"&&React.createElement(React.Fragment,null,React.createElement("option",{value:"posted"},"On Payment Posted (state == 'posted') [Recommended]")),e==="stock.picking"&&React.createElement(React.Fragment,null,React.createElement("option",{value:"posted"},"On Delivery Done / Dispatched (state == 'done') [Recommended]")))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label",style:{fontWeight:"700"}},"3. WhatsApp Approved Template"),React.createElement("select",{className:"form-select",value:v,onChange:k=>l(k.target.value)},I.length>0?I.map(k=>React.createElement("option",{key:k.id,value:k.template_name},k.display_title," (",k.template_name," \u2022 ",k.category,")")):React.createElement(React.Fragment,null,React.createElement("option",{value:"uniglobal_invoice_notification"},"Invoice Notification with PDF (uniglobal_invoice_notification)"),React.createElement("option",{value:"offer_sandslab"},"SaNDS Lab Special Offer QR (offer_sandslab)"),React.createElement("option",{value:"uniglobal_delivery_dispatch"},"Order Dispatched Status (uniglobal_delivery_dispatch)")))),React.createElement("div",{className:"form-group",style:{background:"#F8FAFC",padding:"12px",borderRadius:"8px",border:"1px solid #E2E8F0"}},React.createElement("label",{className:"form-label",style:{fontWeight:"700",marginBottom:"8px"}},"4. Enterprise Automation Features"),React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"8px"}},React.createElement("label",{style:{display:"flex",alignItems:"center",gap:"8px",cursor:"pointer",fontSize:"12.5px"}},React.createElement("input",{type:"checkbox",checked:u,onChange:k=>D(k.target.checked)}),React.createElement("span",null,React.createElement("strong",null,"Dynamic PDF Streaming:")," Auto-generate & attach Odoo QWeb PDF")),React.createElement("label",{style:{display:"flex",alignItems:"center",gap:"8px",cursor:"pointer",fontSize:"12.5px"}},React.createElement("input",{type:"checkbox",checked:P,onChange:k=>z(k.target.checked)}),React.createElement("span",null,React.createElement("strong",null,"Odoo Chatter Feedback:")," Log WhatsApp delivery status in record chatter")),React.createElement("label",{style:{display:"flex",alignItems:"center",gap:"8px",cursor:"pointer",fontSize:"12.5px"}},React.createElement("input",{type:"checkbox",checked:y,onChange:k=>p(k.target.checked)}),React.createElement("span",null,React.createElement("strong",null,"Smart Phone Fallback:")," Check partner mobile first, then landline/phone")))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Integration API Key"),React.createElement("input",{type:"text",className:"form-input",value:O,onChange:k=>R(k.target.value)}))),React.createElement("div",{className:"card",style:{margin:0}},React.createElement("div",{className:"card-header",style:{flexWrap:"wrap",gap:"8px"}},React.createElement("div",{style:{display:"flex",gap:"8px"}},React.createElement("button",{type:"button",className:`btn ${C==="python"?"btn-primary":"btn-secondary"}`,style:{fontSize:"12px",padding:"6px 14px"},onClick:()=>b("python")},"\u{1F40D} Python Server Action (Odoo 14 - 18)"),React.createElement("button",{type:"button",className:`btn ${C==="webhook"?"btn-primary":"btn-secondary"}`,style:{fontSize:"12px",padding:"6px 14px"},onClick:()=>b("webhook")},"\u26A1 Odoo 17/18 Webhook Rule (JSON)")),React.createElement("button",{className:"btn-copy-code",onClick:()=>{let k=C==="python"?ue():ge();navigator.clipboard.writeText(k),n("Odoo Automation code copied to clipboard!")}},React.createElement("span",null,"\u{1F4CB}")," Copy Code")),React.createElement("div",{className:"code-box",style:{minHeight:"440px",maxHeight:"580px",overflowY:"auto"}},React.createElement("div",{className:"code-box-header"},React.createElement("span",null,C==="python"?"ir.actions.server.py":"odoo17_webhook_config.json"),React.createElement("span",{style:{fontSize:"11px",color:"#64748B"}},C==="python"?'Paste directly into Odoo Server Action "Python Code" field':"Odoo 17 / 18 Automation Rule Webhook")),React.createElement("pre",{style:{margin:0,whiteSpace:"pre-wrap",wordBreak:"break-word",overflowWrap:"anywhere"}},C==="python"?ue():ge())),React.createElement("div",{style:{marginTop:"16px",padding:"14px",background:"#F0F9FF",border:"1px solid #BAE6FD",borderRadius:"8px"}},React.createElement("strong",{style:{fontSize:"13px",color:"#0369A1",display:"flex",alignItems:"center",gap:"6px",marginBottom:"6px"}},React.createElement("span",null,"\u{1F4D8}")," How to Setup in Odoo in 30 Seconds:"),React.createElement("ol",{style:{fontSize:"12px",color:"#0C4A6E",margin:"0 0 0 18px",lineHeight:"1.6"}},React.createElement("li",null,"In Odoo, activate ",React.createElement("strong",null,"Developer Mode")," (Settings \u2192 General Settings \u2192 Activate the developer mode)."),React.createElement("li",null,"Navigate to ",React.createElement("strong",null,"Settings \u2192 Technical \u2192 Server Actions")," (or ",React.createElement("em",null,"Automation Rules")," in Odoo 17/18)."),React.createElement("li",null,"Create a new action: Set Model to ",React.createElement("strong",null,e)," and Action To Do to ",React.createElement("strong",null,"Execute Python Code"),"."),React.createElement("li",null,"Paste the copied script into the ",React.createElement("strong",null,"Python Code")," box and click ",React.createElement("strong",null,"Save"),"!"),React.createElement("li",null,"Whenever a document matches your trigger event, WhatsApp will dispatch automatically with live chatter logging."))))),g==="tester"&&React.createElement("div",{style:{display:"grid",gridTemplateColumns:"minmax(380px, 460px) 1fr",gap:"20px"}},React.createElement("div",{className:"card",style:{margin:0}},React.createElement("div",{className:"card-header"},React.createElement("span",{className:"card-title"},React.createElement("span",null,"\u{1F9EA}")," Odoo Inbound Webhook Simulator")),React.createElement("div",{style:{marginBottom:"14px"}},React.createElement("span",{style:{fontSize:"11.5px",fontWeight:"700",color:"var(--text-secondary)",display:"block",marginBottom:"6px"}},"Load Quick Simulation Preset:"),React.createElement("div",{style:{display:"flex",gap:"6px",flexWrap:"wrap"}},React.createElement("button",{type:"button",className:"odoo-preset-btn",onClick:()=>le("invoice")},React.createElement("span",null,"\u{1F4C4}")," Invoice (INV/2026/0142)"),React.createElement("button",{type:"button",className:"odoo-preset-btn",onClick:()=>le("order")},React.createElement("span",null,"\u{1F6D2}")," Sales Order (SO-8821)"),React.createElement("button",{type:"button",className:"odoo-preset-btn",onClick:()=>le("payment")},React.createElement("span",null,"\u{1F4B3}")," Payment (PAY-5510)"))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Endpoint URL"),React.createElement("div",{style:{display:"flex",gap:"8px"}},React.createElement("span",{className:"badge cat-utility",style:{padding:"8px 12px",fontSize:"12px"}},"POST"),React.createElement("input",{type:"text",className:"form-input",value:_,readOnly:!0}))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"API Key Header (X-API-Key)"),React.createElement("input",{type:"text",className:"form-input",value:O,onChange:k=>R(k.target.value)})),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Odoo Model"),React.createElement("select",{className:"form-select",value:x,onChange:k=>A(k.target.value)},React.createElement("option",{value:"account.move"},"account.move"),React.createElement("option",{value:"sale.order"},"sale.order"),React.createElement("option",{value:"account.payment"},"account.payment"),React.createElement("option",{value:"stock.picking"},"stock.picking"))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Document Ref"),React.createElement("input",{type:"text",className:"form-input",value:S,onChange:k=>E(k.target.value)}))),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Customer Name"),React.createElement("input",{type:"text",className:"form-input",value:i,onChange:k=>a(k.target.value)})),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Recipient Phone"),React.createElement("input",{type:"text",className:"form-input",value:M,onChange:k=>N(k.target.value)}))),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Amount"),React.createElement("input",{type:"text",className:"form-input",value:h,onChange:k=>W(k.target.value)})),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Currency"),React.createElement("input",{type:"text",className:"form-input",value:$,onChange:k=>K(k.target.value)}))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"WhatsApp Template"),React.createElement("select",{className:"form-select",value:H,onChange:k=>j(k.target.value)},I.length>0?I.map(k=>React.createElement("option",{key:k.id,value:k.template_name},k.display_title," (",k.template_name,")")):React.createElement(React.Fragment,null,React.createElement("option",{value:"offer_sandslab"},"SaNDS Lab Special Offer QR (offer_sandslab)"),React.createElement("option",{value:"uniglobal_invoice_notification"},"Invoice Notification (uniglobal_invoice_notification)")))),React.createElement("button",{className:"btn btn-success",style:{width:"100%",padding:"10px"},onClick:he,disabled:L},L?"Dispatching...":"\u25B6 Dispatch Simulated Odoo Webhook")),React.createElement("div",{className:"card",style:{margin:0}},React.createElement("div",{className:"card-header"},React.createElement("span",{className:"card-title"},React.createElement("span",null,"\u{1F4E1}")," Gateway Real-Time Response"),te&&React.createElement("span",{className:"badge status-sent",style:{fontSize:"11px"}},"Meta Dispatch Verified")),React.createElement("div",{className:"code-box",style:{minHeight:"360px",maxHeight:"560px",overflowY:"auto"}},React.createElement("div",{className:"code-box-header"},React.createElement("span",null,"HTTP Response Inspector"),React.createElement("span",{style:{fontSize:"10.5px",color:"#64748B"}},"application/json")),React.createElement("pre",{style:{margin:0,whiteSpace:"pre-wrap",wordBreak:"break-word",overflowWrap:"anywhere"}},X||'// Click "Dispatch Simulated Odoo Webhook" to execute live Meta Cloud API integration.')),te&&React.createElement("div",{style:{marginTop:"14px",padding:"12px",background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"8px",display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",color:"#166534",display:"block"}},"Message Successfully Recorded"),React.createElement("code",{style:{fontSize:"11.5px",color:"#047857"}},te)),React.createElement("button",{type:"button",className:"btn btn-secondary",style:{fontSize:"12px"},onClick:()=>{let k=document.querySelector('button.nav-item[onClick*="logs"]');k&&k.click()}},"View in Message Logs \u2192")))),g==="audit"&&React.createElement("div",{className:"card",style:{margin:0}},React.createElement("div",{className:"card-header"},React.createElement("div",null,React.createElement("span",{className:"card-title"},React.createElement("span",null,"\u{1F4DC}")," Odoo Dispatched Messages Audit"),React.createElement("p",{style:{margin:"4px 0 0 0",fontSize:"12px",color:"var(--text-secondary)"}},"Real-time log of all WhatsApp messages triggered from Odoo ERP Automated Actions and webhooks.")),React.createElement("button",{className:"btn btn-secondary",style:{fontSize:"12px"},onClick:ie,disabled:q},q?"Refreshing...":"\u{1F504} Refresh Logs")),React.createElement("div",{style:{overflowX:"auto"}},React.createElement("table",{className:"table",style:{width:"100%"}},React.createElement("thead",null,React.createElement("tr",null,React.createElement("th",null,"ID"),React.createElement("th",null,"Odoo Model"),React.createElement("th",null,"Document Ref"),React.createElement("th",null,"Recipient Phone"),React.createElement("th",null,"Template"),React.createElement("th",null,"Status"),React.createElement("th",null,"Cost (BHD)"),React.createElement("th",null,"Meta Tracking ID"),React.createElement("th",null,"Dispatched At"))),React.createElement("tbody",null,oe.length>0?oe.map(k=>React.createElement("tr",{key:k.id},React.createElement("td",null,React.createElement("strong",null,"#",k.id)),React.createElement("td",null,React.createElement("span",{className:"badge",style:{background:"#E0F2FE",color:"#0369A1"}},k.odoo_model||"account.move")),React.createElement("td",null,React.createElement("strong",null,k.odoo_record_name||"INV/2026/0142")),React.createElement("td",null,React.createElement("code",null,k.to_phone)),React.createElement("td",null,React.createElement("span",{style:{fontSize:"12px"}},k.template_name||"N/A")),React.createElement("td",null,React.createElement("span",{className:`badge status-${k.status||"sent"}`},k.status==="read"?"READ \u2713\u2713":k.status==="delivered"?"DELIVERED \u2713\u2713":k.status==="sent"?"SENT \u2713":k.status.toUpperCase())),React.createElement("td",null,React.createElement("strong",null,parseFloat(k.client_rate_bhd||.0185).toFixed(4))),React.createElement("td",null,React.createElement("code",{style:{fontSize:"11px",maxWidth:"140px",display:"inline-block",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"},title:k.message_id},k.message_id)),React.createElement("td",{style:{fontSize:"11.5px",color:"var(--text-muted)"}},k.sent_at||k.created_at))):React.createElement("tr",null,React.createElement("td",{colSpan:"9",style:{textAlign:"center",padding:"30px",color:"var(--text-muted)"}},q?"Loading Odoo message telemetry...":"No Odoo-triggered messages found yet. Use the Webhook Simulator to dispatch test notifications.")))))),g==="connectors"&&React.createElement("div",{className:"card",style:{margin:0}},React.createElement("div",{className:"card-header",style:{flexWrap:"wrap",gap:"8px"}},React.createElement("span",{className:"card-title"},React.createElement("span",null,"\u{1F50C}")," Multi-Platform Connector Snippets"),React.createElement("button",{className:"btn-copy-code",onClick:()=>{navigator.clipboard.writeText(ne.code),n(`${ne.filename} copied to clipboard!`)}},React.createElement("span",null,"\u{1F4CB}")," Copy Code")),React.createElement("div",{className:"code-tabs-header"},React.createElement("button",{type:"button",className:`code-tab-btn ${J==="python"?"active":""}`,onClick:()=>ae("python")},React.createElement("span",null,"\u{1F40D}")," Python (Odoo)"),React.createElement("button",{type:"button",className:`code-tab-btn ${J==="php"?"active":""}`,onClick:()=>ae("php")},React.createElement("span",null,"\u{1F418}")," PHP"),React.createElement("button",{type:"button",className:`code-tab-btn ${J==="curl"?"active":""}`,onClick:()=>ae("curl")},React.createElement("span",null,"\u{1F4BB}")," cURL"),React.createElement("button",{type:"button",className:`code-tab-btn ${J==="dotnet"?"active":""}`,onClick:()=>ae("dotnet")},React.createElement("span",null,"\u{1F537}")," .NET (C#)"),React.createElement("button",{type:"button",className:`code-tab-btn ${J==="node"?"active":""}`,onClick:()=>ae("node")},React.createElement("span",null,"\u{1F7E8}")," Node.js")),React.createElement("div",{className:"code-box",style:{minHeight:"380px",maxHeight:"560px",overflowY:"auto"}},React.createElement("div",{className:"code-box-header"},React.createElement("span",null,ne.filename),React.createElement("span",{style:{fontSize:"10.5px",color:"#64748B"}},ne.title)),React.createElement("pre",{style:{margin:0,whiteSpace:"pre-wrap",wordBreak:"break-word",overflowWrap:"anywhere"}},ne.code))),c&&React.createElement(Oe,{onClose:()=>f(!1),showToast:n,apiKey:O}))}function Le({showToast:n}){let[r,g]=s([]),[o,c]=s(""),[f,e]=s(!1),d=()=>{fetch("./api/api_keys.php").then(l=>l.json()).then(l=>{l.success&&g(l.data)})};U(()=>{d()},[]);let T=async l=>{if(l.preventDefault(),!!o){e(!0);try{(await(await fetch("./api/api_keys.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({system_name:o})})).json()).success&&(n(`Generated API key for ${o}`),c(""),d())}finally{e(!1)}}},m=async(l,u)=>{await fetch("./api/api_keys.php",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:l,is_active:u?0:1})}),n("API Key status updated"),d()};return React.createElement("div",null,React.createElement("div",{className:"page-header-row"},React.createElement("div",{className:"page-title-group"},React.createElement("h1",null,React.createElement("span",null,"\u{1F511}")," External API Keys Management"),React.createElement("p",null,"Manage authentication tokens for Odoo ERP, POS terminal middleware, and third-party systems."))),React.createElement("div",{className:"card",style:{padding:"16px 20px",marginBottom:"16px"}},React.createElement("form",{onSubmit:T,style:{display:"flex",gap:"12px",alignItems:"center"}},React.createElement("input",{type:"text",className:"form-input",placeholder:"System / Application Name (e.g. Odoo ERP Production)",value:o,onChange:l=>c(l.target.value),style:{flex:1},required:!0}),React.createElement("button",{type:"submit",className:"btn btn-primary",disabled:f},React.createElement("span",null,"\u2795")," Generate New API Key"))),React.createElement(Z,{columns:[{key:"system_name",label:"Integration System",render:l=>React.createElement("strong",null,l.system_name)},{key:"api_key",label:"Secret API Key Token",render:l=>React.createElement("code",{style:{background:"#F1F5F9",padding:"4px 8px",borderRadius:"4px",color:"#0F172A"}},l.api_key)},{key:"rate_limit_per_minute",label:"Rate Limit",render:l=>React.createElement("span",null,l.rate_limit_per_minute," req/min")},{key:"is_active",label:"Status",render:l=>React.createElement("span",{className:`badge ${l.is_active?"status-read":"status-failed"}`},l.is_active?"ACTIVE":"REVOKED")},{key:"last_used_at",label:"Last Used",render:l=>React.createElement("span",{style:{fontSize:"11.5px",color:"var(--text-muted)"}},l.last_used_at||"Never")},{key:"actions",label:"Actions",sortable:!1,render:l=>React.createElement("button",{className:"btn btn-secondary btn-sm",onClick:()=>m(l.id,l.is_active)},l.is_active?"Revoke":"Activate")}],data:r,title:"api_keys",searchPlaceholder:"Search system name, token...",defaultPageSize:10,pageSizeOptions:[5,10,20],defaultSortKey:"id",defaultSortDir:"desc"}))}function $e({currentUser:n,showToast:r}){let g=n?.role==="superadmin",[o,c]=s([]),[f,e]=s(!1),[d,T]=s({name:"",email:"",password:"Password@123",role:"user",status:"active"}),[m,v]=s(null),[l,u]=s(null),[D,P]=s(!1),[z,y]=s(null),[p,C]=s("Password@123"),[b,I]=s(!1),F=()=>{fetch("./api/users.php").then(a=>a.json()).then(a=>{if(a.success){let S=g?a.data:a.data.filter(E=>E.role!=="superadmin");c(S)}})};U(()=>{F()},[n]);let O=async a=>{a.preventDefault();try{let E=await(await fetch("./api/users.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)})).json();E.success?(r("\u2713 User created successfully"),e(!1),T({name:"",email:"",password:"Password@123",role:"user",status:"active"}),F()):r(E.error||"Failed to create user","error")}catch{r("Error creating user","error")}},R=async a=>{if(a.preventDefault(),!!l){P(!0);try{let S={id:l.id,name:l.name,email:l.email,role:l.role,status:l.status};l.password&&l.password.trim()!==""&&(S.password=l.password.trim());let h=await(await fetch("./api/users.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(S)})).json();h.success?(r("\u2713 User account updated successfully!"),u(null),F()):r(h.error||"Failed to update user","error")}catch{r("Error updating user account","error")}finally{P(!1)}}},_=(a,S)=>{if(n?.id===a.id){r("You cannot suspend your own logged-in account","error");return}S==="suspended"?v({title:"Suspend User Account?",subtitle:`Are you sure you want to suspend account "${a.name}" (${a.email})? They will immediately be prevented from logging into the platform.`,icon:"\u23F8\uFE0F",badgeClass:"warning",confirmText:"Yes, Suspend Account",cancelText:"Cancel",onConfirm:async()=>{try{let h=await(await fetch("./api/users.php?action=toggle_status",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:a.id,status:"suspended"})})).json();h.success?(r(`\u23F8\uFE0F User "${a.name}" has been suspended`),F()):r(h.error||"Failed to suspend user","error")}catch{r("Error suspending user","error")}finally{v(null)}}}):(async()=>{try{let h=await(await fetch("./api/users.php?action=toggle_status",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:a.id,status:"active"})})).json();h.success?(r(`\u2713 User "${a.name}" has been activated`),F()):r(h.error||"Failed to activate user","error")}catch{r("Error activating user","error")}})()},t=async a=>{if(a.preventDefault(),!!z){if(!p||p.trim().length<6){r("Password must be at least 6 characters","error");return}I(!0);try{let E=await(await fetch("./api/users.php?action=reset_password",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:z.id,new_password:p.trim()})})).json();E.success?(r(`\u2713 Password reset for "${z.name}" successfully!`),y(null)):r(E.error||"Failed to reset password","error")}catch{r("Error resetting password","error")}finally{I(!1)}}},x=()=>{let a="Pass@"+Math.floor(1e3+Math.random()*9e3)+"!";C(a)},A=a=>{a&&(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(a).then(()=>{r("\u{1F4CB} Password copied to clipboard")}).catch(()=>{r(`Password: ${a}`)}):r(`Password: ${a}`))},M=a=>{let S=o.find(h=>h.id===a),E=S?`"${S.name}"`:"this user";v({title:"Delete User Account?",subtitle:`Are you sure you want to permanently delete user account ${E}? They will no longer be able to log in.`,icon:"\u{1F464}",badgeClass:"danger",confirmText:"Yes, Delete User",cancelText:"Cancel",onConfirm:async()=>{try{let W=await(await fetch(`./api/users.php?id=${a}`,{method:"DELETE"})).json();W.success?(r("User deleted"),F()):r(W.error,"error")}catch{r("Error deleting user","error")}finally{v(null)}}})},N=[{key:"name",label:"User Name",render:a=>React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"8px"}},React.createElement("div",{className:"avatar",style:{background:a.avatar_color||"#128C7E"}},a.name.charAt(0)),React.createElement("div",null,React.createElement("strong",{style:{display:"block",fontSize:"13px"}},a.name),n?.id===a.id&&React.createElement("span",{style:{fontSize:"10.5px",color:"var(--wa-teal)",fontWeight:"700"}},"(Current Session)")))},{key:"email",label:"Email Address"},{key:"role",label:"Assigned Role",render:a=>React.createElement("span",{className:`badge ${a.role==="superadmin"?"cat-marketing":a.role==="admin"?"cat-auth":"cat-utility"}`},a.role.toUpperCase())},{key:"status",label:"Account Status",render:a=>React.createElement("span",{className:`badge ${a.status==="active"?"status-read":"status-failed"}`},a.status==="active"?"\u2713 ACTIVE":"\u23F8\uFE0F SUSPENDED")},{key:"last_login",label:"Last Active",render:a=>React.createElement("span",{style:{fontSize:"11.5px",color:"var(--text-muted)"}},a.last_login||"Never")},{key:"actions",label:"Actions",sortable:!1,render:a=>React.createElement("div",{style:{display:"flex",gap:"5px",alignItems:"center",flexWrap:"wrap"}},React.createElement("button",{className:"btn btn-secondary btn-sm",title:"Edit user details",onClick:()=>u({...a,password:""})},"\u270F\uFE0F Edit"),React.createElement("button",{className:"btn btn-secondary btn-sm",title:"Admin Reset Password",onClick:()=>{y(a),C("Password@123")}},"\u{1F511} Reset PW"),n?.id!==a.id&&(a.status==="active"?React.createElement("button",{className:"btn btn-warning btn-sm",title:"Suspend user account",onClick:()=>_(a,"suspended")},"\u23F8\uFE0F Suspend"):React.createElement("button",{className:"btn btn-success btn-sm",title:"Activate user account",onClick:()=>_(a,"active")},"\u25B6\uFE0F Activate")),n?.id!==a.id&&React.createElement("button",{className:"btn btn-danger-outline btn-sm",title:"Delete user",onClick:()=>M(a.id)},"\u{1F5D1}\uFE0F"))}],i=g?o:o.filter(a=>a.role!=="superadmin");return React.createElement("div",null,React.createElement("div",{className:"page-header-row"},React.createElement("div",{className:"page-title-group"},React.createElement("h1",null,React.createElement("span",null,"\u{1F465}")," User Accounts & Role Permissions"),React.createElement("p",null,g?"Manage Superadmin, Admin, and Operations User accounts for platform access.":"Manage Admin and Operations User accounts for platform access.")),React.createElement("button",{className:"btn btn-primary",onClick:()=>e(!0)},React.createElement("span",null,"\u2795")," Add New User")),React.createElement(Z,{columns:N,data:i,title:"platform_users",searchPlaceholder:"Search users by name, email, role...",defaultPageSize:10,pageSizeOptions:[5,10,20],defaultSortKey:"id",defaultSortDir:"desc"}),f&&React.createElement("div",{className:"modal-overlay",onClick:()=>e(!1)},React.createElement("div",{className:"modal-content",style:{maxWidth:"480px"},onClick:a=>a.stopPropagation()},React.createElement("div",{className:"modal-header"},React.createElement("span",{className:"card-title"},"Create New User"),React.createElement("button",{className:"close-btn",onClick:()=>e(!1)},"\u2715")),React.createElement("form",{onSubmit:O},React.createElement("div",{className:"modal-body",style:{padding:"20px"}},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Full Name ",React.createElement("span",{style:{color:"#EF4444"}},"*")),React.createElement("input",{type:"text",className:"form-input",value:d.name,onChange:a=>T({...d,name:a.target.value}),required:!0})),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Email Address ",React.createElement("span",{style:{color:"#EF4444"}},"*")),React.createElement("input",{type:"email",className:"form-input",value:d.email,onChange:a=>T({...d,email:a.target.value}),required:!0})),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Password ",React.createElement("span",{style:{color:"#EF4444"}},"*")),React.createElement("input",{type:"password",className:"form-input",value:d.password,onChange:a=>T({...d,password:a.target.value}),required:!0,minLength:6}),React.createElement("span",{className:"form-hint"},"Default password is Password@123 (min 6 characters)")),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Role"),React.createElement("select",{className:"form-select",value:d.role,onChange:a=>T({...d,role:a.target.value})},g&&React.createElement("option",{value:"superadmin"},"Superadmin (Global Platform Owner)"),React.createElement("option",{value:"admin"},"Admin (Full Client Access)"),React.createElement("option",{value:"user"},"User (Standard Access)"))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Account Status"),React.createElement("select",{className:"form-select",value:d.status,onChange:a=>T({...d,status:a.target.value})},React.createElement("option",{value:"active"},"Active (Access Allowed)"),React.createElement("option",{value:"suspended"},"Suspended (Access Blocked)")))),React.createElement("div",{className:"modal-footer",style:{padding:"12px 20px",display:"flex",gap:"8px",justifyContent:"flex-end"}},React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:()=>e(!1)},"Cancel"),React.createElement("button",{type:"submit",className:"btn btn-primary"},"\u2795 Create User"))))),l&&React.createElement("div",{className:"modal-overlay",onClick:()=>u(null)},React.createElement("div",{className:"modal-content",style:{maxWidth:"480px"},onClick:a=>a.stopPropagation()},React.createElement("div",{className:"modal-header"},React.createElement("span",{className:"card-title"},"\u270F\uFE0F Edit User: ",l.name),React.createElement("button",{className:"close-btn",onClick:()=>u(null)},"\u2715")),React.createElement("form",{onSubmit:R},React.createElement("div",{className:"modal-body",style:{padding:"20px"}},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Full Name ",React.createElement("span",{style:{color:"#EF4444"}},"*")),React.createElement("input",{type:"text",className:"form-input",value:l.name,onChange:a=>u({...l,name:a.target.value}),required:!0})),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Email Address ",React.createElement("span",{style:{color:"#EF4444"}},"*")),React.createElement("input",{type:"email",className:"form-input",value:l.email,onChange:a=>u({...l,email:a.target.value}),required:!0})),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Assigned Role"),React.createElement("select",{className:"form-select",value:l.role,onChange:a=>u({...l,role:a.target.value})},g&&React.createElement("option",{value:"superadmin"},"Superadmin (Global Platform Owner)"),React.createElement("option",{value:"admin"},"Admin (Full Client Access)"),React.createElement("option",{value:"user"},"User (Standard Access)"))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Account Status"),React.createElement("select",{className:"form-select",value:l.status,onChange:a=>u({...l,status:a.target.value})},React.createElement("option",{value:"active"},"Active (Access Allowed)"),React.createElement("option",{value:"suspended"},"Suspended (Access Blocked)"))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Set New Password (Optional)"),React.createElement("input",{type:"password",className:"form-input",placeholder:"Leave blank to keep unchanged",value:l.password||"",onChange:a=>u({...l,password:a.target.value}),minLength:6}),React.createElement("span",{className:"form-hint"},"Enter at least 6 characters only if you want to overwrite password."))),React.createElement("div",{className:"modal-footer",style:{padding:"12px 20px",display:"flex",gap:"8px",justifyContent:"flex-end"}},React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:()=>u(null),disabled:D},"Cancel"),React.createElement("button",{type:"submit",className:"btn btn-primary",disabled:D},D?"Saving...":"\u{1F4BE} Save Changes"))))),z&&React.createElement("div",{className:"modal-overlay",onClick:()=>y(null)},React.createElement("div",{className:"modal-content",style:{maxWidth:"460px"},onClick:a=>a.stopPropagation()},React.createElement("div",{className:"modal-header"},React.createElement("span",{className:"card-title"},"\u{1F511} Reset Password for ",z.name),React.createElement("button",{className:"close-btn",onClick:()=>y(null)},"\u2715")),React.createElement("form",{onSubmit:t},React.createElement("div",{className:"modal-body",style:{padding:"20px"}},React.createElement("div",{style:{marginBottom:"14px",fontSize:"12.5px",color:"var(--text-secondary)"}},"User Account: ",React.createElement("strong",null,z.email)," \u2022 Role: ",React.createElement("strong",{style:{textTransform:"uppercase"}},z.role)),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"New Password ",React.createElement("span",{style:{color:"#EF4444"}},"*")),React.createElement("div",{style:{display:"flex",gap:"8px"}},React.createElement("input",{type:"text",className:"form-input",value:p,onChange:a=>C(a.target.value),placeholder:"Enter new password (min 6 chars)",required:!0,minLength:6,style:{fontFamily:"monospace",fontWeight:"bold"}}),React.createElement("button",{type:"button",className:"btn btn-secondary btn-sm",onClick:x,title:"Generate random password",style:{whiteSpace:"nowrap"}},"\u{1F3B2} Random"),React.createElement("button",{type:"button",className:"btn btn-secondary btn-sm",onClick:()=>A(p),title:"Copy to clipboard",style:{whiteSpace:"nowrap"}},"\u{1F4CB} Copy"))),React.createElement("div",{style:{background:"#EFF6FF",border:"1px solid #BFDBFE",color:"#1E40AF",padding:"10px 14px",borderRadius:"8px",fontSize:"12px",marginTop:"14px",lineHeight:"1.5"}},"\u{1F4A1} ",React.createElement("strong",null,"Admin Notice:")," Once saved, the user must use this new password to sign in. Every user can also update their own password at any time via the ",React.createElement("strong",null,"Change Password")," button in the header.")),React.createElement("div",{className:"modal-footer",style:{padding:"12px 20px",display:"flex",gap:"8px",justifyContent:"flex-end"}},React.createElement("button",{type:"button",className:"btn btn-secondary",onClick:()=>y(null),disabled:b},"Cancel"),React.createElement("button",{type:"submit",className:"btn btn-primary",disabled:b},b?"Resetting...":"\u{1F511} Reset Password"))))),m&&React.createElement(me,{isOpen:!!m,title:m.title,subtitle:m.subtitle,icon:m.icon,badgeClass:m.badgeClass,confirmText:m.confirmText,cancelText:m.cancelText,onClose:()=>v(null),onConfirm:m.onConfirm}))}function G(n,r="BHD",g=3){let o=parseFloat(n||0),c=typeof g=="number"?g:["BHD","KWD","OMR"].includes(r)?3:2,f=o.toFixed(c);return r==="INR"?`\u20B9 ${f}`:r==="USD"?`$ ${f}`:`${f} ${r}`}function ee(n,r="YYYY-MM-DD HH:mm:ss"){if(!n)return"";try{let g=String(n).trim();/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(g)&&(g=g.replace(" ","T"));let o=new Date(g);if(isNaN(o.getTime()))return n;let c=o.getFullYear(),f=String(o.getMonth()+1).padStart(2,"0"),e=String(o.getDate()).padStart(2,"0"),d=o.getHours(),T=String(o.getMinutes()).padStart(2,"0"),m=String(o.getSeconds()).padStart(2,"0"),v=d>=12?"PM":"AM",l=String(d%12||12).padStart(2,"0"),u=String(d).padStart(2,"0");return r==="DD/MM/YYYY hh:mm:ss A"?`${e}/${f}/${c} ${l}:${T}:${m} ${v}`:r==="DD-MM-YYYY HH:mm"?`${e}-${f}-${c} ${u}:${T}`:r==="MM/DD/YYYY hh:mm A"?`${f}/${e}/${c} ${l}:${T} ${v}`:r==="YYYY-MM-DD hh:mm A"?`${c}-${f}-${e} ${l}:${T} ${v}`:`${c}-${f}-${e} ${u}:${T}:${m}`}catch{return n}}function je({currentUser:n,showToast:r,globalSettings:g,onBalanceChange:o}){let[c,f]=s({wallet_balance:0,currency:"BHD",currency_decimals:3,users:[],transactions:[]}),[e,d]=s(!0),[T,m]=s(!1),[v,l]=s(null),[u,D]=s({user_id:"",amount:"",transaction_type:"credit",reference_id:"",notes:""}),[P,z]=s(!1),[y,p]=s("all"),[C,b]=s(null),[I,F]=s(!1),O=n?.role==="superadmin",R=async()=>{d(!0);try{let a=await(await fetch(`./api/wallet.php?type=${y==="all"?"":y}&limit=100`)).json();a.success&&(f(a),o&&o(a.wallet_balance))}catch(i){console.error(i)}finally{d(!1)}};U(()=>{R()},[y]);let _=(i=null)=>{let a=i?i.id:c.users[0]?.id||"";D({user_id:a,amount:"",transaction_type:"credit",reference_id:"",notes:""}),l(i),m(!0)},t=async i=>{if(i.preventDefault(),!u.user_id||parseFloat(u.amount)<=0){r("Please enter a valid amount and target account","error");return}z(!0);try{let S=await(await fetch("./api/wallet.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(u)})).json();S.success?(r(S.message||"Wallet balance updated successfully!"),m(!1),R()):r(S.error||"Failed to update wallet balance","error")}catch{r("Network error processing recharge","error")}finally{z(!1)}},x=async()=>{if(C){F(!0);try{let a=await(await fetch(`./api/wallet.php?id=${C.id}&revert=1`,{method:"DELETE"})).json();a.success?(r(a.message||"Transaction record deleted & balance adjusted successfully"),b(null),R()):r(a.error||"Failed to delete transaction","error")}catch{r("Network error deleting transaction","error")}finally{F(!1)}}},A=c.currency||g?.system_currency||"BHD",M=c.currency_decimals??g?.currency_decimals??3,N=[{key:"created_at",label:"Date & Time",render:i=>React.createElement("span",{style:{fontSize:"12px",color:"var(--text-secondary)"}},ee(i.created_at,g?.system_date_format))},{key:"user_name",label:"Account / User",render:i=>React.createElement("div",null,React.createElement("strong",null,i.user_name||"Client Account"),React.createElement("div",{style:{fontSize:"10.5px",color:"var(--text-muted)"}},i.user_email))},{key:"transaction_type",label:"Type",render:i=>React.createElement("span",{className:`tx-type-badge tx-${i.transaction_type}`},i.transaction_type==="credit"?"\u{1F7E2} Credit (+)":i.transaction_type==="debit"?"\u{1F534} Debit (-)":"\u{1F7E1} Adjustment")},{key:"amount",label:"Amount",render:i=>{let a=i.transaction_type==="credit";return React.createElement("span",{style:{fontWeight:"800",fontSize:"13px",color:a?"#15803D":"#B91C1C"}},a?"+":"-",G(i.amount,i.currency||A,M))}},{key:"balance_after",label:"Balance After",render:i=>React.createElement("div",null,React.createElement("strong",null,G(i.balance_after,i.currency||A,M)),React.createElement("div",{style:{fontSize:"10px",color:"var(--text-muted)"}},"Before: ",G(i.balance_before,i.currency||A,M)))},{key:"reference_id",label:"Reference / Ref ID",render:i=>React.createElement("div",{style:{maxWidth:"180px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"},title:i.reference_id},React.createElement("span",{className:"badge badge-subtle",style:{fontSize:"11px",fontFamily:"monospace"}},i.reference_id||"N/A"))},{key:"description",label:"Description / Notes",render:i=>React.createElement("div",{style:{fontSize:"12px",maxWidth:"240px"},title:i.description},i.description||(i.reference_type==="superadmin_topup"?"Recharge added by Superadmin":"WhatsApp Dispatch"))},{key:"performed_by_name",label:"Processed By",render:i=>React.createElement("span",{style:{fontSize:"11.5px",color:"var(--text-secondary)"}},i.performed_by_name||"System / Auto")},{key:"actions",label:"Actions",sortable:!1,render:i=>React.createElement("div",null,O&&React.createElement("button",{className:"btn btn-secondary btn-sm",style:{padding:"3px 8px",fontSize:"11px",color:"#EF4444",display:"flex",alignItems:"center",gap:"3px"},onClick:()=>b(i),title:"Delete this transaction record and adjust user balance"},React.createElement("span",null,"\u{1F5D1}\uFE0F")," Delete"))}];return React.createElement("div",null,React.createElement("div",{className:"page-header-row"},React.createElement("div",{className:"page-title-group"},React.createElement("h1",null,React.createElement("span",null,"\u{1F4B3}")," Prepaid Wallet & Financial Statement"),React.createElement("p",null,"Superadmin balance management, automatic transaction debit ledger, and multi-currency billing statement.")),React.createElement("div",{style:{display:"flex",gap:"10px"}},O&&React.createElement("button",{className:"btn btn-primary",onClick:()=>_(null),style:{display:"flex",alignItems:"center",gap:"6px"}},React.createElement("span",null,"\u2795")," Add Wallet Balance"),React.createElement("button",{className:"btn btn-secondary",onClick:R},React.createElement("span",null,"\u{1F504}")," Refresh Statement"))),React.createElement("div",{className:"wallet-hero-grid"},React.createElement("div",{className:"wallet-balance-card"},React.createElement("div",{className:"wallet-balance-label"},"Available Prepaid Wallet Balance"),React.createElement("div",{className:"wallet-balance-amount"},G(c.wallet_balance,A,M)),React.createElement("div",{className:"wallet-quick-actions"},O&&React.createElement("button",{className:"btn-recharge",onClick:()=>_(null)},React.createElement("span",null,"\u2795")," Top-Up / Add Credit"),React.createElement("span",{style:{fontSize:"12px",opacity:.9,alignSelf:"center"}},"Base Currency: ",React.createElement("strong",null,A)))),React.createElement("div",{className:"card",style:{display:"flex",flexDirection:"column",justifyContent:"center"}},React.createElement("span",{style:{fontSize:"12px",color:"var(--text-muted)",fontWeight:"700",textTransform:"uppercase"}},"Total Credits / Recharges"),React.createElement("div",{style:{fontSize:"24px",fontWeight:"800",color:"#15803D",marginTop:"6px"}},G(c.transactions.filter(i=>i.transaction_type==="credit").reduce((i,a)=>i+parseFloat(a.amount||0),0),A,M)),React.createElement("span",{style:{fontSize:"11.5px",color:"var(--text-secondary)",marginTop:"4px"}},c.transactions.filter(i=>i.transaction_type==="credit").length," credit events")),React.createElement("div",{className:"card",style:{display:"flex",flexDirection:"column",justifyContent:"center"}},React.createElement("span",{style:{fontSize:"12px",color:"var(--text-muted)",fontWeight:"700",textTransform:"uppercase"}},"Total Dispatches / Debits"),React.createElement("div",{style:{fontSize:"24px",fontWeight:"800",color:"#B91C1C",marginTop:"6px"}},G(c.transactions.filter(i=>i.transaction_type==="debit").reduce((i,a)=>i+parseFloat(a.amount||0),0),A,M)),React.createElement("span",{style:{fontSize:"11.5px",color:"var(--text-secondary)",marginTop:"4px"}},c.transactions.filter(i=>i.transaction_type==="debit").length," message dispatches"))),O&&c.users&&c.users.length>0&&React.createElement("div",{className:"card",style:{marginBottom:"24px"}},React.createElement("div",{className:"card-header",style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement("span",{className:"card-title",style:{fontSize:"15px"}},"\u{1F465} Client Account Balances Overview"),React.createElement("span",{style:{fontSize:"12px",color:"var(--text-muted)"}},"Superadmin Quick Balance Management")),React.createElement("div",{style:{overflowX:"auto"}},React.createElement("table",{className:"data-table"},React.createElement("thead",null,React.createElement("tr",null,React.createElement("th",null,"User / Company"),React.createElement("th",null,"Email"),React.createElement("th",null,"Role"),React.createElement("th",null,"Current Balance"),React.createElement("th",null,"Status"),React.createElement("th",null,"Action"))),React.createElement("tbody",null,c.users.map(i=>React.createElement("tr",{key:i.id},React.createElement("td",null,React.createElement("strong",null,i.name)),React.createElement("td",null,i.email),React.createElement("td",null,React.createElement("span",{className:`badge ${i.role==="superadmin"?"cat-marketing":i.role==="admin"?"cat-auth":"cat-utility"}`},i.role.toUpperCase())),React.createElement("td",null,React.createElement("strong",{style:{fontSize:"14px",color:parseFloat(i.wallet_balance)>0?"#15803D":"#94A3B8"}},G(i.wallet_balance,A,M))),React.createElement("td",null,React.createElement("span",{className:`badge ${i.status==="active"?"status-read":"status-failed"}`},i.status.toUpperCase())),React.createElement("td",null,React.createElement("button",{className:"btn btn-primary btn-sm",style:{padding:"4px 10px",fontSize:"11.5px",display:"flex",alignItems:"center",gap:"4px"},onClick:()=>_(i)},React.createElement("span",null,"\u2795")," Top-Up")))))))),React.createElement(Z,{columns:N,data:c.transactions,title:"wallet_transactions_statement",searchPlaceholder:"Search reference ID, description, user...",defaultPageSize:10,pageSizeOptions:[10,25,50,100],defaultSortKey:"created_at",defaultSortDir:"desc",actions:React.createElement("div",{style:{display:"flex",gap:"8px",alignItems:"center"}},React.createElement("select",{className:"form-select",style:{width:"150px",padding:"5px 8px",fontSize:"12px"},value:y,onChange:i=>p(i.target.value)},React.createElement("option",{value:"all"},"All Transactions"),React.createElement("option",{value:"credit"},"Credits (Top-Ups)"),React.createElement("option",{value:"debit"},"Debits (Dispatches)"))),emptyMessage:e?"Loading wallet transactions...":"No transaction history records found."}),T&&React.createElement("div",{style:{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1e4}},React.createElement("div",{className:"card",style:{width:"520px",maxWidth:"95vw"}},React.createElement("div",{className:"card-header",style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement("span",{className:"card-title",style:{fontSize:"16px",display:"flex",alignItems:"center",gap:"8px"}},React.createElement("span",null,"\u{1F4B3}")," Add Wallet Balance / Payment Credit"),React.createElement("button",{className:"btn btn-secondary btn-sm",onClick:()=>m(!1)},"\u2715")),React.createElement("form",{onSubmit:t,style:{marginTop:"14px"}},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Select Client / Admin Account"),React.createElement("select",{className:"form-select",value:u.user_id,onChange:i=>D({...u,user_id:i.target.value}),required:!0},React.createElement("option",{value:""},"-- Choose Account --"),c.users.map(i=>React.createElement("option",{key:i.id,value:i.id},i.name," (",i.email,") - Current Balance: ",G(i.wallet_balance,A,M))))),React.createElement("div",{className:"form-row"},React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Top-Up Amount (",A,")"),React.createElement("input",{type:"number",step:"0.001",min:"0.001",placeholder:"e.g. 50.000",className:"form-input",value:u.amount,onChange:i=>D({...u,amount:i.target.value}),required:!0})),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Transaction Type"),React.createElement("select",{className:"form-select",value:u.transaction_type,onChange:i=>D({...u,transaction_type:i.target.value})},React.createElement("option",{value:"credit"},"Credit (Top-Up / Payment Made)"),React.createElement("option",{value:"debit"},"Debit (Deduction)"),React.createElement("option",{value:"adjustment"},"Manual Set (Override)")))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Payment Reference / Receipt ID"),React.createElement("input",{type:"text",placeholder:"e.g. BENEFIT-849201, Bank Transfer #9912, Cash Receipt",className:"form-input",value:u.reference_id,onChange:i=>D({...u,reference_id:i.target.value})}),React.createElement("span",{className:"form-hint"},"Reference number to match with client invoice or bank statement.")),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Notes & Description"),React.createElement("textarea",{rows:"2",placeholder:"e.g. 50 BHD Recharge via BenefitPay on 05-Oct-2026",className:"form-input",value:u.notes,onChange:i=>D({...u,notes:i.target.value})})),React.createElement("div",{style:{display:"flex",gap:"10px",marginTop:"16px"}},React.createElement("button",{type:"button",className:"btn btn-secondary",style:{flex:1},onClick:()=>m(!1)},"Cancel"),React.createElement("button",{type:"submit",className:"btn btn-primary",style:{flex:1},disabled:P},P?"Processing...":"\u{1F4B3} Credit Wallet Balance"))))),C&&React.createElement("div",{className:"confirm-modal-overlay",onClick:()=>!I&&b(null)},React.createElement("div",{className:"confirm-modal-card",onClick:i=>i.stopPropagation()},React.createElement("div",{className:"confirm-modal-body"},React.createElement("div",{className:"confirm-modal-icon-badge"},React.createElement("span",null,"\u{1F5D1}\uFE0F")),React.createElement("div",{className:"confirm-modal-title"},"Delete Transaction Record"),React.createElement("div",{className:"confirm-modal-subtitle"},"Are you sure you want to permanently remove this transaction from the ledger?"),React.createElement("div",{className:"confirm-modal-info-box"},React.createElement("div",{className:"confirm-modal-info-row"},React.createElement("span",{className:"confirm-modal-info-label"},"Transaction ID"),React.createElement("span",{className:"confirm-modal-info-value"},"#",C.id)),React.createElement("div",{className:"confirm-modal-info-row"},React.createElement("span",{className:"confirm-modal-info-label"},"Account / User"),React.createElement("span",{className:"confirm-modal-info-value"},C.user_name||C.user_email||"N/A")),React.createElement("div",{className:"confirm-modal-info-row"},React.createElement("span",{className:"confirm-modal-info-label"},"Type & Amount"),React.createElement("span",{className:"confirm-modal-info-value",style:{color:C.transaction_type==="credit"?"#15803D":"#DC2626"}},C.transaction_type==="credit"?"\u{1F7E2} Credit (+)":"\u{1F534} Debit (-)"," ",G(C.amount,C.currency||A,M))),C.reference_id&&React.createElement("div",{className:"confirm-modal-info-row"},React.createElement("span",{className:"confirm-modal-info-label"},"Reference ID"),React.createElement("span",{className:"confirm-modal-info-value",style:{fontFamily:"monospace"}},C.reference_id)),C.description&&React.createElement("div",{className:"confirm-modal-info-row"},React.createElement("span",{className:"confirm-modal-info-label"},"Description"),React.createElement("span",{className:"confirm-modal-info-value",style:{maxWidth:"220px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},C.description))),React.createElement("div",{className:"confirm-modal-warning-box"},React.createElement("span",{style:{fontSize:"16px"}},"\u26A0\uFE0F"),React.createElement("div",null,React.createElement("strong",null,"Automatic Balance Reversal:")," Deleting this record will automatically adjust the user balance accordingly (e.g. subtracting credited funds or refunding debited messages)."))),React.createElement("div",{className:"confirm-modal-actions"},React.createElement("button",{type:"button",className:"btn-confirm-cancel",onClick:()=>b(null),disabled:I},"Cancel"),React.createElement("button",{type:"button",className:"btn-confirm-delete",onClick:x,disabled:I},I?"Deleting...":"\u{1F5D1}\uFE0F Yes, Delete & Adjust Balance")))))}function Ue({currentUser:n,showToast:r,onSettingsChange:g}){let o=!n||n.role==="superadmin",[c,f]=s("tariffs"),[e,d]=s({billing_model:"per_message",meta_phone_number_id:"",meta_waba_account_id:"",meta_access_token:"",webhook_verify_token:"",business_display_name:"UniGlobal Consultancy W.L.L",business_phone_number:"+973 1700 8899",system_currency:"BHD",currency_decimals:"3",system_date_format:"YYYY-MM-DD HH:mm:ss",system_timezone:"Asia/Bahrain",tariff_utility_meta:"0.0140",tariff_utility_platform:"0.0045",tariff_auth_meta:"0.0110",tariff_auth_platform:"0.0035",tariff_marketing_meta:"0.0270",tariff_marketing_platform:"0.0070",tariff_service_meta:"0.0075",tariff_service_platform:"0.0025",wallet_enforcement:"1"}),[T,m]=s(!1),[v,l]=s(new Date().toISOString());U(()=>{fetch("./api/settings.php").then(p=>p.json()).then(p=>{p.success&&p.settings&&d(C=>({...C,...p.settings}))})},[]),U(()=>{let p=setInterval(()=>l(new Date().toISOString()),1e3);return()=>clearInterval(p)},[]);let u=async p=>{p&&p.preventDefault(),m(!0);try{let b=await(await fetch("./api/settings.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({settings:e})})).json();b.success?(r("System configuration & Tariffs updated successfully! Changes are live."),g&&g(e)):r(b.error||"Failed to update settings","error")}catch{r("Network error saving settings","error")}finally{m(!1)}},D=e.system_currency||"BHD",P=parseInt(e.currency_decimals||"3",10),z=[{code:"BHD",name:"\u{1F1E7}\u{1F1ED} BHD - Bahraini Dinar (3 decimals)",defaultDecimals:3},{code:"SAR",name:"\u{1F1F8}\u{1F1E6} SAR - Saudi Riyal (2 decimals)",defaultDecimals:2},{code:"AED",name:"\u{1F1E6}\u{1F1EA} AED - UAE Dirham (2 decimals)",defaultDecimals:2},{code:"KWD",name:"\u{1F1F0}\u{1F1FC} KWD - Kuwaiti Dinar (3 decimals)",defaultDecimals:3},{code:"QAR",name:"\u{1F1F6}\u{1F1E6} QAR - Qatari Riyal (2 decimals)",defaultDecimals:2},{code:"OMR",name:"\u{1F1F4}\u{1F1F2} OMR - Omani Rial (3 decimals)",defaultDecimals:3},{code:"INR",name:"\u{1F1EE}\u{1F1F3} INR - Indian Rupee (\u20B9, 2 decimals)",defaultDecimals:2},{code:"USD",name:"\u{1F1FA}\u{1F1F8} USD - US Dollar ($, 2 decimals)",defaultDecimals:2}],y=[{value:"YYYY-MM-DD HH:mm:ss",label:"YYYY-MM-DD HH:mm:ss (2026-10-05 17:45:00)"},{value:"DD/MM/YYYY hh:mm:ss A",label:"DD/MM/YYYY hh:mm:ss A (05/10/2026 05:45:00 PM)"},{value:"DD-MM-YYYY HH:mm",label:"DD-MM-YYYY HH:mm (05-10-2026 17:45)"},{value:"MM/DD/YYYY hh:mm A",label:"MM/DD/YYYY hh:mm A (10/05/2026 05:45 PM)"},{value:"YYYY-MM-DD hh:mm A",label:"YYYY-MM-DD hh:mm A (2026-10-05 05:45 PM)"}];return React.createElement("div",null,React.createElement("div",{className:"page-header-row"},React.createElement("div",{className:"page-title-group"},React.createElement("h1",null,React.createElement("span",null,"\u2699\uFE0F")," Superadmin Platform Engine Configuration"),React.createElement("p",null,"Configure Meta Cloud API, message tariffs, GCC/India currencies, prepaid wallet rules, and date formats."))),React.createElement("div",{className:"settings-nav-tabs"},React.createElement("button",{type:"button",className:`settings-tab-btn ${c==="tariffs"?"active":""}`,onClick:()=>f("tariffs")},React.createElement("span",null,"\u{1F4B0}")," Tariffs & Pricing Engine"),React.createElement("button",{type:"button",className:`settings-tab-btn ${c==="currency"?"active":""}`,onClick:()=>f("currency")},React.createElement("span",null,"\u{1F30D}")," Currency & Regional (GCC / India)"),React.createElement("button",{type:"button",className:`settings-tab-btn ${c==="datetime"?"active":""}`,onClick:()=>f("datetime")},React.createElement("span",null,"\u{1F552}")," Date & Time Formats"),React.createElement("button",{type:"button",className:`settings-tab-btn ${c==="meta"?"active":""}`,onClick:()=>f("meta")},React.createElement("span",null,"\u26A1")," Meta Cloud API Credentials"),React.createElement("button",{type:"button",className:`settings-tab-btn ${c==="version"?"active":""}`,onClick:()=>f("version")},React.createElement("span",null,"\u{1F3F7}\uFE0F")," Version & Roadmap Architecture")),React.createElement("form",{onSubmit:u},c==="tariffs"&&React.createElement("div",{className:"card",style:{maxWidth:"950px"}},!o&&React.createElement("div",{style:{background:"#FEF3C7",border:"1.5px solid #FCD34D",borderRadius:"12px",padding:"14px 18px",marginBottom:"20px",display:"flex",alignItems:"center",gap:"12px"}},React.createElement("span",{style:{fontSize:"24px"}},"\u{1F512}"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"13.5px",color:"#92400E"}},"Read-Only Official Tariff Schedule"),React.createElement("div",{style:{fontSize:"12px",color:"#78350F",marginTop:"2px"}},"WhatsApp Meta base costs, platform margins, and billing engine rules are managed exclusively by SaNDS Lab Superadmin. Admin accounts have view-only access."))),!o&&React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"12px",padding:"14px 18px",marginBottom:"20px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"8px"}},React.createElement("strong",{style:{fontSize:"13.5px",color:"#0F172A"}},"Active Charging Engine Model:"),React.createElement("span",{className:"badge",style:{background:e.billing_model==="24h_session"?"#DBEAFE":"#DCFCE7",color:e.billing_model==="24h_session"?"#1E40AF":"#15803D",fontWeight:"700",padding:"5px 12px"}},e.billing_model==="24h_session"?"\u26A1 Option B: Meta 24-Hour Session Billing":"\u{1F4C4} Option A: Standard Per-Message Billing"))),o&&React.createElement("div",{style:{background:"#F8FAFC",border:"1.5px solid #0D9488",borderRadius:"12px",padding:"18px",marginBottom:"22px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"8px",flexWrap:"wrap",gap:"8px"}},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"8px"}},React.createElement("span",{style:{fontSize:"18px"}},"\u26A1"),React.createElement("strong",{style:{fontSize:"15px",color:"#0F172A"}},"WhatsApp Tariff & Charging Engine Model")),React.createElement("span",{className:"badge",style:{background:"#CCFBF1",color:"#0F766E",fontWeight:"800",fontSize:"11px",padding:"4px 9px"}},"\u{1F451} Superadmin Exclusive Rule")),React.createElement("p",{style:{fontSize:"12.5px",color:"var(--text-secondary)",margin:"0 0 16px 0",lineHeight:"1.4"}},"Choose how the platform calculates Meta tariffs and debits client prepaid balances for outgoing messages:"),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(320px, 1fr))",gap:"14px"}},React.createElement("div",{onClick:()=>d({...e,billing_model:"per_message"}),style:{border:e.billing_model==="per_message"||!e.billing_model?"2px solid #10B981":"1px solid #E2E8F0",background:e.billing_model==="per_message"||!e.billing_model?"#FFFFFF":"#F8FAFC",borderRadius:"10px",padding:"14px",cursor:"pointer",boxShadow:e.billing_model==="per_message"||!e.billing_model?"0 4px 12px rgba(16, 185, 129, 0.15)":"none",transition:"all 0.2s ease"}},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"10px",marginBottom:"6px"}},React.createElement("input",{type:"radio",name:"billing_model",value:"per_message",checked:e.billing_model==="per_message"||!e.billing_model,onChange:()=>d({...e,billing_model:"per_message"}),style:{width:"16px",height:"16px",accentColor:"#10B981",cursor:"pointer"}}),React.createElement("strong",{style:{fontSize:"13.5px",color:"#0F172A"}},"Option A: Standard Per-Message Billing")),React.createElement("p",{style:{fontSize:"12px",color:"var(--text-secondary)",margin:"4px 0 0 26px",lineHeight:"1.4"}},"Every single outgoing message debits the full ",React.createElement("strong",null,"Meta Base Cost + Platform Margin"),"."),React.createElement("div",{style:{margin:"8px 0 0 26px",fontSize:"11px",color:"#059669",fontWeight:"700"}},"\u2713 Standard SaaS / Reseller model (Maximum platform margin).")),React.createElement("div",{onClick:()=>d({...e,billing_model:"24h_session"}),style:{border:e.billing_model==="24h_session"?"2px solid #3B82F6":"1px solid #E2E8F0",background:e.billing_model==="24h_session"?"#FFFFFF":"#F8FAFC",borderRadius:"10px",padding:"14px",cursor:"pointer",boxShadow:e.billing_model==="24h_session"?"0 4px 12px rgba(59, 130, 246, 0.15)":"none",transition:"all 0.2s ease"}},React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"10px",marginBottom:"6px"}},React.createElement("input",{type:"radio",name:"billing_model",value:"24h_session",checked:e.billing_model==="24h_session",onChange:()=>d({...e,billing_model:"24h_session"}),style:{width:"16px",height:"16px",accentColor:"#3B82F6",cursor:"pointer"}}),React.createElement("strong",{style:{fontSize:"13.5px",color:"#0F172A"}},"Option B: Meta 24-Hour Session Billing")),React.createElement("p",{style:{fontSize:"12px",color:"var(--text-secondary)",margin:"4px 0 0 26px",lineHeight:"1.4"}},React.createElement("strong",null,"1st Message:")," Opens a 24h window (Full Meta Cost + Platform Margin).",React.createElement("br",null),React.createElement("strong",null,"Subsequent Messages in 24h:")," Meta Cost is waived (",React.createElement("strong",null,"0.0000 ",D),") and only Platform Margin is debited."),React.createElement("div",{style:{margin:"8px 0 0 26px",fontSize:"11px",color:"#2563EB",fontWeight:"700"}},"\u2713 Official Meta Conversation Window Alignment.")))),React.createElement("h3",{style:{fontSize:"15px",fontWeight:"800",color:"var(--wa-dark-teal)",marginBottom:"8px"}},"Dynamic Meta Cost & Platform Charges per Category"),React.createElement("p",{style:{fontSize:"12.5px",color:"var(--text-secondary)",marginBottom:"18px"}},o?"Configure the exact Meta Cost and SaNDS Platform Margin per message category. These tariffs take effect dynamically across all outgoing message dispatches, wallet debits, and client billing.":"Current official Meta Cost and Platform Charges per message category for outgoing dispatches."),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(380px, 1fr))",gap:"16px"}},React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"12px",padding:"16px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"12px"}},React.createElement("strong",{style:{fontSize:"14px",color:"#0F172A"}},"\u{1F4C4} UTILITY (Invoices, Receipts, Notices)"),React.createElement("span",{className:"badge cat-util"},"UTILITY")),React.createElement("div",{className:"form-row"},React.createElement("div",{className:"form-group",style:{marginBottom:0}},React.createElement("label",{className:"form-label",style:{fontSize:"11.5px"}},"Meta Base Cost (",D,")"),React.createElement("input",{type:"number",step:"0.0001",className:"form-input",value:e.tariff_utility_meta,onChange:p=>o&&d({...e,tariff_utility_meta:p.target.value}),readOnly:!o,disabled:!o,style:o?{}:{background:"#F1F5F9",cursor:"not-allowed",color:"#475569",borderColor:"#CBD5E1"},required:!0})),React.createElement("div",{className:"form-group",style:{marginBottom:0}},React.createElement("label",{className:"form-label",style:{fontSize:"11.5px"}},"Platform Margin (",D,")"),React.createElement("input",{type:"number",step:"0.0001",className:"form-input",value:e.tariff_utility_platform,onChange:p=>o&&d({...e,tariff_utility_platform:p.target.value}),readOnly:!o,disabled:!o,style:o?{}:{background:"#F1F5F9",cursor:"not-allowed",color:"#475569",borderColor:"#CBD5E1"},required:!0}))),React.createElement("div",{style:{marginTop:"10px",fontSize:"12px",color:"#0369A1",fontWeight:"700"}},"Total Client Rate: ",(parseFloat(e.tariff_utility_meta||0)+parseFloat(e.tariff_utility_platform||0)).toFixed(P)," ",D)),React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"12px",padding:"16px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"12px"}},React.createElement("strong",{style:{fontSize:"14px",color:"#0F172A"}},"\u{1F510} AUTHENTICATION (OTP, 2FA, Logins)"),React.createElement("span",{className:"badge cat-auth"},"AUTH")),React.createElement("div",{className:"form-row"},React.createElement("div",{className:"form-group",style:{marginBottom:0}},React.createElement("label",{className:"form-label",style:{fontSize:"11.5px"}},"Meta Base Cost (",D,")"),React.createElement("input",{type:"number",step:"0.0001",className:"form-input",value:e.tariff_auth_meta,onChange:p=>o&&d({...e,tariff_auth_meta:p.target.value}),readOnly:!o,disabled:!o,style:o?{}:{background:"#F1F5F9",cursor:"not-allowed",color:"#475569",borderColor:"#CBD5E1"},required:!0})),React.createElement("div",{className:"form-group",style:{marginBottom:0}},React.createElement("label",{className:"form-label",style:{fontSize:"11.5px"}},"Platform Margin (",D,")"),React.createElement("input",{type:"number",step:"0.0001",className:"form-input",value:e.tariff_auth_platform,onChange:p=>o&&d({...e,tariff_auth_platform:p.target.value}),readOnly:!o,disabled:!o,style:o?{}:{background:"#F1F5F9",cursor:"not-allowed",color:"#475569",borderColor:"#CBD5E1"},required:!0}))),React.createElement("div",{style:{marginTop:"10px",fontSize:"12px",color:"#0369A1",fontWeight:"700"}},"Total Client Rate: ",(parseFloat(e.tariff_auth_meta||0)+parseFloat(e.tariff_auth_platform||0)).toFixed(P)," ",D)),React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"12px",padding:"16px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"12px"}},React.createElement("strong",{style:{fontSize:"14px",color:"#0F172A"}},"\u{1F4E3} MARKETING (Promotions, Discounts, Offers)"),React.createElement("span",{className:"badge cat-mark"},"MARKETING")),React.createElement("div",{className:"form-row"},React.createElement("div",{className:"form-group",style:{marginBottom:0}},React.createElement("label",{className:"form-label",style:{fontSize:"11.5px"}},"Meta Base Cost (",D,")"),React.createElement("input",{type:"number",step:"0.0001",className:"form-input",value:e.tariff_marketing_meta,onChange:p=>o&&d({...e,tariff_marketing_meta:p.target.value}),readOnly:!o,disabled:!o,style:o?{}:{background:"#F1F5F9",cursor:"not-allowed",color:"#475569",borderColor:"#CBD5E1"},required:!0})),React.createElement("div",{className:"form-group",style:{marginBottom:0}},React.createElement("label",{className:"form-label",style:{fontSize:"11.5px"}},"Platform Margin (",D,")"),React.createElement("input",{type:"number",step:"0.0001",className:"form-input",value:e.tariff_marketing_platform,onChange:p=>o&&d({...e,tariff_marketing_platform:p.target.value}),readOnly:!o,disabled:!o,style:o?{}:{background:"#F1F5F9",cursor:"not-allowed",color:"#475569",borderColor:"#CBD5E1"},required:!0}))),React.createElement("div",{style:{marginTop:"10px",fontSize:"12px",color:"#0369A1",fontWeight:"700"}},"Total Client Rate: ",(parseFloat(e.tariff_marketing_meta||0)+parseFloat(e.tariff_marketing_platform||0)).toFixed(P)," ",D)),React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"12px",padding:"16px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"12px"}},React.createElement("strong",{style:{fontSize:"14px",color:"#0F172A"}},"\u{1F4AC} SERVICE (Customer Support, Live Chat)"),React.createElement("span",{className:"badge cat-serv"},"SERVICE")),React.createElement("div",{className:"form-row"},React.createElement("div",{className:"form-group",style:{marginBottom:0}},React.createElement("label",{className:"form-label",style:{fontSize:"11.5px"}},"Meta Base Cost (",D,")"),React.createElement("input",{type:"number",step:"0.0001",className:"form-input",value:e.tariff_service_meta,onChange:p=>o&&d({...e,tariff_service_meta:p.target.value}),readOnly:!o,disabled:!o,style:o?{}:{background:"#F1F5F9",cursor:"not-allowed",color:"#475569",borderColor:"#CBD5E1"},required:!0})),React.createElement("div",{className:"form-group",style:{marginBottom:0}},React.createElement("label",{className:"form-label",style:{fontSize:"11.5px"}},"Platform Margin (",D,")"),React.createElement("input",{type:"number",step:"0.0001",className:"form-input",value:e.tariff_service_platform,onChange:p=>o&&d({...e,tariff_service_platform:p.target.value}),readOnly:!o,disabled:!o,style:o?{}:{background:"#F1F5F9",cursor:"not-allowed",color:"#475569",borderColor:"#CBD5E1"},required:!0}))),React.createElement("div",{style:{marginTop:"10px",fontSize:"12px",color:"#0369A1",fontWeight:"700"}},"Total Client Rate: ",(parseFloat(e.tariff_service_meta||0)+parseFloat(e.tariff_service_platform||0)).toFixed(P)," ",D)))),c==="currency"&&React.createElement("div",{className:"card",style:{maxWidth:"800px"}},React.createElement("h3",{style:{fontSize:"15px",fontWeight:"800",color:"var(--wa-dark-teal)",marginBottom:"8px"}},"Multi-Currency Configuration (All GCC & India)"),React.createElement("p",{style:{fontSize:"12.5px",color:"var(--text-secondary)",marginBottom:"18px"}},"Select the operating currency for the entire platform, wallet balances, tariffs, and transaction reports."),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Platform Operating Currency"),React.createElement("select",{className:"form-select",value:e.system_currency,onChange:p=>{let C=p.target.value,b=z.find(I=>I.code===C);d({...e,system_currency:C,currency_decimals:b?String(b.defaultDecimals):"3"})}},z.map(p=>React.createElement("option",{key:p.code,value:p.code},p.name))),React.createElement("span",{className:"form-hint"},"All wallet top-ups, message charges, and Odoo billing logs will display in this currency.")),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Currency Decimal Precision"),React.createElement("select",{className:"form-select",value:e.currency_decimals,onChange:p=>d({...e,currency_decimals:p.target.value})},React.createElement("option",{value:"3"},"3 Decimals (e.g. 0.0185 BHD / 100.500 KWD)"),React.createElement("option",{value:"2"},"2 Decimals (e.g. 2.50 SAR / 150.00 INR / $ 10.00)"),React.createElement("option",{value:"4"},"4 Decimals (e.g. 0.0145 BHD Micro-billing)"))),React.createElement("div",{className:"form-group",style:{marginTop:"16px"}},React.createElement("label",{className:"form-label"},"Prepaid Wallet Enforcement"),React.createElement("select",{className:"form-select",value:e.wallet_enforcement,onChange:p=>d({...e,wallet_enforcement:p.target.value})},React.createElement("option",{value:"1"},"Strict Enforcement: Block messages when wallet balance is insufficient"),React.createElement("option",{value:"0"},"Monitor Only: Allow dispatches and record negative balance")))),c==="datetime"&&React.createElement("div",{className:"card",style:{maxWidth:"800px"}},React.createElement("h3",{style:{fontSize:"15px",fontWeight:"800",color:"var(--wa-dark-teal)",marginBottom:"8px"}},"Date & Time Format Settings"),React.createElement("p",{style:{fontSize:"12.5px",color:"var(--text-secondary)",marginBottom:"18px"}},"Standardize how timestamps, audit logs, and message telemetry are rendered across all views."),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"System Date & Time Format"),React.createElement("select",{className:"form-select",value:e.system_date_format,onChange:p=>d({...e,system_date_format:p.target.value})},y.map(p=>React.createElement("option",{key:p.value,value:p.value},p.label)))),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Regional Timezone"),React.createElement("select",{className:"form-select",value:e.system_timezone,onChange:p=>d({...e,system_timezone:p.target.value})},React.createElement("option",{value:"Asia/Bahrain"},"\u{1F1E7}\u{1F1ED} Bahrain (GMT+3) - Asia/Bahrain"),React.createElement("option",{value:"Asia/Riyadh"},"\u{1F1F8}\u{1F1E6} Saudi Arabia (GMT+3) - Asia/Riyadh"),React.createElement("option",{value:"Asia/Dubai"},"\u{1F1E6}\u{1F1EA} UAE / Dubai (GMT+4) - Asia/Dubai"),React.createElement("option",{value:"Asia/Kuwait"},"\u{1F1F0}\u{1F1FC} Kuwait (GMT+3) - Asia/Kuwait"),React.createElement("option",{value:"Asia/Qatar"},"\u{1F1F6}\u{1F1E6} Qatar (GMT+3) - Asia/Qatar"),React.createElement("option",{value:"Asia/Muscat"},"\u{1F1F4}\u{1F1F2} Oman (GMT+4) - Asia/Muscat"),React.createElement("option",{value:"Asia/Kolkata"},"\u{1F1EE}\u{1F1F3} India (GMT+5:30) - Asia/Kolkata"),React.createElement("option",{value:"UTC"},"\u{1F310} Coordinated Universal Time (UTC)"))),React.createElement("div",{style:{background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"10px",padding:"14px",marginTop:"16px"}},React.createElement("div",{style:{fontSize:"11.5px",color:"#166534",fontWeight:"700",textTransform:"uppercase"}},"Live Format Preview"),React.createElement("div",{style:{fontSize:"18px",fontWeight:"800",color:"#15803D",marginTop:"4px"}},ee(v,e.system_date_format)))),c==="meta"&&React.createElement("div",{className:"card",style:{maxWidth:"850px"}},!o&&React.createElement("div",{style:{background:"#FEF3C7",border:"1.5px solid #FCD34D",borderRadius:"12px",padding:"14px 18px",marginBottom:"20px",display:"flex",alignItems:"center",gap:"12px"}},React.createElement("span",{style:{fontSize:"24px"}},"\u{1F512}"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"13.5px",color:"#92400E"}},"Read-Only Meta Cloud API Credentials"),React.createElement("div",{style:{fontSize:"12px",color:"#78350F",marginTop:"2px"}},"WhatsApp Business Cloud API tokens, Phone ID, WABA Account ID, and Webhook verification tokens are managed exclusively by SaNDS Lab Superadmin. Admin accounts have view-only access."))),React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"8px"}},React.createElement("h3",{style:{fontSize:"15px",fontWeight:"800",color:"var(--wa-dark-teal)",margin:0}},"Meta WhatsApp Business Cloud API Credentials"),o&&React.createElement("span",{className:"badge",style:{background:"#CCFBF1",color:"#0F766E",fontWeight:"800",fontSize:"11px",padding:"4px 9px"}},"\u{1F451} Superadmin Managed")),React.createElement("p",{style:{fontSize:"12.5px",color:"var(--text-secondary)",marginBottom:"18px"}},o?"Permanent System User Graph API access tokens and Webhook validation tokens for Meta WhatsApp Cloud API v19.0.":"Active Meta WhatsApp Cloud API credentials currently operating this platform."),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Meta Phone Number ID"),React.createElement("input",{type:"text",className:"form-input",value:e.meta_phone_number_id,onChange:p=>o&&d({...e,meta_phone_number_id:p.target.value}),readOnly:!o,disabled:!o,style:o?{}:{background:"#F1F5F9",cursor:"not-allowed",color:"#475569",borderColor:"#CBD5E1"}})),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"WhatsApp Business Account ID (WABA)"),React.createElement("input",{type:"text",className:"form-input",value:e.meta_waba_account_id,onChange:p=>o&&d({...e,meta_waba_account_id:p.target.value}),readOnly:!o,disabled:!o,style:o?{}:{background:"#F1F5F9",cursor:"not-allowed",color:"#475569",borderColor:"#CBD5E1"}})),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Permanent System User Access Token (Graph API)"),React.createElement("input",{type:"password",className:"form-input",value:e.meta_access_token,onChange:p=>o&&d({...e,meta_access_token:p.target.value}),readOnly:!o,disabled:!o,style:o?{}:{background:"#F1F5F9",cursor:"not-allowed",color:"#475569",borderColor:"#CBD5E1"}}),React.createElement("span",{className:"form-hint"},o?"Active system token connected to WhatsApp Business Cloud API.":"System token is securely managed by Superadmin.")),React.createElement("div",{className:"form-group"},React.createElement("label",{className:"form-label"},"Webhook Verification Secret Token"),React.createElement("input",{type:"text",className:"form-input",value:e.webhook_verify_token,onChange:p=>o&&d({...e,webhook_verify_token:p.target.value}),readOnly:!o,disabled:!o,style:o?{}:{background:"#F1F5F9",cursor:"not-allowed",color:"#475569",borderColor:"#CBD5E1"}}),React.createElement("span",{className:"form-hint"},"Paste this token into Meta Developer App Dashboard Webhook settings."))),c==="version"&&React.createElement("div",{className:"card",style:{maxWidth:"950px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}},React.createElement("div",null,React.createElement("h3",{style:{fontSize:"16px",fontWeight:"800",color:"var(--wa-dark-teal)",margin:0}},"WhatsApp Platform \u2014 Version & Release Architecture"),React.createElement("p",{style:{fontSize:"12.5px",color:"var(--text-secondary)",margin:"4px 0 0 0"}},"Permanent specification of active Version 2.0 generation, locked Version 1.0 baseline, and Minor version handling.")),React.createElement("span",{className:"version-chip",style:{background:"#DCFCE7",color:"#166534",border:"1px solid #BBF7D0",padding:"6px 14px",fontSize:"12px"}},"Active: v2.5.0")),React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"16px"}},React.createElement("div",{style:{background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"12px",padding:"18px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"8px"}},React.createElement("strong",{style:{fontSize:"14.5px",color:"#15803D"}},"\u26A1 Active Release: Version 2.5.0 (Production Live)"),React.createElement("span",{className:"badge",style:{background:"#16A34A",color:"#FFFFFF"}},"LIVE & ACTIVE")),React.createElement("p",{style:{fontSize:"12.5px",color:"#166534",margin:"0 0 8px 0",lineHeight:"1.5"}},"Enterprise User Security (Edit, Suspend, Password Reset) and SaNDS Lab Application Key Licensing Engine with offline asymmetric RSA-SHA256 verification are live. All scheduled Version 2.0 roadmap milestones are officially completed and deployed in production."),React.createElement("div",{style:{fontSize:"11.5px",color:"#15803D",fontWeight:"600"}},"Git Branch: ",React.createElement("code",null,"main")," \u2022 Target Host: ",React.createElement("code",null,"https://whatsapp.sandslab.com"))),React.createElement("div",{style:{background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"12px",padding:"18px"}},React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"8px"}},React.createElement("strong",{style:{fontSize:"14.5px",color:"#15803D"}},"\u{1F512} Locked Baseline Milestone: Version 1.0.0"),React.createElement("div",{style:{display:"flex",gap:"6px"}},React.createElement("span",{className:"badge",style:{background:"#16A34A",color:"#FFFFFF"}},"TAG: v1.0.0"),React.createElement("span",{className:"badge",style:{background:"#16A34A",color:"#FFFFFF"}},"TAG: v1.0"))),React.createElement("p",{style:{fontSize:"12px",color:"#166534",margin:"0 0 10px 0",lineHeight:"1.4"}},React.createElement("strong",null,"Commit Hash:")," ",React.createElement("code",null,"9dd6ebc")," \u2022 Permanent Git checkpoint. Fully tested, production-ready, and verified."),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(260px, 1fr))",gap:"8px",fontSize:"12px",color:"#14532D"}},React.createElement("div",null,"\u2713 Superadmin RBAC Security Restrictions"),React.createElement("div",null,"\u2713 Dual Charging Engine (Option A vs B)"),React.createElement("div",null,"\u2713 Meta WhatsApp Cloud API v19.0 Dispatch"),React.createElement("div",null,"\u2713 Multi-Language Odoo API Hub"),React.createElement("div",null,"\u2713 Prepaid Wallet & BHD 3-Dec Audit Ledger"),React.createElement("div",null,"\u2713 Enterprise DataTables (DESC Sort)"))),React.createElement("div",{style:{background:"#FFFFFF",border:"1px solid #E2E8F0",borderRadius:"12px",padding:"18px"}},React.createElement("strong",{style:{fontSize:"13.5px",color:"#0F172A",display:"block",marginBottom:"8px"}},"\u{1F4D0} Semantic Minor Versioning (SemVer 2.0.0) Protocol"),React.createElement("p",{style:{fontSize:"12px",color:"var(--text-secondary)",marginBottom:"12px"}},"Every new update from now onward must be versioned according to standard semantic versioning rules:"),React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px"}},React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"8px",padding:"12px"}},React.createElement("strong",{style:{fontSize:"12.5px",color:"#2563EB"}},"v2.0.0 (MAJOR)"),React.createElement("div",{style:{fontSize:"11px",color:"#64748B",marginTop:"4px"}},"Major architecture shift & foundational framework upgrades.")),React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"8px",padding:"12px"}},React.createElement("strong",{style:{fontSize:"12.5px",color:"#059669"}},"v2.x.0 (MINOR)"),React.createElement("div",{style:{fontSize:"11px",color:"#64748B",marginTop:"4px"}},"Scheduled roadmap feature milestones (v2.1 Live Chat, v2.2 Campaigns, v2.3 Odoo, v2.4 Templates, v2.5 License).")),React.createElement("div",{style:{background:"#F8FAFC",border:"1px solid #E2E8F0",borderRadius:"8px",padding:"12px"}},React.createElement("strong",{style:{fontSize:"12.5px",color:"#D97706"}},"v2.x.y (PATCH)"),React.createElement("div",{style:{fontSize:"11px",color:"#64748B",marginTop:"4px"}},"Targeted bug fixes, security patches, styling polish, or urgent hotfixes.")))),React.createElement("div",{style:{background:"#FFFFFF",border:"1px solid #E2E8F0",borderRadius:"12px",padding:"18px"}},React.createElement("strong",{style:{fontSize:"13.5px",color:"#0F172A",display:"block",marginBottom:"12px"}},"\u{1F4CB} Version 2.0 Execution Roadmap (All Milestones Completed & Production Live \u2705)"),React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"10px"}},React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:"12px",padding:"12px 14px",background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"8px"}},React.createElement("span",{className:"badge",style:{background:"#16A34A",color:"#FFFFFF",marginTop:"2px"}},"v2.1.0"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",color:"#15803D"}},"1. Inbound Live Chat & Two-Way Agent Inbox (Completed & Released \u2705)"),React.createElement("div",{style:{fontSize:"11.5px",color:"#166534",marginTop:"2px"}},"Interactive two-way chat window, Meta 24-hour customer care session window tracking, canned replies, and simulated inbound testing."))),React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:"12px",padding:"12px 14px",background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"8px"}},React.createElement("span",{className:"badge",style:{background:"#16A34A",color:"#FFFFFF",marginTop:"2px"}},"v2.2.0"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",color:"#15803D"}},"2. Bulk Campaign Broadcasts & Queue Pacing (Completed & Released \u2705)"),React.createElement("div",{style:{fontSize:"11.5px",color:"#166534",marginTop:"2px"}},"CSV contact upload with dynamic variable mapping, anti-spam dispatch queue pacing (50 msgs/min), and live animated monitor."))),React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:"12px",padding:"12px 14px",background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"8px"}},React.createElement("span",{className:"badge",style:{background:"#16A34A",color:"#FFFFFF",marginTop:"2px"}},"v2.3.0"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",color:"#15803D"}},"3. Odoo ERP Automated Action Webhook & Model Sync (Completed & Released \u2705)"),React.createElement("div",{style:{fontSize:"11.5px",color:"#166534",marginTop:"2px"}},"Inbound webhook triggers for automated invoice generation (account.move), sales order confirmations, dynamic PDF attachment streaming, and bi-directional chatter delivery callbacks."))),React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:"12px",padding:"12px 14px",background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"8px"}},React.createElement("span",{className:"badge",style:{background:"#16A34A",color:"#FFFFFF",marginTop:"2px"}},"v2.4.0"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",color:"#15803D"}},"4. WhatsApp Template Studio & Meta Graph API Live Approval (Completed & Released \u2705)"),React.createElement("div",{style:{fontSize:"11.5px",color:"#166534",marginTop:"2px"}},"Direct Meta Graph API submission for message templates, curated library of pre-built Meta presets, live handset mockup phone preview, and active/inactive template filtering."))),React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:"12px",padding:"12px 14px",background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:"8px"}},React.createElement("span",{className:"badge",style:{background:"#16A34A",color:"#FFFFFF",marginTop:"2px"}},"v2.5.0"),React.createElement("div",null,React.createElement("strong",{style:{fontSize:"12.5px",color:"#15803D"}},"5. Enterprise User Security & SaNDS Lab Application Key Licensing (Active & Released \u2705)"),React.createElement("div",{style:{fontSize:"11.5px",color:"#166534",marginTop:"2px"}},"Admin user edit & suspension controls, self and admin password reset flows, SaNDS Lab Application Key licensing engine with offline asymmetric RSA-SHA256 verification, top header expiry duration pill, and strict lock security protection."))))))),c!=="version"&&React.createElement("div",{style:{marginTop:"20px"}},React.createElement("button",{type:"submit",className:`btn ${o||c!=="tariffs"&&c!=="meta"?"btn-primary":"btn-secondary"}`,style:{padding:"10px 24px",fontSize:"14px",fontWeight:"700"},disabled:T||!o&&(c==="tariffs"||c==="meta")},T?"Saving...":!o&&c==="tariffs"?"\u{1F512} Tariffs Managed by Superadmin (Read Only)":!o&&c==="meta"?"\u{1F512} Meta Credentials Managed by Superadmin (Read Only)":"\u{1F4BE} Save & Apply System Configuration"))))}var be=document.getElementById("root");be&&ReactDOM.createRoot(be).render(React.createElement(Se,null));})();
+}`
+    }
+  };
+  const currentSnippet = snippets[activeSnippetLang] || snippets.python;
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u26A1"), " Odoo ERP Automation & Developer Hub"), /* @__PURE__ */ React.createElement("p", null, "Enterprise Odoo Automated Action Studio, inbound webhook controllers, dynamic PDF streaming, and live bi-directional delivery telemetry.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-primary",
+      style: { display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 14px", fontSize: "13px", fontWeight: "600", cursor: "pointer" },
+      onClick: () => setShowGuideModal(true)
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4D6}"),
+    " Step-by-Step Setup Guide"
+  ), /* @__PURE__ */ React.createElement("span", { className: "odoo-code-header-badge" }, /* @__PURE__ */ React.createElement("span", null, "\u25CF"), " Odoo Gateway Active (v2.3.0)"))), /* @__PURE__ */ React.createElement("div", { className: "odoo-subnav-bar" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `odoo-subnav-btn ${hubTab === "studio" ? "active" : ""}`,
+      onClick: () => setHubTab("studio")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u26A1"),
+    " Automated Action Studio"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `odoo-subnav-btn ${hubTab === "tester" ? "active" : ""}`,
+      onClick: () => setHubTab("tester")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F9EA}"),
+    " Webhook Tester & Simulator"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `odoo-subnav-btn ${hubTab === "audit" ? "active" : ""}`,
+      onClick: () => setHubTab("audit")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"),
+    " Live Odoo Audit Telemetry"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `odoo-subnav-btn ${hubTab === "connectors" ? "active" : ""}`,
+      onClick: () => setHubTab("connectors")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F50C}"),
+    " Multi-Platform Connectors"
+  )), hubTab === "studio" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "minmax(360px, 420px) 1fr", gap: "20px" } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Odoo Automation Configurator")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "1. Target Odoo Business Model"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" } }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `odoo-model-pill ${selectedModel === "account.move" ? "active" : ""}`,
+      onClick: () => setSelectedModel("account.move")
+    },
+    /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F4C4}"),
+    /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", display: "block" } }, "account.move"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Customer Invoices"))
+  ), /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `odoo-model-pill ${selectedModel === "sale.order" ? "active" : ""}`,
+      onClick: () => setSelectedModel("sale.order")
+    },
+    /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F6D2}"),
+    /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", display: "block" } }, "sale.order"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Sales Orders"))
+  ), /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `odoo-model-pill ${selectedModel === "account.payment" ? "active" : ""}`,
+      onClick: () => setSelectedModel("account.payment")
+    },
+    /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F4B3}"),
+    /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", display: "block" } }, "account.payment"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Payment Receipts"))
+  ), /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: `odoo-model-pill ${selectedModel === "stock.picking" ? "active" : ""}`,
+      onClick: () => setSelectedModel("stock.picking")
+    },
+    /* @__PURE__ */ React.createElement("span", { style: { fontSize: "20px" } }, "\u{1F69A}"),
+    /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", display: "block" } }, "stock.picking"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", color: "var(--text-muted)" } }, "Delivery Orders"))
+  ))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "2. Trigger Event Condition"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: selectedTrigger, onChange: (e) => setSelectedTrigger(e.target.value) }, selectedModel === "account.move" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("option", { value: "posted" }, "On Invoice Posted / Validated (state == 'posted') [Recommended]"), /* @__PURE__ */ React.createElement("option", { value: "paid" }, "On Payment Completed (payment_state in ('paid', 'in_payment'))"), /* @__PURE__ */ React.createElement("option", { value: "create" }, "On Invoice Creation (Draft Created)")), selectedModel === "sale.order" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("option", { value: "posted" }, "On Sales Order Confirmed (state == 'sale') [Recommended]"), /* @__PURE__ */ React.createElement("option", { value: "sent" }, "On Quotation Sent to Customer (state == 'sent')")), selectedModel === "account.payment" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("option", { value: "posted" }, "On Payment Posted (state == 'posted') [Recommended]")), selectedModel === "stock.picking" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("option", { value: "posted" }, "On Delivery Done / Dispatched (state == 'done') [Recommended]")))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700" } }, "3. WhatsApp Approved Template"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: selectedTemplate, onChange: (e) => setSelectedTemplate(e.target.value) }, templatesList.length > 0 ? templatesList.map((t) => /* @__PURE__ */ React.createElement("option", { key: t.id, value: t.template_name }, t.display_title, " (", t.template_name, " \u2022 ", t.category, ")")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("option", { value: "uniglobal_invoice_notification" }, "Invoice Notification with PDF (uniglobal_invoice_notification)"), /* @__PURE__ */ React.createElement("option", { value: "offer_sandslab" }, "SaNDS Lab Special Offer QR (offer_sandslab)"), /* @__PURE__ */ React.createElement("option", { value: "uniglobal_delivery_dispatch" }, "Order Dispatched Status (uniglobal_delivery_dispatch)")))), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { background: "#F8FAFC", padding: "12px", borderRadius: "8px", border: "1px solid #E2E8F0" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontWeight: "700", marginBottom: "8px" } }, "4. Enterprise Automation Features"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "8px" } }, /* @__PURE__ */ React.createElement("label", { style: { display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "12.5px" } }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "checkbox",
+      checked: includePdf,
+      onChange: (e) => setIncludePdf(e.target.checked)
+    }
+  ), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("strong", null, "Dynamic PDF Streaming:"), " Auto-generate & attach Odoo QWeb PDF")), /* @__PURE__ */ React.createElement("label", { style: { display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "12.5px" } }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "checkbox",
+      checked: logChatter,
+      onChange: (e) => setLogChatter(e.target.checked)
+    }
+  ), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("strong", null, "Odoo Chatter Feedback:"), " Log WhatsApp delivery status in record chatter")), /* @__PURE__ */ React.createElement("label", { style: { display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "12.5px" } }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "checkbox",
+      checked: phoneFallback,
+      onChange: (e) => setPhoneFallback(e.target.checked)
+    }
+  ), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("strong", null, "Smart Phone Fallback:"), " Check partner mobile first, then landline/phone")))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Integration API Key"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: apiKey, onChange: (e) => setApiKey(e.target.value) }))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `btn ${studioLang === "python" ? "btn-primary" : "btn-secondary"}`,
+      style: { fontSize: "12px", padding: "6px 14px" },
+      onClick: () => setStudioLang("python")
+    },
+    "\u{1F40D} Python Server Action (Odoo 14 - 18)"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `btn ${studioLang === "webhook" ? "btn-primary" : "btn-secondary"}`,
+      style: { fontSize: "12px", padding: "6px 14px" },
+      onClick: () => setStudioLang("webhook")
+    },
+    "\u26A1 Odoo 17/18 Webhook Rule (JSON)"
+  )), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      className: "btn-copy-code",
+      onClick: () => {
+        const codeToCopy = studioLang === "python" ? generateOdooPythonCode() : generateOdoo17WebhookJson();
+        navigator.clipboard.writeText(codeToCopy);
+        showToast("Odoo Automation code copied to clipboard!");
+      }
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"),
+    " Copy Code"
+  )), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { minHeight: "440px", maxHeight: "580px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "code-box-header" }, /* @__PURE__ */ React.createElement("span", null, studioLang === "python" ? "ir.actions.server.py" : "odoo17_webhook_config.json"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11px", color: "#64748B" } }, studioLang === "python" ? 'Paste directly into Odoo Server Action "Python Code" field' : "Odoo 17 / 18 Automation Rule Webhook")), /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, studioLang === "python" ? generateOdooPythonCode() : generateOdoo17WebhookJson())), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "16px", padding: "14px", background: "#F0F9FF", border: "1px solid #BAE6FD", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13px", color: "#0369A1", display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4D8}"), " How to Setup in Odoo in 30 Seconds:"), /* @__PURE__ */ React.createElement("ol", { style: { fontSize: "12px", color: "#0C4A6E", margin: "0 0 0 18px", lineHeight: "1.6" } }, /* @__PURE__ */ React.createElement("li", null, "In Odoo, activate ", /* @__PURE__ */ React.createElement("strong", null, "Developer Mode"), " (Settings \u2192 General Settings \u2192 Activate the developer mode)."), /* @__PURE__ */ React.createElement("li", null, "Navigate to ", /* @__PURE__ */ React.createElement("strong", null, "Settings \u2192 Technical \u2192 Server Actions"), " (or ", /* @__PURE__ */ React.createElement("em", null, "Automation Rules"), " in Odoo 17/18)."), /* @__PURE__ */ React.createElement("li", null, "Create a new action: Set Model to ", /* @__PURE__ */ React.createElement("strong", null, selectedModel), " and Action To Do to ", /* @__PURE__ */ React.createElement("strong", null, "Execute Python Code"), "."), /* @__PURE__ */ React.createElement("li", null, "Paste the copied script into the ", /* @__PURE__ */ React.createElement("strong", null, "Python Code"), " box and click ", /* @__PURE__ */ React.createElement("strong", null, "Save"), "!"), /* @__PURE__ */ React.createElement("li", null, "Whenever a document matches your trigger event, WhatsApp will dispatch automatically with live chatter logging."))))), hubTab === "tester" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "minmax(380px, 460px) 1fr", gap: "20px" } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F9EA}"), " Odoo Inbound Webhook Simulator")), /* @__PURE__ */ React.createElement("div", { style: { marginBottom: "14px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", fontWeight: "700", color: "var(--text-secondary)", display: "block", marginBottom: "6px" } }, "Load Quick Simulation Preset:"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "odoo-preset-btn", onClick: () => applyTesterPreset("invoice") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4C4}"), " Invoice (INV/2026/0142)"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "odoo-preset-btn", onClick: () => applyTesterPreset("order") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6D2}"), " Sales Order (SO-8821)"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "odoo-preset-btn", onClick: () => applyTesterPreset("payment") }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Payment (PAY-5510)"))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Endpoint URL"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge cat-utility", style: { padding: "8px 12px", fontSize: "12px" } }, "POST"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: endpoint, readOnly: true }))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "API Key Header (X-API-Key)"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: apiKey, onChange: (e) => setApiKey(e.target.value) })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Odoo Model"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: testModel, onChange: (e) => setTestModel(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "account.move" }, "account.move"), /* @__PURE__ */ React.createElement("option", { value: "sale.order" }, "sale.order"), /* @__PURE__ */ React.createElement("option", { value: "account.payment" }, "account.payment"), /* @__PURE__ */ React.createElement("option", { value: "stock.picking" }, "stock.picking"))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Document Ref"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: testRecordName, onChange: (e) => setTestRecordName(e.target.value) }))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Customer Name"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: testPartnerName, onChange: (e) => setTestPartnerName(e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Recipient Phone"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: testRecipient, onChange: (e) => setTestRecipient(e.target.value) }))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Amount"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: testAmount, onChange: (e) => setTestAmount(e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Currency"), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: testCurrency, onChange: (e) => setTestCurrency(e.target.value) }))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "WhatsApp Template"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: testTemplate, onChange: (e) => setTestTemplate(e.target.value) }, templatesList.length > 0 ? templatesList.map((t) => /* @__PURE__ */ React.createElement("option", { key: t.id, value: t.template_name }, t.display_title, " (", t.template_name, ")")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("option", { value: "offer_sandslab" }, "SaNDS Lab Special Offer QR (offer_sandslab)"), /* @__PURE__ */ React.createElement("option", { value: "uniglobal_invoice_notification" }, "Invoice Notification (uniglobal_invoice_notification)")))), /* @__PURE__ */ React.createElement("button", { className: "btn btn-success", style: { width: "100%", padding: "10px" }, onClick: runLiveTest, disabled: loading }, loading ? "Dispatching..." : "\u25B6 Dispatch Simulated Odoo Webhook")), /* @__PURE__ */ React.createElement("div", { className: "card", style: { margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4E1}"), " Gateway Real-Time Response"), lastDispatchedId && /* @__PURE__ */ React.createElement("span", { className: "badge status-sent", style: { fontSize: "11px" } }, "Meta Dispatch Verified")), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { minHeight: "360px", maxHeight: "560px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "code-box-header" }, /* @__PURE__ */ React.createElement("span", null, "HTTP Response Inspector"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "#64748B" } }, "application/json")), /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, responseOutput || '// Click "Dispatch Simulated Odoo Webhook" to execute live Meta Cloud API integration.')), lastDispatchedId && /* @__PURE__ */ React.createElement("div", { style: { marginTop: "14px", padding: "12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#166534", display: "block" } }, "Message Successfully Recorded"), /* @__PURE__ */ React.createElement("code", { style: { fontSize: "11.5px", color: "#047857" } }, lastDispatchedId)), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary",
+      style: { fontSize: "12px" },
+      onClick: () => {
+        const el = document.querySelector('button.nav-item[onClick*="logs"]');
+        if (el) el.click();
+      }
+    },
+    "View in Message Logs \u2192"
+  )))), hubTab === "audit" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4DC}"), " Odoo Dispatched Messages Audit"), /* @__PURE__ */ React.createElement("p", { style: { margin: "4px 0 0 0", fontSize: "12px", color: "var(--text-secondary)" } }, "Real-time log of all WhatsApp messages triggered from Odoo ERP Automated Actions and webhooks.")), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary", style: { fontSize: "12px" }, onClick: loadAuditLogs, disabled: loadingAudit }, loadingAudit ? "Refreshing..." : "\u{1F504} Refresh Logs")), /* @__PURE__ */ React.createElement("div", { style: { overflowX: "auto" } }, /* @__PURE__ */ React.createElement("table", { className: "table", style: { width: "100%" } }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "ID"), /* @__PURE__ */ React.createElement("th", null, "Odoo Model"), /* @__PURE__ */ React.createElement("th", null, "Document Ref"), /* @__PURE__ */ React.createElement("th", null, "Recipient Phone"), /* @__PURE__ */ React.createElement("th", null, "Template"), /* @__PURE__ */ React.createElement("th", null, "Status"), /* @__PURE__ */ React.createElement("th", null, "Cost (BHD)"), /* @__PURE__ */ React.createElement("th", null, "Meta Tracking ID"), /* @__PURE__ */ React.createElement("th", null, "Dispatched At"))), /* @__PURE__ */ React.createElement("tbody", null, auditLogs.length > 0 ? auditLogs.map((log) => /* @__PURE__ */ React.createElement("tr", { key: log.id }, /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("strong", null, "#", log.id)), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#E0F2FE", color: "#0369A1" } }, log.odoo_model || "account.move")), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("strong", null, log.odoo_record_name || "INV/2026/0142")), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", null, log.to_phone)), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px" } }, log.template_name || "N/A")), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { className: `badge status-${log.status || "sent"}` }, log.status === "read" ? "READ \u2713\u2713" : log.status === "delivered" ? "DELIVERED \u2713\u2713" : log.status === "sent" ? "SENT \u2713" : log.status.toUpperCase())), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("strong", null, parseFloat(log.client_rate_bhd || 0.0185).toFixed(4))), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("code", { style: { fontSize: "11px", maxWidth: "140px", display: "inline-block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }, title: log.message_id }, log.message_id)), /* @__PURE__ */ React.createElement("td", { style: { fontSize: "11.5px", color: "var(--text-muted)" } }, log.sent_at || log.created_at))) : /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { colSpan: "9", style: { textAlign: "center", padding: "30px", color: "var(--text-muted)" } }, loadingAudit ? "Loading Odoo message telemetry..." : "No Odoo-triggered messages found yet. Use the Webhook Simulator to dispatch test notifications.")))))), hubTab === "connectors" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { margin: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F50C}"), " Multi-Platform Connector Snippets"), /* @__PURE__ */ React.createElement("button", { className: "btn-copy-code", onClick: () => {
+    navigator.clipboard.writeText(currentSnippet.code);
+    showToast(`${currentSnippet.filename} copied to clipboard!`);
+  } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4CB}"), " Copy Code")), /* @__PURE__ */ React.createElement("div", { className: "code-tabs-header" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `code-tab-btn ${activeSnippetLang === "python" ? "active" : ""}`,
+      onClick: () => setActiveSnippetLang("python")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F40D}"),
+    " Python (Odoo)"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `code-tab-btn ${activeSnippetLang === "php" ? "active" : ""}`,
+      onClick: () => setActiveSnippetLang("php")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F418}"),
+    " PHP"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `code-tab-btn ${activeSnippetLang === "curl" ? "active" : ""}`,
+      onClick: () => setActiveSnippetLang("curl")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4BB}"),
+    " cURL"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `code-tab-btn ${activeSnippetLang === "dotnet" ? "active" : ""}`,
+      onClick: () => setActiveSnippetLang("dotnet")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F537}"),
+    " .NET (C#)"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `code-tab-btn ${activeSnippetLang === "node" ? "active" : ""}`,
+      onClick: () => setActiveSnippetLang("node")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F7E8}"),
+    " Node.js"
+  )), /* @__PURE__ */ React.createElement("div", { className: "code-box", style: { minHeight: "380px", maxHeight: "560px", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "code-box-header" }, /* @__PURE__ */ React.createElement("span", null, currentSnippet.filename), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "#64748B" } }, currentSnippet.title)), /* @__PURE__ */ React.createElement("pre", { style: { margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "anywhere" } }, currentSnippet.code))), showGuideModal && /* @__PURE__ */ React.createElement(
+    OdooGuideModal,
+    {
+      onClose: () => setShowGuideModal(false),
+      showToast,
+      apiKey
+    }
+  ));
+}
+function ApiKeysView({ showToast }) {
+  const [keys, setKeys] = useState([]);
+  const [newSystemName, setNewSystemName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const loadKeys = () => {
+    fetch("./api/api_keys.php").then((res) => res.json()).then((res) => {
+      if (res.success) setKeys(res.data);
+    });
+  };
+  useEffect(() => {
+    loadKeys();
+  }, []);
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    if (!newSystemName) return;
+    setLoading(true);
+    try {
+      const res = await fetch("./api/api_keys.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ system_name: newSystemName })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Generated API key for ${newSystemName}`);
+        setNewSystemName("");
+        loadKeys();
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+  const toggleStatus = async (id, currentStatus) => {
+    await fetch("./api/api_keys.php", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, is_active: currentStatus ? 0 : 1 })
+    });
+    showToast("API Key status updated");
+    loadKeys();
+  };
+  const keyColumns = [
+    {
+      key: "system_name",
+      label: "Integration System",
+      render: (k) => /* @__PURE__ */ React.createElement("strong", null, k.system_name)
+    },
+    {
+      key: "api_key",
+      label: "Secret API Key Token",
+      render: (k) => /* @__PURE__ */ React.createElement("code", { style: { background: "#F1F5F9", padding: "4px 8px", borderRadius: "4px", color: "#0F172A" } }, k.api_key)
+    },
+    {
+      key: "rate_limit_per_minute",
+      label: "Rate Limit",
+      render: (k) => /* @__PURE__ */ React.createElement("span", null, k.rate_limit_per_minute, " req/min")
+    },
+    {
+      key: "is_active",
+      label: "Status",
+      render: (k) => /* @__PURE__ */ React.createElement("span", { className: `badge ${k.is_active ? "status-read" : "status-failed"}` }, k.is_active ? "ACTIVE" : "REVOKED")
+    },
+    {
+      key: "last_used_at",
+      label: "Last Used",
+      render: (k) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-muted)" } }, k.last_used_at || "Never")
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      sortable: false,
+      render: (k) => /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => toggleStatus(k.id, k.is_active) }, k.is_active ? "Revoke" : "Activate")
+    }
+  ];
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F511}"), " External API Keys Management"), /* @__PURE__ */ React.createElement("p", null, "Manage authentication tokens for Odoo ERP, POS terminal middleware, and third-party systems."))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: "16px 20px", marginBottom: "16px" } }, /* @__PURE__ */ React.createElement("form", { onSubmit: handleCreate, style: { display: "flex", gap: "12px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      placeholder: "System / Application Name (e.g. Odoo ERP Production)",
+      value: newSystemName,
+      onChange: (e) => setNewSystemName(e.target.value),
+      style: { flex: 1 },
+      required: true
+    }
+  ), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: loading }, /* @__PURE__ */ React.createElement("span", null, "\u2795"), " Generate New API Key"))), /* @__PURE__ */ React.createElement(
+    DataTable,
+    {
+      columns: keyColumns,
+      data: keys,
+      title: "api_keys",
+      searchPlaceholder: "Search system name, token...",
+      defaultPageSize: 10,
+      pageSizeOptions: [5, 10, 20],
+      defaultSortKey: "id",
+      defaultSortDir: "desc"
+    }
+  ));
+}
+function UsersView({ currentUser, showToast }) {
+  const isSuperadmin = currentUser?.role === "superadmin";
+  const [users, setUsers] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", password: "Password@123", role: "user", status: "active" });
+  const [confirmDialog, setConfirmDialog] = useState(null);
+  const [editingUser, setEditingUser] = useState(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [resetPasswordUser, setResetPasswordUser] = useState(null);
+  const [adminNewPassword, setAdminNewPassword] = useState("Password@123");
+  const [savingReset, setSavingReset] = useState(false);
+  const loadUsers = () => {
+    fetch("./api/users.php").then((res) => res.json()).then((res) => {
+      if (res.success) {
+        const list = isSuperadmin ? res.data : res.data.filter((u) => u.role !== "superadmin");
+        setUsers(list);
+      }
+    });
+  };
+  useEffect(() => {
+    loadUsers();
+  }, [currentUser]);
+  const handleSave = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("./api/users.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("\u2713 User created successfully");
+        setShowAddModal(false);
+        setForm({ name: "", email: "", password: "Password@123", role: "user", status: "active" });
+        loadUsers();
+      } else {
+        showToast(data.error || "Failed to create user", "error");
+      }
+    } catch (err) {
+      showToast("Error creating user", "error");
+    }
+  };
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    setSavingEdit(true);
+    try {
+      const payload = {
+        id: editingUser.id,
+        name: editingUser.name,
+        email: editingUser.email,
+        role: editingUser.role,
+        status: editingUser.status
+      };
+      if (editingUser.password && editingUser.password.trim() !== "") {
+        payload.password = editingUser.password.trim();
+      }
+      const res = await fetch("./api/users.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("\u2713 User account updated successfully!");
+        setEditingUser(null);
+        loadUsers();
+      } else {
+        showToast(data.error || "Failed to update user", "error");
+      }
+    } catch (err) {
+      showToast("Error updating user account", "error");
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+  const handleToggleStatus = (u, targetStatus) => {
+    if (currentUser?.id === u.id) {
+      showToast("You cannot suspend your own logged-in account", "error");
+      return;
+    }
+    if (targetStatus === "suspended") {
+      setConfirmDialog({
+        title: "Suspend User Account?",
+        subtitle: `Are you sure you want to suspend account "${u.name}" (${u.email})? They will immediately be prevented from logging into the platform.`,
+        icon: "\u23F8\uFE0F",
+        badgeClass: "warning",
+        confirmText: "Yes, Suspend Account",
+        cancelText: "Cancel",
+        onConfirm: async () => {
+          try {
+            const res = await fetch("./api/users.php?action=toggle_status", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id: u.id, status: "suspended" })
+            });
+            const data = await res.json();
+            if (data.success) {
+              showToast(`\u23F8\uFE0F User "${u.name}" has been suspended`);
+              loadUsers();
+            } else {
+              showToast(data.error || "Failed to suspend user", "error");
+            }
+          } catch (e) {
+            showToast("Error suspending user", "error");
+          } finally {
+            setConfirmDialog(null);
+          }
+        }
+      });
+    } else {
+      (async () => {
+        try {
+          const res = await fetch("./api/users.php?action=toggle_status", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: u.id, status: "active" })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast(`\u2713 User "${u.name}" has been activated`);
+            loadUsers();
+          } else {
+            showToast(data.error || "Failed to activate user", "error");
+          }
+        } catch (e) {
+          showToast("Error activating user", "error");
+        }
+      })();
+    }
+  };
+  const handleAdminResetPassword = async (e) => {
+    e.preventDefault();
+    if (!resetPasswordUser) return;
+    if (!adminNewPassword || adminNewPassword.trim().length < 6) {
+      showToast("Password must be at least 6 characters", "error");
+      return;
+    }
+    setSavingReset(true);
+    try {
+      const res = await fetch("./api/users.php?action=reset_password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: resetPasswordUser.id, new_password: adminNewPassword.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`\u2713 Password reset for "${resetPasswordUser.name}" successfully!`);
+        setResetPasswordUser(null);
+      } else {
+        showToast(data.error || "Failed to reset password", "error");
+      }
+    } catch (err) {
+      showToast("Error resetting password", "error");
+    } finally {
+      setSavingReset(false);
+    }
+  };
+  const generateRandomPassword = () => {
+    const pwd = "Pass@" + Math.floor(1e3 + Math.random() * 9e3) + "!";
+    setAdminNewPassword(pwd);
+  };
+  const copyPassword = (pwd) => {
+    if (!pwd) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(pwd).then(() => {
+        showToast("\u{1F4CB} Password copied to clipboard");
+      }).catch(() => {
+        showToast(`Password: ${pwd}`);
+      });
+    } else {
+      showToast(`Password: ${pwd}`);
+    }
+  };
+  const handleDelete = (id) => {
+    const targetUser = users.find((u) => u.id === id);
+    const userName = targetUser ? `"${targetUser.name}"` : "this user";
+    setConfirmDialog({
+      title: "Delete User Account?",
+      subtitle: `Are you sure you want to permanently delete user account ${userName}? They will no longer be able to log in.`,
+      icon: "\u{1F464}",
+      badgeClass: "danger",
+      confirmText: "Yes, Delete User",
+      cancelText: "Cancel",
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`./api/users.php?id=${id}`, { method: "DELETE" });
+          const data = await res.json();
+          if (data.success) {
+            showToast("User deleted");
+            loadUsers();
+          } else {
+            showToast(data.error, "error");
+          }
+        } catch (e) {
+          showToast("Error deleting user", "error");
+        } finally {
+          setConfirmDialog(null);
+        }
+      }
+    });
+  };
+  const userColumns = [
+    {
+      key: "name",
+      label: "User Name",
+      render: (u) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("div", { className: "avatar", style: { background: u.avatar_color || "#128C7E" } }, u.name.charAt(0)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { display: "block", fontSize: "13px" } }, u.name), currentUser?.id === u.id && /* @__PURE__ */ React.createElement("span", { style: { fontSize: "10.5px", color: "var(--wa-teal)", fontWeight: "700" } }, "(Current Session)")))
+    },
+    {
+      key: "email",
+      label: "Email Address"
+    },
+    {
+      key: "role",
+      label: "Assigned Role",
+      render: (u) => /* @__PURE__ */ React.createElement("span", { className: `badge ${u.role === "superadmin" ? "cat-marketing" : u.role === "admin" ? "cat-auth" : "cat-utility"}` }, u.role.toUpperCase())
+    },
+    {
+      key: "status",
+      label: "Account Status",
+      render: (u) => /* @__PURE__ */ React.createElement("span", { className: `badge ${u.status === "active" ? "status-read" : "status-failed"}` }, u.status === "active" ? "\u2713 ACTIVE" : "\u23F8\uFE0F SUSPENDED")
+    },
+    {
+      key: "last_login",
+      label: "Last Active",
+      render: (u) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-muted)" } }, u.last_login || "Never")
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      sortable: false,
+      render: (u) => /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "5px", alignItems: "center", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-secondary btn-sm",
+          title: "Edit user details",
+          onClick: () => setEditingUser({ ...u, password: "" })
+        },
+        "\u270F\uFE0F Edit"
+      ), /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-secondary btn-sm",
+          title: "Admin Reset Password",
+          onClick: () => {
+            setResetPasswordUser(u);
+            setAdminNewPassword("Password@123");
+          }
+        },
+        "\u{1F511} Reset PW"
+      ), currentUser?.id !== u.id && (u.status === "active" ? /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-warning btn-sm",
+          title: "Suspend user account",
+          onClick: () => handleToggleStatus(u, "suspended")
+        },
+        "\u23F8\uFE0F Suspend"
+      ) : /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-success btn-sm",
+          title: "Activate user account",
+          onClick: () => handleToggleStatus(u, "active")
+        },
+        "\u25B6\uFE0F Activate"
+      )), currentUser?.id !== u.id && /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-danger-outline btn-sm",
+          title: "Delete user",
+          onClick: () => handleDelete(u.id)
+        },
+        "\u{1F5D1}\uFE0F"
+      ))
+    }
+  ];
+  const displayedUsers = isSuperadmin ? users : users.filter((u) => u.role !== "superadmin");
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F465}"), " User Accounts & Role Permissions"), /* @__PURE__ */ React.createElement("p", null, isSuperadmin ? "Manage Superadmin, Admin, and Operations User accounts for platform access." : "Manage Admin and Operations User accounts for platform access.")), /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary", onClick: () => setShowAddModal(true) }, /* @__PURE__ */ React.createElement("span", null, "\u2795"), " Add New User")), /* @__PURE__ */ React.createElement(
+    DataTable,
+    {
+      columns: userColumns,
+      data: displayedUsers,
+      title: "platform_users",
+      searchPlaceholder: "Search users by name, email, role...",
+      defaultPageSize: 10,
+      pageSizeOptions: [5, 10, 20],
+      defaultSortKey: "id",
+      defaultSortDir: "desc"
+    }
+  ), showAddModal && /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: () => setShowAddModal(false) }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "480px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "Create New User"), /* @__PURE__ */ React.createElement("button", { className: "close-btn", onClick: () => setShowAddModal(false) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "20px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Full Name ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement("input", { type: "text", className: "form-input", value: form.name, onChange: (e) => setForm({ ...form, name: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Email Address ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement("input", { type: "email", className: "form-input", value: form.email, onChange: (e) => setForm({ ...form, email: e.target.value }), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Password ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement("input", { type: "password", className: "form-input", value: form.password, onChange: (e) => setForm({ ...form, password: e.target.value }), required: true, minLength: 6 }), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Default password is Password@123 (min 6 characters)")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Role"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: form.role, onChange: (e) => setForm({ ...form, role: e.target.value }) }, isSuperadmin && /* @__PURE__ */ React.createElement("option", { value: "superadmin" }, "Superadmin (Global Platform Owner)"), /* @__PURE__ */ React.createElement("option", { value: "admin" }, "Admin (Full Client Access)"), /* @__PURE__ */ React.createElement("option", { value: "user" }, "User (Standard Access)"))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Account Status"), /* @__PURE__ */ React.createElement("select", { className: "form-select", value: form.status, onChange: (e) => setForm({ ...form, status: e.target.value }) }, /* @__PURE__ */ React.createElement("option", { value: "active" }, "Active (Access Allowed)"), /* @__PURE__ */ React.createElement("option", { value: "suspended" }, "Suspended (Access Blocked)")))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "12px 20px", display: "flex", gap: "8px", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: () => setShowAddModal(false) }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary" }, "\u2795 Create User"))))), editingUser && /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: () => setEditingUser(null) }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "480px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "\u270F\uFE0F Edit User: ", editingUser.name), /* @__PURE__ */ React.createElement("button", { className: "close-btn", onClick: () => setEditingUser(null) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleUpdateUser }, /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "20px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Full Name ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: editingUser.name,
+      onChange: (e) => setEditingUser({ ...editingUser, name: e.target.value }),
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Email Address ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "email",
+      className: "form-input",
+      value: editingUser.email,
+      onChange: (e) => setEditingUser({ ...editingUser, email: e.target.value }),
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Assigned Role"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: editingUser.role,
+      onChange: (e) => setEditingUser({ ...editingUser, role: e.target.value })
+    },
+    isSuperadmin && /* @__PURE__ */ React.createElement("option", { value: "superadmin" }, "Superadmin (Global Platform Owner)"),
+    /* @__PURE__ */ React.createElement("option", { value: "admin" }, "Admin (Full Client Access)"),
+    /* @__PURE__ */ React.createElement("option", { value: "user" }, "User (Standard Access)")
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Account Status"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: editingUser.status,
+      onChange: (e) => setEditingUser({ ...editingUser, status: e.target.value })
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "active" }, "Active (Access Allowed)"),
+    /* @__PURE__ */ React.createElement("option", { value: "suspended" }, "Suspended (Access Blocked)")
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Set New Password (Optional)"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "password",
+      className: "form-input",
+      placeholder: "Leave blank to keep unchanged",
+      value: editingUser.password || "",
+      onChange: (e) => setEditingUser({ ...editingUser, password: e.target.value }),
+      minLength: 6
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Enter at least 6 characters only if you want to overwrite password."))), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "12px 20px", display: "flex", gap: "8px", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: () => setEditingUser(null), disabled: savingEdit }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: savingEdit }, savingEdit ? "Saving..." : "\u{1F4BE} Save Changes"))))), resetPasswordUser && /* @__PURE__ */ React.createElement("div", { className: "modal-overlay", onClick: () => setResetPasswordUser(null) }, /* @__PURE__ */ React.createElement("div", { className: "modal-content", style: { maxWidth: "460px" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "modal-header" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "\u{1F511} Reset Password for ", resetPasswordUser.name), /* @__PURE__ */ React.createElement("button", { className: "close-btn", onClick: () => setResetPasswordUser(null) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleAdminResetPassword }, /* @__PURE__ */ React.createElement("div", { className: "modal-body", style: { padding: "20px" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: "14px", fontSize: "12.5px", color: "var(--text-secondary)" } }, "User Account: ", /* @__PURE__ */ React.createElement("strong", null, resetPasswordUser.email), " \u2022 Role: ", /* @__PURE__ */ React.createElement("strong", { style: { textTransform: "uppercase" } }, resetPasswordUser.role)), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "New Password ", /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "*")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px" } }, /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: adminNewPassword,
+      onChange: (e) => setAdminNewPassword(e.target.value),
+      placeholder: "Enter new password (min 6 chars)",
+      required: true,
+      minLength: 6,
+      style: { fontFamily: "monospace", fontWeight: "bold" }
+    }
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      onClick: generateRandomPassword,
+      title: "Generate random password",
+      style: { whiteSpace: "nowrap" }
+    },
+    "\u{1F3B2} Random"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn btn-secondary btn-sm",
+      onClick: () => copyPassword(adminNewPassword),
+      title: "Copy to clipboard",
+      style: { whiteSpace: "nowrap" }
+    },
+    "\u{1F4CB} Copy"
+  ))), /* @__PURE__ */ React.createElement("div", { style: { background: "#EFF6FF", border: "1px solid #BFDBFE", color: "#1E40AF", padding: "10px 14px", borderRadius: "8px", fontSize: "12px", marginTop: "14px", lineHeight: "1.5" } }, "\u{1F4A1} ", /* @__PURE__ */ React.createElement("strong", null, "Admin Notice:"), " Once saved, the user must use this new password to sign in. Every user can also update their own password at any time via the ", /* @__PURE__ */ React.createElement("strong", null, "Change Password"), " button in the header.")), /* @__PURE__ */ React.createElement("div", { className: "modal-footer", style: { padding: "12px 20px", display: "flex", gap: "8px", justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: () => setResetPasswordUser(null), disabled: savingReset }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", disabled: savingReset }, savingReset ? "Resetting..." : "\u{1F511} Reset Password"))))), confirmDialog && /* @__PURE__ */ React.createElement(
+    ConfirmDialog,
+    {
+      isOpen: !!confirmDialog,
+      title: confirmDialog.title,
+      subtitle: confirmDialog.subtitle,
+      icon: confirmDialog.icon,
+      badgeClass: confirmDialog.badgeClass,
+      confirmText: confirmDialog.confirmText,
+      cancelText: confirmDialog.cancelText,
+      onClose: () => setConfirmDialog(null),
+      onConfirm: confirmDialog.onConfirm
+    }
+  ));
+}
+function formatCurrency(amount, currency = "BHD", decimals = 3) {
+  const num = parseFloat(amount || 0);
+  const dec = typeof decimals === "number" ? decimals : ["BHD", "KWD", "OMR"].includes(currency) ? 3 : 2;
+  const formatted = num.toFixed(dec);
+  if (currency === "INR") return `\u20B9 ${formatted}`;
+  if (currency === "USD") return `$ ${formatted}`;
+  return `${formatted} ${currency}`;
+}
+function formatDateTime(dateStr, format = "YYYY-MM-DD HH:mm:ss") {
+  if (!dateStr) return "";
+  try {
+    let cleanStr = String(dateStr).trim();
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(cleanStr)) {
+      cleanStr = cleanStr.replace(" ", "T");
+    }
+    const d = new Date(cleanStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const YYYY = d.getFullYear();
+    const MM = String(d.getMonth() + 1).padStart(2, "0");
+    const DD = String(d.getDate()).padStart(2, "0");
+    let hours = d.getHours();
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    const seconds = String(d.getSeconds()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const hh12 = String(hours % 12 || 12).padStart(2, "0");
+    const HH24 = String(hours).padStart(2, "0");
+    if (format === "DD/MM/YYYY hh:mm:ss A") return `${DD}/${MM}/${YYYY} ${hh12}:${minutes}:${seconds} ${ampm}`;
+    if (format === "DD-MM-YYYY HH:mm") return `${DD}-${MM}-${YYYY} ${HH24}:${minutes}`;
+    if (format === "MM/DD/YYYY hh:mm A") return `${MM}/${DD}/${YYYY} ${hh12}:${minutes} ${ampm}`;
+    if (format === "YYYY-MM-DD hh:mm A") return `${YYYY}-${MM}-${DD} ${hh12}:${minutes} ${ampm}`;
+    return `${YYYY}-${MM}-${DD} ${HH24}:${minutes}:${seconds}`;
+  } catch (e) {
+    return dateStr;
+  }
+}
+function WalletView({ currentUser, showToast, globalSettings, onBalanceChange }) {
+  const [walletData, setWalletData] = useState({
+    wallet_balance: 0,
+    currency: "BHD",
+    currency_decimals: 3,
+    users: [],
+    transactions: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [showTopUpModal, setShowTopUpModal] = useState(false);
+  const [selectedUserForTopUp, setSelectedUserForTopUp] = useState(null);
+  const [topUpForm, setTopUpForm] = useState({
+    user_id: "",
+    amount: "",
+    transaction_type: "credit",
+    reference_id: "",
+    notes: ""
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [deleteTargetTx, setDeleteTargetTx] = useState(null);
+  const [deletingTx, setDeletingTx] = useState(false);
+  const isSuperadmin = currentUser?.role === "superadmin";
+  const loadWallet = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`./api/wallet.php?type=${typeFilter === "all" ? "" : typeFilter}&limit=100`);
+      const data = await res.json();
+      if (data.success) {
+        setWalletData(data);
+        if (onBalanceChange) onBalanceChange(data.wallet_balance);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    loadWallet();
+  }, [typeFilter]);
+  const handleOpenTopUp = (user = null) => {
+    const targetId = user ? user.id : walletData.users[0]?.id || "";
+    setTopUpForm({
+      user_id: targetId,
+      amount: "",
+      transaction_type: "credit",
+      reference_id: "",
+      notes: ""
+    });
+    setSelectedUserForTopUp(user);
+    setShowTopUpModal(true);
+  };
+  const handleSaveTopUp = async (e) => {
+    e.preventDefault();
+    if (!topUpForm.user_id || parseFloat(topUpForm.amount) <= 0) {
+      showToast("Please enter a valid amount and target account", "error");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch("./api/wallet.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(topUpForm)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message || "Wallet balance updated successfully!");
+        setShowTopUpModal(false);
+        loadWallet();
+      } else {
+        showToast(data.error || "Failed to update wallet balance", "error");
+      }
+    } catch (err) {
+      showToast("Network error processing recharge", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  const confirmExecuteDelete = async () => {
+    if (!deleteTargetTx) return;
+    setDeletingTx(true);
+    try {
+      const res = await fetch(`./api/wallet.php?id=${deleteTargetTx.id}&revert=1`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message || "Transaction record deleted & balance adjusted successfully");
+        setDeleteTargetTx(null);
+        loadWallet();
+      } else {
+        showToast(data.error || "Failed to delete transaction", "error");
+      }
+    } catch (e) {
+      showToast("Network error deleting transaction", "error");
+    } finally {
+      setDeletingTx(false);
+    }
+  };
+  const curr = walletData.currency || globalSettings?.system_currency || "BHD";
+  const dec = walletData.currency_decimals ?? globalSettings?.currency_decimals ?? 3;
+  const ledgerColumns = [
+    {
+      key: "created_at",
+      label: "Date & Time",
+      render: (t) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "var(--text-secondary)" } }, formatDateTime(t.created_at, globalSettings?.system_date_format))
+    },
+    {
+      key: "user_name",
+      label: "Account / User",
+      render: (t) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", null, t.user_name || "Client Account"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10.5px", color: "var(--text-muted)" } }, t.user_email))
+    },
+    {
+      key: "transaction_type",
+      label: "Type",
+      render: (t) => /* @__PURE__ */ React.createElement("span", { className: `tx-type-badge tx-${t.transaction_type}` }, t.transaction_type === "credit" ? "\u{1F7E2} Credit (+)" : t.transaction_type === "debit" ? "\u{1F534} Debit (-)" : "\u{1F7E1} Adjustment")
+    },
+    {
+      key: "amount",
+      label: "Amount",
+      render: (t) => {
+        const isCredit = t.transaction_type === "credit";
+        return /* @__PURE__ */ React.createElement("span", { style: { fontWeight: "800", fontSize: "13px", color: isCredit ? "#15803D" : "#B91C1C" } }, isCredit ? "+" : "-", formatCurrency(t.amount, t.currency || curr, dec));
+      }
+    },
+    {
+      key: "balance_after",
+      label: "Balance After",
+      render: (t) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", null, formatCurrency(t.balance_after, t.currency || curr, dec)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "10px", color: "var(--text-muted)" } }, "Before: ", formatCurrency(t.balance_before, t.currency || curr, dec)))
+    },
+    {
+      key: "reference_id",
+      label: "Reference / Ref ID",
+      render: (t) => /* @__PURE__ */ React.createElement("div", { style: { maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }, title: t.reference_id }, /* @__PURE__ */ React.createElement("span", { className: "badge badge-subtle", style: { fontSize: "11px", fontFamily: "monospace" } }, t.reference_id || "N/A"))
+    },
+    {
+      key: "description",
+      label: "Description / Notes",
+      render: (t) => /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", maxWidth: "240px" }, title: t.description }, t.description || (t.reference_type === "superadmin_topup" ? "Recharge added by Superadmin" : "WhatsApp Dispatch"))
+    },
+    {
+      key: "performed_by_name",
+      label: "Processed By",
+      render: (t) => /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)" } }, t.performed_by_name || "System / Auto")
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      sortable: false,
+      render: (t) => /* @__PURE__ */ React.createElement("div", null, isSuperadmin && /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "btn btn-secondary btn-sm",
+          style: { padding: "3px 8px", fontSize: "11px", color: "#EF4444", display: "flex", alignItems: "center", gap: "3px" },
+          onClick: () => setDeleteTargetTx(t),
+          title: "Delete this transaction record and adjust user balance"
+        },
+        /* @__PURE__ */ React.createElement("span", null, "\u{1F5D1}\uFE0F"),
+        " Delete"
+      ))
+    }
+  ];
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Prepaid Wallet & Financial Statement"), /* @__PURE__ */ React.createElement("p", null, "Superadmin balance management, automatic transaction debit ledger, and multi-currency billing statement.")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px" } }, isSuperadmin && /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary", onClick: () => handleOpenTopUp(null), style: { display: "flex", alignItems: "center", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", null, "\u2795"), " Add Wallet Balance"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary", onClick: loadWallet }, /* @__PURE__ */ React.createElement("span", null, "\u{1F504}"), " Refresh Statement"))), /* @__PURE__ */ React.createElement("div", { className: "wallet-hero-grid" }, /* @__PURE__ */ React.createElement("div", { className: "wallet-balance-card" }, /* @__PURE__ */ React.createElement("div", { className: "wallet-balance-label" }, "Available Prepaid Wallet Balance"), /* @__PURE__ */ React.createElement("div", { className: "wallet-balance-amount" }, formatCurrency(walletData.wallet_balance, curr, dec)), /* @__PURE__ */ React.createElement("div", { className: "wallet-quick-actions" }, isSuperadmin && /* @__PURE__ */ React.createElement("button", { className: "btn-recharge", onClick: () => handleOpenTopUp(null) }, /* @__PURE__ */ React.createElement("span", null, "\u2795"), " Top-Up / Add Credit"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", opacity: 0.9, alignSelf: "center" } }, "Base Currency: ", /* @__PURE__ */ React.createElement("strong", null, curr)))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { display: "flex", flexDirection: "column", justifyContent: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "var(--text-muted)", fontWeight: "700", textTransform: "uppercase" } }, "Total Credits / Recharges"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "24px", fontWeight: "800", color: "#15803D", marginTop: "6px" } }, formatCurrency(
+    walletData.transactions.filter((t) => t.transaction_type === "credit").reduce((acc, t) => acc + parseFloat(t.amount || 0), 0),
+    curr,
+    dec
+  )), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)", marginTop: "4px" } }, walletData.transactions.filter((t) => t.transaction_type === "credit").length, " credit events")), /* @__PURE__ */ React.createElement("div", { className: "card", style: { display: "flex", flexDirection: "column", justifyContent: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "var(--text-muted)", fontWeight: "700", textTransform: "uppercase" } }, "Total Dispatches / Debits"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "24px", fontWeight: "800", color: "#B91C1C", marginTop: "6px" } }, formatCurrency(
+    walletData.transactions.filter((t) => t.transaction_type === "debit").reduce((acc, t) => acc + parseFloat(t.amount || 0), 0),
+    curr,
+    dec
+  )), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "11.5px", color: "var(--text-secondary)", marginTop: "4px" } }, walletData.transactions.filter((t) => t.transaction_type === "debit").length, " message dispatches"))), isSuperadmin && walletData.users && walletData.users.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "card", style: { marginBottom: "24px" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { className: "card-title", style: { fontSize: "15px" } }, "\u{1F465} Client Account Balances Overview"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: "12px", color: "var(--text-muted)" } }, "Superadmin Quick Balance Management")), /* @__PURE__ */ React.createElement("div", { style: { overflowX: "auto" } }, /* @__PURE__ */ React.createElement("table", { className: "data-table" }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "User / Company"), /* @__PURE__ */ React.createElement("th", null, "Email"), /* @__PURE__ */ React.createElement("th", null, "Role"), /* @__PURE__ */ React.createElement("th", null, "Current Balance"), /* @__PURE__ */ React.createElement("th", null, "Status"), /* @__PURE__ */ React.createElement("th", null, "Action"))), /* @__PURE__ */ React.createElement("tbody", null, walletData.users.map((u) => /* @__PURE__ */ React.createElement("tr", { key: u.id }, /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("strong", null, u.name)), /* @__PURE__ */ React.createElement("td", null, u.email), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { className: `badge ${u.role === "superadmin" ? "cat-marketing" : u.role === "admin" ? "cat-auth" : "cat-utility"}` }, u.role.toUpperCase())), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: parseFloat(u.wallet_balance) > 0 ? "#15803D" : "#94A3B8" } }, formatCurrency(u.wallet_balance, curr, dec))), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { className: `badge ${u.status === "active" ? "status-read" : "status-failed"}` }, u.status.toUpperCase())), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      className: "btn btn-primary btn-sm",
+      style: { padding: "4px 10px", fontSize: "11.5px", display: "flex", alignItems: "center", gap: "4px" },
+      onClick: () => handleOpenTopUp(u)
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u2795"),
+    " Top-Up"
+  )))))))), /* @__PURE__ */ React.createElement(
+    DataTable,
+    {
+      columns: ledgerColumns,
+      data: walletData.transactions,
+      title: "wallet_transactions_statement",
+      searchPlaceholder: "Search reference ID, description, user...",
+      defaultPageSize: 10,
+      pageSizeOptions: [10, 25, 50, 100],
+      defaultSortKey: "created_at",
+      defaultSortDir: "desc",
+      actions: /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "8px", alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+        "select",
+        {
+          className: "form-select",
+          style: { width: "150px", padding: "5px 8px", fontSize: "12px" },
+          value: typeFilter,
+          onChange: (e) => setTypeFilter(e.target.value)
+        },
+        /* @__PURE__ */ React.createElement("option", { value: "all" }, "All Transactions"),
+        /* @__PURE__ */ React.createElement("option", { value: "credit" }, "Credits (Top-Ups)"),
+        /* @__PURE__ */ React.createElement("option", { value: "debit" }, "Debits (Dispatches)")
+      )),
+      emptyMessage: loading ? "Loading wallet transactions..." : "No transaction history records found."
+    }
+  ), showTopUpModal && /* @__PURE__ */ React.createElement("div", { style: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(0,0,0,0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1e4
+  } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { width: "520px", maxWidth: "95vw" } }, /* @__PURE__ */ React.createElement("div", { className: "card-header", style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { className: "card-title", style: { fontSize: "16px", display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F4B3}"), " Add Wallet Balance / Payment Credit"), /* @__PURE__ */ React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setShowTopUpModal(false) }, "\u2715")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSaveTopUp, style: { marginTop: "14px" } }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Select Client / Admin Account"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: topUpForm.user_id,
+      onChange: (e) => setTopUpForm({ ...topUpForm, user_id: e.target.value }),
+      required: true
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "" }, "-- Choose Account --"),
+    walletData.users.map((u) => /* @__PURE__ */ React.createElement("option", { key: u.id, value: u.id }, u.name, " (", u.email, ") - Current Balance: ", formatCurrency(u.wallet_balance, curr, dec)))
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Top-Up Amount (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.001",
+      min: "0.001",
+      placeholder: "e.g. 50.000",
+      className: "form-input",
+      value: topUpForm.amount,
+      onChange: (e) => setTopUpForm({ ...topUpForm, amount: e.target.value }),
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Transaction Type"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: topUpForm.transaction_type,
+      onChange: (e) => setTopUpForm({ ...topUpForm, transaction_type: e.target.value })
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "credit" }, "Credit (Top-Up / Payment Made)"),
+    /* @__PURE__ */ React.createElement("option", { value: "debit" }, "Debit (Deduction)"),
+    /* @__PURE__ */ React.createElement("option", { value: "adjustment" }, "Manual Set (Override)")
+  ))), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Payment Reference / Receipt ID"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      placeholder: "e.g. BENEFIT-849201, Bank Transfer #9912, Cash Receipt",
+      className: "form-input",
+      value: topUpForm.reference_id,
+      onChange: (e) => setTopUpForm({ ...topUpForm, reference_id: e.target.value })
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Reference number to match with client invoice or bank statement.")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Notes & Description"), /* @__PURE__ */ React.createElement(
+    "textarea",
+    {
+      rows: "2",
+      placeholder: "e.g. 50 BHD Recharge via BenefitPay on 05-Oct-2026",
+      className: "form-input",
+      value: topUpForm.notes,
+      onChange: (e) => setTopUpForm({ ...topUpForm, notes: e.target.value })
+    }
+  )), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "10px", marginTop: "16px" } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", style: { flex: 1 }, onClick: () => setShowTopUpModal(false) }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "btn btn-primary", style: { flex: 1 }, disabled: submitting }, submitting ? "Processing..." : "\u{1F4B3} Credit Wallet Balance"))))), deleteTargetTx && /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-overlay", onClick: () => !deletingTx && setDeleteTargetTx(null) }, /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-card", onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-body" }, /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-icon-badge" }, /* @__PURE__ */ React.createElement("span", null, "\u{1F5D1}\uFE0F")), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-title" }, "Delete Transaction Record"), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-subtitle" }, "Are you sure you want to permanently remove this transaction from the ledger?"), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-info-box" }, /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-info-row" }, /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-label" }, "Transaction ID"), /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-value" }, "#", deleteTargetTx.id)), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-info-row" }, /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-label" }, "Account / User"), /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-value" }, deleteTargetTx.user_name || deleteTargetTx.user_email || "N/A")), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-info-row" }, /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-label" }, "Type & Amount"), /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-value", style: { color: deleteTargetTx.transaction_type === "credit" ? "#15803D" : "#DC2626" } }, deleteTargetTx.transaction_type === "credit" ? "\u{1F7E2} Credit (+)" : "\u{1F534} Debit (-)", " ", formatCurrency(deleteTargetTx.amount, deleteTargetTx.currency || curr, dec))), deleteTargetTx.reference_id && /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-info-row" }, /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-label" }, "Reference ID"), /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-value", style: { fontFamily: "monospace" } }, deleteTargetTx.reference_id)), deleteTargetTx.description && /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-info-row" }, /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-label" }, "Description"), /* @__PURE__ */ React.createElement("span", { className: "confirm-modal-info-value", style: { maxWidth: "220px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, deleteTargetTx.description))), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-warning-box" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "16px" } }, "\u26A0\uFE0F"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", null, "Automatic Balance Reversal:"), " Deleting this record will automatically adjust the user balance accordingly (e.g. subtracting credited funds or refunding debited messages)."))), /* @__PURE__ */ React.createElement("div", { className: "confirm-modal-actions" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn-confirm-cancel",
+      onClick: () => setDeleteTargetTx(null),
+      disabled: deletingTx
+    },
+    "Cancel"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: "btn-confirm-delete",
+      onClick: confirmExecuteDelete,
+      disabled: deletingTx
+    },
+    deletingTx ? "Deleting..." : "\u{1F5D1}\uFE0F Yes, Delete & Adjust Balance"
+  )))));
+}
+function SettingsView({ currentUser, showToast, onSettingsChange }) {
+  const isSuperadmin = !currentUser || currentUser.role === "superadmin";
+  const [activeSubTab, setActiveSubTab] = useState("tariffs");
+  const [settings, setSettings] = useState({
+    billing_model: "per_message",
+    meta_phone_number_id: "",
+    meta_waba_account_id: "",
+    meta_access_token: "",
+    webhook_verify_token: "",
+    business_display_name: "UniGlobal Consultancy W.L.L",
+    business_phone_number: "+973 1700 8899",
+    system_currency: "BHD",
+    currency_decimals: "3",
+    system_date_format: "YYYY-MM-DD HH:mm:ss",
+    system_timezone: "Asia/Bahrain",
+    tariff_utility_meta: "0.0140",
+    tariff_utility_platform: "0.0045",
+    tariff_auth_meta: "0.0110",
+    tariff_auth_platform: "0.0035",
+    tariff_marketing_meta: "0.0270",
+    tariff_marketing_platform: "0.0070",
+    tariff_service_meta: "0.0075",
+    tariff_service_platform: "0.0025",
+    wallet_enforcement: "1"
+  });
+  const [loading, setLoading] = useState(false);
+  const [currentTimePreview, setCurrentTimePreview] = useState((/* @__PURE__ */ new Date()).toISOString());
+  useEffect(() => {
+    fetch("./api/settings.php").then((res) => res.json()).then((res) => {
+      if (res.success && res.settings) {
+        setSettings((prev) => ({ ...prev, ...res.settings }));
+      }
+    });
+  }, []);
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTimePreview((/* @__PURE__ */ new Date()).toISOString()), 1e3);
+    return () => clearInterval(timer);
+  }, []);
+  const handleSave = async (e) => {
+    if (e) e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch("./api/settings.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ settings })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("System configuration & Tariffs updated successfully! Changes are live.");
+        if (onSettingsChange) onSettingsChange(settings);
+      } else {
+        showToast(data.error || "Failed to update settings", "error");
+      }
+    } catch (err) {
+      showToast("Network error saving settings", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const curr = settings.system_currency || "BHD";
+  const dec = parseInt(settings.currency_decimals || "3", 10);
+  const currencyOptions = [
+    { code: "BHD", name: "\u{1F1E7}\u{1F1ED} BHD - Bahraini Dinar (3 decimals)", defaultDecimals: 3 },
+    { code: "SAR", name: "\u{1F1F8}\u{1F1E6} SAR - Saudi Riyal (2 decimals)", defaultDecimals: 2 },
+    { code: "AED", name: "\u{1F1E6}\u{1F1EA} AED - UAE Dirham (2 decimals)", defaultDecimals: 2 },
+    { code: "KWD", name: "\u{1F1F0}\u{1F1FC} KWD - Kuwaiti Dinar (3 decimals)", defaultDecimals: 3 },
+    { code: "QAR", name: "\u{1F1F6}\u{1F1E6} QAR - Qatari Riyal (2 decimals)", defaultDecimals: 2 },
+    { code: "OMR", name: "\u{1F1F4}\u{1F1F2} OMR - Omani Rial (3 decimals)", defaultDecimals: 3 },
+    { code: "INR", name: "\u{1F1EE}\u{1F1F3} INR - Indian Rupee (\u20B9, 2 decimals)", defaultDecimals: 2 },
+    { code: "USD", name: "\u{1F1FA}\u{1F1F8} USD - US Dollar ($, 2 decimals)", defaultDecimals: 2 }
+  ];
+  const dateFormatOptions = [
+    { value: "YYYY-MM-DD HH:mm:ss", label: "YYYY-MM-DD HH:mm:ss (2026-10-05 17:45:00)" },
+    { value: "DD/MM/YYYY hh:mm:ss A", label: "DD/MM/YYYY hh:mm:ss A (05/10/2026 05:45:00 PM)" },
+    { value: "DD-MM-YYYY HH:mm", label: "DD-MM-YYYY HH:mm (05-10-2026 17:45)" },
+    { value: "MM/DD/YYYY hh:mm A", label: "MM/DD/YYYY hh:mm A (10/05/2026 05:45 PM)" },
+    { value: "YYYY-MM-DD hh:mm A", label: "YYYY-MM-DD hh:mm A (2026-10-05 05:45 PM)" }
+  ];
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "page-header-row" }, /* @__PURE__ */ React.createElement("div", { className: "page-title-group" }, /* @__PURE__ */ React.createElement("h1", null, /* @__PURE__ */ React.createElement("span", null, "\u2699\uFE0F"), " Superadmin Platform Engine Configuration"), /* @__PURE__ */ React.createElement("p", null, "Configure Meta Cloud API, message tariffs, GCC/India currencies, prepaid wallet rules, and date formats."))), /* @__PURE__ */ React.createElement("div", { className: "settings-nav-tabs" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `settings-tab-btn ${activeSubTab === "tariffs" ? "active" : ""}`,
+      onClick: () => setActiveSubTab("tariffs")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F4B0}"),
+    " Tariffs & Pricing Engine"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `settings-tab-btn ${activeSubTab === "currency" ? "active" : ""}`,
+      onClick: () => setActiveSubTab("currency")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F30D}"),
+    " Currency & Regional (GCC / India)"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `settings-tab-btn ${activeSubTab === "datetime" ? "active" : ""}`,
+      onClick: () => setActiveSubTab("datetime")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F552}"),
+    " Date & Time Formats"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `settings-tab-btn ${activeSubTab === "meta" ? "active" : ""}`,
+      onClick: () => setActiveSubTab("meta")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u26A1"),
+    " Meta Cloud API Credentials"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      className: `settings-tab-btn ${activeSubTab === "version" ? "active" : ""}`,
+      onClick: () => setActiveSubTab("version")
+    },
+    /* @__PURE__ */ React.createElement("span", null, "\u{1F3F7}\uFE0F"),
+    " Version & Roadmap Architecture"
+  )), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave }, activeSubTab === "tariffs" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "950px" } }, !isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEF3C7", border: "1.5px solid #FCD34D", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F512}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#92400E" } }, "Read-Only Official Tariff Schedule"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "#78350F", marginTop: "2px" } }, "WhatsApp Meta base costs, platform margins, and billing engine rules are managed exclusively by SaNDS Lab Superadmin. Admin accounts have view-only access."))), !isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A" } }, "Active Charging Engine Model:"), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: settings.billing_model === "24h_session" ? "#DBEAFE" : "#DCFCE7", color: settings.billing_model === "24h_session" ? "#1E40AF" : "#15803D", fontWeight: "700", padding: "5px 12px" } }, settings.billing_model === "24h_session" ? "\u26A1 Option B: Meta 24-Hour Session Billing" : "\u{1F4C4} Option A: Standard Per-Message Billing"))), isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1.5px solid #0D9488", borderRadius: "12px", padding: "18px", marginBottom: "22px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "18px" } }, "\u26A1"), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "15px", color: "#0F172A" } }, "WhatsApp Tariff & Charging Engine Model")), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#CCFBF1", color: "#0F766E", fontWeight: "800", fontSize: "11px", padding: "4px 9px" } }, "\u{1F451} Superadmin Exclusive Rule")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", margin: "0 0 16px 0", lineHeight: "1.4" } }, "Choose how the platform calculates Meta tariffs and debits client prepaid balances for outgoing messages:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "14px" } }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      onClick: () => setSettings({ ...settings, billing_model: "per_message" }),
+      style: {
+        border: settings.billing_model === "per_message" || !settings.billing_model ? "2px solid #10B981" : "1px solid #E2E8F0",
+        background: settings.billing_model === "per_message" || !settings.billing_model ? "#FFFFFF" : "#F8FAFC",
+        borderRadius: "10px",
+        padding: "14px",
+        cursor: "pointer",
+        boxShadow: settings.billing_model === "per_message" || !settings.billing_model ? "0 4px 12px rgba(16, 185, 129, 0.15)" : "none",
+        transition: "all 0.2s ease"
+      }
+    },
+    /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" } }, /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "radio",
+        name: "billing_model",
+        value: "per_message",
+        checked: settings.billing_model === "per_message" || !settings.billing_model,
+        onChange: () => setSettings({ ...settings, billing_model: "per_message" }),
+        style: { width: "16px", height: "16px", accentColor: "#10B981", cursor: "pointer" }
+      }
+    ), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A" } }, "Option A: Standard Per-Message Billing")),
+    /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", margin: "4px 0 0 26px", lineHeight: "1.4" } }, "Every single outgoing message debits the full ", /* @__PURE__ */ React.createElement("strong", null, "Meta Base Cost + Platform Margin"), "."),
+    /* @__PURE__ */ React.createElement("div", { style: { margin: "8px 0 0 26px", fontSize: "11px", color: "#059669", fontWeight: "700" } }, "\u2713 Standard SaaS / Reseller model (Maximum platform margin).")
+  ), /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      onClick: () => setSettings({ ...settings, billing_model: "24h_session" }),
+      style: {
+        border: settings.billing_model === "24h_session" ? "2px solid #3B82F6" : "1px solid #E2E8F0",
+        background: settings.billing_model === "24h_session" ? "#FFFFFF" : "#F8FAFC",
+        borderRadius: "10px",
+        padding: "14px",
+        cursor: "pointer",
+        boxShadow: settings.billing_model === "24h_session" ? "0 4px 12px rgba(59, 130, 246, 0.15)" : "none",
+        transition: "all 0.2s ease"
+      }
+    },
+    /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" } }, /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "radio",
+        name: "billing_model",
+        value: "24h_session",
+        checked: settings.billing_model === "24h_session",
+        onChange: () => setSettings({ ...settings, billing_model: "24h_session" }),
+        style: { width: "16px", height: "16px", accentColor: "#3B82F6", cursor: "pointer" }
+      }
+    ), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A" } }, "Option B: Meta 24-Hour Session Billing")),
+    /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", margin: "4px 0 0 26px", lineHeight: "1.4" } }, /* @__PURE__ */ React.createElement("strong", null, "1st Message:"), " Opens a 24h window (Full Meta Cost + Platform Margin).", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("strong", null, "Subsequent Messages in 24h:"), " Meta Cost is waived (", /* @__PURE__ */ React.createElement("strong", null, "0.0000 ", curr), ") and only Platform Margin is debited."),
+    /* @__PURE__ */ React.createElement("div", { style: { margin: "8px 0 0 26px", fontSize: "11px", color: "#2563EB", fontWeight: "700" } }, "\u2713 Official Meta Conversation Window Alignment.")
+  ))), /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", color: "var(--wa-dark-teal)", marginBottom: "8px" } }, "Dynamic Meta Cost & Platform Charges per Category"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "18px" } }, isSuperadmin ? "Configure the exact Meta Cost and SaNDS Platform Margin per message category. These tariffs take effect dynamically across all outgoing message dispatches, wallet debits, and client billing." : "Current official Meta Cost and Platform Charges per message category for outgoing dispatches."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(380px, 1fr))", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "\u{1F4C4} UTILITY (Invoices, Receipts, Notices)"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-util" }, "UTILITY")), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Meta Base Cost (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_utility_meta,
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_utility_meta: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Platform Margin (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_utility_platform,
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_utility_platform: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
+      required: true
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "10px", fontSize: "12px", color: "#0369A1", fontWeight: "700" } }, "Total Client Rate: ", (parseFloat(settings.tariff_utility_meta || 0) + parseFloat(settings.tariff_utility_platform || 0)).toFixed(dec), " ", curr)), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "\u{1F510} AUTHENTICATION (OTP, 2FA, Logins)"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-auth" }, "AUTH")), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Meta Base Cost (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_auth_meta,
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_auth_meta: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Platform Margin (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_auth_platform,
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_auth_platform: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
+      required: true
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "10px", fontSize: "12px", color: "#0369A1", fontWeight: "700" } }, "Total Client Rate: ", (parseFloat(settings.tariff_auth_meta || 0) + parseFloat(settings.tariff_auth_platform || 0)).toFixed(dec), " ", curr)), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "\u{1F4E3} MARKETING (Promotions, Discounts, Offers)"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-mark" }, "MARKETING")), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Meta Base Cost (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_marketing_meta,
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_marketing_meta: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Platform Margin (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_marketing_platform,
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_marketing_platform: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
+      required: true
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "10px", fontSize: "12px", color: "#0369A1", fontWeight: "700" } }, "Total Client Rate: ", (parseFloat(settings.tariff_marketing_meta || 0) + parseFloat(settings.tariff_marketing_platform || 0)).toFixed(dec), " ", curr)), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14px", color: "#0F172A" } }, "\u{1F4AC} SERVICE (Customer Support, Live Chat)"), /* @__PURE__ */ React.createElement("span", { className: "badge cat-serv" }, "SERVICE")), /* @__PURE__ */ React.createElement("div", { className: "form-row" }, /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Meta Base Cost (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_service_meta,
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_service_meta: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
+      required: true
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React.createElement("label", { className: "form-label", style: { fontSize: "11.5px" } }, "Platform Margin (", curr, ")"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "number",
+      step: "0.0001",
+      className: "form-input",
+      value: settings.tariff_service_platform,
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, tariff_service_platform: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {},
+      required: true
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "10px", fontSize: "12px", color: "#0369A1", fontWeight: "700" } }, "Total Client Rate: ", (parseFloat(settings.tariff_service_meta || 0) + parseFloat(settings.tariff_service_platform || 0)).toFixed(dec), " ", curr)))), activeSubTab === "currency" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "800px" } }, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", color: "var(--wa-dark-teal)", marginBottom: "8px" } }, "Multi-Currency Configuration (All GCC & India)"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "18px" } }, "Select the operating currency for the entire platform, wallet balances, tariffs, and transaction reports."), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Platform Operating Currency"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: settings.system_currency,
+      onChange: (e) => {
+        const selectedCode = e.target.value;
+        const found = currencyOptions.find((c) => c.code === selectedCode);
+        setSettings({
+          ...settings,
+          system_currency: selectedCode,
+          currency_decimals: found ? String(found.defaultDecimals) : "3"
+        });
+      }
+    },
+    currencyOptions.map((c) => /* @__PURE__ */ React.createElement("option", { key: c.code, value: c.code }, c.name))
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "All wallet top-ups, message charges, and Odoo billing logs will display in this currency.")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Currency Decimal Precision"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: settings.currency_decimals,
+      onChange: (e) => setSettings({ ...settings, currency_decimals: e.target.value })
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "3" }, "3 Decimals (e.g. 0.0185 BHD / 100.500 KWD)"),
+    /* @__PURE__ */ React.createElement("option", { value: "2" }, "2 Decimals (e.g. 2.50 SAR / 150.00 INR / $ 10.00)"),
+    /* @__PURE__ */ React.createElement("option", { value: "4" }, "4 Decimals (e.g. 0.0145 BHD Micro-billing)")
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group", style: { marginTop: "16px" } }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Prepaid Wallet Enforcement"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: settings.wallet_enforcement,
+      onChange: (e) => setSettings({ ...settings, wallet_enforcement: e.target.value })
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "1" }, "Strict Enforcement: Block messages when wallet balance is insufficient"),
+    /* @__PURE__ */ React.createElement("option", { value: "0" }, "Monitor Only: Allow dispatches and record negative balance")
+  ))), activeSubTab === "datetime" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "800px" } }, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", color: "var(--wa-dark-teal)", marginBottom: "8px" } }, "Date & Time Format Settings"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "18px" } }, "Standardize how timestamps, audit logs, and message telemetry are rendered across all views."), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "System Date & Time Format"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: settings.system_date_format,
+      onChange: (e) => setSettings({ ...settings, system_date_format: e.target.value })
+    },
+    dateFormatOptions.map((df) => /* @__PURE__ */ React.createElement("option", { key: df.value, value: df.value }, df.label))
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Regional Timezone"), /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "form-select",
+      value: settings.system_timezone,
+      onChange: (e) => setSettings({ ...settings, system_timezone: e.target.value })
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Bahrain" }, "\u{1F1E7}\u{1F1ED} Bahrain (GMT+3) - Asia/Bahrain"),
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Riyadh" }, "\u{1F1F8}\u{1F1E6} Saudi Arabia (GMT+3) - Asia/Riyadh"),
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Dubai" }, "\u{1F1E6}\u{1F1EA} UAE / Dubai (GMT+4) - Asia/Dubai"),
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Kuwait" }, "\u{1F1F0}\u{1F1FC} Kuwait (GMT+3) - Asia/Kuwait"),
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Qatar" }, "\u{1F1F6}\u{1F1E6} Qatar (GMT+3) - Asia/Qatar"),
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Muscat" }, "\u{1F1F4}\u{1F1F2} Oman (GMT+4) - Asia/Muscat"),
+    /* @__PURE__ */ React.createElement("option", { value: "Asia/Kolkata" }, "\u{1F1EE}\u{1F1F3} India (GMT+5:30) - Asia/Kolkata"),
+    /* @__PURE__ */ React.createElement("option", { value: "UTC" }, "\u{1F310} Coordinated Universal Time (UTC)")
+  )), /* @__PURE__ */ React.createElement("div", { style: { background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "10px", padding: "14px", marginTop: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#166534", fontWeight: "700", textTransform: "uppercase" } }, "Live Format Preview"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "18px", fontWeight: "800", color: "#15803D", marginTop: "4px" } }, formatDateTime(currentTimePreview, settings.system_date_format)))), activeSubTab === "meta" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "850px" } }, !isSuperadmin && /* @__PURE__ */ React.createElement("div", { style: { background: "#FEF3C7", border: "1.5px solid #FCD34D", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: "24px" } }, "\u{1F512}"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#92400E" } }, "Read-Only Meta Cloud API Credentials"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "12px", color: "#78350F", marginTop: "2px" } }, "WhatsApp Business Cloud API tokens, Phone ID, WABA Account ID, and Webhook verification tokens are managed exclusively by SaNDS Lab Superadmin. Admin accounts have view-only access."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "15px", fontWeight: "800", color: "var(--wa-dark-teal)", margin: 0 } }, "Meta WhatsApp Business Cloud API Credentials"), isSuperadmin && /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#CCFBF1", color: "#0F766E", fontWeight: "800", fontSize: "11px", padding: "4px 9px" } }, "\u{1F451} Superadmin Managed")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "18px" } }, isSuperadmin ? "Permanent System User Graph API access tokens and Webhook validation tokens for Meta WhatsApp Cloud API v19.0." : "Active Meta WhatsApp Cloud API credentials currently operating this platform."), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Meta Phone Number ID"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: settings.meta_phone_number_id,
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, meta_phone_number_id: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {}
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "WhatsApp Business Account ID (WABA)"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: settings.meta_waba_account_id,
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, meta_waba_account_id: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {}
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Permanent System User Access Token (Graph API)"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "password",
+      className: "form-input",
+      value: settings.meta_access_token,
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, meta_access_token: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {}
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, isSuperadmin ? "Active system token connected to WhatsApp Business Cloud API." : "System token is securely managed by Superadmin.")), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", { className: "form-label" }, "Webhook Verification Secret Token"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      className: "form-input",
+      value: settings.webhook_verify_token,
+      onChange: (e) => isSuperadmin && setSettings({ ...settings, webhook_verify_token: e.target.value }),
+      readOnly: !isSuperadmin,
+      disabled: !isSuperadmin,
+      style: !isSuperadmin ? { background: "#F1F5F9", cursor: "not-allowed", color: "#475569", borderColor: "#CBD5E1" } : {}
+    }
+  ), /* @__PURE__ */ React.createElement("span", { className: "form-hint" }, "Paste this token into Meta Developer App Dashboard Webhook settings."))), activeSubTab === "version" && /* @__PURE__ */ React.createElement("div", { className: "card", style: { maxWidth: "950px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: "16px", fontWeight: "800", color: "var(--wa-dark-teal)", margin: 0 } }, "WhatsApp Platform \u2014 Version & Release Architecture"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "var(--text-secondary)", margin: "4px 0 0 0" } }, "Permanent specification of active Version 2.0 generation, locked Version 1.0 baseline, and Minor version handling.")), /* @__PURE__ */ React.createElement("span", { className: "version-chip", style: { background: "#DCFCE7", color: "#166534", border: "1px solid #BBF7D0", padding: "6px 14px", fontSize: "12px" } }, "Active: v2.5.0")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "16px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "12px", padding: "18px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14.5px", color: "#15803D" } }, "\u26A1 Active Release: Version 2.5.0 (Production Live)"), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#16A34A", color: "#FFFFFF" } }, "LIVE & ACTIVE")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12.5px", color: "#166534", margin: "0 0 8px 0", lineHeight: "1.5" } }, "Enterprise User Security (Edit, Suspend, Password Reset) and SaNDS Lab Application Key Licensing Engine with offline asymmetric RSA-SHA256 verification are live. All scheduled Version 2.0 roadmap milestones are officially completed and deployed in production."), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#15803D", fontWeight: "600" } }, "Git Branch: ", /* @__PURE__ */ React.createElement("code", null, "main"), " \u2022 Target Host: ", /* @__PURE__ */ React.createElement("code", null, "https://whatsapp.sandslab.com"))), /* @__PURE__ */ React.createElement("div", { style: { background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "12px", padding: "18px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "14.5px", color: "#15803D" } }, "\u{1F512} Locked Baseline Milestone: Version 1.0.0"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: "6px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#16A34A", color: "#FFFFFF" } }, "TAG: v1.0.0"), /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#16A34A", color: "#FFFFFF" } }, "TAG: v1.0"))), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "#166534", margin: "0 0 10px 0", lineHeight: "1.4" } }, /* @__PURE__ */ React.createElement("strong", null, "Commit Hash:"), " ", /* @__PURE__ */ React.createElement("code", null, "9dd6ebc"), " \u2022 Permanent Git checkpoint. Fully tested, production-ready, and verified."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "8px", fontSize: "12px", color: "#14532D" } }, /* @__PURE__ */ React.createElement("div", null, "\u2713 Superadmin RBAC Security Restrictions"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Dual Charging Engine (Option A vs B)"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Meta WhatsApp Cloud API v19.0 Dispatch"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Multi-Language Odoo API Hub"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Prepaid Wallet & BHD 3-Dec Audit Ledger"), /* @__PURE__ */ React.createElement("div", null, "\u2713 Enterprise DataTables (DESC Sort)"))), /* @__PURE__ */ React.createElement("div", { style: { background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "18px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A", display: "block", marginBottom: "8px" } }, "\u{1F4D0} Semantic Minor Versioning (SemVer 2.0.0) Protocol"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" } }, "Every new update from now onward must be versioned according to standard semantic versioning rules:"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#2563EB" } }, "v2.0.0 (MAJOR)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", marginTop: "4px" } }, "Major architecture shift & foundational framework upgrades.")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#059669" } }, "v2.x.0 (MINOR)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", marginTop: "4px" } }, "Scheduled roadmap feature milestones (v2.1 Live Chat, v2.2 Campaigns, v2.3 Odoo, v2.4 Templates, v2.5 License).")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "12px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#D97706" } }, "v2.x.y (PATCH)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11px", color: "#64748B", marginTop: "4px" } }, "Targeted bug fixes, security patches, styling polish, or urgent hotfixes.")))), /* @__PURE__ */ React.createElement("div", { style: { background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "18px" } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "13.5px", color: "#0F172A", display: "block", marginBottom: "12px" } }, "\u{1F4CB} Version 2.0 Execution Roadmap (All Milestones Completed & Production Live \u2705)"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "10px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "12px 14px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.1.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "1. Inbound Live Chat & Two-Way Agent Inbox (Completed & Released \u2705)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#166534", marginTop: "2px" } }, "Interactive two-way chat window, Meta 24-hour customer care session window tracking, canned replies, and simulated inbound testing."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "12px 14px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.2.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "2. Bulk Campaign Broadcasts & Queue Pacing (Completed & Released \u2705)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#166534", marginTop: "2px" } }, "CSV contact upload with dynamic variable mapping, anti-spam dispatch queue pacing (50 msgs/min), and live animated monitor."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "12px 14px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.3.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "3. Odoo ERP Automated Action Webhook & Model Sync (Completed & Released \u2705)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#166534", marginTop: "2px" } }, "Inbound webhook triggers for automated invoice generation (account.move), sales order confirmations, dynamic PDF attachment streaming, and bi-directional chatter delivery callbacks."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "12px 14px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.4.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "4. WhatsApp Template Studio & Meta Graph API Live Approval (Completed & Released \u2705)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#166534", marginTop: "2px" } }, "Direct Meta Graph API submission for message templates, curated library of pre-built Meta presets, live handset mockup phone preview, and active/inactive template filtering."))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: "12px", padding: "12px 14px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px" } }, /* @__PURE__ */ React.createElement("span", { className: "badge", style: { background: "#16A34A", color: "#FFFFFF", marginTop: "2px" } }, "v2.5.0"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: "12.5px", color: "#15803D" } }, "5. Enterprise User Security & SaNDS Lab Application Key Licensing (Active & Released \u2705)"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: "11.5px", color: "#166534", marginTop: "2px" } }, "Admin user edit & suspension controls, self and admin password reset flows, SaNDS Lab Application Key licensing engine with offline asymmetric RSA-SHA256 verification, top header expiry duration pill, and strict lock security protection."))))))), activeSubTab !== "version" && /* @__PURE__ */ React.createElement("div", { style: { marginTop: "20px" } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "submit",
+      className: `btn ${isSuperadmin || activeSubTab !== "tariffs" && activeSubTab !== "meta" ? "btn-primary" : "btn-secondary"}`,
+      style: { padding: "10px 24px", fontSize: "14px", fontWeight: "700" },
+      disabled: loading || !isSuperadmin && (activeSubTab === "tariffs" || activeSubTab === "meta")
+    },
+    loading ? "Saving..." : !isSuperadmin && activeSubTab === "tariffs" ? "\u{1F512} Tariffs Managed by Superadmin (Read Only)" : !isSuperadmin && activeSubTab === "meta" ? "\u{1F512} Meta Credentials Managed by Superadmin (Read Only)" : "\u{1F4BE} Save & Apply System Configuration"
+  ))));
+}
+const rootElement = document.getElementById("root");
+if (rootElement) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(/* @__PURE__ */ React.createElement(App, null));
+}

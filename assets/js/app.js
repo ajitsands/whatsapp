@@ -712,6 +712,7 @@ function App() {
           onLogin={handleLogin}
           onSwitchDemo={switchDemoRole}
           licenseInfo={licenseInfo}
+          globalSettings={globalSettings}
           onOpenLicenseActivation={() => setShowLicenseActivationModal(true)}
         />
         {(showLicenseActivationModal || isLicenseLocked) && (
@@ -794,7 +795,7 @@ function App() {
                     : 'status-active'
                 }`}
                 onClick={() => setShowLicenseDetailsModal(true)}
-                title="Click to view SaNDS Lab Application Key & Expiry details"
+                title={licenseInfo?.expires_at ? `Click to view License details (Expires: ${formatExpiryDate(licenseInfo.expires_at, globalSettings?.system_date_format)})` : "Click to view SaNDS Lab Application Key & Expiry details"}
               >
                 <span>{!licenseInfo || !licenseInfo.valid ? '⚠️' : licenseInfo.days_left <= 7 ? '⏳' : '🛡️'}</span>
                 <span>
@@ -1053,6 +1054,7 @@ function App() {
       {showLicenseDetailsModal && (
         <LicenseDetailsModal
           licenseInfo={licenseInfo}
+          globalSettings={globalSettings}
           onClose={() => setShowLicenseDetailsModal(false)}
           onChangeKey={() => {
             setShowLicenseDetailsModal(false);
@@ -1276,9 +1278,90 @@ function LicenseActivationModal({ licenseInfo, isLockedScreen, currentUser, onSu
 }
 
 // -----------------------------------------------------------------------------
+// HELPER: FORMAT EXPIRY DATE ACCORDING TO SYSTEM DATE FORMAT SETTING
+// -----------------------------------------------------------------------------
+function formatExpiryDate(dateStr, format = 'YYYY-MM-DD HH:mm:ss') {
+  if (!dateStr) return '';
+  if (dateStr === 'Lifetime' || dateStr === 'Lifetime License') return 'Lifetime License';
+  try {
+    const str = String(dateStr).trim();
+    let YYYY = '', MM = '', DD = '', hours = null, minutes = null, seconds = null;
+
+    const isoMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+    const dmySlashMatch = str.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+    const dmyDashMatch = str.match(/^(\d{2})-(\d{2})-(\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+
+    if (isoMatch) {
+      YYYY = isoMatch[1];
+      MM = isoMatch[2];
+      DD = isoMatch[3];
+      if (isoMatch[4] !== undefined) {
+        hours = parseInt(isoMatch[4], 10);
+        minutes = isoMatch[5] || '00';
+        seconds = isoMatch[6] || '00';
+      }
+    } else if (dmyDashMatch) {
+      DD = dmyDashMatch[1];
+      MM = dmyDashMatch[2];
+      YYYY = dmyDashMatch[3];
+      if (dmyDashMatch[4] !== undefined) {
+        hours = parseInt(dmyDashMatch[4], 10);
+        minutes = dmyDashMatch[5] || '00';
+        seconds = dmyDashMatch[6] || '00';
+      }
+    } else if (dmySlashMatch) {
+      DD = dmySlashMatch[1];
+      MM = dmySlashMatch[2];
+      YYYY = dmySlashMatch[3];
+      if (dmySlashMatch[4] !== undefined) {
+        hours = parseInt(dmySlashMatch[4], 10);
+        minutes = dmySlashMatch[5] || '00';
+        seconds = dmySlashMatch[6] || '00';
+      }
+    } else {
+      const d = new Date(str);
+      if (isNaN(d.getTime())) return dateStr;
+      YYYY = String(d.getFullYear());
+      MM = String(d.getMonth() + 1).padStart(2, '0');
+      DD = String(d.getDate()).padStart(2, '0');
+      hours = d.getHours();
+      minutes = String(d.getMinutes()).padStart(2, '0');
+      seconds = String(d.getSeconds()).padStart(2, '0');
+    }
+
+    let datePart = `${YYYY}-${MM}-${DD}`;
+    if (format && format.includes('DD/MM/YYYY')) {
+      datePart = `${DD}/${MM}/${YYYY}`;
+    } else if (format && format.includes('DD-MM-YYYY')) {
+      datePart = `${DD}-${MM}-${YYYY}`;
+    } else if (format && format.includes('MM/DD/YYYY')) {
+      datePart = `${MM}/${DD}/${YYYY}`;
+    } else if (format && format.includes('YYYY-MM-DD')) {
+      datePart = `${YYYY}-${MM}-${DD}`;
+    }
+
+    if (hours === null || (hours === 0 && minutes === '00' && (seconds === '00' || !seconds))) {
+      return datePart;
+    }
+
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const hh12 = String(hours % 12 || 12).padStart(2, '0');
+    const HH24 = String(hours).padStart(2, '0');
+
+    if (format === 'DD/MM/YYYY hh:mm:ss A') return `${datePart} ${hh12}:${minutes}:${seconds} ${ampm}`;
+    if (format === 'DD-MM-YYYY HH:mm') return `${datePart} ${HH24}:${minutes}`;
+    if (format === 'MM/DD/YYYY hh:mm A') return `${datePart} ${hh12}:${minutes} ${ampm}`;
+    if (format === 'YYYY-MM-DD hh:mm A') return `${datePart} ${hh12}:${minutes} ${ampm}`;
+    return `${datePart} ${HH24}:${minutes}:${seconds}`;
+  } catch (e) {
+    return dateStr;
+  }
+}
+
+// -----------------------------------------------------------------------------
 // SANDS LAB LICENSE DETAILS & EXPIRY MODAL
 // -----------------------------------------------------------------------------
-function LicenseDetailsModal({ licenseInfo, onClose, onChangeKey, onRefresh, showToast }) {
+function LicenseDetailsModal({ licenseInfo, globalSettings, onClose, onChangeKey, onRefresh, showToast }) {
   const [refreshing, setRefreshing] = useState(false);
   const [showFullKey, setShowFullKey] = useState(false);
 
@@ -1371,7 +1454,9 @@ function LicenseDetailsModal({ licenseInfo, onClose, onChangeKey, onRefresh, sho
 
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#F8FAFC', borderRadius: '8px' }}>
               <span style={{ color: 'var(--text-muted)', fontSize: '12.5px' }}>Expiration Date:</span>
-              <strong style={{ fontSize: '13px' }}>{licenseInfo?.expires_at || 'Lifetime'}</strong>
+              <strong style={{ fontSize: '13px' }}>
+                {formatExpiryDate(licenseInfo?.expires_at, globalSettings?.system_date_format) || 'Lifetime'}
+              </strong>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#F8FAFC', borderRadius: '8px' }}>
@@ -1382,6 +1467,13 @@ function LicenseDetailsModal({ licenseInfo, onClose, onChangeKey, onRefresh, sho
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#F8FAFC', borderRadius: '8px' }}>
               <span style={{ color: 'var(--text-muted)', fontSize: '12.5px' }}>Product Plan / Tier:</span>
               <strong style={{ fontSize: '13px' }}>{licenseInfo?.plan || 'Enterprise License'}</strong>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#F8FAFC', borderRadius: '8px' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '12.5px' }}>Remote Server Sync:</span>
+              <strong style={{ fontSize: '12.5px', color: '#047857' }}>
+                ✓ Every 24h Auto-Check {licenseInfo?.last_online_check ? `(Last: ${formatExpiryDate(licenseInfo.last_online_check, globalSettings?.system_date_format)})` : ''}
+              </strong>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: '#F8FAFC', borderRadius: '8px' }}>
@@ -1560,7 +1652,7 @@ function ChangePasswordModal({ currentUser, onClose, showToast }) {
 // -----------------------------------------------------------------------------
 // 1. LOGIN VIEW
 // -----------------------------------------------------------------------------
-function LoginView({ onLogin, onSwitchDemo, licenseInfo, onOpenLicenseActivation }) {
+function LoginView({ onLogin, onSwitchDemo, licenseInfo, globalSettings, onOpenLicenseActivation }) {
   const [email, setEmail] = useState('admin@uniglobal.bh');
   const [password, setPassword] = useState('Password@123');
   const [loading, setLoading] = useState(false);
@@ -1658,7 +1750,7 @@ function LoginView({ onLogin, onSwitchDemo, licenseInfo, onOpenLicenseActivation
             justifyContent: 'space-between',
             fontWeight: '600'
           }}>
-            <span>🛡️ License: <strong>{licenseInfo.duration_text}</strong> ({licenseInfo.expires_at})</span>
+            <span>🛡️ License: <strong>{licenseInfo.duration_text}</strong> ({formatExpiryDate(licenseInfo.expires_at, globalSettings?.system_date_format)})</span>
             <button
               type="button"
               className="btn btn-secondary btn-sm"

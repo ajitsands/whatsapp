@@ -22,12 +22,14 @@ switch ($action) {
         sendJsonResponse([
             'success' => true,
             'data'    => array_merge($check, [
-                'stored_license_key' => !empty($stored['license_key']) 
+                'stored_license_key'   => !empty($stored['license_key']) 
                     ? substr($stored['license_key'], 0, 7) . '••••-••••-' . substr($stored['license_key'], -4)
                     : null,
-                'full_license_key'   => $stored['license_key'] ?? '',
-                'detected_domain'    => explode(':', $_SERVER['HTTP_HOST'] ?? 'localhost')[0],
-                'activated_at'       => $stored['activated_at'] ?? null,
+                'full_license_key'     => $stored['license_key'] ?? '',
+                'detected_domain'      => explode(':', $_SERVER['HTTP_HOST'] ?? 'localhost')[0],
+                'activated_at'         => $stored['activated_at'] ?? null,
+                'last_online_check'    => $stored['last_online_check'] ?? null,
+                'online_sync_interval' => '24 Hours',
             ])
         ]);
         break;

@@ -11,6 +11,7 @@ require_once __DIR__ . '/db.php';
 
 class LicenseManager {
     private const KEY_SERVER_ACTIVATE_URL = 'https://key.sandslab.com/public/api/activate';
+    private const ONLINE_CHECK_INTERVAL   = 86400; // 24 Hours in seconds
 
     /**
      * Retrieve stored license configuration from database
@@ -26,7 +27,9 @@ class LicenseManager {
                     'sands_license_token',
                     'sands_license_public_key',
                     'sands_license_domain',
-                    'sands_license_activated_at'
+                    'sands_license_activated_at',
+                    'sands_license_last_online_check',
+                    'sands_license_status'
                 )
             ");
             $rows = $stmt->fetchAll();
@@ -36,19 +39,23 @@ class LicenseManager {
             }
 
             return [
-                'license_key'  => $settings['sands_license_key'] ?? '',
-                'token'        => $settings['sands_license_token'] ?? '',
-                'public_key'   => $settings['sands_license_public_key'] ?? '',
-                'domain'       => $settings['sands_license_domain'] ?? '',
-                'activated_at' => $settings['sands_license_activated_at'] ?? null,
+                'license_key'       => $settings['sands_license_key'] ?? '',
+                'token'             => $settings['sands_license_token'] ?? '',
+                'public_key'        => $settings['sands_license_public_key'] ?? '',
+                'domain'            => $settings['sands_license_domain'] ?? '',
+                'activated_at'      => $settings['sands_license_activated_at'] ?? null,
+                'last_online_check' => $settings['sands_license_last_online_check'] ?? null,
+                'status'            => $settings['sands_license_status'] ?? 'active',
             ];
         } catch (Throwable $e) {
             return [
-                'license_key'  => '',
-                'token'        => '',
-                'public_key'   => '',
-                'domain'       => '',
-                'activated_at' => null,
+                'license_key'       => '',
+                'token'             => '',
+                'public_key'        => '',
+                'domain'            => '',
+                'activated_at'      => null,
+                'last_online_check' => null,
+                'status'            => 'unlicensed',
             ];
         }
     }
@@ -56,14 +63,16 @@ class LicenseManager {
     /**
      * Save license credentials into system_settings
      */
-    public static function saveStoredLicense(string $licenseKey, string $token, string $publicKey, string $domain): void {
+    public static function saveStoredLicense(string $licenseKey, string $token, string $publicKey, string $domain, string $status = 'active'): void {
         $db = Database::getConnection();
         $items = [
-            'sands_license_key'          => $licenseKey,
-            'sands_license_token'        => $token,
-            'sands_license_public_key'   => $publicKey,
-            'sands_license_domain'       => $domain,
-            'sands_license_activated_at' => date('Y-m-d H:i:s')
+            'sands_license_key'               => $licenseKey,
+            'sands_license_token'             => $token,
+            'sands_license_public_key'        => $publicKey,
+            'sands_license_domain'            => $domain,
+            'sands_license_activated_at'      => date('Y-m-d H:i:s'),
+            'sands_license_last_online_check' => date('Y-m-d H:i:s'),
+            'sands_license_status'            => $status
         ];
 
         $stmt = $db->prepare("
@@ -78,6 +87,30 @@ class LicenseManager {
     }
 
     /**
+     * Touch or update the last online verification timestamp and optional status flag
+     */
+    public static function updateLastOnlineCheck(?string $status = null): void {
+        try {
+            $db = Database::getConnection();
+            $stmt = $db->prepare("
+                INSERT INTO system_settings (setting_key, setting_value, setting_group, description)
+                VALUES ('sands_license_last_online_check', ?, 'license', 'Last Online Verification Timestamp')
+                ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = NOW()
+            ");
+            $stmt->execute([date('Y-m-d H:i:s')]);
+
+            if ($status !== null) {
+                $stmtStatus = $db->prepare("
+                    INSERT INTO system_settings (setting_key, setting_value, setting_group, description)
+                    VALUES ('sands_license_status', ?, 'license', 'License Status Flag')
+                    ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = NOW()
+                ");
+                $stmtStatus->execute([$status]);
+            }
+        } catch (Throwable $e) {}
+    }
+
+    /**
      * Clear stored license
      */
     public static function clearStoredLicense(): void {
@@ -89,22 +122,25 @@ class LicenseManager {
                 'sands_license_token',
                 'sands_license_public_key',
                 'sands_license_domain',
-                'sands_license_activated_at'
+                'sands_license_activated_at',
+                'sands_license_last_online_check',
+                'sands_license_status'
             )
         ");
     }
 
     /**
-     * Local Offline RSA SHA-256 Verification (Per SaNDS Lab Specs Section 3)
+     * Local Offline RSA SHA-256 Verification & Automated 24-Hour Remote Check
      */
-    public static function checkLicenseLocally(?string $token = null, ?string $publicKey = null): array {
+    public static function checkLicenseLocally(?string $token = null, ?string $publicKey = null, bool $allowOnlineSync = true): array {
         if ($token === null || $publicKey === null) {
             $stored = self::getStoredLicense();
             $token = $stored['token'];
             $publicKey = $stored['public_key'];
             $licenseKey = $stored['license_key'];
         } else {
-            $licenseKey = '';
+            $stored = self::getStoredLicense();
+            $licenseKey = $stored['license_key'] ?? '';
         }
 
         if (empty($token) || empty($publicKey)) {
@@ -116,6 +152,56 @@ class LicenseManager {
                 'duration_text'       => 'Unlicensed',
                 'days_left'           => 0
             ];
+        }
+
+        // If previously flagged as suspended by key.sandslab.com
+        if (($stored['status'] ?? 'active') === 'suspended') {
+            return [
+                'valid'               => false,
+                'status'              => 'suspended',
+                'message'             => 'Application Key is suspended by licensing server (key.sandslab.com).',
+                'requires_activation' => true,
+                'duration_text'       => 'Key Suspended',
+                'days_left'           => 0,
+                'license_key'         => $licenseKey
+            ];
+        }
+
+        // 24-Hour Remote Check Routine with key.sandslab.com
+        if ($allowOnlineSync && !empty($licenseKey) && !empty($stored['domain'])) {
+            $isTrialKey = str_starts_with(strtoupper($licenseKey), 'SANDSLAB-TRIAL-');
+            if (!$isTrialKey) {
+                $lastCheckStr = $stored['last_online_check'] ?? null;
+                $lastCheckTime = !empty($lastCheckStr) ? strtotime($lastCheckStr) : 0;
+                $secondsSinceCheck = time() - $lastCheckTime;
+
+                if ($secondsSinceCheck >= self::ONLINE_CHECK_INTERVAL) {
+                    // Update timestamp immediately as a lock to prevent concurrent requests from firing duplicate curls
+                    self::updateLastOnlineCheck();
+
+                    // Contact key.sandslab.com with a snappy 5-second timeout
+                    $refreshRes = self::activate($licenseKey, $stored['domain'], 5);
+                    if ($refreshRes['success']) {
+                        $stored = self::getStoredLicense();
+                        $token = $stored['token'];
+                        $publicKey = $stored['public_key'];
+                        $licenseKey = $stored['license_key'];
+                    } elseif (isset($refreshRes['http_code']) && in_array($refreshRes['http_code'], [400, 401, 403, 404, 422], true)) {
+                        // Key server explicitly rejected / suspended / revoked the key
+                        self::updateLastOnlineCheck('suspended');
+                        return [
+                            'valid'               => false,
+                            'status'              => 'suspended',
+                            'message'             => $refreshRes['error'] ?? 'Application Key has been suspended or revoked by key.sandslab.com.',
+                            'requires_activation' => true,
+                            'duration_text'       => 'Key Suspended',
+                            'days_left'           => 0,
+                            'license_key'         => $licenseKey
+                        ];
+                    }
+                    // If network timeout or key server is unreachable, gracefully fall back to local RSA verification below
+                }
+            }
         }
 
         $parts = explode('.', $token);
@@ -195,7 +281,24 @@ class LicenseManager {
             ];
         }
 
-        // 3. Expiry / Duration Calculation
+        // 3. Payload Status Check (Suspension / Revocation Flag)
+        $payloadStatus = strtolower(trim((string)($payload['status'] ?? ($payload['license_status'] ?? 'active'))));
+        if (in_array($payloadStatus, ['suspended', 'revoked', 'disabled', 'cancelled', 'blocked'], true)) {
+            self::updateLastOnlineCheck('suspended');
+            return [
+                'valid'               => false,
+                'status'              => 'suspended',
+                'message'             => 'Application Key is suspended. Please contact SaNDS Lab support.',
+                'requires_activation' => true,
+                'duration_text'       => 'Key Suspended',
+                'days_left'           => 0,
+                'license_key'         => $payload['license_key'] ?? $licenseKey,
+                'domain'              => $licenseHost,
+                'payload'             => $payload
+            ];
+        }
+
+        // 4. Expiry / Duration Calculation
         $expiresAt = $payload['expires_at'] 
             ?? $payload['expiry_date'] 
             ?? $payload['valid_until'] 
@@ -211,7 +314,30 @@ class LicenseManager {
         if (!empty($expiresAt)) {
             $expiryTime = is_numeric($expiresAt) ? (int)$expiresAt : strtotime((string)$expiresAt);
             if ($expiryTime && $expiryTime > 0) {
-                $formattedExpiry = date('Y-m-d', $expiryTime);
+                $rawExpiryIso = date('Y-m-d', $expiryTime);
+
+                // Fetch application setting for system date format
+                $systemDateFormat = 'YYYY-MM-DD';
+                try {
+                    $db = Database::getConnection();
+                    $stmtFmt = $db->query("SELECT setting_value FROM system_settings WHERE setting_key = 'system_date_format' LIMIT 1");
+                    if ($stmtFmt && $rowFmt = $stmtFmt->fetch()) {
+                        $systemDateFormat = $rowFmt['setting_value'] ?? 'YYYY-MM-DD';
+                    }
+                } catch (Throwable $e) {}
+
+                $hasSpecificTime = (date('H:i:s', $expiryTime) !== '00:00:00' && date('H:i:s', $expiryTime) !== '23:59:59');
+
+                if (str_contains($systemDateFormat, 'DD/MM/YYYY')) {
+                    $formattedExpiry = date($hasSpecificTime ? 'd/m/Y h:i:s A' : 'd/m/Y', $expiryTime);
+                } elseif (str_contains($systemDateFormat, 'DD-MM-YYYY')) {
+                    $formattedExpiry = date($hasSpecificTime ? 'd-m-Y H:i' : 'd-m-Y', $expiryTime);
+                } elseif (str_contains($systemDateFormat, 'MM/DD/YYYY')) {
+                    $formattedExpiry = date($hasSpecificTime ? 'm/d/Y h:i A' : 'm/d/Y', $expiryTime);
+                } else {
+                    $formattedExpiry = date($hasSpecificTime ? 'Y-m-d H:i:s' : 'Y-m-d', $expiryTime);
+                }
+
                 $secondsLeft = $expiryTime - time();
                 $daysLeft = (int)ceil($secondsLeft / 86400);
 
@@ -224,10 +350,12 @@ class LicenseManager {
                         'message'             => "Application key expired on {$formattedExpiry}.",
                         'requires_activation' => true,
                         'expires_at'          => $formattedExpiry,
+                        'expires_at_raw'      => $rawExpiryIso,
                         'days_left'           => $daysLeft,
                         'duration_text'       => $durationText,
                         'license_key'         => $payload['license_key'] ?? $licenseKey,
                         'domain'              => $licenseHost,
+                        'last_online_check'   => $stored['last_online_check'] ?? null,
                         'payload'             => $payload
                     ];
                 } else {
@@ -241,25 +369,28 @@ class LicenseManager {
         }
 
         return [
-            'valid'               => true,
-            'status'              => 'active',
-            'message'             => 'Application Key verified and active.',
-            'requires_activation' => false,
-            'license_key'         => $payload['license_key'] ?? $licenseKey,
-            'domain'              => $licenseHost,
-            'client_name'         => $payload['client_name'] ?? ($payload['customer'] ?? 'Licensed Customer'),
-            'plan'                => $payload['plan'] ?? 'Standard Enterprise',
-            'expires_at'          => $formattedExpiry,
-            'days_left'           => $daysLeft !== null ? $daysLeft : 9999,
-            'duration_text'       => $durationText,
-            'payload'             => $payload
+            'valid'                => true,
+            'status'               => 'active',
+            'message'              => 'Application Key verified and active.',
+            'requires_activation'  => false,
+            'license_key'          => $payload['license_key'] ?? $licenseKey,
+            'domain'               => $licenseHost,
+            'client_name'          => $payload['client_name'] ?? ($payload['customer'] ?? 'Licensed Customer'),
+            'plan'                 => $payload['plan'] ?? 'Standard Enterprise',
+            'expires_at'           => $formattedExpiry,
+            'expires_at_raw'       => $rawExpiryIso ?? $formattedExpiry,
+            'days_left'            => $daysLeft !== null ? $daysLeft : 9999,
+            'duration_text'        => $durationText,
+            'last_online_check'    => $stored['last_online_check'] ?? null,
+            'online_sync_interval' => '24 Hours',
+            'payload'              => $payload
         ];
     }
 
     /**
      * Activate License Online with key.sandslab.com (Per SaNDS Lab Specs Section 2)
      */
-    public static function activate(string $licenseKey, ?string $domain = null): array {
+    public static function activate(string $licenseKey, ?string $domain = null, int $timeout = 15): array {
         $licenseKey = trim($licenseKey);
         if (empty($licenseKey)) {
             return ['success' => false, 'error' => 'License Key is required.'];
@@ -301,7 +432,7 @@ class LicenseManager {
             ]),
             CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
             CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_TIMEOUT        => 15
+            CURLOPT_TIMEOUT        => $timeout
         ]);
 
         $response = curl_exec($ch);
@@ -311,18 +442,19 @@ class LicenseManager {
 
         if ($response === false) {
             return [
-                'success' => false,
-                'error'   => 'Could not connect to licensing server: ' . ($curlError ?: 'Network Timeout')
+                'success'   => false,
+                'error'     => 'Could not connect to licensing server: ' . ($curlError ?: 'Network Timeout'),
+                'http_code' => 0
             ];
         }
 
         $data = json_decode($response, true);
         if ($httpCode === 200 && !empty($data['token']) && !empty($data['public_key'])) {
             // SUCCESS: Save data to application
-            self::saveStoredLicense($licenseKey, $data['token'], $data['public_key'], $domain);
+            self::saveStoredLicense($licenseKey, $data['token'], $data['public_key'], $domain, 'active');
 
-            // Verify locally
-            $localCheck = self::checkLicenseLocally($data['token'], $data['public_key']);
+            // Verify locally without re-triggering remote sync
+            $localCheck = self::checkLicenseLocally($data['token'], $data['public_key'], false);
             return [
                 'success' => true,
                 'message' => $data['message'] ?? 'Activation successful.',
