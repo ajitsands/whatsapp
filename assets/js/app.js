@@ -323,12 +323,12 @@ function VersionArchitectureModal({ isOpen, onClose }) {
         </div>
 
         <div className="version-modal-body">
-          {/* Card 0: Today's Updates (14-Oct-2026) - Production Milestone Locked */}
+          {/* Card 0: Latest Updates - Production Milestone Locked */}
           <div className="version-card-block" style={{ borderLeft: '4px solid #2563EB', background: '#EFF6FF', boxShadow: '0 2px 8px rgba(37,99,235,0.06)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '20px' }}>⭐</span>
-                <strong style={{ fontSize: '15px', color: '#1E40AF' }}>Today's Updates (14-Oct-2026) — Production Locked 🔒</strong>
+                <strong style={{ fontSize: '15px', color: '#1E40AF' }}>Latest Updates — Production Locked 🔒</strong>
               </div>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <span className="version-chip" style={{ background: '#DBEAFE', color: '#1E40AF', border: '1px solid #BFDBFE', fontWeight: '700' }}>
@@ -9049,10 +9049,10 @@ function SettingsView({ currentUser, showToast, onSettingsChange }) {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {/* Today's Updates Block (14-Oct-2026) */}
+              {/* Latest Updates Block */}
               <div style={{ background: '#EFF6FF', border: '1.5px solid #BFDBFE', borderRadius: '12px', padding: '18px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
-                  <strong style={{ fontSize: '14.5px', color: '#1E40AF' }}>⭐ Today's Release Updates (14-Oct-2026) — Production Locked 🔒</strong>
+                  <strong style={{ fontSize: '14.5px', color: '#1E40AF' }}>⭐ Latest Updates — Production Locked 🔒</strong>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <span className="badge" style={{ background: '#2563EB', color: '#FFFFFF' }}>GIT TAG: v2.5.0</span>
                     <span className="badge" style={{ background: '#16A34A', color: '#FFFFFF' }}>MILESTONE LOCKED ✅</span>

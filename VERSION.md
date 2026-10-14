@@ -72,19 +72,19 @@ v2 . [MINOR] . [PATCH]
 ## 📜 Release Changelog History
 
 ### [2.5.0] — 2026-10-14 (Enterprise Security, SaNDS Lab Licensing & Dynamic Branding Locked 🔒)
-- ⭐ **TODAY'S UPDATE — Superadmin Company Profile & Dynamic Branding:**
+- ⭐ **LATEST UPDATE — Superadmin Company Profile & Dynamic Branding:**
   - Dedicated "🏢 Company Profile & Branding" configuration sub-tab in Engine Settings.
   - Restricted exclusively to Superadmin accounts (read-only for standard Admin/User).
   - Integrated direct Logo Upload handler (`api/settings.php?action=upload_logo`) supporting PNG, SVG, JPG, WEBP (up to 5MB).
   - Real-time triple live previews (Header Brand Bar, Login Card, and WhatsApp Handset Simulator).
   - Dynamic platform-wide reflection: automatically replaces hardcoded "UniGlobal Consultancy" across the top header bar, login screen, composer handset mockup, template studio simulator, document titles, and receipts.
-- ⭐ **TODAY'S UPDATE — Automated 24-Hour Remote License Sync & Suspension Engine:**
+- ⭐ **LATEST UPDATE — Automated 24-Hour Remote License Sync & Suspension Engine:**
   - Background 24-hour verification schedule connecting with `https://key.sandslab.com`.
   - Immediate local application locking if a license key is revoked or suspended on the server.
   - Graceful fallback to local asymmetric RSA-SHA256 cryptographic verification if server is temporarily unreachable.
-- ⭐ **TODAY'S UPDATE — Wholesale Carrier Tariff Privacy:**
+- ⭐ **LATEST UPDATE — Wholesale Carrier Tariff Privacy:**
   - Wholesale Meta delivery costs strictly restricted to Superadmin visibility across tariff calculators, message logs, and dashboard metrics.
-- ⭐ **TODAY'S UPDATE — Enterprise Root React ErrorBoundary & White Screen Immunity:**
+- ⭐ **LATEST UPDATE — Enterprise Root React ErrorBoundary & White Screen Immunity:**
   - Added full React `ErrorBoundary` wrapping `<App />` root to prevent white screens on any runtime exception.
   - Branded recovery UI with exact diagnostic reporting, 1-click view reloading, and session purging.
   - Safeguarded `ComposerView` prop scope and user avatar/name renderers across all views.
